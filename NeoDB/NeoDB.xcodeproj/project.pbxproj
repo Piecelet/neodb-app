@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2429E4DB2D1C45B90045E2F3 /* Account in Frameworks */ = {isa = PBXBuildFile; productRef = 2429E4DA2D1C45B90045E2F3 /* Account */; };
+		2429E4DD2D1C45BC0045E2F3 /* Config in Frameworks */ = {isa = PBXBuildFile; productRef = 2429E4DC2D1C45BC0045E2F3 /* Config */; };
+		2429E4DF2D1C45BE0045E2F3 /* Network in Frameworks */ = {isa = PBXBuildFile; productRef = 2429E4DE2D1C45BE0045E2F3 /* Network */; };
+		2429E4E42D1C4D3F0045E2F3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 2429E4E32D1C4D3F0045E2F3 /* KeychainSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		24CEAD012D0DA6210083D4BA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -33,6 +40,9 @@
 		24E905DA2D1AADDC0032A91E /* Exceptions for "NeoDB" folder in "NeoDB" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Info.plist,
+				Packages/Account,
+				Packages/Config,
 				Packages/Network,
 			);
 			target = 24CEACEE2D0DA6200083D4BA /* NeoDB */;
@@ -65,6 +75,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2429E4DF2D1C45BE0045E2F3 /* Network in Frameworks */,
+				2429E4DD2D1C45BC0045E2F3 /* Config in Frameworks */,
+				2429E4E42D1C4D3F0045E2F3 /* KeychainSwift in Frameworks */,
+				2429E4DB2D1C45B90045E2F3 /* Account in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +99,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2429E4D92D1C45B90045E2F3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		24CEACE62D0DA6200083D4BA = {
 			isa = PBXGroup;
 			children = (
 				24CEACF12D0DA6200083D4BA /* NeoDB */,
 				24CEAD032D0DA6210083D4BA /* NeoDBTests */,
 				24CEAD0D2D0DA6210083D4BA /* NeoDBUITests */,
+				2429E4D92D1C45B90045E2F3 /* Frameworks */,
 				24CEACF02D0DA6200083D4BA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,6 +147,10 @@
 			);
 			name = NeoDB;
 			packageProductDependencies = (
+				2429E4DA2D1C45B90045E2F3 /* Account */,
+				2429E4DC2D1C45BC0045E2F3 /* Config */,
+				2429E4DE2D1C45BE0045E2F3 /* Network */,
+				2429E4E32D1C4D3F0045E2F3 /* KeychainSwift */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -208,6 +234,9 @@
 			);
 			mainGroup = 24CEACE62D0DA6200083D4BA;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2429E4E22D1C4D3F0045E2F3 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
 			projectDirPath = "";
@@ -407,6 +436,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NeoDB/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeoDB/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NeoDB;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -447,6 +477,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NeoDB/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = NeoDB/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NeoDB;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -602,6 +633,37 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2429E4E22D1C4D3F0045E2F3 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2429E4DA2D1C45B90045E2F3 /* Account */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Account;
+		};
+		2429E4DC2D1C45BC0045E2F3 /* Config */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Config;
+		};
+		2429E4DE2D1C45BE0045E2F3 /* Network */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Network;
+		};
+		2429E4E32D1C4D3F0045E2F3 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2429E4E22D1C4D3F0045E2F3 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 24CEACE72D0DA6200083D4BA /* Project object */;
 }
