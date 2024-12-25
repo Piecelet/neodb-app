@@ -15,11 +15,21 @@ let package = Package(
             name: "Account",
             targets: ["Account"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/evgenyneu/keychain-swift.git", from: "24.0.0"),
+        .package(path: "../Network"),
+        .package(path: "../Config")
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "Account"),
+            name: "Account",
+            dependencies: [
+                .product(name: "KeychainSwift", package: "keychain-swift"),
+                "Network",
+                "Config"
+            ]),
         .testTarget(
             name: "AccountTests",
             dependencies: ["Account"]

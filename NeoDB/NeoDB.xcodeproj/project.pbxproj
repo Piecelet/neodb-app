@@ -50,6 +50,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		2429E4E72D1C515D0045E2F3 /* References */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = References;
+			sourceTree = "<group>";
+		};
 		24CEACF12D0DA6200083D4BA /* NeoDB */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -113,6 +118,7 @@
 				24CEAD032D0DA6210083D4BA /* NeoDBTests */,
 				24CEAD0D2D0DA6210083D4BA /* NeoDBUITests */,
 				2429E4D92D1C45B90045E2F3 /* Frameworks */,
+				2429E4E72D1C515D0045E2F3 /* References */,
 				24CEACF02D0DA6200083D4BA /* Products */,
 			);
 			sourceTree = "<group>";
