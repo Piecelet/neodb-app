@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import OSLog
+import KeychainSwift
 
 enum AuthError: Error {
     case invalidURL
@@ -21,21 +22,58 @@ struct AppRegistrationResponse: Codable {
 @MainActor
 class AuthService: ObservableObject {
     private let logger = Logger(subsystem: "com.neodb.app", category: "Auth")
+    private let keychain = KeychainSwift(keyPrefix: "neodb_")
+    
     @Published var isAuthenticated = false
     @Published var accessToken: String?
     @Published var isRegistering = false
     
     private let baseURL = "https://neodb.social"
     private var clientId: String? {
-        get { UserDefaults.standard.string(forKey: "neodb.clientId") }
-        set { UserDefaults.standard.set(newValue, forKey: "neodb.clientId") }
+        get { keychain.get("client_id") }
+        set { 
+            if let value = newValue {
+                keychain.set(value, forKey: "client_id")
+            } else {
+                keychain.delete("client_id")
+            }
+        }
     }
     private var clientSecret: String? {
-        get { UserDefaults.standard.string(forKey: "neodb.clientSecret") }
-        set { UserDefaults.standard.set(newValue, forKey: "neodb.clientSecret") }
+        get { keychain.get("client_secret") }
+        set { 
+            if let value = newValue {
+                keychain.set(value, forKey: "client_secret")
+            } else {
+                keychain.delete("client_secret")
+            }
+        }
     }
+    private var savedAccessToken: String? {
+        get { keychain.get("access_token") }
+        set {
+            if let value = newValue {
+                keychain.set(value, forKey: "access_token")
+                accessToken = value
+                isAuthenticated = true
+            } else {
+                keychain.delete("access_token")
+                accessToken = nil
+                isAuthenticated = false
+            }
+        }
+    }
+    
     private let redirectUri = "neodb://oauth/callback"
     private let scopes = "read write"
+    
+    init() {
+        // Check if we have a saved access token
+        if let token = savedAccessToken {
+            accessToken = token
+            isAuthenticated = true
+        }
+    }
     
     var authorizationURL: URL? {
         guard let clientId = clientId else { return nil }
@@ -155,6 +193,7 @@ class AuthService: ObservableObject {
                 if httpResponse.statusCode == 401 {
                     self.clientId = nil
                     self.clientSecret = nil
+                    self.savedAccessToken = nil
                 }
                 throw AuthError.tokenExchangeFailed(errorMessage)
             }
@@ -170,8 +209,7 @@ class AuthService: ObservableObject {
         
         do {
             let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
-            self.accessToken = tokenResponse.access_token
-            self.isAuthenticated = true
+            self.savedAccessToken = tokenResponse.access_token
             logger.debug("Successfully obtained access token")
         } catch {
             logger.error("Failed to decode token response: \(error)")
@@ -180,5 +218,11 @@ class AuthService: ObservableObject {
             }
             throw error
         }
+    }
+    
+    func logout() {
+        clientId = nil
+        clientSecret = nil
+        savedAccessToken = nil
     }
 }
