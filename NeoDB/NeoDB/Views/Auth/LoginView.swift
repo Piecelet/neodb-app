@@ -117,29 +117,79 @@ struct LoginView: View {
 }
 
 struct InstanceInputView: View {
-    @State var instanceUrl: String
+    @State private var instanceUrl: String
+    @State private var isValidating = false
+    @State private var localError: String?
+    @FocusState private var isUrlFieldFocused: Bool
+    
     let onSubmit: (String) -> Void
+    
+    init(instanceUrl: String, onSubmit: @escaping (String) -> Void) {
+        _instanceUrl = State(initialValue: instanceUrl)
+        self.onSubmit = onSubmit
+    }
+    
+    var isValidUrl: Bool {
+        let urlPattern = "^[a-zA-Z0-9][a-zA-Z0-9-_.]+\\.[a-zA-Z]{2,}$"
+        let urlPredicate = NSPredicate(format: "SELF MATCHES %@", urlPattern)
+        return urlPredicate.evaluate(with: instanceUrl)
+    }
     
     var body: some View {
         VStack(spacing: 16) {
             Text("Enter the URL of your NeoDB instance")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
             
             TextField("Instance URL", text: $instanceUrl)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
-                .autocapitalization(.none)
+                .textInputAutocapitalization(.never)
                 .keyboardType(.URL)
                 .submitLabel(.done)
-                .onSubmit {
-                    onSubmit(instanceUrl)
+                .focused($isUrlFieldFocused)
+                .onChange(of: instanceUrl) { _ in
+                    localError = nil
                 }
+                .onSubmit {
+                    submitInstance()
+                }
+                .accessibilityHint("Enter your NeoDB instance URL, for example: neodb.social")
             
-            Button("Connect") {
-                onSubmit(instanceUrl)
+            if let error = localError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+            
+            Button(action: submitInstance) {
+                HStack {
+                    if isValidating {
+                        ProgressView()
+                            .tint(.white)
+                    } else {
+                        Text("Connect")
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .disabled(isValidating || instanceUrl.isEmpty || !isValidUrl)
         }
         .padding()
+        .onAppear {
+            isUrlFieldFocused = true
+        }
     }
-} 
+    
+    private func submitInstance() {
+        guard isValidUrl else {
+            localError = "Please enter a valid instance URL"
+            return
+        }
+        
+        isValidating = true
+        onSubmit(instanceUrl)
+        isValidating = false
+    }
+}

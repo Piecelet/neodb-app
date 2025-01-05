@@ -191,7 +191,9 @@ class AuthService: ObservableObject {
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "client_id", value: clientId),
             URLQueryItem(name: "redirect_uri", value: redirectUri),
-            URLQueryItem(name: "scope", value: scopes)
+            URLQueryItem(name: "scope", value: scopes),
+            // Add current instance as state to restore it after callback
+            URLQueryItem(name: "state", value: self.currentInstance)
         ]
         logger.debug("Created authorization URL for instance: \(self.currentInstance)")
         return components?.url
@@ -258,6 +260,17 @@ class AuthService: ObservableObject {
     func handleCallback(url: URL) async throws {
         logger.debug("Handling callback URL: \(url)")
         
+        // Extract instance from saved state if available
+        if let state = URLComponents(url: url, resolvingAgainstBaseURL: true)?
+            .queryItems?
+            .first(where: { $0.name == "state" })?
+            .value,
+           !state.isEmpty && state != "None" {
+            // If state contains instance information, use it
+            currentInstance = state.lowercased()
+            logger.debug("Restored instance from state: \(self.currentInstance)")
+        }
+        
         // Verify we have client credentials before proceeding
         guard let client = getInstanceClient(for: self.currentInstance) else {
             logger.error("No client credentials found for instance: \(self.currentInstance)")
@@ -274,17 +287,20 @@ class AuthService: ObservableObject {
             throw AuthError.invalidResponse
         }
         
-        logger.debug("Authorization code received: \(code)")
+        logger.debug("Authorization code received: \(code) for instance: \(self.currentInstance)")
         try await exchangeCodeForToken(code: code)
     }
     
     private func exchangeCodeForToken(code: String) async throws {
-        guard let client = getInstanceClient(for: currentInstance) else {
-            logger.error("No client credentials found for token exchange")
+        // Double check we're using the correct instance
+        logger.debug("Exchanging token for instance: \(self.currentInstance)")
+        
+        guard let client = getInstanceClient(for: self.currentInstance) else {
+            logger.error("No client credentials found for token exchange on instance: \(self.currentInstance)")
             throw AuthError.noClientCredentials
         }
         
-        logger.debug("Using client_id: \(client.clientId) for token exchange")
+        logger.debug("Using client_id: \(client.clientId) for token exchange on instance: \(self.currentInstance)")
         
         guard let url = URL(string: "\(baseURL)/oauth/token") else {
             throw AuthError.invalidURL
@@ -316,15 +332,15 @@ class AuthService: ObservableObject {
         
         guard httpResponse.statusCode == 200 else {
             if let errorMessage = String(data: data, encoding: .utf8) {
-                logger.error("Token exchange failed: \(errorMessage), status code: \(httpResponse.statusCode)")
-                // If unauthorized, clear stored credentials
+                logger.error("Token exchange failed for instance \(self.currentInstance): \(errorMessage), status code: \(httpResponse.statusCode)")
+                // If unauthorized, clear stored credentials for this instance
                 if httpResponse.statusCode == 401 {
-                    removeInstanceClient(for: currentInstance)
+                    removeInstanceClient(for: self.currentInstance)
                     savedAccessToken = nil
                 }
                 throw AuthError.tokenExchangeFailed(errorMessage)
             }
-            logger.error("Token exchange failed with status code: \(httpResponse.statusCode)")
+            logger.error("Token exchange failed for instance \(self.currentInstance) with status code: \(httpResponse.statusCode)")
             throw AuthError.tokenExchangeFailed("Failed with status code: \(httpResponse.statusCode)")
         }
         
@@ -337,9 +353,9 @@ class AuthService: ObservableObject {
         do {
             let tokenResponse = try JSONDecoder().decode(TokenResponse.self, from: data)
             self.savedAccessToken = tokenResponse.access_token
-            logger.debug("Successfully obtained access token")
+            logger.debug("Successfully obtained access token for instance: \(self.currentInstance)")
         } catch {
-            logger.error("Failed to decode token response: \(error)")
+            logger.error("Failed to decode token response for instance \(self.currentInstance): \(error)")
             if let responseString = String(data: data, encoding: .utf8) {
                 logger.error("Raw response: \(responseString)")
             }
