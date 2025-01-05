@@ -44,6 +44,10 @@ struct ContentView: View {
         }
         .tint(.accentColor)
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {
