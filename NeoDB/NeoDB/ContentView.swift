@@ -8,17 +8,52 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject var authService: AuthService
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            NavigationStack {
+                Text("Home Feed")
+                    .navigationTitle("Home")
+            }
+            .tabItem {
+                Label("Home", systemImage: "house.fill")
+            }
+            
+            NavigationStack {
+                Text("Search")
+                    .navigationTitle("Search")
+            }
+            .tabItem {
+                Label("Search", systemImage: "magnifyingglass")
+            }
+            
+            NavigationStack {
+                Text("Library")
+                    .navigationTitle("Library")
+            }
+            .tabItem {
+                Label("Library", systemImage: "books.vertical.fill")
+            }
+            
+            
+            NavigationStack {
+                ProfileView(authService: authService)
+            }
+            .tabItem {
+                Label("Profile", systemImage: "person.fill")
+            }
         }
-        .padding()
+        .tint(.accentColor)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {
     ContentView()
+        .environmentObject(AuthService())
 }
