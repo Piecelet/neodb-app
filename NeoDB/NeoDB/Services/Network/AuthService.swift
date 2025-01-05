@@ -37,6 +37,11 @@ class AuthService: ObservableObject {
     @Published var isRegistering = false
     @Published var currentInstance: String {
         didSet {
+            let lowercaseInstance = self.currentInstance.lowercased()
+            if lowercaseInstance != self.currentInstance {
+                self.currentInstance = lowercaseInstance
+                return
+            }
             // Save the current instance
             UserDefaults.standard.set(self.currentInstance, forKey: "neodb.currentInstance")
             logger.debug("Switched to instance: \(self.currentInstance)")
@@ -48,8 +53,8 @@ class AuthService: ObservableObject {
     private let scopes = "read write"
     
     init(instance: String? = nil) {
-        // Load last used instance or use default
-        self.currentInstance = instance ?? UserDefaults.standard.string(forKey: "neodb.currentInstance") ?? "neodb.social"
+        // Load last used instance or use default, ensure it's lowercase
+        self.currentInstance = (instance ?? UserDefaults.standard.string(forKey: "neodb.currentInstance") ?? "neodb.social").lowercased()
         self.keychain = KeychainSwift(keyPrefix: "neodb_")
         
         logger.debug("Initialized with instance: \(self.currentInstance)")
@@ -62,7 +67,7 @@ class AuthService: ObservableObject {
         }
         
         // Log if we have client credentials
-        if let client = getInstanceClient(for: currentInstance) {
+        if let client = getInstanceClient(for: self.currentInstance) {
             logger.debug("Found existing client credentials for instance: \(self.currentInstance), client_id: \(client.clientId)")
         }
     }
@@ -150,24 +155,26 @@ class AuthService: ObservableObject {
     }
     
     func validateInstance(_ instance: String) -> Bool {
+        let lowercaseInstance = instance.lowercased()
         // Basic validation: ensure it's a valid hostname
         let hostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
         let hostnamePredicate = NSPredicate(format: "SELF MATCHES %@", hostnameRegex)
-        return hostnamePredicate.evaluate(with: instance)
+        return hostnamePredicate.evaluate(with: lowercaseInstance)
     }
     
     func switchInstance(_ newInstance: String) throws {
-        guard validateInstance(newInstance) else {
+        let lowercaseInstance = newInstance.lowercased()
+        guard validateInstance(lowercaseInstance) else {
             throw AuthError.invalidInstance
         }
         
-        logger.debug("Switching from instance \(self.currentInstance) to \(newInstance)")
+        logger.debug("Switching from instance \(self.currentInstance) to \(lowercaseInstance)")
         
         // Logout from current instance but keep the client credentials
         logout()
         
         // Switch to new instance
-        currentInstance = newInstance
+        currentInstance = lowercaseInstance
         
         // Clear current session but keep client credentials
         savedAccessToken = nil
