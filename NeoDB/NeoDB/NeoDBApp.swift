@@ -16,8 +16,10 @@ struct NeoDBApp: App {
             Group {
                 if authService.isAuthenticated {
                     ContentView()
+                        .environmentObject(authService)
                 } else {
                     LoginView()
+                        .environmentObject(authService)
                 }
             }
             .onOpenURL { url in

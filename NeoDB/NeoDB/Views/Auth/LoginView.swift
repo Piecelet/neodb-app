@@ -2,7 +2,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @StateObject private var authService = AuthService()
+    @EnvironmentObject var authService: AuthService
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
