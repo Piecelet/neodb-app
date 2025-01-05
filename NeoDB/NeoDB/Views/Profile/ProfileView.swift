@@ -14,12 +14,14 @@ class ProfileViewModel: ObservableObject {
         self.authService = authService
     }
     
-    func loadUserProfile() async {
-        isLoading = true
+    func loadUserProfile(forceRefresh: Bool = false) async {
+        if forceRefresh {
+            isLoading = true
+        }
         error = nil
         
         do {
-            user = try await userService.getCurrentUser()
+            user = try await userService.getCurrentUser(forceRefresh: forceRefresh)
         } catch {
             self.error = error.localizedDescription
         }
@@ -28,6 +30,7 @@ class ProfileViewModel: ObservableObject {
     }
     
     func logout() {
+        userService.clearCache()
         authService.logout()
     }
 }
@@ -36,6 +39,7 @@ struct ProfileView: View {
     @StateObject private var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.refresh) private var refresh
     
     init(authService: AuthService) {
         let userService = UserService(authService: authService)
@@ -45,11 +49,7 @@ struct ProfileView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .scaleEffect(1.2)
-                } else if let user = viewModel.user {
+                if let user = viewModel.user {
                     List {
                         // Profile Header Section
                         Section {
@@ -73,13 +73,25 @@ struct ProfileView: View {
                                 }
                                 .frame(width: 60, height: 60)
                                 .clipShape(Circle())
+                                .overlay {
+                                    if viewModel.isLoading {
+                                        Circle()
+                                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                                            .overlay {
+                                                ProgressView()
+                                                    .scaleEffect(0.5)
+                                            }
+                                    }
+                                }
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(user.displayName)
                                         .font(.headline)
+                                        .redacted(reason: viewModel.isLoading ? .placeholder : [])
                                     Text("@\(user.username)")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
+                                        .redacted(reason: viewModel.isLoading ? .placeholder : [])
                                 }
                             }
                         }
@@ -88,6 +100,7 @@ struct ProfileView: View {
                         if let externalAcct = user.externalAcct {
                             Section("Account Information") {
                                 LabeledContent("External Account", value: externalAcct)
+                                    .redacted(reason: viewModel.isLoading ? .placeholder : [])
                             }
                         }
                         
@@ -105,6 +118,9 @@ struct ProfileView: View {
                         }
                     }
                     .listStyle(.insetGrouped)
+                    .refreshable {
+                        await viewModel.loadUserProfile(forceRefresh: true)
+                    }
                 } else if let error = viewModel.error {
                     EmptyStateView(
                         "Couldn't Load Profile",
@@ -121,14 +137,14 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.large)
+            .overlay {
+                if viewModel.isLoading && viewModel.user == nil {
+                    ProgressView()
+                }
+            }
         }
         .task {
             await viewModel.loadUserProfile()
         }
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
 }
