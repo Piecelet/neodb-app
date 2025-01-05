@@ -13,8 +13,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                Text("Home Feed")
-                    .navigationTitle("Home")
+                HomeView(authService: authService)
             }
             .tabItem {
                 Label("Home", systemImage: "house.fill")
@@ -36,7 +35,6 @@ struct ContentView: View {
                 Label("Library", systemImage: "books.vertical.fill")
             }
             
-            
             NavigationStack {
                 ProfileView(authService: authService)
             }
@@ -45,12 +43,7 @@ struct ContentView: View {
             }
         }
         .tint(.accentColor)
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
 }
 
 #Preview {
