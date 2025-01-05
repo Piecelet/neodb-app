@@ -5,8 +5,6 @@ class ProfileViewModel: ObservableObject {
     private let userService: UserService
     private let authService: AuthService
     
-//    @ObserveInjection var inject
-    
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
@@ -167,6 +165,10 @@ struct ProfileView: View {
         .task {
             await viewModel.loadUserProfile()
         }
-//        .enableInjection()
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
