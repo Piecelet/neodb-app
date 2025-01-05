@@ -36,6 +36,7 @@ struct ContentView: View {
                 Label("Library", systemImage: "books.vertical.fill")
             }
             
+            
             NavigationStack {
                 ProfileView(authService: authService)
             }
