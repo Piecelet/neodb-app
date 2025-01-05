@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var authService = AuthService()
+    
     var body: some View {
         TabView {
             NavigationStack {
@@ -35,8 +37,7 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                Text("Profile")
-                    .navigationTitle("Profile")
+                ProfileView(authService: authService)
             }
             .tabItem {
                 Label("Profile", systemImage: "person.fill")
