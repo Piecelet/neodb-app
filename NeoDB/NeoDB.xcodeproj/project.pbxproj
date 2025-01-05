@@ -7,8 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
-		245FD2812D2A9AF0005B55B3 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2802D2A9AF0005B55B3 /* Inject */; };
+		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,7 +72,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
-				245FD2812D2A9AF0005B55B3 /* Inject in Frameworks */,
+				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
+				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,7 +143,8 @@
 			name = NeoDB;
 			packageProductDependencies = (
 				245FD2122D2A817A005B55B3 /* KeychainSwift */,
-				245FD2802D2A9AF0005B55B3 /* Inject */,
+				2426883F2D2A9E0D00DFAAC1 /* InjectionNext */,
+				24D1BE402D2A9F340063B530 /* Inject */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -227,7 +230,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */,
-				245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */,
+				2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */,
+				24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -627,6 +631,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/johnno1962/InjectionNext";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.6;
+			};
+		};
 		245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
@@ -635,7 +647,7 @@
 				minimumVersion = 24.0.0;
 			};
 		};
-		245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */ = {
+		24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
 			requirement = {
@@ -646,14 +658,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2426883F2D2A9E0D00DFAAC1 /* InjectionNext */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */;
+			productName = InjectionNext;
+		};
 		245FD2122D2A817A005B55B3 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
 		};
-		245FD2802D2A9AF0005B55B3 /* Inject */ = {
+		24D1BE402D2A9F340063B530 /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */;
+			package = 24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
 		};
 /* End XCSwiftPackageProductDependency section */

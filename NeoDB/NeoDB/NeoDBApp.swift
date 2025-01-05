@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-@_exported import Inject
 
 @main
 struct NeoDBApp: App {

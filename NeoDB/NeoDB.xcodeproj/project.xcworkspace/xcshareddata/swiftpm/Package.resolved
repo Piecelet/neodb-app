@@ -1,5 +1,5 @@
 {
-  "originHash" : "ca743f63be8dcd3aa3d73bc571b57622feb0232f7da1c4c7df0f32f15ee49896",
+  "originHash" : "657466b00a4cf16eda52a23bd963af27f6da71d69047ed11c12b2a367c93a6ba",
   "pins" : [
     {
       "identity" : "inject",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "728c56639ecb3df441d51d5bc6747329afabcfc9",
         "version" : "1.5.2"
+      }
+    },
+    {
+      "identity" : "injectionnext",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/johnno1962/InjectionNext",
+      "state" : {
+        "revision" : "dc3474dc65e0a8d6661932733950810bfca180a9",
+        "version" : "1.2.6"
       }
     },
     {
