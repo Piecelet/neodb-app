@@ -113,7 +113,12 @@ struct LoginView: View {
             }
             .presentationDetents([.height(200)])
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct InstanceInputView: View {
@@ -180,7 +185,12 @@ struct InstanceInputView: View {
         .onAppear {
             isUrlFieldFocused = true
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func submitInstance() {
         guard isValidUrl else {

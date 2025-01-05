@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
+		245FD2812D2A9AF0005B55B3 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2802D2A9AF0005B55B3 /* Inject */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
+				245FD2812D2A9AF0005B55B3 /* Inject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,12 +92,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		245FD27F2D2A9AF0005B55B3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		24CEACE62D0DA6200083D4BA = {
 			isa = PBXGroup;
 			children = (
 				24CEACF12D0DA6200083D4BA /* NeoDB */,
 				24CEAD032D0DA6210083D4BA /* NeoDBTests */,
 				24CEAD0D2D0DA6210083D4BA /* NeoDBUITests */,
+				245FD27F2D2A9AF0005B55B3 /* Frameworks */,
 				24CEACF02D0DA6200083D4BA /* Products */,
 			);
 			sourceTree = "<group>";
@@ -131,6 +141,7 @@
 			name = NeoDB;
 			packageProductDependencies = (
 				245FD2122D2A817A005B55B3 /* KeychainSwift */,
+				245FD2802D2A9AF0005B55B3 /* Inject */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -216,6 +227,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -432,6 +444,10 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12;
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = app.neodb;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -619,6 +635,14 @@
 				minimumVersion = 24.0.0;
 			};
 		};
+		245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -626,6 +650,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
+		};
+		245FD2802D2A9AF0005B55B3 /* Inject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 245FD2452D2A99B5005B55B3 /* XCRemoteSwiftPackageReference "Inject" */;
+			productName = Inject;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
