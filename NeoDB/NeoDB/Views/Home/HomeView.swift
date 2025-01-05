@@ -1,12 +1,15 @@
 import SwiftUI
+import OSLog
 
 @MainActor
 class HomeViewModel: ObservableObject {
     private let timelineService: TimelineService
+    private let logger = Logger(subsystem: "social.neodb.app", category: "HomeViewModel")
     
     @Published var statuses: [Status] = []
     @Published var isLoading = false
     @Published var error: String?
+    @Published var detailedError: String?
     
     // Pagination
     private var maxId: String?
@@ -26,9 +29,10 @@ class HomeViewModel: ObservableObject {
         
         isLoading = true
         error = nil
+        detailedError = nil
         
         do {
-            let newStatuses = try await timelineService.getHomeTimeline(maxId: maxId)
+            let newStatuses = try await timelineService.getTimeline(maxId: maxId)
             if refresh {
                 statuses = newStatuses
             } else {
@@ -36,8 +40,26 @@ class HomeViewModel: ObservableObject {
             }
             maxId = newStatuses.last?.id
             hasMore = !newStatuses.isEmpty
+            logger.debug("Successfully loaded \(newStatuses.count) statuses")
         } catch {
-            self.error = error.localizedDescription
+            logger.error("Failed to load timeline: \(error.localizedDescription)")
+            self.error = "Failed to load timeline"
+            if let decodingError = error as? DecodingError {
+                switch decodingError {
+                case .dataCorrupted(let context):
+                    detailedError = "Data corrupted: \(context.debugDescription)"
+                case .keyNotFound(let key, let context):
+                    detailedError = "Key not found: \(key.stringValue) in \(context.debugDescription)"
+                case .typeMismatch(let type, let context):
+                    detailedError = "Type mismatch: expected \(type) at \(context.debugDescription)"
+                case .valueNotFound(let type, let context):
+                    detailedError = "Value not found: expected \(type) at \(context.debugDescription)"
+                @unknown default:
+                    detailedError = "Unknown decoding error: \(decodingError)"
+                }
+            } else {
+                detailedError = error.localizedDescription
+            }
         }
         
         isLoading = false
@@ -59,7 +81,7 @@ struct HomeView: View {
                 EmptyStateView(
                     "Couldn't Load Timeline",
                     systemImage: "exclamationmark.triangle",
-                    description: Text(error)
+                    description: Text(viewModel.detailedError ?? error)
                 )
             } else if viewModel.statuses.isEmpty && !viewModel.isLoading {
                 EmptyStateView(
@@ -151,6 +173,7 @@ struct StatusView: View {
             // Content
             Text(status.content)
                 .font(.body)
+                .textSelection(.enabled)
             
             // Media
             if !status.mediaAttachments.isEmpty {
@@ -173,9 +196,18 @@ struct StatusView: View {
                     }
                 }
             }
+            
+            // Stats
+            HStack(spacing: 16) {
+                Label("\(status.repliesCount)", systemImage: "bubble.right")
+                Label("\(status.reblogsCount)", systemImage: "arrow.2.squarepath")
+                Label("\(status.favouritesCount)", systemImage: "star")
+            }
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
         .padding()
-        .background(Color(uiColor: .systemBackground))
+        .background(Color(.systemBackground))
     }
     
     @ViewBuilder
