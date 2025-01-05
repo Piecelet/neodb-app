@@ -73,18 +73,6 @@ struct ProfileView: View {
                                 }
                                 .frame(width: 60, height: 60)
                                 .clipShape(Circle())
-                                .overlay {
-                                    Circle()
-                                        .stroke(
-                                            .linearGradient(
-                                                colors: [.blue.opacity(0.5), .purple.opacity(0.5)],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            ),
-                                            lineWidth: 2
-                                        )
-                                }
-                                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                                 
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(user.displayName)
@@ -94,23 +82,12 @@ struct ProfileView: View {
                                         .foregroundStyle(.secondary)
                                 }
                             }
-                            .listRowBackground(Color.clear)
                         }
                         
                         // External Account Section
                         if let externalAcct = user.externalAcct {
                             Section("Account Information") {
-                                HStack {
-                                    Label {
-                                        Text("External Account")
-                                    } icon: {
-                                        Image(systemName: "link")
-                                            .foregroundStyle(.blue)
-                                    }
-                                    Spacer()
-                                    Text(externalAcct)
-                                        .foregroundStyle(.secondary)
-                                }
+                                LabeledContent("External Account", value: externalAcct)
                             }
                         }
                         
@@ -123,29 +100,14 @@ struct ProfileView: View {
                                 }
                             }) {
                                 Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
-                                    .font(.headline)
-                                    .padding(.horizontal, 24)
-                                    .padding(.vertical, 12)
-                                    .background {
-                                        Capsule()
-                                            .fill(.red.opacity(0.1))
-                                    }
-                                    .overlay {
-                                        Capsule()
-                                            .stroke(.red.opacity(0.3), lineWidth: 1)
-                                    }
                             }
                             .foregroundStyle(.red)
                         }
                     }
                     .listStyle(.insetGrouped)
-                    .background {
-                        Color(colorScheme == .dark ? .black : .white)
-                            .ignoresSafeArea()
-                    }
                 } else if let error = viewModel.error {
                     EmptyStateView(
-                        "Error",
+                        "Couldn't Load Profile",
                         systemImage: "exclamationmark.triangle",
                         description: Text(error)
                     )
