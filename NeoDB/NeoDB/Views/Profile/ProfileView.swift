@@ -5,6 +5,8 @@ class ProfileViewModel: ObservableObject {
     private let userService: UserService
     private let authService: AuthService
     
+//    @ObserveInjection var inject
+    
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
@@ -35,6 +37,7 @@ class ProfileViewModel: ObservableObject {
 struct ProfileView: View {
     @StateObject private var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
     
     init(authService: AuthService) {
         let userService = UserService(authService: authService)
@@ -46,47 +49,103 @@ struct ProfileView: View {
             Group {
                 if viewModel.isLoading {
                     ProgressView()
+                        .progressViewStyle(.circular)
+                        .scaleEffect(1.2)
                 } else if let user = viewModel.user {
                     ScrollView {
-                        VStack(spacing: 20) {
-                            AsyncImage(url: URL(string: user.avatar)) { image in
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                            } placeholder: {
-                                ProgressView()
-                            }
-                            .frame(width: 100, height: 100)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(Color.gray.opacity(0.2), lineWidth: 1))
-                            
-                            VStack(spacing: 8) {
-                                Text(user.displayName)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
+                        VStack(spacing: 24) {
+                            // Profile Header Section
+                            VStack(spacing: 16) {
+                                AsyncImage(url: URL(string: user.avatar)) { phase in
+                                    switch phase {
+                                    case .empty:
+                                        ProgressView()
+                                    case .success(let image):
+                                        image
+                                            .resizable()
+                                            .scaledToFill()
+                                            .transition(.scale.combined(with: .opacity))
+                                    case .failure(_):
+                                        Image(systemName: "person.circle.fill")
+                                            .symbolRenderingMode(.hierarchical)
+                                            .foregroundStyle(.secondary)
+                                    @unknown default:
+                                        EmptyView()
+                                    }
+                                }
+                                .frame(width: 120, height: 120)
+                                .clipShape(Circle())
+                                .overlay {
+                                    Circle()
+                                        .stroke(
+                                            .linearGradient(
+                                                colors: [.blue.opacity(0.5), .purple.opacity(0.5)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 2
+                                        )
+                                }
+                                .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                                 
-                                Text("@\(user.username)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                VStack(spacing: 8) {
+                                    Text(user.displayName)
+                                        .font(.title2)
+                                        .fontWeight(.semibold)
+                                    
+                                    Text("@\(user.username)")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                }
                             }
+                            .padding(.top, 20)
                             
+                            // External Account Section
                             if let externalAcct = user.externalAcct {
-                                Text(externalAcct)
-                                    .font(.footnote)
-                                    .foregroundColor(.secondary)
+                                VStack(spacing: 12) {
+                                    Text("External Account")
+                                        .font(.headline)
+                                        .foregroundStyle(.secondary)
+                                    
+                                    Text(externalAcct)
+                                        .font(.subheadline)
+                                        .padding(.horizontal, 16)
+                                        .padding(.vertical, 8)
+                                        .background(.ultraThinMaterial)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+                                .padding(.horizontal)
                             }
                             
+                            // Logout Button
                             Button(role: .destructive, action: {
-                                viewModel.logout()
-                                dismiss()
+                                withAnimation {
+                                    viewModel.logout()
+                                    dismiss()
+                                }
                             }) {
                                 Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
+                                    .font(.headline)
+                                    .padding(.horizontal, 24)
+                                    .padding(.vertical, 12)
+                                    .background {
+                                        Capsule()
+                                            .fill(.red.opacity(0.1))
+                                    }
+                                    .overlay {
+                                        Capsule()
+                                            .stroke(.red.opacity(0.3), lineWidth: 1)
+                                    }
                             }
-                            .buttonStyle(.borderedProminent)
-                            .tint(.red)
-                            .padding(.top, 20)
+                            .foregroundStyle(.red)
+                            .padding(.top, 12)
                         }
-                        .padding()
+                        .padding(.horizontal)
+                        .padding(.bottom, 32)
+                    }
+                    .background {
+                        Color(colorScheme == .dark ? .black : .white)
+                            .ignoresSafeArea()
                     }
                 } else if let error = viewModel.error {
                     EmptyStateView(
@@ -103,9 +162,11 @@ struct ProfileView: View {
                 }
             }
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.large)
         }
         .task {
             await viewModel.loadUserProfile()
         }
+//        .enableInjection()
     }
-} 
+}
