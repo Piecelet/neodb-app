@@ -1,3 +1,5 @@
+Note: keychain-swift is already added to the project, this is just a reference for the documentation.
+
 # Helper functions for storing text in Keychain for iOS, macOS, tvOS and WatchOS
 
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)

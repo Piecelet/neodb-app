@@ -1,0 +1,69 @@
+openapi: 3.1.0
+info:
+  title: NeoDB API
+  version: 1.0.0
+  description: NeoDB API <hr/><a href='https://neodb.social'>Learn more</a>
+paths:
+  /api/me:
+    get:
+      operationId: users_api_me
+      summary: Get current user's basic info
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      tags:
+        - user
+      security:
+        - OAuthAccessTokenAuth: []
+components:
+  schemas:
+    UserSchema:
+      properties:
+        url:
+          title: Url
+          type: string
+        external_acct:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: External Acct
+        display_name:
+          title: Display Name
+          type: string
+        avatar:
+          title: Avatar
+          type: string
+        username:
+          title: Username
+          type: string
+      required:
+        - url
+        - external_acct
+        - display_name
+        - avatar
+        - username
+      title: UserSchema
+      type: object
+    Result:
+      properties:
+        message:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Message
+      required:
+        - message
+      title: Result
+      type: object
+servers: []
