@@ -50,10 +50,10 @@ struct ProfileView: View {
                         .progressViewStyle(.circular)
                         .scaleEffect(1.2)
                 } else if let user = viewModel.user {
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            // Profile Header Section
-                            VStack(spacing: 16) {
+                    List {
+                        // Profile Header Section
+                        Section {
+                            HStack(spacing: 16) {
                                 AsyncImage(url: URL(string: user.avatar)) { phase in
                                     switch phase {
                                     case .empty:
@@ -71,7 +71,7 @@ struct ProfileView: View {
                                         EmptyView()
                                     }
                                 }
-                                .frame(width: 120, height: 120)
+                                .frame(width: 60, height: 60)
                                 .clipShape(Circle())
                                 .overlay {
                                     Circle()
@@ -86,36 +86,36 @@ struct ProfileView: View {
                                 }
                                 .shadow(color: .black.opacity(0.1), radius: 8, y: 4)
                                 
-                                VStack(spacing: 8) {
+                                VStack(alignment: .leading, spacing: 4) {
                                     Text(user.displayName)
-                                        .font(.title2)
-                                        .fontWeight(.semibold)
-                                    
+                                        .font(.headline)
                                     Text("@\(user.username)")
                                         .font(.subheadline)
                                         .foregroundStyle(.secondary)
                                 }
                             }
-                            .padding(.top, 20)
-                            
-                            // External Account Section
-                            if let externalAcct = user.externalAcct {
-                                VStack(spacing: 12) {
-                                    Text("External Account")
-                                        .font(.headline)
-                                        .foregroundStyle(.secondary)
-                                    
+                            .listRowBackground(Color.clear)
+                        }
+                        
+                        // External Account Section
+                        if let externalAcct = user.externalAcct {
+                            Section("Account Information") {
+                                HStack {
+                                    Label {
+                                        Text("External Account")
+                                    } icon: {
+                                        Image(systemName: "link")
+                                            .foregroundStyle(.blue)
+                                    }
+                                    Spacer()
                                     Text(externalAcct)
-                                        .font(.subheadline)
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(.ultraThinMaterial)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .foregroundStyle(.secondary)
                                 }
-                                .padding(.horizontal)
                             }
-                            
-                            // Logout Button
+                        }
+                        
+                        // Logout Button
+                        Section {
                             Button(role: .destructive, action: {
                                 withAnimation {
                                     viewModel.logout()
@@ -136,11 +136,9 @@ struct ProfileView: View {
                                     }
                             }
                             .foregroundStyle(.red)
-                            .padding(.top, 12)
                         }
-                        .padding(.horizontal)
-                        .padding(.bottom, 32)
                     }
+                    .listStyle(.insetGrouped)
                     .background {
                         Color(colorScheme == .dark ? .black : .white)
                             .ignoresSafeArea()
