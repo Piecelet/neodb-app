@@ -140,10 +140,9 @@ struct ProfileView: View {
                         dismiss()
                     }
                 }) {
-                    Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
-                        .labelStyle(.iconOnly)
+                    Text("Sign Out")
+                        .frame(maxWidth: .infinity)
                 }
-                .foregroundStyle(.red)
                 .disabled(viewModel.user == nil)
             }
         }
