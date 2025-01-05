@@ -21,7 +21,7 @@ struct AppRegistrationResponse: Codable {
 
 @MainActor
 class AuthService: ObservableObject {
-    private let logger = Logger(subsystem: "com.neodb.app", category: "Auth")
+    private let logger = Logger(subsystem: "app.neodb", category: "Auth")
     private let keychain = KeychainSwift(keyPrefix: "neodb_")
     
     @Published var isAuthenticated = false
