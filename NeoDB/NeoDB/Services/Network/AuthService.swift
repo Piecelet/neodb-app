@@ -26,8 +26,14 @@ class AuthService: ObservableObject {
     @Published var isRegistering = false
     
     private let baseURL = "https://neodb.social"
-    private var clientId: String?
-    private var clientSecret: String?
+    private var clientId: String? {
+        get { UserDefaults.standard.string(forKey: "neodb.clientId") }
+        set { UserDefaults.standard.set(newValue, forKey: "neodb.clientId") }
+    }
+    private var clientSecret: String? {
+        get { UserDefaults.standard.string(forKey: "neodb.clientSecret") }
+        set { UserDefaults.standard.set(newValue, forKey: "neodb.clientSecret") }
+    }
     private let redirectUri = "neodb://oauth/callback"
     private let scopes = "read write"
     
@@ -44,6 +50,12 @@ class AuthService: ObservableObject {
     }
     
     func registerApp() async throws {
+        // If we already have credentials, no need to register again
+        if clientId != nil && clientSecret != nil {
+            logger.debug("Using existing client credentials")
+            return
+        }
+        
         isRegistering = true
         defer { isRegistering = false }
         
@@ -104,13 +116,8 @@ class AuthService: ObservableObject {
     
     private func exchangeCodeForToken(code: String) async throws {
         guard let clientId = clientId, let clientSecret = clientSecret else {
-            logger.warning("No client credentials found, attempting to register app")
-            try await registerApp()
-            guard clientId != nil, clientSecret != nil else {
-                throw AuthError.unauthorized
-            }
-            try await exchangeCodeForToken(code: code)
-            return
+            logger.error("No client credentials found for token exchange")
+            throw AuthError.unauthorized
         }
         
         guard let url = URL(string: "\(baseURL)/oauth/token") else {
@@ -144,6 +151,11 @@ class AuthService: ObservableObject {
         guard httpResponse.statusCode == 200 else {
             if let errorMessage = String(data: data, encoding: .utf8) {
                 logger.error("Token exchange failed: \(errorMessage), status code: \(httpResponse.statusCode)")
+                // If unauthorized, clear stored credentials
+                if httpResponse.statusCode == 401 {
+                    self.clientId = nil
+                    self.clientSecret = nil
+                }
                 throw AuthError.tokenExchangeFailed(errorMessage)
             }
             logger.error("Token exchange failed with status code: \(httpResponse.statusCode)")
