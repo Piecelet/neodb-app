@@ -6,6 +6,8 @@ struct LoginView: View {
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
+    @State private var instanceUrl: String = "neodb.social"
+    @State private var showInstanceInput = false
     
     var body: some View {
         VStack(spacing: 20) {
@@ -23,6 +25,26 @@ struct LoginView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Instance")
+                    .font(.headline)
+                
+                HStack {
+                    Text(authService.currentInstance)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Button("Change") {
+                        showInstanceInput = true
+                    }
+                }
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(10)
+            }
+            .padding(.horizontal)
             
             Button(action: {
                 Task {
@@ -70,5 +92,54 @@ struct LoginView: View {
         }, message: {
             Text(errorMessage ?? "An unknown error occurred")
         })
+        .sheet(isPresented: $showInstanceInput) {
+            NavigationStack {
+                InstanceInputView(instanceUrl: instanceUrl) { newInstance in
+                    do {
+                        try authService.switchInstance(newInstance)
+                        instanceUrl = newInstance
+                        showInstanceInput = false
+                    } catch {
+                        errorMessage = "Invalid instance URL"
+                        showError = true
+                    }
+                }
+                .navigationTitle("Change Instance")
+                .navigationBarItems(
+                    leading: Button("Cancel") {
+                        showInstanceInput = false
+                    }
+                )
+            }
+            .presentationDetents([.height(200)])
+        }
+    }
+}
+
+struct InstanceInputView: View {
+    @State var instanceUrl: String
+    let onSubmit: (String) -> Void
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            Text("Enter the URL of your NeoDB instance")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            
+            TextField("Instance URL", text: $instanceUrl)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .autocapitalization(.none)
+                .keyboardType(.URL)
+                .submitLabel(.done)
+                .onSubmit {
+                    onSubmit(instanceUrl)
+                }
+            
+            Button("Connect") {
+                onSubmit(instanceUrl)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
     }
 } 

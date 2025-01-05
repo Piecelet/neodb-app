@@ -10,6 +10,8 @@ enum AuthError: Error {
     case unauthorized
     case registrationFailed(String)
     case tokenExchangeFailed(String)
+    case invalidInstance
+    case noClientCredentials
 }
 
 struct AppRegistrationResponse: Codable {
@@ -19,64 +21,164 @@ struct AppRegistrationResponse: Codable {
     let redirect_uri: String
 }
 
+struct InstanceClient: Codable {
+    let clientId: String
+    let clientSecret: String
+    let instance: String
+}
+
 @MainActor
 class AuthService: ObservableObject {
     private let logger = Logger(subsystem: "app.neodb", category: "Auth")
-    private let keychain = KeychainSwift(keyPrefix: "neodb_")
+    private let keychain: KeychainSwift
     
     @Published var isAuthenticated = false
     @Published var accessToken: String?
     @Published var isRegistering = false
-    
-    private let baseURL = "https://neodb.social"
-    private var clientId: String? {
-        get { keychain.get("client_id") }
-        set { 
-            if let value = newValue {
-                keychain.set(value, forKey: "client_id")
-            } else {
-                keychain.delete("client_id")
-            }
-        }
-    }
-    private var clientSecret: String? {
-        get { keychain.get("client_secret") }
-        set { 
-            if let value = newValue {
-                keychain.set(value, forKey: "client_secret")
-            } else {
-                keychain.delete("client_secret")
-            }
-        }
-    }
-    private var savedAccessToken: String? {
-        get { keychain.get("access_token") }
-        set {
-            if let value = newValue {
-                keychain.set(value, forKey: "access_token")
-                accessToken = value
-                isAuthenticated = true
-            } else {
-                keychain.delete("access_token")
-                accessToken = nil
-                isAuthenticated = false
-            }
+    @Published var currentInstance: String {
+        didSet {
+            // Save the current instance
+            UserDefaults.standard.set(self.currentInstance, forKey: "neodb.currentInstance")
+            logger.debug("Switched to instance: \(self.currentInstance)")
         }
     }
     
+    private var baseURL: String { "https://\(self.currentInstance)" }
     private let redirectUri = "neodb://oauth/callback"
     private let scopes = "read write"
     
-    init() {
-        // Check if we have a saved access token
+    init(instance: String? = nil) {
+        // Load last used instance or use default
+        self.currentInstance = instance ?? UserDefaults.standard.string(forKey: "neodb.currentInstance") ?? "neodb.social"
+        self.keychain = KeychainSwift(keyPrefix: "neodb_")
+        
+        logger.debug("Initialized with instance: \(self.currentInstance)")
+        
+        // Check if we have a saved access token for current instance
         if let token = savedAccessToken {
             accessToken = token
             isAuthenticated = true
+            logger.debug("Found saved access token for instance: \(self.currentInstance)")
+        }
+        
+        // Log if we have client credentials
+        if let client = getInstanceClient(for: currentInstance) {
+            logger.debug("Found existing client credentials for instance: \(self.currentInstance), client_id: \(client.clientId)")
         }
     }
     
+    private var clientId: String? {
+        get { 
+            guard let clientData = getInstanceClient(for: self.currentInstance) else { 
+                logger.debug("No client_id found for instance: \(self.currentInstance)")
+                return nil 
+            }
+            return clientData.clientId
+        }
+        set {
+            if let value = newValue, let secretValue = clientSecret {
+                saveInstanceClient(InstanceClient(
+                    clientId: value,
+                    clientSecret: secretValue,
+                    instance: self.currentInstance
+                ))
+                logger.debug("Saved client_id for instance: \(self.currentInstance)")
+            }
+        }
+    }
+    
+    private var clientSecret: String? {
+        get {
+            guard let clientData = getInstanceClient(for: self.currentInstance) else { 
+                logger.debug("No client_secret found for instance: \(self.currentInstance)")
+                return nil 
+            }
+            return clientData.clientSecret
+        }
+        set {
+            if let value = newValue, let idValue = clientId {
+                saveInstanceClient(InstanceClient(
+                    clientId: idValue,
+                    clientSecret: value,
+                    instance: self.currentInstance
+                ))
+                logger.debug("Saved client_secret for instance: \(self.currentInstance)")
+            }
+        }
+    }
+    
+    private var savedAccessToken: String? {
+        get { keychain.get("access_token_\(self.currentInstance)") }
+        set {
+            if let value = newValue {
+                keychain.set(value, forKey: "access_token_\(self.currentInstance)")
+                accessToken = value
+                isAuthenticated = true
+                logger.debug("Saved access token for instance: \(self.currentInstance)")
+            } else {
+                keychain.delete("access_token_\(self.currentInstance)")
+                accessToken = nil
+                isAuthenticated = false
+                logger.debug("Removed access token for instance: \(self.currentInstance)")
+            }
+        }
+    }
+    
+    private func getInstanceClient(for instance: String) -> InstanceClient? {
+        guard let data = keychain.getData("client_\(instance)"),
+              let client = try? JSONDecoder().decode(InstanceClient.self, from: data)
+        else { 
+            logger.debug("Failed to get client data for instance: \(instance)")
+            return nil 
+        }
+        logger.debug("Retrieved client data for instance: \(instance)")
+        return client
+    }
+    
+    private func saveInstanceClient(_ client: InstanceClient) {
+        if let data = try? JSONEncoder().encode(client) {
+            keychain.set(data, forKey: "client_\(client.instance)")
+            logger.debug("Saved client data for instance: \(client.instance)")
+        } else {
+            logger.error("Failed to encode client data for instance: \(client.instance)")
+        }
+    }
+    
+    private func removeInstanceClient(for instance: String) {
+        keychain.delete("client_\(instance)")
+        logger.debug("Removed client data for instance: \(instance)")
+    }
+    
+    func validateInstance(_ instance: String) -> Bool {
+        // Basic validation: ensure it's a valid hostname
+        let hostnameRegex = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\\-]*[A-Za-z0-9])$"
+        let hostnamePredicate = NSPredicate(format: "SELF MATCHES %@", hostnameRegex)
+        return hostnamePredicate.evaluate(with: instance)
+    }
+    
+    func switchInstance(_ newInstance: String) throws {
+        guard validateInstance(newInstance) else {
+            throw AuthError.invalidInstance
+        }
+        
+        logger.debug("Switching from instance \(self.currentInstance) to \(newInstance)")
+        
+        // Logout from current instance but keep the client credentials
+        logout()
+        
+        // Switch to new instance
+        currentInstance = newInstance
+        
+        // Clear current session but keep client credentials
+        savedAccessToken = nil
+        isAuthenticated = false
+    }
+    
     var authorizationURL: URL? {
-        guard let clientId = clientId else { return nil }
+        guard let clientId = clientId else { 
+            logger.error("Cannot create authorization URL: no client_id available")
+            return nil 
+        }
         var components = URLComponents(string: "\(baseURL)/oauth/authorize")
         components?.queryItems = [
             URLQueryItem(name: "response_type", value: "code"),
@@ -84,13 +186,14 @@ class AuthService: ObservableObject {
             URLQueryItem(name: "redirect_uri", value: redirectUri),
             URLQueryItem(name: "scope", value: scopes)
         ]
+        logger.debug("Created authorization URL for instance: \(self.currentInstance)")
         return components?.url
     }
     
     func registerApp() async throws {
-        // If we already have credentials, no need to register again
-        if clientId != nil && clientSecret != nil {
-            logger.debug("Using existing client credentials")
+        // Check if we already have valid credentials for this instance
+        if let client = getInstanceClient(for: self.currentInstance) {
+            logger.debug("Using existing client credentials for instance: \(self.currentInstance), client_id: \(client.clientId)")
             return
         }
         
@@ -117,6 +220,7 @@ class AuthService: ObservableObject {
         
         request.httpBody = body.data(using: String.Encoding.utf8)
         
+        logger.debug("Registering app with instance: \(self.currentInstance)")
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -125,20 +229,35 @@ class AuthService: ObservableObject {
         
         guard httpResponse.statusCode == 200 else {
             if let errorMessage = String(data: data, encoding: .utf8) {
-                logger.error("Registration failed: \(errorMessage)")
+                logger.error("Registration failed for instance \(self.currentInstance): \(errorMessage)")
                 throw AuthError.registrationFailed(errorMessage)
             }
             throw AuthError.registrationFailed("Registration failed with status code: \(httpResponse.statusCode)")
         }
         
         let registrationResponse = try JSONDecoder().decode(AppRegistrationResponse.self, from: data)
-        self.clientId = registrationResponse.client_id
-        self.clientSecret = registrationResponse.client_secret
-        logger.debug("App registered successfully with client_id: \(registrationResponse.client_id)")
+        
+        // Save the client credentials for this instance
+        let client = InstanceClient(
+            clientId: registrationResponse.client_id,
+            clientSecret: registrationResponse.client_secret,
+            instance: currentInstance
+        )
+        saveInstanceClient(client)
+        
+        logger.debug("App registered successfully with client_id: \(registrationResponse.client_id) for instance: \(self.currentInstance)")
     }
     
     func handleCallback(url: URL) async throws {
         logger.debug("Handling callback URL: \(url)")
+        
+        // Verify we have client credentials before proceeding
+        guard let client = getInstanceClient(for: self.currentInstance) else {
+            logger.error("No client credentials found for instance: \(self.currentInstance)")
+            throw AuthError.noClientCredentials
+        }
+        logger.debug("Found client credentials for callback, client_id: \(client.clientId)")
+        
         guard let code = URLComponents(url: url, resolvingAgainstBaseURL: true)?
             .queryItems?
             .first(where: { $0.name == "code" })?
@@ -153,10 +272,12 @@ class AuthService: ObservableObject {
     }
     
     private func exchangeCodeForToken(code: String) async throws {
-        guard let clientId = clientId, let clientSecret = clientSecret else {
+        guard let client = getInstanceClient(for: currentInstance) else {
             logger.error("No client credentials found for token exchange")
-            throw AuthError.unauthorized
+            throw AuthError.noClientCredentials
         }
+        
+        logger.debug("Using client_id: \(client.clientId) for token exchange")
         
         guard let url = URL(string: "\(baseURL)/oauth/token") else {
             throw AuthError.invalidURL
@@ -167,8 +288,8 @@ class AuthService: ObservableObject {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         
         let parameters = [
-            "client_id": clientId,
-            "client_secret": clientSecret,
+            "client_id": client.clientId,
+            "client_secret": client.clientSecret,
             "code": code,
             "redirect_uri": redirectUri,
             "grant_type": "authorization_code"
@@ -191,9 +312,8 @@ class AuthService: ObservableObject {
                 logger.error("Token exchange failed: \(errorMessage), status code: \(httpResponse.statusCode)")
                 // If unauthorized, clear stored credentials
                 if httpResponse.statusCode == 401 {
-                    self.clientId = nil
-                    self.clientSecret = nil
-                    self.savedAccessToken = nil
+                    removeInstanceClient(for: currentInstance)
+                    savedAccessToken = nil
                 }
                 throw AuthError.tokenExchangeFailed(errorMessage)
             }
@@ -221,8 +341,21 @@ class AuthService: ObservableObject {
     }
     
     func logout() {
-        clientId = nil
-        clientSecret = nil
         savedAccessToken = nil
+        isAuthenticated = false
+        logger.debug("Logged out from instance: \(self.currentInstance)")
+    }
+    
+    func clearAllData() {
+        // Clear all keychain data
+        keychain.clear()
+        // Clear current instance
+        UserDefaults.standard.removeObject(forKey: "neodb.currentInstance")
+        // Reset state
+        currentInstance = "neodb.social"
+        isAuthenticated = false
+        accessToken = nil
+        logger.debug("Cleared all data")
     }
 }
+
