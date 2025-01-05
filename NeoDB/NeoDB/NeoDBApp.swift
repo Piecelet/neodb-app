@@ -9,9 +9,26 @@ import SwiftUI
 
 @main
 struct NeoDBApp: App {
+    @StateObject private var authService = AuthService()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            Group {
+                if authService.isAuthenticated {
+                    ContentView()
+                } else {
+                    LoginView()
+                }
+            }
+            .onOpenURL { url in
+                Task {
+                    do {
+                        try await authService.handleCallback(url: url)
+                    } catch {
+                        print("Authentication error: \(error)")
+                    }
+                }
+            }
         }
     }
 }
