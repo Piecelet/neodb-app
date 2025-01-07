@@ -4,7 +4,7 @@ import OSLog
 @MainActor
 class HomeViewModel: ObservableObject {
     private let timelineService: TimelineService
-    private let logger = Logger(subsystem: "social.neodb.app", category: "HomeViewModel")
+    private let logger = Logger(subsystem: "app.neodb", category: "HomeViewModel")
     
     @Published var statuses: [Status] = []
     @Published var isLoading = false
