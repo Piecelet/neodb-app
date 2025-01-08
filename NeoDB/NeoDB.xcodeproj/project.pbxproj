@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
+		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 /* End PBXBuildFile section */
 
@@ -73,7 +75,9 @@
 			files = (
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
+				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
+				249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +149,8 @@
 				245FD2122D2A817A005B55B3 /* KeychainSwift */,
 				2426883F2D2A9E0D00DFAAC1 /* InjectionNext */,
 				24D1BE402D2A9F340063B530 /* Inject */,
+				249B951C2D2EF5C800FE3D95 /* MarkdownUI */,
+				2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -232,6 +238,8 @@
 				245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */,
 				2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */,
 				24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */,
+				249B95192D2EF5B500FE3D95 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+				2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -631,6 +639,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/divadretlaw/HTML2Markdown";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.2;
+			};
+		};
 		2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/johnno1962/InjectionNext";
@@ -647,6 +663,14 @@
 				minimumVersion = 24.0.0;
 			};
 		};
+		249B95192D2EF5B500FE3D95 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.1;
+			};
+		};
 		24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
@@ -658,6 +682,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */;
+			productName = HTML2Markdown;
+		};
 		2426883F2D2A9E0D00DFAAC1 /* InjectionNext */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */;
@@ -667,6 +696,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
+		};
+		249B951C2D2EF5C800FE3D95 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 249B95192D2EF5B500FE3D95 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
 		};
 		24D1BE402D2A9F340063B530 /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;
