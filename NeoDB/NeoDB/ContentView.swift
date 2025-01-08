@@ -42,7 +42,6 @@ struct ContentView: View {
             }
         }
         .tint(.accentColor)
-        .enableInjection()
     }
 
     #if DEBUG
