@@ -28,8 +28,7 @@ struct ContentView: View {
             }
             
             NavigationStack {
-                Text("Library")
-                    .navigationTitle("Library")
+                LibraryView(authService: authService)
             }
             .tabItem {
                 Label("Library", systemImage: "books.vertical.fill")

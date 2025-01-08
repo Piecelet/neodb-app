@@ -45,7 +45,10 @@ struct ProfileView: View {
     
     init(authService: AuthService) {
         let userService = UserService(authService: authService)
-        _viewModel = StateObject(wrappedValue: ProfileViewModel(userService: userService, authService: authService))
+        _viewModel = StateObject(wrappedValue: ProfileViewModel(
+            userService: userService,
+            authService: authService
+        ))
     }
     
     var body: some View {
@@ -67,7 +70,12 @@ struct ProfileView: View {
         .task {
             await viewModel.loadUserProfile()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var profileContent: some View {
         List {
@@ -162,10 +170,6 @@ struct ProfileView: View {
         }
         .enableInjection()
     }
-    
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
     
     private var placeholderAvatar: some View {
         Circle()

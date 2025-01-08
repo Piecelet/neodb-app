@@ -2,14 +2,13 @@ import Foundation
 import OSLog
 
 @MainActor
-class TimelineService {
+class ShelfService {
     private let authService: AuthService
+    private let logger = Logger(subsystem: "social.neodb.app", category: "ShelfService")
     private let decoder: JSONDecoder
-    private let logger = Logger(subsystem: "app.neodb", category: "TimelineService")
     
     init(authService: AuthService) {
         self.authService = authService
-        
         self.decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -31,35 +30,26 @@ class TimelineService {
         }
     }
     
-    func getTimeline(maxId: String? = nil, sinceId: String? = nil, minId: String? = nil, limit: Int = 20, local: Bool = true) async throws -> [Status] {
+    func getShelfItems(type: ShelfType, category: ItemCategory? = nil, page: Int = 1) async throws -> PagedMarkSchema {
         guard let accessToken = authService.accessToken else {
             logger.error("No access token available")
             throw AuthError.unauthorized
         }
         
         let baseURL = "https://\(authService.currentInstance)"
-        var components = URLComponents(string: "\(baseURL)/api/v1/timelines/public")!
+        var components = URLComponents(string: "\(baseURL)/api/me/shelf/\(type.rawValue)")!
         
         var queryItems = [URLQueryItem]()
-        // Always add local=true to show only local statuses
-        queryItems.append(URLQueryItem(name: "local", value: String(local)))
-        
-        if let maxId = maxId {
-            queryItems.append(URLQueryItem(name: "max_id", value: maxId))
+        if let category = category {
+            queryItems.append(URLQueryItem(name: "category", value: category.rawValue))
         }
-        if let sinceId = sinceId {
-            queryItems.append(URLQueryItem(name: "since_id", value: sinceId))
-        }
-        if let minId = minId {
-            queryItems.append(URLQueryItem(name: "min_id", value: minId))
-        }
-        queryItems.append(URLQueryItem(name: "limit", value: String(min(limit, 40))))
+        queryItems.append(URLQueryItem(name: "page", value: String(page)))
         components.queryItems = queryItems
         
         var request = URLRequest(url: components.url!)
         request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
         
-        logger.debug("Fetching timeline from: \(components.url?.absoluteString ?? "")")
+        logger.debug("Fetching shelf items from: \(components.url?.absoluteString ?? "")")
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -90,9 +80,9 @@ class TimelineService {
         }
         
         do {
-            let statuses = try decoder.decode([Status].self, from: data)
-            logger.debug("Successfully decoded \(statuses.count) local statuses")
-            return statuses
+            let pagedMarks = try decoder.decode(PagedMarkSchema.self, from: data)
+            logger.debug("Successfully decoded \(pagedMarks.data.count) marks")
+            return pagedMarks
         } catch {
             logger.error("Decoding error: \(error.localizedDescription)")
             if let decodingError = error as? DecodingError {
