@@ -9,6 +9,7 @@ graph TD
     B --> C[ProfileViewModel]
     C --> D[ProfileView]
     A --> D
+    E[Router] --> D
 ```
 
 ### State Management
@@ -20,6 +21,10 @@ graph TD
 // Profile-level state
 @Published var user: User?
 @Published var isLoading: Bool
+
+// Navigation state
+@Published var path: [RouterDestination]
+@Published var presentedSheet: SheetDestination?
 ```
 
 ## Key Components
@@ -52,6 +57,51 @@ class AuthService {
 class UserService {
     func getCurrentUser(forceRefresh: Bool = false) async throws -> User
     func clearCache()
+}
+```
+
+### Router Integration
+```swift
+// Profile-related destinations
+case userProfile(id: String)
+case userProfileWithUser(user: User)
+case followers(id: String)
+case following(id: String)
+
+// Navigation in views
+Button {
+    router.navigate(to: .userProfile(id: account.id))
+} label: {
+    KFImage(URL(string: account.avatar))
+        .placeholder { ... }
+        .resizable()
+        .aspectRatio(contentMode: .fill)
+        .frame(width: 44, height: 44)
+        .clipShape(Circle())
+}
+
+// For User type
+Button {
+    router.navigate(to: .userProfileWithUser(user: user))
+} label: {
+    UserAvatarView(user: user)
+}
+```
+
+### Navigation Examples
+```swift
+// In StatusView
+Button {
+    router.navigate(to: .userProfile(id: status.account.id))
+} label: {
+    // Avatar or username view
+}
+
+// In ProfileView
+Button {
+    router.navigate(to: .followers(id: user.id))
+} label: {
+    Text("Followers")
 }
 ```
 
@@ -99,6 +149,13 @@ KFImage(URL(string: user.avatar))
     .frame(width: avatarSize, height: avatarSize)
     .clipShape(Circle())
 ```
+
+### Navigation Features
+- Profile view navigation
+- Followers/Following lists
+- Deep linking support
+- Back navigation
+- Sheet presentations
 
 ### Image Loading Features
 - Automatic caching
@@ -149,11 +206,14 @@ enum AuthError {
 - [ ] Background sync
 - [ ] Rate limiting
 - [ ] Error retry mechanism
+- [ ] Analytics tracking
+- [ ] Deep linking enhancements
 
 ### Performance Optimizations
 - Preload avatar images
 - Cache size limits
 - Background data prefetch
+- Navigation state persistence
 
 ## API Endpoints
 
@@ -173,4 +233,11 @@ Response: {
     avatar: string
     username: string
 }
+```
+
+### Navigation
+```
+/users/{id}
+/users/{id}/followers
+/users/{id}/following
 ``` 

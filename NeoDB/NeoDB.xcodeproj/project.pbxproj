@@ -44,8 +44,10 @@
 			membershipExceptions = (
 				Info.plist,
 				References/Cursor/auth_and_profile.md,
+				References/Cursor/router.md,
 				References/Cursor/shelf_feature.md,
 				References/Cursor/timeline_local.md,
+				References/IceCubes/Router.md,
 				References/Mastodon/timelines.md,
 				References/NeoDB/api.md,
 				References/NeoDB/openapi/openapi.yaml,

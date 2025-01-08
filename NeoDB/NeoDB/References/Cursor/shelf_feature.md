@@ -1,7 +1,7 @@
 # Shelf Feature Implementation
 
 ## Overview
-Shelf display functionality moved from ProfileView to dedicated LibraryView tab for better organization and user experience.
+Shelf display functionality in dedicated LibraryView tab for collection management. Supports navigation to item details, filtering, and shelf management.
 
 ## API Endpoints
 - GET `/api/me/shelf/{type}`
@@ -15,11 +15,36 @@ Shelf display functionality moved from ProfileView to dedicated LibraryView tab 
 3. PagedMarkSchema - Paginated response structure
 4. ItemSchema - Item details structure
 
-## Implementation Plan
-1. Create LibraryView and LibraryViewModel
-2. Move shelf UI components from ProfileView
-3. Enhance shelf display for dedicated tab view
-4. Implement pagination and filtering
+## Router Integration
+
+### Destinations
+```swift
+// Library destinations
+case itemDetail(id: String)
+case itemDetailWithItem(item: ItemSchema)
+case shelfDetail(type: ShelfType)
+case userShelf(userId: String, type: ShelfType)
+
+// Sheet destinations
+case addToShelf(item: ItemSchema)
+case editShelfItem(mark: MarkSchema)
+```
+
+### Navigation Examples
+```swift
+// Navigate to item detail
+Button {
+    router.navigate(to: .itemDetailWithItem(item: mark.item))
+} label: {
+    ShelfItemView(mark: mark)
+}
+
+// Present add to shelf sheet
+router.presentedSheet = .addToShelf(item: item)
+
+// Navigate to user's shelf
+router.navigate(to: .userShelf(userId: user.id, type: .wishlist))
+```
 
 ## Component Structure
 - LibraryView/
@@ -35,37 +60,87 @@ Shelf display functionality moved from ProfileView to dedicated LibraryView tab 
 - Infinite scrolling pagination
 - Pull-to-refresh
 - Loading states and error handling
+- Deep linking support
+- Navigation integration
 
-## Changes
-1. Initial Implementation:
-   - Added ShelfService.swift for API communication
-   - Created shelf models
-   - Implemented shelf UI in ProfileView
+## Implementation Details
 
-2. Migration to Library Tab:
-   - Created dedicated LibraryView
-   - Moved shelf functionality from ProfileView
-   - Enhanced UI for full-screen display
-   - Improved navigation and filtering
-   - Updated ContentView to include Library tab
-   - Restored ProfileView to its original state
+### LibraryView
+```swift
+struct LibraryView: View {
+    @StateObject private var viewModel: LibraryViewModel
+    @EnvironmentObject private var router: Router
+    
+    var body: some View {
+        VStack {
+            ShelfFilterView(...)
+            
+            ScrollView {
+                LazyVStack {
+                    ForEach(viewModel.shelfItems) { mark in
+                        Button {
+                            router.navigate(to: .itemDetailWithItem(item: mark.item))
+                        } label: {
+                            ShelfItemView(mark: mark)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+```
 
-## Design Rationale
-- Dedicated tab provides better visibility for collection management
-- Separates profile information from content management
-- More space for enhanced shelf features
-- Clearer navigation structure
+### ShelfItemView
+```swift
+struct ShelfItemView: View {
+    let mark: MarkSchema
+    
+    var body: some View {
+        HStack {
+            KFImage(URL(string: mark.item.coverImageUrl))
+                .placeholder { ... }
+            
+            VStack(alignment: .leading) {
+                Text(mark.item.displayTitle)
+                if let rating = mark.ratingGrade {
+                    RatingView(rating: rating)
+                }
+                TagsView(tags: mark.tags)
+            }
+        }
+    }
+}
+```
 
-## Migration Process
-1. Created new LibraryView and components
-2. Moved shelf functionality from ProfileView
-3. Updated tab bar in ContentView
-4. Removed shelf-related code from ProfileView
-5. Organized components into proper directory structure
+## Deep Linking
+Support for deep links to:
+- Specific items
+- User shelves
+- Shelf types
+- Categories
+
+URL patterns:
+```
+/items/{id}
+/users/{id}/shelf/{type}
+/shelf/{type}?category={category}
+```
+
+## Error Handling
+- Network errors
+- Invalid data
+- Loading states
+- Empty states
+- Retry mechanisms
 
 ## Future Improvements
-- Add sorting options
-- Implement search within library
-- Add batch actions for multiple items
-- Enhance item details view
-- Add statistics and reading progress 
+- Batch actions
+- Sorting options
+- Search within library
+- Enhanced filters
+- Statistics view
+- Reading progress
+- Share functionality
+- Export/Import
+- Offline support 

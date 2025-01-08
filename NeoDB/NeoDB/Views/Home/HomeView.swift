@@ -69,6 +69,7 @@ class HomeViewModel: ObservableObject {
 struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var router: Router
     
     init(authService: AuthService) {
         let timelineService = TimelineService(authService: authService)
@@ -103,14 +104,19 @@ struct HomeView: View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(viewModel.statuses) { status in
-                    StatusView(status: status)
-                        .onAppear {
-                            if status.id == viewModel.statuses.last?.id {
-                                Task {
-                                    await viewModel.loadTimeline()
+                    Button {
+                        router.navigate(to: .statusDetailWithStatus(status: status))
+                    } label: {
+                        StatusView(status: status)
+                            .onAppear {
+                                if status.id == viewModel.statuses.last?.id {
+                                    Task {
+                                        await viewModel.loadTimeline()
+                                    }
                                 }
                             }
-                        }
+                    }
+                    .buttonStyle(.plain)
                 }
                 
                 if viewModel.isLoading {

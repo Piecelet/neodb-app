@@ -6,35 +6,42 @@ import MarkdownUI
 struct StatusView: View {
     let status: Status
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack(spacing: 8) {
-                KFImage(URL(string: status.account.avatar))
-                    .placeholder {
-                        Circle()
-                            .fill(Color.gray.opacity(0.2))
-                            .frame(width: 44, height: 44)
-                    }
-                    .onFailure { _ in
-                        Image(systemName: "person.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
+                Button {
+                    router.navigate(to: .userProfile(id: status.account.id))
+                } label: {
+                    KFImage(URL(string: status.account.avatar))
+                        .placeholder {
+                            Circle()
+                                .fill(Color.gray.opacity(0.2))
+                                .frame(width: 44, height: 44)
+                        }
+                        .onFailure { _ in
+                            Image(systemName: "person.circle.fill")
+                                .symbolRenderingMode(.hierarchical)
+                                .foregroundStyle(.secondary)
+                                .font(.system(size: 44))
+                        }
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 44, height: 44)
+                        .clipShape(Circle())
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(status.account.displayName)
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        Text("@\(status.account.username)")
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
-                            .font(.system(size: 44))
                     }
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 44, height: 44)
-                    .clipShape(Circle())
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(status.account.displayName)
-                        .font(.headline)
-                    Text("@\(status.account.username)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
                 }
+                .buttonStyle(.plain)
                 
                 Spacer()
                 
@@ -80,7 +87,12 @@ struct StatusView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     private var mediaGrid: some View {
