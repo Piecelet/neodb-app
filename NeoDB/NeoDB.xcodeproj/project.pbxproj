@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */ = {isa = PBXBuildFile; productRef = 2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */; };
+		2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
@@ -73,6 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
@@ -151,6 +153,7 @@
 				24D1BE402D2A9F340063B530 /* Inject */,
 				249B951C2D2EF5C800FE3D95 /* MarkdownUI */,
 				2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */,
+				2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -240,6 +243,7 @@
 				24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */,
 				249B95192D2EF5B500FE3D95 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 				2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
+				2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -647,6 +651,14 @@
 				minimumVersion = 3.0.2;
 			};
 		};
+		2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.1.3;
+			};
+		};
 		2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/johnno1962/InjectionNext";
@@ -686,6 +698,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */;
 			productName = HTML2Markdown;
+		};
+		2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
 		};
 		2426883F2D2A9E0D00DFAAC1 /* InjectionNext */ = {
 			isa = XCSwiftPackageProductDependency;
