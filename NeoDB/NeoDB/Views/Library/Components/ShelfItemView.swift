@@ -1,5 +1,5 @@
 import SwiftUI
-import OSLog
+import Kingfisher
 
 struct ShelfItemView: View {
     let mark: MarkSchema
@@ -7,20 +7,14 @@ struct ShelfItemView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Cover Image
-            AsyncImage(url: URL(string: mark.item.coverImageUrl ?? "")) { phase in
-                switch phase {
-                case .empty:
+            KFImage(URL(string: mark.item.coverImageUrl ?? ""))
+                .placeholder {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .aspectRatio(2/3, contentMode: .fit)
                         .frame(width: 60)
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 60, height: 90)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                case .failure:
+                }
+                .onFailure { _ in
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
                         .aspectRatio(2/3, contentMode: .fit)
@@ -29,10 +23,11 @@ struct ShelfItemView: View {
                             Image(systemName: "photo")
                                 .foregroundStyle(.secondary)
                         }
-                @unknown default:
-                    EmptyView()
                 }
-            }
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: 60, height: 90)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(mark.item.displayTitle)
@@ -63,12 +58,7 @@ struct ShelfItemView: View {
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
 }
 
 #if DEBUG
