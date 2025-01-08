@@ -4,7 +4,7 @@ import OSLog
 @MainActor
 class HomeViewModel: ObservableObject {
     private let timelineService: TimelineService
-    private let logger = Logger(subsystem: "social.neodb.app", category: "HomeViewModel")
+    private let logger = Logger(subsystem: "app.neodb", category: "HomeViewModel")
     
     @Published var statuses: [Status] = []
     @Published var isLoading = false
@@ -97,7 +97,12 @@ struct HomeView: View {
         .task {
             await viewModel.loadTimeline()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var timelineContent: some View {
         ScrollView {
@@ -208,7 +213,12 @@ struct StatusView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     private var mediaGrid: some View {

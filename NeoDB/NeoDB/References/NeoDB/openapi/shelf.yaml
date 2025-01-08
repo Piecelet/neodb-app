@@ -1,0 +1,467 @@
+openapi: 3.1.0
+info:
+  title: NeoDB API
+  version: 1.0.0
+  description: NeoDB API <hr/><a href='https://neodb.social'>Learn more</a>
+paths:
+  /api/me/shelf/{type}:
+    get:
+      operationId: journal_api_list_marks_on_shelf
+      summary: List Marks On Shelf
+      parameters:
+        - in: path
+          name: type
+          schema:
+            enum:
+              - wishlist
+              - progress
+              - complete
+              - dropped
+            title: ShelfType
+            type: string
+          required: true
+        - in: query
+          name: category
+          schema:
+            anyOf:
+              - $ref: '#/components/schemas/AvailableItemCategory'
+              - type: 'null'
+          required: false
+        - in: query
+          name: page
+          schema:
+            default: 1
+            minimum: 1
+            title: Page
+            type: integer
+          required: false
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedMarkSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      description: >-
+        Get holding marks on current user's shelf
+
+
+        Shelf's `type` should be one of `wishlist` / `progress` / `complete`;
+
+        `category` is optional, marks for all categories will be returned if not
+        specified.
+      tags:
+        - mark
+      security:
+        - OAuthAccessTokenAuth: []
+  /api/me/shelf/item/{item_uuid}:
+    get:
+      operationId: journal_api_get_mark_by_item
+      summary: Get Mark By Item
+      parameters:
+        - in: path
+          name: item_uuid
+          schema:
+            title: Item Uuid
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MarkSchema'
+        '302':
+          description: Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      description: Get holding mark on current user's shelf by item uuid
+      tags:
+        - mark
+      security:
+        - OAuthAccessTokenAuth: []
+    post:
+      operationId: journal_api_mark_item
+      summary: Mark Item
+      parameters:
+        - in: path
+          name: item_uuid
+          schema:
+            title: Item Uuid
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      description: >-
+        Create or update a holding mark about an item for current user.
+
+
+        `shelf_type` and `visibility` are required; `created_time` is optional,
+        default to now.
+
+        if the item is already marked, this will update the mark.
+
+
+        updating mark without `rating_grade`, `comment_text` or `tags` field
+        will clear them.
+      tags:
+        - mark
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MarkInSchema'
+        required: true
+      security:
+        - OAuthAccessTokenAuth: []
+    delete:
+      operationId: journal_api_delete_mark
+      summary: Delete Mark
+      parameters:
+        - in: path
+          name: item_uuid
+          schema:
+            title: Item Uuid
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+      description: >-
+        Remove a holding mark about an item for current user, unlike the web
+        behavior, this does not clean up tags.
+      tags:
+        - mark
+      security:
+        - OAuthAccessTokenAuth: []
+components:
+  schemas:
+    Result:
+      properties:
+        message:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Message
+      required:
+        - message
+      title: Result
+      type: object
+    ExternalResourceSchema:
+      properties:
+        url:
+          title: Url
+          type: string
+      required:
+        - url
+      title: ExternalResourceSchema
+      type: object
+    ItemCategory:
+      enum:
+        - book
+        - movie
+        - tv
+        - music
+        - game
+        - podcast
+        - performance
+        - fanfic
+        - exhibition
+        - collection
+      title: ItemCategory
+      type: string
+    LocalizedTitleSchema:
+      properties:
+        lang:
+          title: Lang
+          type: string
+        text:
+          title: Text
+          type: string
+      required:
+        - lang
+        - text
+      title: LocalizedTitleSchema
+      type: object
+    ItemSchema:
+      properties:
+        title:
+          title: Title
+          type: string
+        description:
+          default: ''
+          title: Description
+          type: string
+        localized_title:
+          default: []
+          items:
+            $ref: '#/components/schemas/LocalizedTitleSchema'
+          title: Localized Title
+          type: array
+        localized_description:
+          default: []
+          items:
+            $ref: '#/components/schemas/LocalizedTitleSchema'
+          title: Localized Description
+          type: array
+        cover_image_url:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Cover Image Url
+        rating:
+          anyOf:
+            - type: number
+            - type: 'null'
+          title: Rating
+        rating_count:
+          anyOf:
+            - type: integer
+            - type: 'null'
+          title: Rating Count
+        brief:
+          deprecated: true
+          title: Brief
+          type: string
+        id:
+          title: Id
+          type: string
+        type:
+          title: Type
+          type: string
+        uuid:
+          title: Uuid
+          type: string
+        url:
+          title: Url
+          type: string
+        api_url:
+          title: Api Url
+          type: string
+        category:
+          $ref: '#/components/schemas/ItemCategory'
+        parent_uuid:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Parent Uuid
+        display_title:
+          title: Display Title
+          type: string
+        external_resources:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ExternalResourceSchema'
+              type: array
+            - type: 'null'
+          title: External Resources
+      required:
+        - title
+        - cover_image_url
+        - rating
+        - rating_count
+        - brief
+        - id
+        - type
+        - uuid
+        - url
+        - api_url
+        - category
+        - parent_uuid
+        - display_title
+        - external_resources
+      title: ItemSchema
+      type: object
+    Input:
+      properties:
+        page:
+          default: 1
+          minimum: 1
+          title: Page
+          type: integer
+      title: Input
+      type: object
+    MarkSchema:
+      properties:
+        shelf_type:
+          $ref: '#/components/schemas/ShelfType'
+        visibility:
+          maximum: 2
+          minimum: 0
+          title: Visibility
+          type: integer
+        item:
+          $ref: '#/components/schemas/ItemSchema'
+        created_time:
+          format: date-time
+          title: Created Time
+          type: string
+        comment_text:
+          anyOf:
+            - type: string
+            - type: 'null'
+          title: Comment Text
+        rating_grade:
+          anyOf:
+            - maximum: 10
+              minimum: 1
+              type: integer
+            - type: 'null'
+          title: Rating Grade
+        tags:
+          items:
+            type: string
+          title: Tags
+          type: array
+      required:
+        - shelf_type
+        - visibility
+        - item
+        - created_time
+        - comment_text
+        - rating_grade
+        - tags
+      title: MarkSchema
+      type: object
+    PagedMarkSchema:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/MarkSchema'
+          title: Data
+          type: array
+        pages:
+          title: Pages
+          type: integer
+        count:
+          title: Count
+          type: integer
+      required:
+        - data
+        - pages
+        - count
+      title: PagedMarkSchema
+      type: object
+    MarkInSchema:
+      properties:
+        shelf_type:
+          $ref: '#/components/schemas/ShelfType'
+        visibility:
+          maximum: 2
+          minimum: 0
+          title: Visibility
+          type: integer
+        comment_text:
+          default: ''
+          title: Comment Text
+          type: string
+        rating_grade:
+          default: 0
+          maximum: 10
+          minimum: 0
+          title: Rating Grade
+          type: integer
+        tags:
+          default: []
+          items:
+            type: string
+          title: Tags
+          type: array
+        created_time:
+          anyOf:
+            - format: date-time
+              type: string
+            - type: 'null'
+          title: Created Time
+        post_to_fediverse:
+          default: false
+          title: Post To Fediverse
+          type: boolean
+      required:
+        - shelf_type
+        - visibility
+      title: MarkInSchema
+      type: object
+  securitySchemes:
+    OAuthAccessTokenAuth:
+      type: http
+      scheme: bearer
+servers: []
