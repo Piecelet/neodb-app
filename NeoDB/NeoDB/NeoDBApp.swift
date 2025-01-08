@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct NeoDBApp: App {
     @StateObject private var authService = AuthService()
+    @StateObject private var router = Router()
     
     var body: some Scene {
         WindowGroup {
@@ -17,18 +18,29 @@ struct NeoDBApp: App {
                 if authService.isAuthenticated {
                     ContentView()
                         .environmentObject(authService)
+                        .environmentObject(router)
                 } else {
                     LoginView()
                         .environmentObject(authService)
                 }
             }
             .onOpenURL { url in
-                Task {
-                    do {
-                        try await authService.handleCallback(url: url)
-                    } catch {
-                        print("Authentication error: \(error)")
+                // First try to handle OAuth callback
+                if url.scheme == "neodb" && url.host == "oauth" {
+                    Task {
+                        do {
+                            try await authService.handleCallback(url: url)
+                        } catch {
+                            print("Authentication error: \(error)")
+                        }
                     }
+                    return
+                }
+                
+                // Then try to handle deep links
+                if !router.handleURL(url) {
+                    // If the router didn't handle the URL, open it in the default browser
+                    UIApplication.shared.open(url)
                 }
             }
         }
