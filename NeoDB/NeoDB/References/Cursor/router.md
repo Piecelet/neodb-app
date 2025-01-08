@@ -1,7 +1,7 @@
 # Router Implementation Design
 
 ## Overview
-Implementing a navigation router system for NeoDB app, inspired by IceCubes' implementation.
+Implementing a navigation router system for NeoDB app, inspired by IceCubes' implementation. The router provides centralized navigation management, type-safe routing, and deep linking support.
 
 ## Router Destinations
 Main navigation destinations in the app:
@@ -59,9 +59,11 @@ Main router class that manages navigation state:
 class Router: ObservableObject {
     @Published var path: [RouterDestination] = []
     @Published var presentedSheet: SheetDestination?
+    private let logger = Logger(subsystem: "social.neodb.app", category: "Router")
     
     func navigate(to destination: RouterDestination) {
         path.append(destination)
+        logger.debug("Navigated to: \(String(describing: destination))")
     }
     
     func dismissSheet() {
@@ -69,26 +71,75 @@ class Router: ObservableObject {
     }
     
     func handleURL(_ url: URL) -> Bool {
+        logger.debug("Handling URL: \(url.absoluteString)")
+        
         // Handle deep links and internal navigation
         if url.host == "neodb.social" {
-            if let id = url.lastPathComponent {
-                if url.path.contains("/items/") {
-                    navigate(to: .itemDetail(id: id))
-                    return true
-                } else if url.path.contains("/users/") {
-                    navigate(to: .userProfile(id: id))
-                    return true
-                }
+            let pathComponents = url.pathComponents
+            
+            if pathComponents.contains("items"),
+               let id = pathComponents.last {
+                navigate(to: .itemDetail(id: id))
+                return true
+            }
+            
+            if pathComponents.contains("users"),
+               let id = pathComponents.last {
+                navigate(to: .userProfile(id: id))
+                return true
+            }
+            
+            if pathComponents.contains("status"),
+               let id = pathComponents.last {
+                navigate(to: .statusDetail(id: id))
+                return true
+            }
+            
+            if pathComponents.contains("tags"),
+               let tag = pathComponents.last {
+                navigate(to: .hashTag(tag: tag))
+                return true
             }
         }
+        
+        return false
+    }
+    
+    func handleStatus(status: Status, url: URL) -> Bool {
+        logger.debug("Handling status URL: \(url.absoluteString)")
+        
+        let pathComponents = url.pathComponents
+        
+        // Handle hashtags
+        if pathComponents.contains("tags"),
+           let tag = pathComponents.last {
+            navigate(to: .hashTag(tag: tag))
+            return true
+        }
+        
+        // Handle mentions
+        if pathComponents.contains("users"),
+           let id = pathComponents.last {
+            navigate(to: .userProfile(id: id))
+            return true
+        }
+        
+        // Handle status links
+        if pathComponents.contains("status"),
+           let id = pathComponents.last {
+            navigate(to: .statusDetail(id: id))
+            return true
+        }
+        
         return false
     }
 }
 ```
 
-## Integration with SwiftUI
-Example of integration in the main app structure:
+## Integration with Views
+Example of integration in views:
 
+### ContentView
 ```swift
 struct ContentView: View {
     @StateObject private var router = Router()
@@ -100,23 +151,110 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            ItemDetailView(id: id)
+                            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
                         case .userProfile(let id):
-                            UserProfileView(id: id)
+                            Text("User Profile: \(id)")  // TODO: Implement UserProfileView
                         // ... other cases
                         }
                     }
             }
-            // ... other tabs
         }
         .environmentObject(router)
         .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
             case .newStatus:
-                StatusEditorView()
+                Text("New Status")  // TODO: Implement StatusEditorView
             case .addToShelf(let item):
-                ShelfEditorView(item: item)
+                Text("Add to Shelf: \(item.displayTitle)")  // TODO: Implement ShelfEditorView
             // ... other cases
+            }
+        }
+    }
+}
+```
+
+### HomeView
+```swift
+struct HomeView: View {
+    @EnvironmentObject private var router: Router
+    
+    var body: some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(viewModel.statuses) { status in
+                    Button {
+                        router.navigate(to: .statusDetailWithStatus(status: status))
+                    } label: {
+                        StatusView(status: status)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+}
+```
+
+### LibraryView
+```swift
+struct LibraryView: View {
+    @EnvironmentObject private var router: Router
+    
+    var body: some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(viewModel.shelfItems) { mark in
+                    Button {
+                        router.navigate(to: .itemDetailWithItem(item: mark.item))
+                    } label: {
+                        ShelfItemView(mark: mark)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+    }
+}
+```
+
+## Deep Linking Support
+The router handles deep links through the `handleURL` method in the app's entry point:
+
+```swift
+struct NeoDBApp: App {
+    @StateObject private var authService = AuthService()
+    @StateObject private var router = Router()
+    
+    var body: some Scene {
+        WindowGroup {
+            Group {
+                if authService.isAuthenticated {
+                    ContentView()
+                        .environmentObject(authService)
+                        .environmentObject(router)
+                } else {
+                    LoginView()
+                        .environmentObject(authService)
+                }
+            }
+            .onOpenURL { url in
+                // First try to handle OAuth callback
+                if url.scheme == "neodb" && url.host == "oauth" {
+                    Task {
+                        do {
+                            try await authService.handleCallback(url: url)
+                        } catch {
+                            print("Authentication error: \(error)")
+                        }
+                    }
+                    return
+                }
+                
+                // Then try to handle deep links
+                if !router.handleURL(url) {
+                    // If the router didn't handle the URL, open it in the default browser
+                    UIApplication.shared.open(url)
+                }
             }
         }
     }
@@ -129,18 +267,13 @@ struct ContentView: View {
 3. Deep linking support
 4. Consistent navigation patterns
 5. Easy to extend and maintain
+6. Improved code organization
+7. Better state management
+8. Enhanced user experience
 
-## Usage Examples
-```swift
-// In a view
-@EnvironmentObject private var router: Router
-
-// Navigate
-router.navigate(to: .itemDetail(id: "123"))
-
-// Present sheet
-router.presentedSheet = .addToShelf(item: someItem)
-
-// Handle URL
-router.handleURL(someURL)
-``` 
+## Next Steps
+1. Implement destination views (ItemDetailView, StatusDetailView, etc.)
+2. Add more navigation features as needed
+3. Enhance deep linking support
+4. Improve error handling and logging
+5. Add analytics tracking for navigation events 

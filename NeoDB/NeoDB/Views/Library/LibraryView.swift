@@ -1,6 +1,5 @@
 import SwiftUI
 import OSLog
-import Kingfisher
 
 @MainActor
 class LibraryViewModel: ObservableObject {
@@ -72,6 +71,7 @@ class LibraryViewModel: ObservableObject {
 struct LibraryView: View {
     @StateObject private var viewModel: LibraryViewModel
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var router: Router
     
     init(authService: AuthService) {
         let shelfService = ShelfService(authService: authService)
@@ -79,41 +79,39 @@ struct LibraryView: View {
     }
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Shelf Type Picker
-                ShelfFilterView(
-                    selectedShelfType: $viewModel.selectedShelfType,
-                    selectedCategory: $viewModel.selectedCategory,
-                    onShelfTypeChange: viewModel.changeShelfType,
-                    onCategoryChange: viewModel.changeCategory
-                )
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(Color(.systemBackground))
-                
-                // Content
-                Group {
-                    if let error = viewModel.error {
-                        EmptyStateView(
-                            "Couldn't Load Library",
-                            systemImage: "exclamationmark.triangle",
-                            description: Text(error)
-                        )
-                    } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading {
-                        EmptyStateView(
-                            "No Items Found",
-                            systemImage: "books.vertical",
-                            description: Text("Add some items to your \(viewModel.selectedShelfType.displayName.lowercased()) list")
-                        )
-                    } else {
-                        libraryContent
-                    }
+        VStack(spacing: 0) {
+            // Shelf Type Picker
+            ShelfFilterView(
+                selectedShelfType: $viewModel.selectedShelfType,
+                selectedCategory: $viewModel.selectedCategory,
+                onShelfTypeChange: viewModel.changeShelfType,
+                onCategoryChange: viewModel.changeCategory
+            )
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            .background(Color(.systemBackground))
+            
+            // Content
+            Group {
+                if let error = viewModel.error {
+                    EmptyStateView(
+                        "Couldn't Load Library",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text(error)
+                    )
+                } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading {
+                    EmptyStateView(
+                        "No Items Found",
+                        systemImage: "books.vertical",
+                        description: Text("Add some items to your \(viewModel.selectedShelfType.displayName.lowercased()) list")
+                    )
+                } else {
+                    libraryContent
                 }
             }
-            .navigationTitle("Library")
-            .navigationBarTitleDisplayMode(.large)
         }
+        .navigationTitle("Library")
+        .navigationBarTitleDisplayMode(.large)
         .task {
             await viewModel.loadShelfItems()
         }
@@ -123,14 +121,19 @@ struct LibraryView: View {
         ScrollView {
             LazyVStack(spacing: 12) {
                 ForEach(viewModel.shelfItems) { mark in
-                    ShelfItemView(mark: mark)
-                        .onAppear {
-                            if mark.id == viewModel.shelfItems.last?.id {
-                                Task {
-                                    await viewModel.loadNextPage()
+                    Button {
+                        router.navigate(to: .itemDetailWithItem(item: mark.item))
+                    } label: {
+                        ShelfItemView(mark: mark)
+                            .onAppear {
+                                if mark.id == viewModel.shelfItems.last?.id {
+                                    Task {
+                                        await viewModel.loadNextPage()
+                                    }
                                 }
                             }
-                        }
+                    }
+                    .buttonStyle(.plain)
                 }
                 
                 if viewModel.isLoading {
