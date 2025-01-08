@@ -1,5 +1,6 @@
 import SwiftUI
 import OSLog
+import Kingfisher
 
 @MainActor
 class LibraryViewModel: ObservableObject {
@@ -116,12 +117,7 @@ struct LibraryView: View {
         .task {
             await viewModel.loadShelfItems()
         }
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
     
     private var libraryContent: some View {
         ScrollView {
@@ -149,5 +145,4 @@ struct LibraryView: View {
             await viewModel.loadShelfItems(refresh: true)
         }
     }
-    
 } 
