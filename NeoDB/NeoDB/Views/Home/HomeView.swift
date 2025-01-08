@@ -97,7 +97,12 @@ struct HomeView: View {
         .task {
             await viewModel.loadTimeline()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var timelineContent: some View {
         ScrollView {
@@ -208,7 +213,12 @@ struct StatusView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     private var mediaGrid: some View {
