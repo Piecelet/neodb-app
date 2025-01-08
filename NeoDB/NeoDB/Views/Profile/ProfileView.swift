@@ -1,4 +1,5 @@
 import SwiftUI
+import Kingfisher
 
 @MainActor
 class ProfileViewModel: ObservableObject {
@@ -83,27 +84,22 @@ struct ProfileView: View {
             Section {
                 HStack(spacing: 16) {
                     if let user = viewModel.user {
-                        AsyncImage(url: URL(string: user.avatar)) { phase in
-                            switch phase {
-                            case .empty:
+                        KFImage(URL(string: user.avatar))
+                            .placeholder {
                                 placeholderAvatar
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: avatarSize, height: avatarSize)
-                                    .clipShape(Circle())
-                                    .transition(.scale.combined(with: .opacity))
-                            case .failure(_):
+                            }
+                            .onFailure { _ in
                                 Image(systemName: "person.circle.fill")
                                     .symbolRenderingMode(.hierarchical)
                                     .foregroundStyle(.secondary)
                                     .font(.system(size: avatarSize * 0.8))
                                     .frame(width: avatarSize, height: avatarSize)
-                            @unknown default:
-                                EmptyView()
                             }
-                        }
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: avatarSize, height: avatarSize)
+                            .clipShape(Circle())
+                            .transition(.scale.combined(with: .opacity))
                     } else {
                         placeholderAvatar
                     }
