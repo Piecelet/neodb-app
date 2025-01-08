@@ -5,7 +5,7 @@ import OSLog
 class TimelineService {
     private let authService: AuthService
     private let decoder: JSONDecoder
-    private let logger = Logger(subsystem: "app.neodb", category: "TimelineService")
+    private let logger = Logger(subsystem: "social.neodb.app", category: "TimelineService")
     
     init(authService: AuthService) {
         self.authService = authService
@@ -31,7 +31,7 @@ class TimelineService {
         }
     }
     
-    func getTimeline(maxId: String? = nil, sinceId: String? = nil, minId: String? = nil, limit: Int = 20) async throws -> [Status] {
+    func getTimeline(maxId: String? = nil, sinceId: String? = nil, minId: String? = nil, limit: Int = 20, local: Bool = true) async throws -> [Status] {
         guard let accessToken = authService.accessToken else {
             logger.error("No access token available")
             throw AuthError.unauthorized
@@ -41,6 +41,9 @@ class TimelineService {
         var components = URLComponents(string: "\(baseURL)/api/v1/timelines/public")!
         
         var queryItems = [URLQueryItem]()
+        // Always add local=true to show only local statuses
+        queryItems.append(URLQueryItem(name: "local", value: String(local)))
+        
         if let maxId = maxId {
             queryItems.append(URLQueryItem(name: "max_id", value: maxId))
         }
@@ -88,7 +91,7 @@ class TimelineService {
         
         do {
             let statuses = try decoder.decode([Status].self, from: data)
-            logger.debug("Successfully decoded \(statuses.count) statuses")
+            logger.debug("Successfully decoded \(statuses.count) local statuses")
             return statuses
         } catch {
             logger.error("Decoding error: \(error.localizedDescription)")
