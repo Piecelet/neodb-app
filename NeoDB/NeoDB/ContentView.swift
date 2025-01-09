@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  NeoDB
 //
-//  Created by citron on 12/14/24.
+//  Created by citron(https://github.com/lcandy2) on 12/14/24.
 //
 
 import SwiftUI
