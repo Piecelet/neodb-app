@@ -5,6 +5,8 @@ enum ItemCategory: String, Codable, CaseIterable {
     case book
     case movie
     case tv
+    case tvSeason = "tv_season"
+    case tvEpisode = "tv_episode"
     case music
     case game
     case podcast

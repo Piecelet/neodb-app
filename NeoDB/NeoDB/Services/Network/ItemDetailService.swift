@@ -4,10 +4,12 @@ import OSLog
 @MainActor
 class ItemDetailService {
     private let authService: AuthService
+    private let router: Router
     private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
     
-    init(authService: AuthService) {
+    init(authService: AuthService, router: Router) {
         self.authService = authService
+        self.router = router
     }
     
     private func fetchItem<T: Codable>(endpoint: String) async throws -> T {
@@ -106,6 +108,10 @@ class ItemDetailService {
             return try await fetchMovie(uuid: id)
         case .tv:
             return try await fetchTVShow(uuid: id)
+        case .tvSeason:
+            return try await fetchTVSeason(uuid: id)
+        case .tvEpisode:
+            return try await fetchTVEpisode(uuid: id)
         case .music:
             return try await fetchAlbum(uuid: id)
         case .game:

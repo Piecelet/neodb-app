@@ -109,6 +109,20 @@ class ItemDetailViewModel: ObservableObject {
                 ("Episodes", show.episodeCount.map { String($0) } ?? ""),
                 ("Language", show.language.joined(separator: ", "))
             ]
+        case let season as TVSeasonSchema:
+            return [
+                ("Season", season.seasonNumber.map { String($0) } ?? ""),
+                ("Episodes", season.episodeCount.map { String($0) } ?? ""),
+                ("Director", season.director.joined(separator: ", ")),
+                ("Year", season.year.map { String($0) } ?? ""),
+                ("Genre", season.genre.joined(separator: ", "))
+            ]
+        case let episode as TVEpisodeSchema:
+            return [
+                ("Episode", episode.episodeNumber.map { String($0) } ?? ""),
+                ("Title", episode.title),
+                ("Parent", episode.parentUuid ?? "")
+            ]
         case let game as GameSchema:
             return [
                 ("Developer", game.developer.joined(separator: ", ")),

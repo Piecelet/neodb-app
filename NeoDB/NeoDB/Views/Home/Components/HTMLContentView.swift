@@ -1,11 +1,13 @@
 import SwiftUI
 import HTML2Markdown
 import MarkdownUI
+import OSLog
 
 struct HTMLContentView: View {
     let htmlContent: String
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
+    private let logger = Logger(subsystem: "app.neodb", category: "HTMLContent")
     
     var body: some View {
         if let markdown = convertHTMLToMarkdown(htmlContent) {
@@ -35,12 +37,32 @@ struct HTMLContentView: View {
             return
         }
         
+        logger.debug("Processing URL: \(url.absoluteString)")
+        logger.debug("Path components: \(pathComponents)")
+        
         // Parse NeoDB URL pattern: /~username~/type/id
+        // or /~username~/type/subtype/id for TV seasons and episodes
         if pathComponents[1].hasPrefix("~"), pathComponents[1].hasSuffix("~") {
             let type = pathComponents[2]
-            let id = pathComponents[3]
+            let id: String
+            let itemType: String
+            let category: ItemCategory
             
-            // Create a temporary ItemSchema to get the category
+            if type == "tv" && pathComponents.count >= 5 {
+                // Handle TV seasons and episodes
+                let subtype = pathComponents[3] // "season" or "episode"
+                id = pathComponents[4]
+                itemType = subtype
+                category = categoryFromType(subtype) // Use subtype for category
+                logger.debug("TV content - type: \(type), subtype: \(subtype), id: \(id)")
+            } else {
+                id = pathComponents[3]
+                itemType = type
+                category = categoryFromType(type)
+                logger.debug("Regular content - type: \(type), id: \(id)")
+            }
+            
+            // Create a temporary ItemSchema
             let tempItem = ItemSchema(
                 title: "",
                 description: "",
@@ -50,17 +72,18 @@ struct HTMLContentView: View {
                 rating: nil,
                 ratingCount: nil,
                 id: id,
-                type: type,
+                type: itemType,
                 uuid: id,
                 url: url.absoluteString,
                 apiUrl: "",
-                category: categoryFromType(type),
+                category: category,
                 parentUuid: nil,
                 displayTitle: "",
                 externalResources: nil,
                 brief: nil
             )
             
+            logger.debug("Created ItemSchema - type: \(tempItem.type), category: \(tempItem.category.rawValue)")
             router.navigate(to: .itemDetailWithItem(item: tempItem))
         } else {
             openURL(url)
@@ -75,6 +98,10 @@ struct HTMLContentView: View {
             return .book
         case "tv":
             return .tv
+        case "season":
+            return .tvSeason
+        case "episode":
+            return .tvEpisode
         case "game":
             return .game
         case "album":

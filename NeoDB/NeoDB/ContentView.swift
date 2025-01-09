@@ -19,15 +19,16 @@ struct ContentView: View {
                         switch destination {
                         case .itemDetail(let id):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: id,
                                 category: router.itemToLoad?.category
                             )
                         case .itemDetailWithItem(let item):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: item.id,
-                                category: item.category
+                                category: item.category,
+                                item: item
                             )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
@@ -68,15 +69,16 @@ struct ContentView: View {
                         switch destination {
                         case .itemDetail(let id):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: id,
                                 category: router.itemToLoad?.category
                             )
                         case .itemDetailWithItem(let item):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: item.id,
-                                category: item.category
+                                category: item.category,
+                                item: item
                             )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
@@ -109,15 +111,16 @@ struct ContentView: View {
                         switch destination {
                         case .itemDetail(let id):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: id,
                                 category: router.itemToLoad?.category
                             )
                         case .itemDetailWithItem(let item):
                             ItemDetailViewContainer(
-                                itemDetailService: ItemDetailService(authService: authService),
+                                itemDetailService: ItemDetailService(authService: authService, router: router),
                                 id: item.id,
-                                category: item.category
+                                category: item.category,
+                                item: item
                             )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView

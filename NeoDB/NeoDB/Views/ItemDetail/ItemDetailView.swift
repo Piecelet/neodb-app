@@ -70,6 +70,32 @@ struct ItemDetailView: View {
                         Divider()
                     }
                     
+                    // TV Season-specific metadata
+                    if let season = item as? TVSeasonSchema {
+                        ItemMetadataView(metadata: [
+                            ("Season", season.seasonNumber.map { String($0) } ?? ""),
+                            ("Episodes", season.episodeCount.map { String($0) } ?? ""),
+                            ("Director", season.director.joined(separator: ", ")),
+                            ("Cast", season.actor.joined(separator: ", ")),
+                            ("Year", season.year.map { String($0) } ?? ""),
+                            ("Genre", season.genre.joined(separator: ", ")),
+                            ("Language", season.language.joined(separator: ", "))
+                        ])
+                        
+                        Divider()
+                    }
+                    
+                    // TV Episode-specific metadata
+                    if let episode = item as? TVEpisodeSchema {
+                        ItemMetadataView(metadata: [
+                            ("Episode", episode.episodeNumber.map { String($0) } ?? ""),
+                            ("Title", episode.title),
+                            ("Parent", episode.parentUuid ?? "")
+                        ])
+                        
+                        Divider()
+                    }
+                    
                     // Game-specific metadata
                     if let game = item as? GameSchema {
                         ItemMetadataView(metadata: [
@@ -163,10 +189,11 @@ struct ItemDetailView: View {
 
 #Preview {
     NavigationStack {
-        let viewModel = ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService()))
+        let router = Router()
+        let viewModel = ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService(), router: router))
         viewModel.item = EditionSchema.preview
         return ItemDetailView(viewModel: viewModel)
-            .environmentObject(Router())
+            .environmentObject(router)
     }
 }
 

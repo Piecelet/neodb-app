@@ -5,18 +5,20 @@ struct ItemDetailViewContainer: View {
     @EnvironmentObject private var router: Router
     let id: String?
     let category: ItemCategory?
+    let item: ItemSchema?
     
-    init(itemDetailService: ItemDetailService, id: String? = nil, category: ItemCategory? = nil) {
+    init(itemDetailService: ItemDetailService, id: String? = nil, category: ItemCategory? = nil, item: ItemSchema? = nil) {
         _viewModel = StateObject(wrappedValue: ItemDetailViewModel(itemDetailService: itemDetailService))
         self.id = id
         self.category = category
+        self.item = item
     }
     
     var body: some View {
         ItemDetailView(viewModel: viewModel)
             .onAppear {
                 // Load item details
-                if let item = router.itemToLoad {
+                if let item = item ?? router.itemToLoad {
                     viewModel.loadItem(item: item)
                     router.itemToLoad = nil // Clear stored item
                 } else if let id = id, let category = category {
@@ -27,6 +29,7 @@ struct ItemDetailViewContainer: View {
 }
 
 #Preview {
-    ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: AuthService()))
-        .environmentObject(Router())
+    let router = Router()
+    return ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: AuthService(), router: router))
+        .environmentObject(router)
 } 
