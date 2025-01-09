@@ -4,139 +4,131 @@
 The item detail system handles various types of media items including books, movies, TV shows (and their seasons/episodes), music, games, etc.
 
 ## Features
-1. Dynamic Layout
-   - Type-specific metadata display
-   - Conditional UI elements
-   - Responsive design
-   - Key information preview
-   - Detailed metadata sections
+1. Modern UI Design
+   - Clean, minimalist layout
+   - Apple HIG compliant
+   - Consistent typography
+   - Subtle visual hierarchy
+   - Efficient use of space
+   - Focused content presentation
+
+2. Content Organization
+   - Header with key information
+   - Sheet-based full metadata
+   - Concise description
+   - Streamlined actions
+   - Contextual external links
+
+3. Component Structure
+   - ItemHeaderView: Title, cover, rating, preview metadata
+   - MetadataSheet: Full item details
+   - ExpandableDescriptionView: Collapsible description
+   - ItemActionsView: Primary and secondary actions
+
+## Layout Guidelines
+1. Header Section
+   - Cover image (100pt width, 2:3 ratio)
+   - Title in title3 style
+   - Rating with subtle star icon
+   - Preview metadata (3 items)
+   - "Show All Details" button
+
+2. Metadata Sheet
+   - Full-screen modal presentation
+   - List-based layout
+   - Label width: 80pt
+   - Multi-line value support
+   - Navigation bar with Done button
+
+3. Description Section
+   - Section title in headline style
+   - Three-line preview
    - Expandable content
+   - "Read More" button
 
-2. TV Content Hierarchy
-   - Show → Season → Episode navigation
-   - Parent-child relationships
-   - Type-specific API endpoints
+4. Actions Section
+   - Primary action (Add to Shelf)
+   - Secondary actions (Share, Links)
+   - Consistent button styles
 
-3. Metadata Display
-   - Key information preview
-   - Detailed metadata sections
-   - Expandable content
+## Typography
+1. Title: `.title3`, `.semibold`
+2. Metadata: `.footnote`
+3. Section Headers: `.headline`
+4. Description: `.body`
+5. Buttons: System default
 
-## URL Patterns and API Mapping
-1. Basic Item URLs
-   - `/~username~/type/id` → `/api/{type}/{id}`
-2. TV-specific URLs and API Endpoints
-   - `/~username~/tv/id` → `/api/tv/{id}`
-   - `/~username~/tv/season/id` → `/api/tv/season/{id}`
-   - `/~username~/tv/episode/id` → `/api/tv/episode/{id}`
-
-### TV Content Handling
-For TV shows and their components:
-1. TV shows: `/~username~/tv/id` → category: `.tv`
-2. Seasons: `/~username~/tv/season/id` → category: `.tvSeason`
-3. Episodes: `/~username~/tv/episode/id` → category: `.tvEpisode`
-
-The system determines the correct category and API endpoint based on both the base type and subtype:
-```swift
-if type == "tv" && pathComponents.count >= 5 {
-    let subtype = pathComponents[3] // "season" or "episode"
-    category = categoryFromType(subtype) // Use subtype for category
-}
-```
-
-## API Endpoints
-Each category maps to a specific API endpoint:
-- TV shows: `/api/tv/{id}`
-- TV seasons: `/api/tv/season/{id}`
-- TV episodes: `/api/tv/episode/{id}`
-- Books: `/api/book/{id}`
-- Movies: `/api/movie/{id}`
-- Podcasts: `/api/podcast/{id}`
-- Albums: `/api/album/{id}`
-- Games: `/api/game/{id}`
-- Performances: `/api/performance/{id}`
-
-## Models
-### Categories
-```swift
-enum ItemCategory: String, Codable {
-    case tv
-    case tvSeason = "tv_season"
-    case tvEpisode = "tv_episode"
-    case book
-    case movie
-    case music
-    case game
-    case podcast
-    case performance
-    // ... other cases
-}
-```
-
-### TV-related Schemas
-- `TVShowSchema`: Base TV show information
-- `TVSeasonSchema`: Season-specific fields including:
-  - seasonNumber
-  - episodeCount
-  - episodeUuids
-- `TVEpisodeSchema`: Episode-specific fields including:
-  - episodeNumber
-  - parentUuid (links to season)
-
-## Data Flow
-1. URL Processing (`HTMLContentView`)
-   - Parse URL components
-   - Determine correct category based on type/subtype
-   - Create temporary `ItemSchema` with proper category
-
-2. Navigation
-   - Use `Router` to navigate with the temporary item
-   - Pass category information through the navigation stack
-
-3. Data Fetching (`ItemDetailService`)
-   - Use category to determine correct API endpoint
-   - Fetch and decode appropriate schema type
-
-## Design Considerations
-1. **Type Safety**: Using distinct categories for TV seasons and episodes ensures type-safe API calls
-2. **Clear Data Flow**: Category information flows from URL parsing to API calls
-3. **Maintainability**: Centralized category handling in `categoryFromType`
-4. **Extensibility**: Easy to add new subtypes by extending the category enum and mapping logic
+## Spacing
+1. Vertical Component Spacing: 16pt
+2. Horizontal Padding: 16pt
+3. Metadata Item Spacing: 4pt
+4. Button Padding: 12pt (primary), 8pt (secondary)
 
 ## Recent Changes
-1. API Endpoint Fixes
-   - Corrected TV content API mapping
-   - Added proper type resolution
-   - Fixed endpoint selection logic
-   - Improved error handling
+1. UI Modernization
+   - Moved full metadata to sheet
+   - Removed duplicate description title
+   - Improved metadata preview
+   - Enhanced button styling
+   - Simplified layout structure
 
-2. URL Handling
-   - Enhanced type parsing
-   - Separated category and type handling
-   - Fixed subtype resolution
-   - Preserved type information
+2. Layout Optimization
+   - Consolidated metadata presentation
+   - Improved content organization
+   - Enhanced readability
+   - Better use of space
+   - Cleaner visual hierarchy
 
-3. UI Updates
-   - Type-specific displays
-   - Enhanced metadata organization
-   - Improved error states
-   - Added loading indicators
-   - Expandable metadata sections
-   - Key information preview
+3. Component Updates
+   - Added MetadataSheet
+   - Simplified ExpandableDescriptionView
+   - Enhanced metadata display
+   - Improved expandable content
+
+4. Performance Improvements
+   - Added item caching mechanism
+   - Prevented unnecessary reloading
+   - Optimized tab switching behavior
+   - Improved state management
+   - Enhanced loading logic
+
+5. URL Handling
+   - Added dynamic instance domain support
+   - Improved share URL generation
+   - Enhanced external link handling
+   - Fixed relative URL resolution
+   - Added instance-aware sharing
 
 ## Best Practices
-1. Always check URL structure before parsing
-2. Use proper category for API endpoint selection
-3. Maintain type information throughout the navigation flow
-4. Log important state transitions for debugging
+1. Visual Design
+   - Use system colors and fonts
+   - Maintain consistent spacing
+   - Follow platform conventions
+   - Keep UI elements subtle
+   - Focus on content
+
+2. Layout
+   - Group related information
+   - Use progressive disclosure
+   - Maintain clear hierarchy
+   - Optimize for readability
+   - Consider different screen sizes
+
+3. Interaction
+   - Clear primary actions
+   - Logical button placement
+   - Intuitive gestures
+   - Responsive feedback
+   - Accessible controls
 
 ## Future Improvements
-- Enhanced navigation between related items
-- Batch loading of episodes
-- Season overview pages
-- Show timeline view
-- Watch progress tracking
-- Air date notifications
-- Related content suggestions
-- Advanced filtering
-- Offline support 
+- Enhanced image loading states
+- Dynamic type support
+- Accessibility improvements
+- Dark mode refinements
+- Animation polish
+- Landscape optimization
+- iPad layout adaptation
+- Custom transitions
+- Rich previews
+- Social sharing enhancements 

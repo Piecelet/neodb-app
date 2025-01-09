@@ -10,45 +10,68 @@ import SwiftUI
 struct ItemActionsView: View {
     let item: ItemSchema
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var authService: AuthService
     @Environment(\.openURL) private var openURL
     
+    private var shareURL: URL? {
+        // Ensure the URL has the domain
+        if let url = URL(string: item.url), url.host == nil {
+            return URL(string: "https://\(authService.currentInstance)\(item.url)")
+        }
+        return URL(string: item.url)
+    }
+    
     var body: some View {
-        VStack(spacing: 16) {
-            // Add to Shelf Button
+        VStack(spacing: 12) {
+            // Primary Action
             Button {
                 router.presentedSheet = .addToShelf(item: item)
             } label: {
-                Label("Add to Shelf", systemImage: "plus")
-                    .frame(maxWidth: .infinity)
+                HStack {
+                    Image(systemName: "plus")
+                    Text("Add to Shelf")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
             
-            // Share Button
-            if let url = URL(string: item.url) {
-                ShareLink(item: url) {
-                    Label("Share", systemImage: "square.and.arrow.up")
+            HStack(spacing: 12) {
+                // Share Button
+                if let url = shareURL {
+                    ShareLink(item: url) {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                            Text("Share")
+                        }
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
-            }
-            
-            // External Links
-            if let resources = item.externalResources, !resources.isEmpty {
-                Menu {
-                    ForEach(resources, id: \.url) { resource in
-                        if let url = URL(string: resource.url) {
-                            Button {
-                                openURL(url)
-                            } label: {
-                                Label(url.host ?? "External Link", systemImage: "link")
+                
+                // External Links
+                if let resources = item.externalResources, !resources.isEmpty {
+                    Menu {
+                        ForEach(resources, id: \.url) { resource in
+                            if let url = URL(string: resource.url) {
+                                Button {
+                                    openURL(url)
+                                } label: {
+                                    Label(url.host ?? "External Link", systemImage: "link")
+                                }
                             }
                         }
-                    }
-                } label: {
-                    Label("External Links", systemImage: "globe")
+                    } label: {
+                        HStack {
+                            Image(systemName: "globe")
+                            Text("Links")
+                        }
                         .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
             }
         }
         .padding()
@@ -56,32 +79,27 @@ struct ItemActionsView: View {
 }
 
 #Preview {
-    ItemActionsView(item: .preview)
-        .environmentObject(Router())
-}
-
-extension ItemSchema {
-    static var preview: ItemSchema {
-        ItemSchema(
-            title: "Sample Item",
-            description: "A sample item description",
-            localizedTitle: [],
-            localizedDescription: [],
-            coverImageUrl: "https://example.com/image.jpg",
-            rating: 4.5,
-            ratingCount: 1234,
-            id: "1",
-            type: "book",
-            uuid: "1",
-            url: "https://example.com/item/1",
-            apiUrl: "https://api.example.com/item/1",
-            category: .book,
-            parentUuid: nil,
-            displayTitle: "Sample Item",
-            externalResources: [
-                ExternalResourceSchema(url: "https://example.com/external/1")
-            ],
-            brief: "A sample item brief description"
-        )
-    }
+    ItemActionsView(item: ItemSchema(
+        title: "Sample Item",
+        description: "A sample item description",
+        localizedTitle: [],
+        localizedDescription: [],
+        coverImageUrl: "https://example.com/image.jpg",
+        rating: 4.5,
+        ratingCount: 1234,
+        id: "1",
+        type: "book",
+        uuid: "1",
+        url: "/book/1",  // Testing relative URL
+        apiUrl: "https://api.example.com/item/1",
+        category: .book,
+        parentUuid: nil,
+        displayTitle: "Sample Item",
+        externalResources: [
+            ExternalResourceSchema(url: "https://example.com/external/1")
+        ],
+        brief: "A sample item brief description"
+    ))
+    .environmentObject(Router())
+    .environmentObject(AuthService())
 } 

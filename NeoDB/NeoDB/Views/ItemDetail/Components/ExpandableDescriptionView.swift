@@ -9,24 +9,22 @@ struct ExpandableDescriptionView: View {
             Text("Description")
                 .font(.headline)
             
-            VStack(spacing: 8) {
-                Text(description)
-                    .font(.body)
-                    .lineLimit(isExpanded ? nil : 3)
-                
-                Button {
-                    withAnimation {
-                        isExpanded.toggle()
-                    }
-                } label: {
-                    Text(isExpanded ? "Show Less" : "Read More")
-                        .font(.subheadline)
-                        .foregroundStyle(.blue)
+            Text(description)
+                .font(.body)
+                .lineLimit(isExpanded ? nil : 3)
+            
+            Button {
+                withAnimation {
+                    isExpanded.toggle()
                 }
+            } label: {
+                Text(isExpanded ? "Show Less" : "Read More")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
+        .padding(.horizontal)
     }
 }
 

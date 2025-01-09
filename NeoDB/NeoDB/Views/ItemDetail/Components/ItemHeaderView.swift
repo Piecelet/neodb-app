@@ -14,21 +14,22 @@ struct ItemHeaderView: View {
     let rating: String
     let ratingCount: String
     let keyMetadata: [(label: String, value: String)]
-    @State private var showAllMetadata = false
+    @State private var showMetadataSheet = false
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 16) {
+            // Title and Cover Section
             HStack(alignment: .top, spacing: 16) {
                 // Cover Image
                 KFImage(coverImageURL)
                     .placeholder {
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color(.systemGray6))
                             .aspectRatio(2/3, contentMode: .fit)
                     }
                     .onFailure { _ in
                         Rectangle()
-                            .fill(Color.gray.opacity(0.2))
+                            .fill(Color(.systemGray6))
                             .aspectRatio(2/3, contentMode: .fit)
                             .overlay {
                                 Image(systemName: "photo")
@@ -37,27 +38,23 @@ struct ItemHeaderView: View {
                     }
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 120)
-                    .clipShape(RoundedRectangle(cornerRadius: 4))
-                    .shadow(radius: 4)
+                    .frame(width: 100)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
                 
-                // Title, Rating and Key Metadata
+                // Title and Rating
                 VStack(alignment: .leading, spacing: 8) {
                     Text(title)
-                        .font(.title2)
-                        .fontWeight(.bold)
+                        .font(.title3)
+                        .fontWeight(.semibold)
                         .fixedSize(horizontal: false, vertical: true)
                     
-                    // Rating
                     if rating != "N/A" {
                         HStack(spacing: 4) {
-                            HStack(spacing: 4) {
-                                Image(systemName: "star.fill")
-                                    .foregroundStyle(.yellow)
-                                Text(rating)
-                                    .fontWeight(.semibold)
-                            }
-                            
+                            Image(systemName: "star.fill")
+                                .imageScale(.small)
+                                .foregroundStyle(.yellow)
+                            Text(rating)
+                                .fontWeight(.medium)
                             if !ratingCount.isEmpty {
                                 Text("·")
                                     .foregroundStyle(.secondary)
@@ -65,61 +62,62 @@ struct ItemHeaderView: View {
                                     .foregroundStyle(.secondary)
                             }
                         }
-                        .font(.subheadline)
+                        .font(.footnote)
                     }
                     
-                    // Key Metadata (first 3 items)
+                    // Key Metadata (Preview)
                     VStack(alignment: .leading, spacing: 4) {
-                        ForEach(keyMetadata.prefix(3), id: \.label) { item in
+                        ForEach(Array(keyMetadata.prefix(3)), id: \.label) { item in
                             if !item.value.isEmpty {
-                                HStack(alignment: .top) {
+                                HStack(alignment: .firstTextBaseline, spacing: 4) {
                                     Text(item.label)
                                         .foregroundStyle(.secondary)
-                                        .frame(width: 60, alignment: .leading)
-                                    
                                     Text(item.value)
                                         .lineLimit(1)
                                 }
-                                .font(.caption)
+                                .font(.footnote)
                             }
                         }
                     }
                     
+                    // Show All Metadata Button
                     if keyMetadata.count > 3 {
                         Button {
-                            withAnimation {
-                                showAllMetadata.toggle()
-                            }
+                            showMetadataSheet = true
                         } label: {
-                            Text(showAllMetadata ? "Show Less" : "Show More")
-                                .font(.caption)
+                            Text("Show All Details")
+                                .font(.footnote)
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
             }
-            .padding()
-            
-            // Expanded Metadata
-            if showAllMetadata {
-                VStack(alignment: .leading, spacing: 4) {
-                    ForEach(keyMetadata.dropFirst(3), id: \.label) { item in
+        }
+        .padding(.horizontal)
+        .sheet(isPresented: $showMetadataSheet) {
+            NavigationStack {
+                List {
+                    ForEach(keyMetadata, id: \.label) { item in
                         if !item.value.isEmpty {
                             HStack(alignment: .top) {
                                 Text(item.label)
                                     .foregroundStyle(.secondary)
-                                    .frame(width: 60, alignment: .leading)
-                                
+                                    .frame(width: 80, alignment: .leading)
                                 Text(item.value)
-                                    .fixedSize(horizontal: false, vertical: true)
+                                    .multilineTextAlignment(.leading)
                             }
-                            .font(.caption)
                         }
                     }
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
-                .transition(.move(edge: .top).combined(with: .opacity))
+                .navigationTitle("Details")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            showMetadataSheet = false
+                        }
+                    }
+                }
             }
         }
     }

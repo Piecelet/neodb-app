@@ -5,6 +5,7 @@ import OSLog
 class ItemDetailViewModel: ObservableObject {
     private let itemDetailService: ItemDetailService
     private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
+    private var loadedItemId: String?
     
     @Published var item: (any ItemDetailProtocol)?
     @Published var isLoading = false
@@ -16,6 +17,11 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(id: String, category: ItemCategory) {
+        // Skip if already loaded
+        if loadedItemId == id, item != nil {
+            return
+        }
+        
         isLoading = true
         error = nil
         
@@ -23,6 +29,7 @@ class ItemDetailViewModel: ObservableObject {
             do {
                 logger.debug("Loading item: \(id) of category: \(category.rawValue)")
                 item = try await itemDetailService.fetchItemDetail(id: id, category: category)
+                loadedItemId = id
             } catch {
                 logger.error("Failed to load item: \(error.localizedDescription)")
                 self.error = error
@@ -33,6 +40,11 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(item: ItemSchema) {
+        // Skip if already loaded
+        if loadedItemId == item.uuid, self.item != nil {
+            return
+        }
+        
         isLoading = true
         error = nil
         
@@ -40,6 +52,7 @@ class ItemDetailViewModel: ObservableObject {
             do {
                 logger.debug("Loading item details for: \(item.displayTitle)")
                 self.item = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
+                loadedItemId = item.uuid
             } catch {
                 logger.error("Failed to load item details: \(error.localizedDescription)")
                 self.error = error
