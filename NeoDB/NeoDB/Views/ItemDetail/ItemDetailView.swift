@@ -128,9 +128,26 @@ struct ItemDetailView: View {
                         Divider()
                     }
                     
-                    if let baseItem = item as? ItemSchema {
-                        ItemActionsView(item: baseItem)
-                    }
+                    // Actions
+                    ItemActionsView(item: ItemSchema(
+                        title: item.title,
+                        description: item.description,
+                        localizedTitle: item.localizedTitle,
+                        localizedDescription: item.localizedDescription,
+                        coverImageUrl: item.coverImageUrl,
+                        rating: item.rating,
+                        ratingCount: item.ratingCount,
+                        id: item.id,
+                        type: item.type,
+                        uuid: item.uuid,
+                        url: item.url,
+                        apiUrl: item.apiUrl,
+                        category: item.category,
+                        parentUuid: item.parentUuid,
+                        displayTitle: item.displayTitle,
+                        externalResources: item.externalResources,
+                        brief: nil
+                    ))
                 }
             } else {
                 EmptyStateView(

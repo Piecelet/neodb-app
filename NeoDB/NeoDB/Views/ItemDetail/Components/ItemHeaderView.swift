@@ -68,4 +68,4 @@ struct ItemHeaderView: View {
         rating: "4.5",
         ratingCount: "1,234 ratings"
     )
-} 
+}
