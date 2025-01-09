@@ -17,22 +17,44 @@ From catalog.yaml:
 
 ## Models
 1. Core Models (Models.swift)
-   - ItemSchema - Base item model with common fields
-   - MarkSchema - User marks/ratings with Identifiable support
-   - LocalizedTitleSchema - Localized text content
-   - ExternalResourceSchema - External resource links
-   - ItemCategory - Media type enumeration
-   - ShelfType - Shelf categories enumeration
-2. Service Models
-   - ItemDetailService - Handles API calls for different item types
-   - ItemDetailViewModel - Manages item detail state and user interactions
-3. View Models
-   - ItemDetailView - Main view for displaying item details
+   - ItemSchema
+     - Basic fields (title, description, etc.)
+     - Localized content (title, description)
+     - API-specific fields (uuid, url, etc.)
+     - Snake case coding keys for API compatibility
+     - Added brief field for summaries
+   - MarkSchema
+     - Shelf type and visibility
+     - Item reference
+     - User's rating and comments
+     - Implements Identifiable protocol
+   - ShelfType
+     - Wishlist, Progress, Complete, Dropped
+     - Display names and icons
+2. View Models
+   - ItemDetailViewModel
+     - Item detail loading
+     - Error handling
+     - Metadata formatting
+3. Views
+   - ItemDetailView
+     - Layout structure
+     - Type-specific components
+     - Loading states
    - Components:
-     - ItemHeaderView - Title, cover image, rating
-     - ItemMetadataView - Genre, release date, etc.
-     - ItemCrewView - Directors, actors, authors
-     - ItemActionsView - Add to shelf, share
+     - ItemHeaderView
+       - Cover image with placeholder
+       - Title and rating
+       - Key metadata preview (3 items)
+       - Expandable metadata section
+       - Smooth animations
+     - ItemMetadataView
+       - Detailed metadata display
+       - Type-specific fields
+     - ItemActionsView
+       - Add to shelf
+       - Share functionality
+       - External links
 
 ## Features
 - Dynamic layout based on item type
@@ -45,17 +67,20 @@ From catalog.yaml:
 - Related items
 - User reviews/comments
 - External links
+- Expandable metadata
+  - Preview of key information
+  - Full details on demand
+  - Smooth transitions
 
 ## Error Handling
 - Network errors
-  - Invalid UUID
-  - Server errors
-  - Timeout
-- Data parsing errors
+  - API failures
+  - Timeout handling
+- Data parsing
   - Missing fields
   - Invalid formats
 - Loading states
-  - Initial loading
+  - Initial load
   - Content loading
   - Action loading
 - Empty states
@@ -67,58 +92,37 @@ From catalog.yaml:
   - Fallback for invalid URLs
 
 ## Implementation Plan
-1. Create ItemDetailService
-   - API endpoints for each item type
-   - Response parsing
+1. Create base models
+   - Define data structures
+   - Add Codable support
+   - Handle API compatibility
+2. Implement services
+   - API integration
    - Error handling
-2. Create ItemDetailViewModel
-   - State management
-   - User actions
-   - Data loading
-3. Create ItemDetailView
+   - Response parsing
+3. Create views
    - Layout structure
-   - Type-specific components
-   - Loading states
+   - User interactions
+   - State management
 4. Implement components
-   - Header component
-   - Metadata component
-   - Actions component
-     - Safe URL handling in ShareLink
-     - Optional binding for URLs
-5. Add navigation integration
-   - Router updates
-   - Deep linking support
-   - Sharing functionality
-
-## Router Integration
-```swift
-// Existing routes
-case itemDetail(id: String)
-case itemDetailWithItem(item: ItemSchema)
-
-// Navigation
-router.navigate(to: .itemDetail(id: item.uuid))
-router.navigate(to: .itemDetailWithItem(item: item))
-```
+   - Header with expandable metadata
+   - Type-specific displays
+   - Action buttons
 
 ## Recent Changes
-1. Consolidated Models
-   - Moved all shared models to Models.swift
-   - Added Identifiable support to MarkSchema
-   - Standardized naming (LocalizedTitleSchema, ExternalResourceSchema)
-   - Removed duplicate definitions from ShelfModels.swift
-2. Added PodcastSchema to Models.swift
-   - Basic information fields
-   - Podcast-specific fields (host, episodes, RSS)
-   - Implemented ItemDetailProtocol
-3. Fixed ShareLink implementation in ItemActionsView
-   - Simplified URL sharing
-   - Added safe URL handling with optional binding
-   - Removed complex preview configuration
-4. Updated error handling
-   - Added URL validation
-   - Improved error messages
-   - Added fallback UI states
+1. Enhanced ItemHeaderView
+   - Added key metadata preview
+   - Implemented expandable details
+   - Added smooth animations
+   - Improved layout and spacing
+2. Model Updates
+   - Added snake_case CodingKeys
+   - Added brief field
+   - Fixed localized content
+3. UI Improvements
+   - Better loading states
+   - Enhanced error handling
+   - Refined typography
 
 ## Future Improvements
 - Offline support
@@ -129,4 +133,8 @@ router.navigate(to: .itemDetailWithItem(item: item))
 - User collections
 - Recommendations
 - Social features integration
-- Analytics tracking 
+- Analytics tracking
+- Advanced metadata display
+  - Custom layouts per type
+  - Interactive elements
+  - Media galleries 

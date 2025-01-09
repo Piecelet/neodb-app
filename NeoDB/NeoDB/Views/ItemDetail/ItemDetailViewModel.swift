@@ -79,4 +79,69 @@ class ItemDetailViewModel: ObservableObject {
     var externalLinks: [URL] {
         item?.externalResources?.compactMap { URL(string: $0.url) } ?? []
     }
+    
+    func getKeyMetadata(for item: any ItemDetailProtocol) -> [(label: String, value: String)] {
+        switch item {
+        case let book as EditionSchema:
+            return [
+                ("Author", book.author.joined(separator: ", ")),
+                ("Year", book.pubYear.map { String($0) } ?? ""),
+                ("Publisher", book.pubHouse ?? ""),
+                ("ISBN", book.isbn ?? ""),
+                ("Pages", book.pages.map { "\($0)" } ?? ""),
+                ("Language", book.language.joined(separator: ", "))
+            ]
+        case let movie as MovieSchema:
+            return [
+                ("Director", movie.director.joined(separator: ", ")),
+                ("Year", movie.year.map { String($0) } ?? ""),
+                ("Genre", movie.genre.joined(separator: ", ")),
+                ("Cast", movie.actor.joined(separator: ", ")),
+                ("Duration", movie.duration ?? ""),
+                ("Language", movie.language.joined(separator: ", "))
+            ]
+        case let show as TVShowSchema:
+            return [
+                ("Director", show.director.joined(separator: ", ")),
+                ("Year", show.year.map { String($0) } ?? ""),
+                ("Genre", show.genre.joined(separator: ", ")),
+                ("Cast", show.actor.joined(separator: ", ")),
+                ("Episodes", show.episodeCount.map { String($0) } ?? ""),
+                ("Language", show.language.joined(separator: ", "))
+            ]
+        case let game as GameSchema:
+            return [
+                ("Developer", game.developer.joined(separator: ", ")),
+                ("Publisher", game.publisher.joined(separator: ", ")),
+                ("Platform", game.platform.joined(separator: ", ")),
+                ("Genre", game.genre.joined(separator: ", ")),
+                ("Release", game.releaseDate.map { String($0) } ?? "")
+            ]
+        case let album as AlbumSchema:
+            return [
+                ("Artist", album.artist.joined(separator: ", ")),
+                ("Genre", album.genre.joined(separator: ", ")),
+                ("Company", album.company.joined(separator: ", ")),
+                ("Release", album.releaseDate.map { String($0) } ?? ""),
+                ("Duration", album.duration.map { String($0) } ?? "")
+            ]
+        case let podcast as PodcastSchema:
+            return [
+                ("Host", podcast.host.joined(separator: ", ")),
+                ("Genre", podcast.genre.joined(separator: ", ")),
+                ("Language", podcast.language.joined(separator: ", "))
+            ]
+        case let performance as PerformanceSchema:
+            return [
+                ("Director", performance.director.joined(separator: ", ")),
+                ("Cast", performance.performer.joined(separator: ", ")),
+                ("Genre", performance.genre.joined(separator: ", ")),
+                ("Language", performance.language.joined(separator: ", ")),
+                ("Opening", performance.openingDate ?? ""),
+                ("Closing", performance.closingDate ?? "")
+            ]
+        default:
+            return []
+        }
+    }
 } 

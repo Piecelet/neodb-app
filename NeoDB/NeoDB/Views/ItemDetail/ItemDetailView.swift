@@ -16,7 +16,8 @@ struct ItemDetailView: View {
                         title: viewModel.displayTitle,
                         coverImageURL: viewModel.coverImageURL,
                         rating: viewModel.rating,
-                        ratingCount: viewModel.ratingCount
+                        ratingCount: viewModel.ratingCount,
+                        keyMetadata: viewModel.getKeyMetadata(for: item)
                     )
                     
                     Divider()
@@ -162,7 +163,48 @@ struct ItemDetailView: View {
 
 #Preview {
     NavigationStack {
-        ItemDetailView(viewModel: ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService())))
+        let viewModel = ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService()))
+        viewModel.item = EditionSchema.preview
+        return ItemDetailView(viewModel: viewModel)
             .environmentObject(Router())
+    }
+}
+
+extension EditionSchema {
+    static var preview: EditionSchema {
+        EditionSchema(
+            id: "1",
+            type: "book",
+            uuid: "1",
+            url: "https://example.com/book/1",
+            apiUrl: "https://api.example.com/book/1",
+            category: .book,
+            parentUuid: nil,
+            displayTitle: "The Lord of the Rings",
+            externalResources: [
+                ExternalResourceSchema(url: "https://example.com/book/1/external")
+            ],
+            title: "The Lord of the Rings",
+            description: "An epic high-fantasy novel by English author and scholar J. R. R. Tolkien.",
+            localizedTitle: [],
+            localizedDescription: [],
+            coverImageUrl: "https://example.com/lotr.jpg",
+            rating: 4.8,
+            ratingCount: 12345,
+            subtitle: "",
+            origTitle: "",
+            author: ["J. R. R. Tolkien"],
+            translator: [],
+            language: ["English"],
+            pubHouse: "Allen & Unwin",
+            pubYear: 1954,
+            pubMonth: nil,
+            binding: "",
+            price: nil,
+            pages: 1178,
+            series: nil,
+            imprint: nil,
+            isbn: "978-0261103252"
+        )
     }
 }
