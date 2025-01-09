@@ -11,22 +11,32 @@ class ShelfService {
         self.authService = authService
         self.decoder = JSONDecoder()
         let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        self.decoder.dateDecodingStrategy = .custom { decoder in
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds, .withTimeZone]
+        self.decoder.dateDecodingStrategy = .custom { [logger] decoder in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)
             
-            if let date = formatter.date(from: dateString) {
-                return date
+            // Try different date format combinations
+            let formatCombinations = [
+                ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds, .withTimeZone]),
+                ISO8601DateFormatter.Options([.withInternetDateTime, .withTimeZone]),
+                ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds]),
+                ISO8601DateFormatter.Options([.withInternetDateTime])
+            ]
+            
+            for options in formatCombinations {
+                formatter.formatOptions = options
+                if let date = formatter.date(from: dateString) {
+                    return date
+                }
             }
             
-            // Fallback to basic ISO8601 without fractional seconds
-            formatter.formatOptions = [.withInternetDateTime]
-            if let date = formatter.date(from: dateString) {
-                return date
-            }
-            
-            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Expected date string to be ISO8601-formatted.")
+            // If all attempts fail, log the problematic date string
+            logger.error("Failed to parse date string: \(dateString)")
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "Expected date string to be ISO8601-formatted, got: \(dateString)"
+            )
         }
     }
     

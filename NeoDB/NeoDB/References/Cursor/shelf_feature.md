@@ -12,8 +12,33 @@ Shelf display functionality in dedicated LibraryView tab for collection manageme
 ## Models
 1. ShelfType enum - Different shelf types (wishlist, progress, complete, dropped)
 2. MarkSchema - Individual shelf item data
+   ```swift
+   struct MarkSchema: Codable {
+       let shelfType: ShelfType
+       let visibility: Int
+       let item: ItemSchema
+       let createdTime: Date  // ISO8601 date-time format
+       let commentText: String?
+       let ratingGrade: Int?
+       let tags: [String]
+   }
+   ```
 3. PagedMarkSchema - Paginated response structure
 4. ItemSchema - Item details structure
+
+## Date Handling
+```swift
+// Support multiple ISO8601 date formats
+let formatCombinations = [
+    ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds, .withTimeZone]),
+    ISO8601DateFormatter.Options([.withInternetDateTime, .withTimeZone]),
+    ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds]),
+    ISO8601DateFormatter.Options([.withInternetDateTime])
+]
+
+// Enhanced error logging for date parsing
+logger.error("Failed to parse date string: \(dateString)")
+```
 
 ## Router Integration
 
@@ -63,76 +88,40 @@ router.navigate(to: .userShelf(userId: user.id, type: .wishlist))
 - Deep linking support
 - Navigation integration
 
-## Implementation Details
-
-### LibraryView
-```swift
-struct LibraryView: View {
-    @StateObject private var viewModel: LibraryViewModel
-    @EnvironmentObject private var router: Router
-    
-    var body: some View {
-        VStack {
-            ShelfFilterView(...)
-            
-            ScrollView {
-                LazyVStack {
-                    ForEach(viewModel.shelfItems) { mark in
-                        Button {
-                            router.navigate(to: .itemDetailWithItem(item: mark.item))
-                        } label: {
-                            ShelfItemView(mark: mark)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-### ShelfItemView
-```swift
-struct ShelfItemView: View {
-    let mark: MarkSchema
-    
-    var body: some View {
-        HStack {
-            KFImage(URL(string: mark.item.coverImageUrl))
-                .placeholder { ... }
-            
-            VStack(alignment: .leading) {
-                Text(mark.item.displayTitle)
-                if let rating = mark.ratingGrade {
-                    RatingView(rating: rating)
-                }
-                TagsView(tags: mark.tags)
-            }
-        }
-    }
-}
-```
-
-## Deep Linking
-Support for deep links to:
-- Specific items
-- User shelves
-- Shelf types
-- Categories
-
-URL patterns:
-```
-/items/{id}
-/users/{id}/shelf/{type}
-/shelf/{type}?category={category}
-```
-
 ## Error Handling
 - Network errors
-- Invalid data
+  - Unauthorized (401)
+  - Invalid response
+  - Network timeouts
+- Data parsing errors
+  - Invalid date formats
+  - Missing required fields
+  - Type mismatches
 - Loading states
+  - Initial loading
+  - Pagination loading
+  - Refresh loading
 - Empty states
+  - No items in shelf
+  - No items in category
 - Retry mechanisms
+  - Auto-retry for network errors
+  - Manual refresh option
+  - Pagination retry
+
+## Recent Changes
+1. Fixed date parsing for shelf items
+   - Added support for multiple ISO8601 formats
+   - Improved error logging for date parsing failures
+   - Added timezone support
+2. Enhanced error handling
+   - Better error messages
+   - Detailed logging
+   - Graceful fallbacks
+3. Updated documentation
+   - Added date format specifications
+   - Documented error handling
+   - Updated model definitions
 
 ## Future Improvements
 - Batch actions
