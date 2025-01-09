@@ -14,37 +14,56 @@ class LibraryViewModel: ObservableObject {
     @Published var totalPages = 1
     @Published var selectedCategory: ItemCategory?
     
+    private var currentLoadTask: Task<Void, Never>?
+
     init(shelfService: ShelfService) {
         self.shelfService = shelfService
     }
     
     func loadShelfItems(refresh: Bool = false) async {
-        if refresh {
-            currentPage = 1
-            shelfItems = []
-        }
+        currentLoadTask?.cancel()
         
-        guard !isLoading else { return }
-        isLoading = true
-        error = nil
-        
-        do {
-            let result = try await shelfService.getShelfItems(
-                type: selectedShelfType,
-                category: selectedCategory,
-                page: currentPage
-            )
+        let task = Task { @MainActor in
             if refresh {
-                shelfItems = result.data
-            } else {
-                shelfItems.append(contentsOf: result.data)
+                currentPage = 1
+                shelfItems = []
             }
-            totalPages = result.pages
-        } catch {
-            self.error = error.localizedDescription
+            
+            guard !isLoading else { return }
+            isLoading = true
+            error = nil
+            
+            do {
+                let result = try await shelfService.getShelfItems(
+                    type: selectedShelfType,
+                    category: selectedCategory,
+                    page: currentPage
+                )
+                
+                try Task.checkCancellation()
+                
+                if refresh {
+                    shelfItems = result.data
+                } else {
+                    shelfItems.append(contentsOf: result.data)
+                }
+                totalPages = result.pages
+            } catch is CancellationError {
+                logger.debug("Load task was cancelled")
+            } catch {
+                if !Task.isCancelled {
+                    self.error = error.localizedDescription
+                    logger.error("Failed to load shelf items: \(error)")
+                }
+            }
+            
+            if !Task.isCancelled {
+                isLoading = false
+            }
         }
         
-        isLoading = false
+        currentLoadTask = task
+        await task.value
     }
     
     func loadNextPage() async {
@@ -55,16 +74,23 @@ class LibraryViewModel: ObservableObject {
     
     func changeShelfType(_ type: ShelfType) {
         selectedShelfType = type
-        Task {
+        currentLoadTask?.cancel()
+        currentLoadTask = Task {
             await loadShelfItems(refresh: true)
         }
     }
     
     func changeCategory(_ category: ItemCategory?) {
         selectedCategory = category
-        Task {
+        currentLoadTask?.cancel()
+        currentLoadTask = Task {
             await loadShelfItems(refresh: true)
         }
+    }
+    
+    func cleanup() {
+        currentLoadTask?.cancel()
+        currentLoadTask = nil
     }
 }
 
@@ -115,6 +141,9 @@ struct LibraryView: View {
         .task {
             await viewModel.loadShelfItems()
         }
+        .onDisappear {
+            viewModel.cleanup()
+        }
     }
     
     private var libraryContent: some View {
@@ -148,4 +177,4 @@ struct LibraryView: View {
             await viewModel.loadShelfItems(refresh: true)
         }
     }
-} 
+}

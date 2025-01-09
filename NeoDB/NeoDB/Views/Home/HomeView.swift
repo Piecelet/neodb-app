@@ -15,54 +15,79 @@ class HomeViewModel: ObservableObject {
     private var maxId: String?
     private var hasMore = true
     
+    // Task management
+    private var currentLoadTask: Task<Void, Never>?
+    
     init(timelineService: TimelineService) {
         self.timelineService = timelineService
     }
     
     func loadTimeline(refresh: Bool = false) async {
-        if refresh {
-            maxId = nil
-            hasMore = true
-        }
+        // Cancel any existing load task
+        currentLoadTask?.cancel()
         
-        guard !isLoading, hasMore else { return }
-        
-        isLoading = true
-        error = nil
-        detailedError = nil
-        
-        do {
-            let newStatuses = try await timelineService.getTimeline(maxId: maxId)
+        let task = Task { @MainActor in
             if refresh {
-                statuses = newStatuses
-            } else {
-                statuses.append(contentsOf: newStatuses)
+                maxId = nil
+                hasMore = true
+                // Only clear statuses if we're refreshing
+                statuses = []
             }
-            maxId = newStatuses.last?.id
-            hasMore = !newStatuses.isEmpty
-            logger.debug("Successfully loaded \(newStatuses.count) statuses")
-        } catch {
-            logger.error("Failed to load timeline: \(error.localizedDescription)")
-            self.error = "Failed to load timeline"
-            if let decodingError = error as? DecodingError {
-                switch decodingError {
-                case .dataCorrupted(let context):
-                    detailedError = "Data corrupted: \(context.debugDescription)"
-                case .keyNotFound(let key, let context):
-                    detailedError = "Key not found: \(key.stringValue) in \(context.debugDescription)"
-                case .typeMismatch(let type, let context):
-                    detailedError = "Type mismatch: expected \(type) at \(context.debugDescription)"
-                case .valueNotFound(let type, let context):
-                    detailedError = "Value not found: expected \(type) at \(context.debugDescription)"
-                @unknown default:
-                    detailedError = "Unknown decoding error: \(decodingError)"
+            
+            guard !isLoading, hasMore else { return }
+            
+            isLoading = true
+            error = nil
+            detailedError = nil
+            
+            do {
+                try Task.checkCancellation()
+                let newStatuses = try await timelineService.getTimeline(maxId: maxId)
+                
+                // Check if task was cancelled after the network call
+                try Task.checkCancellation()
+                
+                if refresh {
+                    statuses = newStatuses
+                } else {
+                    statuses.append(contentsOf: newStatuses)
                 }
-            } else {
-                detailedError = error.localizedDescription
+                maxId = newStatuses.last?.id
+                hasMore = !newStatuses.isEmpty
+                logger.debug("Successfully loaded \(newStatuses.count) statuses")
+            } catch is CancellationError {
+                logger.debug("Timeline load was cancelled")
+                // Don't update error state for cancellation
+            } catch {
+                if !Task.isCancelled {
+                    logger.error("Failed to load timeline: \(error.localizedDescription)")
+                    self.error = "Failed to load timeline"
+                    
+                    if let decodingError = error as? DecodingError {
+                        switch decodingError {
+                        case .dataCorrupted(let context):
+                            detailedError = "Data corrupted: \(context.debugDescription)"
+                        case .keyNotFound(let key, let context):
+                            detailedError = "Key not found: \(key.stringValue) in \(context.debugDescription)"
+                        case .typeMismatch(let type, let context):
+                            detailedError = "Type mismatch: expected \(type) at \(context.debugDescription)"
+                        case .valueNotFound(let type, let context):
+                            detailedError = "Value not found: expected \(type) at \(context.debugDescription)"
+                        @unknown default:
+                            detailedError = "Unknown decoding error: \(decodingError)"
+                        }
+                    } else {
+                        detailedError = error.localizedDescription
+                    }
+                }
+            }
+            
+            if !Task.isCancelled {
+                isLoading = false
             }
         }
         
-        isLoading = false
+        currentLoadTask = task
     }
 }
 
@@ -130,4 +155,4 @@ struct HomeView: View {
             await viewModel.loadTimeline(refresh: true)
         }
     }
-} 
+}
