@@ -5,6 +5,7 @@ import MarkdownUI
 struct HTMLContentView: View {
     let htmlContent: String
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
     
     var body: some View {
         if let markdown = convertHTMLToMarkdown(htmlContent) {
@@ -12,9 +13,78 @@ struct HTMLContentView: View {
                 .markdownTheme(.gitHub)
                 .textSelection(.enabled)
                 .padding(.vertical, 4)
+                .environment(\.openURL, OpenURLAction { url in
+                    handleURL(url)
+                    return .handled
+                })
         } else {
             Text(htmlContent)
                 .textSelection(.enabled)
+        }
+    }
+    
+    private func handleURL(_ url: URL) {
+        guard let host = url.host, host == "neodb.social" else {
+            openURL(url)
+            return
+        }
+        
+        let pathComponents = url.pathComponents
+        guard pathComponents.count >= 4 else {
+            openURL(url)
+            return
+        }
+        
+        // Parse NeoDB URL pattern: /~username~/type/id
+        if pathComponents[1].hasPrefix("~"), pathComponents[1].hasSuffix("~") {
+            let type = pathComponents[2]
+            let id = pathComponents[3]
+            
+            // Create a temporary ItemSchema to get the category
+            let tempItem = ItemSchema(
+                title: "",
+                description: "",
+                localizedTitle: [],
+                localizedDescription: [],
+                coverImageUrl: nil,
+                rating: nil,
+                ratingCount: nil,
+                id: id,
+                type: type,
+                uuid: id,
+                url: url.absoluteString,
+                apiUrl: "",
+                category: categoryFromType(type),
+                parentUuid: nil,
+                displayTitle: "",
+                externalResources: nil,
+                brief: nil
+            )
+            
+            router.navigate(to: .itemDetailWithItem(item: tempItem))
+        } else {
+            openURL(url)
+        }
+    }
+    
+    private func categoryFromType(_ type: String) -> ItemCategory {
+        switch type {
+        case "movie":
+            return .movie
+        case "book":
+            return .book
+        case "tv":
+            return .tv
+        case "game":
+            return .game
+        case "album":
+            return .music
+        case "podcast":
+            return .podcast
+        case "performance":
+            return .performance
+        default:
+            return .book // Default fallback
         }
     }
     

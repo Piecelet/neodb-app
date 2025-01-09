@@ -36,6 +36,7 @@ From catalog.yaml:
      - Item detail loading
      - Error handling
      - Metadata formatting
+     - Support for both ID and full item loading
 3. Views
    - ItemDetailView
      - Layout structure
@@ -71,6 +72,10 @@ From catalog.yaml:
   - Preview of key information
   - Full details on demand
   - Smooth transitions
+- URL handling
+  - Internal URL support (/~username~/type/id)
+  - Category-based routing
+  - Fallback to external browser
 
 ## Error Handling
 - Network errors
@@ -90,6 +95,7 @@ From catalog.yaml:
 - URL handling
   - Safe URL construction
   - Fallback for invalid URLs
+  - Category type validation
 
 ## Implementation Plan
 1. Create base models
@@ -108,6 +114,10 @@ From catalog.yaml:
    - Header with expandable metadata
    - Type-specific displays
    - Action buttons
+5. URL handling
+   - Internal URL parsing
+   - Category mapping
+   - Navigation routing
 
 ## Recent Changes
 1. Enhanced ItemHeaderView
@@ -123,6 +133,10 @@ From catalog.yaml:
    - Better loading states
    - Enhanced error handling
    - Refined typography
+4. URL Handling
+   - Added internal URL support
+   - Implemented category mapping
+   - Fixed navigation issues
 
 ## Future Improvements
 - Offline support

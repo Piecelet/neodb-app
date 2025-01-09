@@ -65,9 +65,16 @@ Button {
 
 ### Library Navigation
 ```swift
-// Navigate to item detail
+// Navigate to item detail with ID
 Button {
     router.navigate(to: .itemDetail(id: item.id))
+} label: {
+    // Item preview
+}
+
+// Navigate to item detail with full item
+Button {
+    router.navigate(to: .itemDetailWithItem(item: item))
 } label: {
     // Item preview
 }
@@ -113,25 +120,62 @@ enum SheetDestination: Identifiable {
 /users/{id}/shelf/{type}
 /status/{id}
 /tags/{tag}
+/~{username}~/{type}/{id}
 ```
 
 ### URL Handling
 ```swift
 func handleURL(_ url: URL) -> Bool {
-    if url.pathComponents.contains("items"),
-       let id = url.pathComponents.last {
-        navigate(to: .itemDetail(id: id))
-        return true
+    // Handle NeoDB internal URLs
+    if url.host == "neodb.social" {
+        let pathComponents = url.pathComponents
+        
+        // Handle ~username~ pattern URLs
+        if pathComponents.count >= 4,
+           pathComponents[1].hasPrefix("~"),
+           pathComponents[1].hasSuffix("~") {
+            let type = pathComponents[2]
+            let id = pathComponents[3]
+            
+            // Create temporary item for navigation
+            let tempItem = ItemSchema(
+                id: id,
+                type: type,
+                category: categoryFromType(type)
+            )
+            navigate(to: .itemDetailWithItem(item: tempItem))
+            return true
+        }
+        
+        // Handle other patterns
+        if pathComponents.contains("items"),
+           let id = pathComponents.last {
+            navigate(to: .itemDetail(id: id))
+            return true
+        }
+        
+        if pathComponents.contains("users"),
+           let id = pathComponents.last {
+            navigate(to: .userProfile(id: id))
+            return true
+        }
+        
+        // ... other patterns
     }
-    
-    if url.pathComponents.contains("users"),
-       let id = url.pathComponents.last {
-        navigate(to: .userProfile(id: id))
-        return true
-    }
-    
-    // ... other patterns
     return false
+}
+
+private func categoryFromType(_ type: String) -> ItemCategory {
+    switch type {
+    case "movie": return .movie
+    case "book": return .book
+    case "tv": return .tv
+    case "game": return .game
+    case "album": return .music
+    case "podcast": return .podcast
+    case "performance": return .performance
+    default: return .book
+    }
 }
 ```
 

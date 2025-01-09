@@ -18,9 +18,17 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: id,
+                                category: router.itemToLoad?.category
+                            )
                         case .itemDetailWithItem(let item):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: item.id,
+                                category: item.category
+                            )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):
@@ -59,9 +67,17 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: id,
+                                category: router.itemToLoad?.category
+                            )
                         case .itemDetailWithItem(let item):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: item.id,
+                                category: item.category
+                            )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):
@@ -92,9 +108,17 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: id,
+                                category: router.itemToLoad?.category
+                            )
                         case .itemDetailWithItem(let item):
-                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
+                            ItemDetailViewContainer(
+                                itemDetailService: ItemDetailService(authService: authService),
+                                id: item.id,
+                                category: item.category
+                            )
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):

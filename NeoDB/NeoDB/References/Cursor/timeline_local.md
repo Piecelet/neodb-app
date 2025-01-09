@@ -1,54 +1,121 @@
-# Timeline Local-Only Implementation
+# Timeline Implementation
 
 ## Overview
-Modified TimelineService to show only local statuses from the instance and properly render HTML content.
+Implementation of the local timeline feature, displaying posts from users in chronological order with support for internal navigation and content rendering.
 
-## API Reference
-From Mastodon API documentation:
-- Endpoint: GET `/api/v1/timelines/public`
-- Parameter: `local=true` to show only local statuses
-- Default: Shows both local and remote statuses (local=false)
+## Features
+1. Content Display
+   - HTML content rendering
+   - Markdown conversion
+   - Internal link handling
+   - Media attachments
+   - Tags and mentions
 
-## Content Rendering
-Status content comes in HTML format with the following features:
-- Links with href attributes
-- Mentions with rel attributes
-- Emoji ratings (🌕 for filled stars)
-- Paragraphs with spacing
+2. Navigation
+   - Internal URL support
+   - Category-based routing
+   - Profile navigation
+   - Item detail navigation
+   - Tag navigation
 
-### HTML Example
-```html
-<p>看過 <a href="https://neodb.social/movie/xxx" rel="nofollow">电影名称</a> 🌕🌕🌕🌕🌕  </p>
-```
+3. URL Patterns
+   - /~username~/type/id - Item details
+   - /users/id - User profiles
+   - /tags/tag - Tag pages
+   - /status/id - Status details
 
-### Implementation Details
-1. Added SwiftDown package for HTML parsing
-2. Created custom AttributedString converter
-3. Added link handling support
-4. Implemented emoji rating display
+## Components
+1. HTMLContentView
+   - HTML to Markdown conversion
+   - Internal link interception
+   - URL pattern parsing
+   - Category mapping
+   - Navigation routing
 
-## Dependencies
-Required SPM packages:
-- SwiftDown: HTML and Markdown parsing
-- SwiftSoup (optional): Advanced HTML manipulation
+2. StatusView
+   - User information
+   - Content rendering
+   - Media grid
+   - Action buttons
+   - Tag display
 
-## Implementation Details
-1. Added local parameter to URL query
-2. Set local=true by default to show only local statuses
-3. Improved error logging for better debugging
-4. Added HTML content parsing and rendering
-5. Implemented link handling and styling
+3. TimelineView
+   - Infinite scrolling
+   - Pull to refresh
+   - Loading states
+   - Error handling
 
-## Design Rationale
-- Local-only timeline provides more relevant content for NeoDB users
-- Reduces noise from remote instances
-- Improves performance by reducing data load
-- Better content moderation as all content is from the same instance
-- Rich text rendering enhances readability and interaction
+## URL Handling
+1. Internal URLs
+   ```swift
+   // Parse NeoDB URL pattern: /~username~/type/id
+   if pathComponents[1].hasPrefix("~"), pathComponents[1].hasSuffix("~") {
+       let type = pathComponents[2]
+       let id = pathComponents[3]
+       
+       // Create temporary item for navigation
+       let tempItem = ItemSchema(
+           id: id,
+           type: type,
+           category: categoryFromType(type)
+       )
+       router.navigate(to: .itemDetailWithItem(item: tempItem))
+   }
+   ```
 
-## Code Changes
-- Modified getTimeline method in TimelineService
-- Added local parameter to URLComponents
-- Added HTML content rendering support
-- Updated documentation
-- Enhanced StatusView with rich text support 
+2. Category Mapping
+   ```swift
+   private func categoryFromType(_ type: String) -> ItemCategory {
+       switch type {
+       case "movie": return .movie
+       case "book": return .book
+       case "tv": return .tv
+       case "game": return .game
+       case "album": return .music
+       case "podcast": return .podcast
+       case "performance": return .performance
+       default: return .book
+       }
+   }
+   ```
+
+## Error Handling
+1. Network Errors
+   - Connection failures
+   - Timeout handling
+   - Retry logic
+
+2. Content Parsing
+   - Invalid HTML
+   - Missing data
+   - Malformed URLs
+
+3. Navigation
+   - Invalid URLs
+   - Missing categories
+   - Unknown types
+
+## Recent Changes
+1. URL Handling
+   - Added internal URL support
+   - Implemented category mapping
+   - Fixed navigation issues
+
+2. Content Display
+   - Improved HTML parsing
+   - Enhanced markdown rendering
+   - Fixed link handling
+
+3. Navigation
+   - Added category-based routing
+   - Improved error handling
+   - Enhanced user experience
+
+## Future Improvements
+- Offline support
+- Content caching
+- Rich media previews
+- Advanced sharing
+- Analytics tracking
+- Performance optimization
+- Accessibility improvements 
