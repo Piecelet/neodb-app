@@ -18,9 +18,9 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .itemDetailWithItem(let item):
-                            Text("Item Detail: \(item.displayTitle)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):
@@ -59,9 +59,9 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .itemDetailWithItem(let item):
-                            Text("Item Detail: \(item.displayTitle)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):
@@ -92,9 +92,9 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         switch destination {
                         case .itemDetail(let id):
-                            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .itemDetailWithItem(let item):
-                            Text("Item Detail: \(item.displayTitle)")  // TODO: Implement ItemDetailView
+                            ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: authService))
                         case .shelfDetail(let type):
                             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
                         case .userShelf(let userId, let type):

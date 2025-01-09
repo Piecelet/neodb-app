@@ -91,7 +91,8 @@ extension MarkSchema {
                 category: .book,
                 parentUuid: nil,
                 displayTitle: "Sample Book",
-                externalResources: nil
+                externalResources: nil,
+                brief: nil
             ),
             createdTime: Date(),
             commentText: "Great book!",

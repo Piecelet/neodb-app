@@ -1,135 +1,109 @@
 # Shelf Feature Implementation
 
 ## Overview
-Shelf display functionality in dedicated LibraryView tab for collection management. Supports navigation to item details, filtering, and shelf management.
+Implementing shelf functionality to display and manage user's collection of items (books, movies, TV shows, etc.).
 
 ## API Endpoints
-- GET `/api/me/shelf/{type}`
-  - Types: wishlist, progress, complete, dropped
-  - Optional query params: category, page
-  - Returns: PagedMarkSchema
+From shelf.yaml:
+- GET `/api/me/shelf/{type}` - Get user's shelf items by type
+- POST `/api/me/shelf` - Add item to shelf
+- PUT `/api/me/shelf/{id}` - Update shelf item
+- DELETE `/api/me/shelf/{id}` - Remove item from shelf
 
 ## Models
-1. ShelfType enum - Different shelf types (wishlist, progress, complete, dropped)
-2. MarkSchema - Individual shelf item data
-   ```swift
-   struct MarkSchema: Codable {
-       let shelfType: ShelfType
-       let visibility: Int
-       let item: ItemSchema
-       let createdTime: Date  // ISO8601 date-time format
-       let commentText: String?
-       let ratingGrade: Int?
-       let tags: [String]
-   }
-   ```
-3. PagedMarkSchema - Paginated response structure
-4. ItemSchema - Item details structure
-
-## Date Handling
-```swift
-// Support multiple ISO8601 date formats
-let formatCombinations = [
-    ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds, .withTimeZone]),
-    ISO8601DateFormatter.Options([.withInternetDateTime, .withTimeZone]),
-    ISO8601DateFormatter.Options([.withInternetDateTime, .withFractionalSeconds]),
-    ISO8601DateFormatter.Options([.withInternetDateTime])
-]
-
-// Enhanced error logging for date parsing
-logger.error("Failed to parse date string: \(dateString)")
-```
-
-## Router Integration
-
-### Destinations
-```swift
-// Library destinations
-case itemDetail(id: String)
-case itemDetailWithItem(item: ItemSchema)
-case shelfDetail(type: ShelfType)
-case userShelf(userId: String, type: ShelfType)
-
-// Sheet destinations
-case addToShelf(item: ItemSchema)
-case editShelfItem(mark: MarkSchema)
-```
-
-### Navigation Examples
-```swift
-// Navigate to item detail
-Button {
-    router.navigate(to: .itemDetailWithItem(item: mark.item))
-} label: {
-    ShelfItemView(mark: mark)
-}
-
-// Present add to shelf sheet
-router.presentedSheet = .addToShelf(item: item)
-
-// Navigate to user's shelf
-router.navigate(to: .userShelf(userId: user.id, type: .wishlist))
-```
-
-## Component Structure
-- LibraryView/
-  - LibraryView.swift (Main view)
-  - LibraryViewModel.swift (Business logic)
-  - Components/
-    - ShelfItemView.swift (Item card)
-    - ShelfFilterView.swift (Type/category filters)
+1. Core Models (Models.swift)
+   - ItemSchema
+     - Basic fields (title, description, etc.)
+     - Localized content (title, description)
+     - API-specific fields (uuid, url, etc.)
+     - Snake case coding keys for API compatibility
+     - Added brief field for summaries
+   - MarkSchema
+     - Shelf type and visibility
+     - Item reference
+     - User's rating and comments
+     - Implements Identifiable protocol
+   - ShelfType
+     - Wishlist, Progress, Complete, Dropped
+     - Display names and icons
+2. View Models
+   - LibraryViewModel
+     - Shelf item loading
+     - Error handling
+     - Pagination support
+3. Views
+   - LibraryView
+     - Shelf type selection
+     - Item grid display
+     - Loading states
+   - ShelfItemView
+     - Cover image
+     - Basic info
+     - Rating display
 
 ## Features
-- Shelf type switching (Want to Read, Reading, Completed, Dropped)
-- Category filtering (All, Book, Movie, TV, Game)
-- Infinite scrolling pagination
-- Pull-to-refresh
-- Loading states and error handling
-- Deep linking support
-- Navigation integration
+- Multiple shelf types
+- Item categorization
+- Rating system
+- Comments/notes
+- Visibility control
+- Grid/list view
+- Sort and filter
+- Search within shelf
 
 ## Error Handling
 - Network errors
-  - Unauthorized (401)
-  - Invalid response
-  - Network timeouts
-- Data parsing errors
-  - Invalid date formats
-  - Missing required fields
-  - Type mismatches
+  - API failures
+  - Timeout handling
+- Data parsing
+  - Missing fields
+  - Invalid formats
 - Loading states
-  - Initial loading
-  - Pagination loading
-  - Refresh loading
+  - Initial load
+  - Pagination
+  - Refresh
 - Empty states
-  - No items in shelf
-  - No items in category
-- Retry mechanisms
-  - Auto-retry for network errors
-  - Manual refresh option
-  - Pagination retry
+  - No items
+  - Loading failed
+
+## Implementation Plan
+1. Create base models
+   - Define data structures
+   - Add Codable support
+   - Handle API compatibility
+2. Implement ShelfService
+   - API integration
+   - Error handling
+   - Response parsing
+3. Create LibraryView
+   - UI layout
+   - User interactions
+   - State management
+4. Add ShelfItemView
+   - Item display
+   - Action handling
+   - Loading states
 
 ## Recent Changes
-1. Fixed date parsing for shelf items
-   - Added support for multiple ISO8601 formats
-   - Improved error logging for date parsing failures
-   - Added timezone support
-2. Enhanced error handling
-   - Better error messages
-   - Detailed logging
-   - Graceful fallbacks
-3. Updated documentation
-   - Added date format specifications
-   - Documented error handling
-   - Updated model definitions
+1. Model Updates
+   - Added snake_case CodingKeys to ItemSchema
+   - Added brief field for item summaries
+   - Fixed localized content field names
+   - Implemented Identifiable for MarkSchema
+2. API Integration
+   - Updated response parsing
+   - Added error logging
+   - Fixed date decoding
+3. UI Improvements
+   - Enhanced loading states
+   - Added error messages
+   - Improved grid layout
 
 ## Future Improvements
-- Batch actions
-- Sorting options
-- Search within library
-- Enhanced filters
+- Offline support
+- Batch operations
+- Advanced filtering
 - Statistics view
-- Reading progress
-- Share functionality
-- Export/Import
-- Offline support 
+- Import/export
+- Sharing features
+- Activity history 

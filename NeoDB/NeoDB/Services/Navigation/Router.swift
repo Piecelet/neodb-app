@@ -111,11 +111,18 @@ enum SheetDestination: Identifiable {
 class Router: ObservableObject {
     @Published var path: [RouterDestination] = []
     @Published var presentedSheet: SheetDestination?
+    @Published var itemToLoad: ItemSchema?
     
-    private let logger = Logger(subsystem: "social.neodb.app", category: "Router")
+    private let logger = Logger(subsystem: "app.neodb", category: "Router")
     
     func navigate(to destination: RouterDestination) {
         path.append(destination)
+        
+        // Store item for loading if navigating to item detail
+        if case .itemDetailWithItem(let item) = destination {
+            itemToLoad = item
+        }
+        
         logger.debug("Navigated to: \(String(describing: destination))")
     }
     
