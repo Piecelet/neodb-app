@@ -1,19 +1,26 @@
-# Item Detail Feature Implementation
+# Item Detail Implementation
 
 ## Overview
-Implementing item detail page functionality to display detailed information about books, movies, TV shows, games, and other media types.
+The item detail system handles various types of media items including books, movies, TV shows (and their seasons/episodes), music, games, etc.
 
-## API Endpoints
-From catalog.yaml:
-- GET `/api/book/{uuid}` - Get book details
-- GET `/api/movie/{uuid}` - Get movie details
-- GET `/api/tv/{uuid}` - Get TV show details
-- GET `/api/tv/season/{uuid}` - Get TV season details
-- GET `/api/tv/episode/{uuid}` - Get TV episode details
-- GET `/api/podcast/{uuid}` - Get podcast details
-- GET `/api/album/{uuid}` - Get album details
-- GET `/api/game/{uuid}` - Get game details
-- GET `/api/performance/{uuid}` - Get performance details
+## Features
+1. Dynamic Layout
+   - Type-specific metadata display
+   - Conditional UI elements
+   - Responsive design
+   - Key information preview
+   - Detailed metadata sections
+   - Expandable content
+
+2. TV Content Hierarchy
+   - Show → Season → Episode navigation
+   - Parent-child relationships
+   - Type-specific API endpoints
+
+3. Metadata Display
+   - Key information preview
+   - Detailed metadata sections
+   - Expandable content
 
 ## URL Patterns and API Mapping
 1. Basic Item URLs
@@ -23,46 +30,78 @@ From catalog.yaml:
    - `/~username~/tv/season/id` → `/api/tv/season/{id}`
    - `/~username~/tv/episode/id` → `/api/tv/episode/{id}`
 
-## Type Handling
-1. URL Type Resolution
-   - Base type (tv) determines category
-   - Subtype (season, episode) determines API endpoint
-   - Type information preserved in ItemSchema
-2. API Endpoint Selection
-   - TV shows: /api/tv/{uuid}
-   - TV seasons: /api/tv/season/{uuid}
-   - TV episodes: /api/tv/episode/{uuid}
+### TV Content Handling
+For TV shows and their components:
+1. TV shows: `/~username~/tv/id` → category: `.tv`
+2. Seasons: `/~username~/tv/season/id` → category: `.tvSeason`
+3. Episodes: `/~username~/tv/episode/id` → category: `.tvEpisode`
+
+The system determines the correct category and API endpoint based on both the base type and subtype:
+```swift
+if type == "tv" && pathComponents.count >= 5 {
+    let subtype = pathComponents[3] // "season" or "episode"
+    category = categoryFromType(subtype) // Use subtype for category
+}
+```
+
+## API Endpoints
+Each category maps to a specific API endpoint:
+- TV shows: `/api/tv/{id}`
+- TV seasons: `/api/tv/season/{id}`
+- TV episodes: `/api/tv/episode/{id}`
+- Books: `/api/book/{id}`
+- Movies: `/api/movie/{id}`
+- Podcasts: `/api/podcast/{id}`
+- Albums: `/api/album/{id}`
+- Games: `/api/game/{id}`
+- Performances: `/api/performance/{id}`
 
 ## Models
-1. Core Models (Models.swift)
-   - ItemSchema
-     - Basic fields (title, description, etc.)
-     - Type and category information
-     - API-specific fields (uuid, url, etc.)
-   - TVShowSchema
-     - Show-specific fields (seasonCount, episodeCount)
-     - Cast and crew information
-   - TVSeasonSchema
-     - Season-specific fields (seasonNumber, episodeCount)
-     - Episode list and metadata
-   - TVEpisodeSchema
-     - Basic fields (title, description)
-     - Episode-specific fields (episodeNumber)
-     - Parent reference
+### Categories
+```swift
+enum ItemCategory: String, Codable {
+    case tv
+    case tvSeason = "tv_season"
+    case tvEpisode = "tv_episode"
+    case book
+    case movie
+    case music
+    case game
+    case podcast
+    case performance
+    // ... other cases
+}
+```
 
-## Features
-1. Dynamic Layout
-   - Type-specific metadata display
-   - Conditional UI elements
-   - Responsive design
-2. TV Content Hierarchy
-   - Show → Season → Episode navigation
-   - Parent-child relationships
-   - Type-specific API endpoints
-3. Metadata Display
-   - Key information preview
-   - Detailed metadata sections
-   - Expandable content
+### TV-related Schemas
+- `TVShowSchema`: Base TV show information
+- `TVSeasonSchema`: Season-specific fields including:
+  - seasonNumber
+  - episodeCount
+  - episodeUuids
+- `TVEpisodeSchema`: Episode-specific fields including:
+  - episodeNumber
+  - parentUuid (links to season)
+
+## Data Flow
+1. URL Processing (`HTMLContentView`)
+   - Parse URL components
+   - Determine correct category based on type/subtype
+   - Create temporary `ItemSchema` with proper category
+
+2. Navigation
+   - Use `Router` to navigate with the temporary item
+   - Pass category information through the navigation stack
+
+3. Data Fetching (`ItemDetailService`)
+   - Use category to determine correct API endpoint
+   - Fetch and decode appropriate schema type
+
+## Design Considerations
+1. **Type Safety**: Using distinct categories for TV seasons and episodes ensures type-safe API calls
+2. **Clear Data Flow**: Category information flows from URL parsing to API calls
+3. **Maintainability**: Centralized category handling in `categoryFromType`
+4. **Extensibility**: Easy to add new subtypes by extending the category enum and mapping logic
 
 ## Recent Changes
 1. API Endpoint Fixes
@@ -70,16 +109,26 @@ From catalog.yaml:
    - Added proper type resolution
    - Fixed endpoint selection logic
    - Improved error handling
+
 2. URL Handling
    - Enhanced type parsing
    - Separated category and type handling
    - Fixed subtype resolution
    - Preserved type information
+
 3. UI Updates
    - Type-specific displays
    - Enhanced metadata organization
    - Improved error states
    - Added loading indicators
+   - Expandable metadata sections
+   - Key information preview
+
+## Best Practices
+1. Always check URL structure before parsing
+2. Use proper category for API endpoint selection
+3. Maintain type information throughout the navigation flow
+4. Log important state transitions for debugging
 
 ## Future Improvements
 - Enhanced navigation between related items
