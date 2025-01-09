@@ -22,15 +22,7 @@ struct ItemDetailView: View {
                     Divider()
                     
                     if !viewModel.description.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Description")
-                                .font(.headline)
-                            
-                            Text(viewModel.description)
-                                .font(.body)
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
+                        ExpandableDescriptionView(description: viewModel.description)
                         
                         Divider()
                     }
@@ -173,4 +165,4 @@ struct ItemDetailView: View {
         ItemDetailView(viewModel: ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService())))
             .environmentObject(Router())
     }
-} 
+}

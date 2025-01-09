@@ -8,7 +8,7 @@ struct ItemHeaderView: View {
     let ratingCount: String
     
     var body: some View {
-        VStack(spacing: 16) {
+        HStack(alignment: .top, spacing: 16) {
             // Cover Image
             KFImage(coverImageURL)
                 .placeholder {
@@ -27,34 +27,36 @@ struct ItemHeaderView: View {
                 }
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .frame(maxWidth: 200)
+                .frame(maxWidth: 120) 
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .shadow(radius: 4)
             
-            // Title
-            Text(title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .multilineTextAlignment(.center)
-            
-            // Rating
-            if rating != "N/A" {
-                HStack(spacing: 8) {
+            // Title and Rating
+            VStack(alignment: .leading, spacing: 8) {
+                Text(title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .fixedSize(horizontal: false, vertical: true)
+                
+                // Rating
+                if rating != "N/A" {
                     HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(.yellow)
-                        Text(rating)
-                            .fontWeight(.semibold)
+                        HStack(spacing: 4) {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                            Text(rating)
+                                .fontWeight(.semibold)
+                        }
+                        
+                        if !ratingCount.isEmpty {
+                            Text("·")
+                                .foregroundStyle(.secondary)
+                            Text(ratingCount)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                    
-                    if !ratingCount.isEmpty {
-                        Text("·")
-                            .foregroundStyle(.secondary)
-                        Text(ratingCount)
-                            .foregroundStyle(.secondary)
-                    }
+                    .font(.subheadline)
                 }
-                .font(.subheadline)
             }
         }
         .padding()
