@@ -114,23 +114,45 @@ enum SheetDestination: Identifiable {
     }
 }
 
+enum TabSection: String, CaseIterable {
+    case home
+    case search
+    case library
+    case profile
+}
+
 @MainActor
 class Router: ObservableObject {
-    @Published var path: [RouterDestination] = []
+    @Published var paths: [TabSection: [RouterDestination]] = [:]
     @Published var presentedSheet: SheetDestination?
     @Published var itemToLoad: ItemSchema?
+    @Published var selectedTab: TabSection = .home
     
     private let logger = Logger(subsystem: "app.neodb", category: "Router")
     
+    init() {
+        // Initialize empty paths for each tab
+        TabSection.allCases.forEach { tab in
+            paths[tab] = []
+        }
+    }
+    
+    func path(for tab: TabSection) -> Binding<[RouterDestination]> {
+        Binding(
+            get: { self.paths[tab] ?? [] },
+            set: { self.paths[tab] = $0 }
+        )
+    }
+    
     func navigate(to destination: RouterDestination) {
-        path.append(destination)
+        paths[selectedTab]?.append(destination)
         
         // Store item for loading if navigating to item detail
         if case .itemDetailWithItem(let item) = destination {
             itemToLoad = item
         }
         
-        logger.debug("Navigated to: \(String(describing: destination))")
+        logger.debug("Navigated to: \(String(describing: destination)) in tab: \(self.selectedTab.rawValue)")
     }
     
     func dismissSheet() {
@@ -181,20 +203,6 @@ class Router: ObservableObject {
         if pathComponents.contains("tags"),
            let tag = pathComponents.last {
             navigate(to: .hashTag(tag: tag))
-            return true
-        }
-        
-        // Handle mentions
-        if pathComponents.contains("users"),
-           let id = pathComponents.last {
-            navigate(to: .userProfile(id: id))
-            return true
-        }
-        
-        // Handle status links
-        if pathComponents.contains("status"),
-           let id = pathComponents.last {
-            navigate(to: .statusDetail(id: id))
             return true
         }
         

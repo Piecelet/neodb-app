@@ -1,7 +1,33 @@
 # Router Implementation Design
 
 ## Overview
-Implementing a navigation router system for NeoDB app, inspired by IceCubes' implementation. The router provides centralized navigation management, type-safe routing, and deep linking support.
+Implementing a navigation router system for NeoDB app, inspired by IceCubes' implementation. The router provides centralized navigation management, type-safe routing, deep linking support, and independent navigation stacks for each tab.
+
+## Navigation Architecture
+1. Tab-based Navigation
+   ```swift
+   enum TabSection: String, CaseIterable {
+       case home
+       case search
+       case library
+       case profile
+   }
+   ```
+
+2. Independent Navigation Paths
+   ```swift
+   class Router: ObservableObject {
+       @Published var paths: [TabSection: [RouterDestination]] = [:]
+       @Published var selectedTab: TabSection = .home
+       
+       func path(for tab: TabSection) -> Binding<[RouterDestination]> {
+           Binding(
+               get: { self.paths[tab] ?? [] },
+               set: { self.paths[tab] = $0 }
+           )
+       }
+   }
+   ```
 
 ## Router Destinations
 Main navigation destinations in the app:
@@ -186,7 +212,7 @@ private func categoryFromType(_ type: String) -> ItemCategory {
 2. Pass full objects only when needed for immediate display
 3. Handle deep links gracefully
 4. Support back navigation
-5. Maintain navigation stack state
+5. Maintain navigation stack state for each tab independently
 
 ### Error Handling
 1. Log navigation failures
@@ -200,10 +226,18 @@ private func categoryFromType(_ type: String) -> ItemCategory {
 3. Preload common destinations
 4. Clean up navigation stack
 
+## Recent Changes
+1. Added support for independent navigation stacks per tab
+2. Implemented tab-based navigation state management
+3. Updated deep linking to work with multiple stacks
+4. Improved navigation state persistence
+
 ## Future Improvements
-- [ ] Navigation history
+- [ ] Navigation history per tab
 - [ ] Custom transitions
 - [ ] Nested navigation
 - [ ] Route analytics
 - [ ] State restoration
-- [ ] URL scheme expansion 
+- [ ] URL scheme expansion
+- [ ] Cross-tab navigation coordination
+- [ ] Tab-specific deep linking rules 
