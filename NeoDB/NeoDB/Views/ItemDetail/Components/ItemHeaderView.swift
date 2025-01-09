@@ -31,7 +31,7 @@ struct ItemHeaderView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxWidth: 120)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
                     .shadow(radius: 4)
                 
                 // Title, Rating and Key Metadata
