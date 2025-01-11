@@ -4,11 +4,13 @@ import OSLog
 @MainActor
 class ItemDetailViewModel: ObservableObject {
     private let itemDetailService: ItemDetailService
-    private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
+    private let logger = Logger.view
     private var loadedItemId: String?
+    private var currentTask: Task<Void, Never>?
     
     @Published var item: (any ItemDetailProtocol)?
     @Published var isLoading = false
+    @Published var isRefreshing = false
     @Published var error: Error?
     @Published var showError = false
     
@@ -17,49 +19,81 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(id: String, category: ItemCategory) {
-        // Skip if already loaded
+        // Cancel any existing task
+        currentTask?.cancel()
+        
+        // Skip if already loaded and not refreshing
         if loadedItemId == id, item != nil {
             return
         }
         
-        isLoading = true
+        isLoading = item == nil // Only show loading if we don't have cached data
         error = nil
         
-        Task {
+        let task = Task {
             do {
                 logger.debug("Loading item: \(id) of category: \(category.rawValue)")
-                item = try await itemDetailService.fetchItemDetail(id: id, category: category)
-                loadedItemId = id
+                
+                // Try to get item (either from cache or network)
+                let loadedItem = try await itemDetailService.fetchItemDetail(id: id, category: category)
+                
+                if !Task.isCancelled {
+                    item = loadedItem
+                    loadedItemId = id
+                }
             } catch {
-                logger.error("Failed to load item: \(error.localizedDescription)")
-                self.error = error
-                self.showError = true
+                if !Task.isCancelled {
+                    logger.error("Failed to load item: \(error.localizedDescription)")
+                    self.error = error
+                    self.showError = true
+                }
             }
-            isLoading = false
+            
+            if !Task.isCancelled {
+                isLoading = false
+            }
         }
+        
+        currentTask = task
     }
     
     func loadItem(item: ItemSchema) {
-        // Skip if already loaded
+        // Cancel any existing task
+        currentTask?.cancel()
+        
+        // Skip if already loaded and not refreshing
         if loadedItemId == item.uuid, self.item != nil {
             return
         }
         
-        isLoading = true
+        isLoading = self.item == nil // Only show loading if we don't have cached data
         error = nil
         
-        Task {
+        let task = Task {
             do {
                 logger.debug("Loading item details for: \(item.displayTitle)")
-                self.item = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
-                loadedItemId = item.uuid
+                
+                // Try to get item (either from cache or network)
+                let loadedItem = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
+                
+                if !Task.isCancelled {
+                    self.item = loadedItem
+                    loadedItemId = item.uuid
+                }
             } catch {
-                logger.error("Failed to load item details: \(error.localizedDescription)")
-                self.error = error
-                self.showError = true
+                if !Task.isCancelled {
+                    logger.error("Failed to load item details: \(error.localizedDescription)")
+                    self.error = error
+                    self.showError = true
+                }
             }
-            isLoading = false
+            
+            if !Task.isCancelled {
+                isLoading = false
+            }
         }
+        
+        currentTask = task
     }
     
     var displayTitle: String {

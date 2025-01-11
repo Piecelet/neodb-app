@@ -128,7 +128,7 @@ class Router: ObservableObject {
     @Published var itemToLoad: ItemSchema?
     @Published var selectedTab: TabSection = .home
     
-    private let logger = Logger(subsystem: "app.neodb", category: "Router")
+    private let logger = Logger.router
     
     init() {
         // Initialize empty paths for each tab

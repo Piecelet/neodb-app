@@ -1,10 +1,12 @@
 import Foundation
+import OSLog
 
 @MainActor
 class UserService {
     private let authService: AuthService
     private let cache = NSCache<NSString, CachedUser>()
     private let cacheKey = "cached_user"
+    private let logger = Logger.networkUser
     
     init(authService: AuthService) {
         self.authService = authService

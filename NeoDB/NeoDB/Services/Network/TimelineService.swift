@@ -12,7 +12,7 @@ import OSLog
 class TimelineService {
     private let authService: AuthService
     private let decoder: JSONDecoder
-    private let logger = Logger(subsystem: "app.neodb", category: "TimelineService")
+    private let logger = Logger.networkTimeline
     
     init(authService: AuthService) {
         self.authService = authService

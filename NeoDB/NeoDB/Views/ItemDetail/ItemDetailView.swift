@@ -13,12 +13,8 @@ struct ItemDetailView: View {
     
     var body: some View {
         ScrollView {
-            if viewModel.isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 100)
-            } else if let item = viewModel.item {
-                VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                if let item = viewModel.item {
                     // Header Section
                     ItemHeaderView(
                         title: viewModel.displayTitle,
@@ -27,6 +23,15 @@ struct ItemDetailView: View {
                         ratingCount: viewModel.ratingCount,
                         keyMetadata: viewModel.getKeyMetadata(for: item)
                     )
+                    .overlay(alignment: .topTrailing) {
+                        if viewModel.isRefreshing {
+                            ProgressView()
+                                .padding(8)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
+                                .padding([.top, .trailing], 8)
+                        }
+                    }
                     
                     Divider()
                         .padding(.vertical)
@@ -59,13 +64,21 @@ struct ItemDetailView: View {
                         externalResources: item.externalResources,
                         brief: nil
                     ))
+                } else if viewModel.isLoading {
+                    VStack(spacing: 16) {
+                        ProgressView()
+                        Text("Loading...")
+                            .foregroundStyle(.secondary)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.top, 100)
+                } else {
+                    EmptyStateView(
+                        "Item Not Found",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text("The requested item could not be found or has been removed.")
+                    )
                 }
-            } else {
-                EmptyStateView(
-                    "Item Not Found",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text("The requested item could not be found or has been removed.")
-                )
             }
         }
         .navigationBarTitleDisplayMode(.inline)
