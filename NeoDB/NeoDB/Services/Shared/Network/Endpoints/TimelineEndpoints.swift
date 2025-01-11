@@ -9,9 +9,9 @@ extension TimelineEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
         case .fetchTimeline:
-            return "/api/timeline"
+            return "/timeline"
         case .fetchLocalTimeline:
-            return "/api/timeline/local"
+            return "/timeline/local"
         }
     }
     

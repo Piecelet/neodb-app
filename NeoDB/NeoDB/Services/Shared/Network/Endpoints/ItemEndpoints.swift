@@ -16,23 +16,23 @@ extension ItemEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
         case .fetchBook(let uuid):
-            return "/api/book/\(uuid)"
+            return "/book/\(uuid)"
         case .fetchMovie(let uuid):
-            return "/api/movie/\(uuid)"
+            return "/movie/\(uuid)"
         case .fetchTVShow(let uuid):
-            return "/api/tv/\(uuid)"
+            return "/tv/\(uuid)"
         case .fetchTVSeason(let uuid):
-            return "/api/tv/season/\(uuid)"
+            return "/tv/season/\(uuid)"
         case .fetchTVEpisode(let uuid):
-            return "/api/tv/episode/\(uuid)"
+            return "/tv/episode/\(uuid)"
         case .fetchPodcast(let uuid):
-            return "/api/podcast/\(uuid)"
+            return "/podcast/\(uuid)"
         case .fetchAlbum(let uuid):
-            return "/api/album/\(uuid)"
+            return "/album/\(uuid)"
         case .fetchGame(let uuid):
-            return "/api/game/\(uuid)"
+            return "/game/\(uuid)"
         case .fetchPerformance(let uuid):
-            return "/api/performance/\(uuid)"
+            return "/performance/\(uuid)"
         }
     }
     

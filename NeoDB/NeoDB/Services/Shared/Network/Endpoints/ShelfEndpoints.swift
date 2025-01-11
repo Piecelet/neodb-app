@@ -10,11 +10,11 @@ extension ShelfEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
         case .fetchShelves:
-            return "/api/shelves"
+            return "/shelves"
         case .addToShelf(_, let shelfId):
-            return "/api/shelf/\(shelfId)/add"
+            return "/shelf/\(shelfId)/add"
         case .removeFromShelf(_, let shelfId):
-            return "/api/shelf/\(shelfId)/remove"
+            return "/shelf/\(shelfId)/remove"
         }
     }
     

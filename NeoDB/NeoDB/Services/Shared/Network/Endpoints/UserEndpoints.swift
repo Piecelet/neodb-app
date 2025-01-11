@@ -8,7 +8,7 @@ extension UserEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
         case .me:
-            return "/api/me"
+            return "/me"
         }
     }
     

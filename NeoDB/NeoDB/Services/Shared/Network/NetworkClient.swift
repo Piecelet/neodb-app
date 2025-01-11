@@ -44,28 +44,29 @@ class NetworkClient {
         self.session = URLSession.shared
     }
     
-    private var baseURL: String {
-        "https://\(instance)"
-    }
-    
-    func setAccessToken(_ token: String?) {
-        self.accessToken = token
-    }
-    
-    func fetch<T: Decodable>(_ endpoint: NetworkEndpoint, type: T.Type) async throws -> T {
-        guard var urlComponents = URLComponents(string: baseURL + endpoint.path) else {
-            logger.error("Invalid URL: \(baseURL)\(endpoint.path)")
+    private func makeURL(endpoint: NetworkEndpoint) throws -> URL {
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = instance
+        
+        // Handle path construction
+        var path = endpoint.path
+        if !path.hasPrefix("/oauth") && !path.hasPrefix("/api") {
+            path = "/api" + path
+        }
+        components.path = path
+        components.queryItems = endpoint.queryItems
+        
+        guard let url = components.url else {
+            logger.error("Failed to construct URL for endpoint: \(endpoint.path)")
             throw NetworkError.invalidURL
         }
         
-        if let queryItems = endpoint.queryItems {
-            urlComponents.queryItems = queryItems
-        }
-        
-        guard let url = urlComponents.url else {
-            throw NetworkError.invalidURL
-        }
-        
+        return url
+    }
+    
+    private func makeRequest(for endpoint: NetworkEndpoint) throws -> URLRequest {
+        let url = try makeURL(endpoint: endpoint)
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.body
@@ -78,6 +79,15 @@ class NetworkClient {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         
+        return request
+    }
+    
+    func setAccessToken(_ token: String?) {
+        self.accessToken = token
+    }
+    
+    func fetch<T: Decodable>(_ endpoint: NetworkEndpoint, type: T.Type) async throws -> T {
+        let request = try makeRequest(for: endpoint)
         logger.debug("Fetching: \(endpoint.path)")
         
         do {
@@ -121,31 +131,7 @@ class NetworkClient {
     }
     
     func send(_ endpoint: NetworkEndpoint) async throws {
-        guard var urlComponents = URLComponents(string: baseURL + endpoint.path) else {
-            logger.error("Invalid URL: \(baseURL)\(endpoint.path)")
-            throw NetworkError.invalidURL
-        }
-        
-        if let queryItems = endpoint.queryItems {
-            urlComponents.queryItems = queryItems
-        }
-        
-        guard let url = urlComponents.url else {
-            throw NetworkError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = endpoint.method.rawValue
-        request.httpBody = endpoint.body
-        
-        endpoint.headers?.forEach { key, value in
-            request.setValue(value, forHTTPHeaderField: key)
-        }
-        
-        if let token = accessToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-        
+        let request = try makeRequest(for: endpoint)
         logger.debug("Sending request to: \(endpoint.path)")
         
         let (_, response) = try await session.data(for: request)

@@ -9,7 +9,7 @@ extension AuthEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
         case .register:
-            return "/api/v1/apps"
+            return "/v1/apps"
         case .token:
             return "/oauth/token"
         }
