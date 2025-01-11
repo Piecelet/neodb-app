@@ -36,7 +36,7 @@ struct InstanceClient: Codable {
 
 @MainActor
 class AuthService: ObservableObject {
-    private let logger = Logger(subsystem: "app.neodb", category: "Auth")
+    private let logger = Logger.auth
     private let keychain: KeychainSwift
     
     @Published var isAuthenticated = false
@@ -265,7 +265,7 @@ class AuthService: ObservableObject {
     }
     
     func handleCallback(url: URL) async throws {
-        logger.debug("Handling callback URL: \(url)")
+        logger.debug("Handling OAuth callback with URL: \(url)")
         
         // Extract instance from saved state if available
         if let state = URLComponents(url: url, resolvingAgainstBaseURL: true)?
@@ -299,6 +299,8 @@ class AuthService: ObservableObject {
     }
     
     private func exchangeCodeForToken(code: String) async throws {
+        logger.debug("Exchanging authorization code for token")
+        
         // Double check we're using the correct instance
         logger.debug("Exchanging token for instance: \(self.currentInstance)")
         
@@ -371,6 +373,7 @@ class AuthService: ObservableObject {
     }
     
     func logout() {
+        logger.info("User logged out")
         savedAccessToken = nil
         isAuthenticated = false
         logger.debug("Logged out from instance: \(self.currentInstance)")
