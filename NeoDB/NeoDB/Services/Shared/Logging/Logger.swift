@@ -48,12 +48,6 @@ extension Logger {
     // MARK: - Performance
     /// Logs related to performance metrics
     static let performance = Logger(subsystem: subsystem, category: "performance")
-
-    // MARK: - Environment
-    /// Logs related to environment management
-    static let environment = Logger(subsystem: subsystem, category: "environment")
-    static let environmentCurrentInstance = Logger(subsystem: subsystem, category: "environment.currentInstance")
-    static let environmentCurrentAccount = Logger(subsystem: subsystem, category: "environment.currentAccount")
 }
 
 // MARK: - Convenience Methods
