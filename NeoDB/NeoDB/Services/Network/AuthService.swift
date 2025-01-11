@@ -36,7 +36,7 @@ struct InstanceClient: Codable {
 
 @MainActor
 class AuthService: ObservableObject {
-    private let logger = Logger.auth
+    private let logger = Logger.networkAuth
     private let keychain: KeychainSwift
     
     @Published var isAuthenticated = false

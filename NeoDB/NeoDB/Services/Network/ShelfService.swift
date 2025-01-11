@@ -4,7 +4,7 @@ import OSLog
 @MainActor
 class ShelfService {
     private let authService: AuthService
-    private let logger = Logger(subsystem: "social.neodb.app", category: "ShelfService")
+    private let logger = Logger.networkShelf
     private let decoder: JSONDecoder
     
     init(authService: AuthService) {

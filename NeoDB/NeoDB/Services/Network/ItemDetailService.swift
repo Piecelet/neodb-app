@@ -13,7 +13,7 @@ import Cache
 class ItemDetailService {
     private let authService: AuthService
     private let router: Router
-    private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
+    private let logger = Logger.networkItem
     
     // Add separate caches for each type
     private let bookStorage: Storage<String, EditionSchema>

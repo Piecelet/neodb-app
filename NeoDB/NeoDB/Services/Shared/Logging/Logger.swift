@@ -13,6 +13,11 @@ extension Logger {
     // MARK: - Networking
     /// Logs related to network requests and responses
     static let network = Logger(subsystem: subsystem, category: "network")
+    static let networkAuth = Logger(subsystem: subsystem, category: "network.auth")
+    static let networkTimeline = Logger(subsystem: subsystem, category: "network.timeline")
+    static let networkItem = Logger(subsystem: subsystem, category: "network.item")
+    static let networkShelf = Logger(subsystem: subsystem, category: "network.shelf")
+    static let networkUser = Logger(subsystem: subsystem, category: "network.user")
     
     // MARK: - Data
     /// Logs related to data persistence and caching
@@ -45,7 +50,7 @@ extension Logger {
     ///   - line: The line where the log was called
     func debug(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         let filename = (file as NSString).lastPathComponent
-        self.debug("[\(filename):\(line)] \(function) - \(message)")
+        log(level: .debug, "[\(filename):\(line)] \(function) - \(message)")
     }
     
     /// Log a message with the info level
@@ -56,7 +61,7 @@ extension Logger {
     ///   - line: The line where the log was called
     func info(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         let filename = (file as NSString).lastPathComponent
-        self.info("[\(filename):\(line)] \(function) - \(message)")
+        log(level: .info, "[\(filename):\(line)] \(function) - \(message)")
     }
     
     /// Log a message with the error level
@@ -67,10 +72,10 @@ extension Logger {
     ///   - line: The line where the log was called
     func error(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         let filename = (file as NSString).lastPathComponent
-        self.error("[\(filename):\(line)] \(function) - \(message)")
+        log(level: .error, "[\(filename):\(line)] \(function) - \(message)")
     }
     
-    /// Log a message with the warning level
+    /// Log a message with the warning level (using .default)
     /// - Parameters:
     ///   - message: The message to log
     ///   - file: The file where the log was called
@@ -78,6 +83,6 @@ extension Logger {
     ///   - line: The line where the log was called
     func warning(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
         let filename = (file as NSString).lastPathComponent
-        self.warning("[\(filename):\(line)] \(function) - \(message)")
+        log(level: .default, "[\(filename):\(line)] \(function) - \(message)")
     }
-} 
+}
