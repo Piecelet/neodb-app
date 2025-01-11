@@ -40,13 +40,6 @@ class ItemDetailViewModel: ObservableObject {
                 if !Task.isCancelled {
                     item = loadedItem
                     loadedItemId = id
-                    
-                    // Start background refresh
-                    isRefreshing = true
-                    await itemDetailService.refreshItemInBackground(id: id, category: category)
-                    if !Task.isCancelled {
-                        isRefreshing = false
-                    }
                 }
             } catch {
                 if !Task.isCancelled {
@@ -86,13 +79,6 @@ class ItemDetailViewModel: ObservableObject {
                 if !Task.isCancelled {
                     self.item = loadedItem
                     loadedItemId = item.uuid
-                    
-                    // Start background refresh
-                    isRefreshing = true
-                    await itemDetailService.refreshItemInBackground(id: item.uuid, category: item.category)
-                    if !Task.isCancelled {
-                        isRefreshing = false
-                    }
                 }
             } catch {
                 if !Task.isCancelled {

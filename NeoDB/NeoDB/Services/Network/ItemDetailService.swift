@@ -194,23 +194,18 @@ class ItemDetailService {
     }
     
     func fetchItemDetail(id: String, category: ItemCategory) async throws -> any ItemDetailProtocol {
-        var shouldRefresh = true
-        
-        // Try to get from cache first
+        // Try cache first
         if let cachedItem = try? getCachedItem(id: id, category: category) {
-            logger.debug("Cache hit for item: \(id)")
-            shouldRefresh = true
-            // Return cached data immediately
+            // Return cached data and refresh in background
+            Task {
+                await refreshItemInBackground(id: id, category: category)
+            }
             return cachedItem
         }
         
-        // If not in cache or should refresh, fetch from network
-        logger.debug("Cache miss for item: \(id), fetching from network")
+        // If no cache, fetch from network once
         let item = try await fetchItemFromNetwork(id: id, category: category)
-        
-        // Store in cache
         try? cacheItem(item, id: id, category: category)
-        
         return item
     }
     
