@@ -11,7 +11,7 @@ import OSLog
 @MainActor
 class LibraryViewModel: ObservableObject {
     private let shelfService: ShelfService
-    private let logger = Logger(subsystem: "social.neodb.app", category: "LibraryViewModel")
+    private let logger = Logger.library
     
     @Published var selectedShelfType: ShelfType = .wishlist
     @Published var shelfItems: [MarkSchema] = []

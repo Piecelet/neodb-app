@@ -31,6 +31,16 @@ extension Logger {
     /// Logs related to view lifecycle events
     static let view = Logger(subsystem: subsystem, category: "view")
     
+    // MARK: - Navigation
+    /// Logs related to navigation and routing
+    static let router = Logger(subsystem: subsystem, category: "router")
+    
+    // MARK: - Views
+    /// Logs related to specific views
+    static let library = Logger(subsystem: subsystem, category: "view.library")
+    static let home = Logger(subsystem: subsystem, category: "view.home")
+    static let htmlContent = Logger(subsystem: subsystem, category: "view.html")
+    
     // MARK: - User Actions
     /// Logs related to user interactions
     static let userAction = Logger(subsystem: subsystem, category: "userAction")

@@ -14,7 +14,7 @@ struct HTMLContentView: View {
     let htmlContent: String
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
-    private let logger = Logger(subsystem: "app.neodb", category: "HTMLContent")
+    private let logger = Logger.htmlContent
     
     var body: some View {
         if let markdown = convertHTMLToMarkdown(htmlContent) {
