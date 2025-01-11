@@ -4,7 +4,7 @@ import OSLog
 @MainActor
 class ItemDetailViewModel: ObservableObject {
     private let itemDetailService: ItemDetailService
-    private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
+    private let logger = Logger.view
     private var loadedItemId: String?
     private var currentTask: Task<Void, Never>?
     
