@@ -4,12 +4,14 @@ import OSLog
 @MainActor
 class UserService {
     private let authService: AuthService
+    private let networkClient: NetworkClient
     private let cache = NSCache<NSString, CachedUser>()
     private let cacheKey = "cached_user"
     private let logger = Logger.networkUser
     
     init(authService: AuthService) {
         self.authService = authService
+        self.networkClient = NetworkClient(instance: authService.currentInstance, accessToken: authService.accessToken)
     }
     
     func getCurrentUser(forceRefresh: Bool = false) async throws -> User {
@@ -17,44 +19,28 @@ class UserService {
         
         // Return cached user if available and not forcing refresh
         if !forceRefresh, let cachedUser = cache.object(forKey: cacheKey) {
+            logger.debug("Returning cached user for instance: \(authService.currentInstance)")
             return cachedUser.user
         }
         
-        guard let accessToken = authService.accessToken else {
-            throw AuthError.unauthorized
+        guard authService.accessToken != nil else {
+            logger.error("No access token available")
+            throw NetworkError.unauthorized
         }
         
-        let baseURL = "https://\(authService.currentInstance)"
-        guard let url = URL(string: "\(baseURL)/api/me") else {
-            throw AuthError.invalidURL
-        }
-        
-        var request = URLRequest(url: url)
-        request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-        
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AuthError.invalidResponse
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            if httpResponse.statusCode == 401 {
-                throw AuthError.unauthorized
-            }
-            throw AuthError.invalidResponse
-        }
-        
-        let user = try JSONDecoder().decode(User.self, from: data)
+        logger.debug("Fetching user profile from network")
+        let user = try await networkClient.fetch(UserEndpoints.me, type: User.self)
         
         // Cache the user
         cache.setObject(CachedUser(user: user), forKey: cacheKey)
+        logger.debug("Cached user profile for instance: \(authService.currentInstance)")
         
         return user
     }
     
     func clearCache() {
         cache.removeAllObjects()
+        logger.debug("Cleared user cache")
     }
 }
 

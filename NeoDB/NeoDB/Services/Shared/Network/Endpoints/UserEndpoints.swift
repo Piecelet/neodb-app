@@ -1,19 +1,22 @@
 import Foundation
 
 enum UserEndpoints {
-    case fetchProfile
+    case me
 }
 
 extension UserEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
-        case .fetchProfile:
-            return "/api/user/profile"
+        case .me:
+            return "/api/me"
         }
     }
     
     var method: HTTPMethod {
-        return .get
+        switch self {
+        case .me:
+            return .get
+        }
     }
     
     var queryItems: [URLQueryItem]? {

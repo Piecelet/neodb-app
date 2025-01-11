@@ -35,13 +35,17 @@ enum NetworkError: Error {
 class NetworkClient {
     private let logger = Logger.network
     private let session: URLSession
-    private let baseURL: String
+    private let instance: String
     private var accessToken: String?
     
-    init(baseURL: String, accessToken: String? = nil) {
-        self.baseURL = baseURL
+    init(instance: String, accessToken: String? = nil) {
+        self.instance = instance
         self.accessToken = accessToken
         self.session = URLSession.shared
+    }
+    
+    private var baseURL: String {
+        "https://\(instance)"
     }
     
     func setAccessToken(_ token: String?) {
@@ -95,10 +99,16 @@ class NetworkClient {
             
             do {
                 let decoder = JSONDecoder()
-                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                logger.debug("Attempting to decode response data")
+                if let dataString = String(data: data, encoding: .utf8) {
+                    logger.debug("Raw response: \(dataString)")
+                }
                 return try decoder.decode(T.self, from: data)
             } catch {
                 logger.error("Decoding error: \(error.localizedDescription)")
+                if let dataString = String(data: data, encoding: .utf8) {
+                    logger.error("Raw response: \(dataString)")
+                }
                 throw NetworkError.decodingError(error)
             }
         } catch {
