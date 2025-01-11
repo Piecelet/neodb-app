@@ -22,3 +22,11 @@ struct User: Codable {
         case username
     }
 } 
+
+struct UserUnauthorized: Codable {
+    let detail: String
+
+    enum CodingKeys: String, CodingKey {
+        case detail
+    }
+}
