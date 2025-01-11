@@ -50,8 +50,9 @@ Each category supports different log levels:
 
 ### 3. Log Format
 
-Unified log format includes:
+The log format varies by environment:
 
+#### Development Environment
 ```
 [FileName:LineNumber] FunctionName - Specific Message
 ```
@@ -59,6 +60,16 @@ Unified log format includes:
 Example:
 ```
 [AuthService.swift:42] handleCallback(url:) - Handling OAuth callback with URL: neodb://oauth/callback
+```
+
+#### Production Environment
+```
+Specific Message
+```
+
+Example:
+```
+Handling OAuth callback with URL: neodb://oauth/callback
 ```
 
 ## Usage Guide
@@ -184,7 +195,10 @@ Create commonly used search patterns:
 
 2. **Logger Implementation Fix**
    - Fixed infinite recursion in convenience methods
-   - Updated implementation to use `log(level:)` instead of direct level calls
+   - Updated implementation to use direct level calls instead of `log(level:)`
+   - Added environment-specific log formatting:
+     - Development: Shows file name, line number, and function name
+     - Production: Shows only the message for cleaner logs
 
 3. **Service Integration**
    - Updated all network services to use their specific network subcategories

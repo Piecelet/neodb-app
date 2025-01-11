@@ -42,6 +42,15 @@ extension Logger {
 
 // MARK: - Convenience Methods
 extension Logger {
+    private func formatMessage(_ message: String, file: String = #file, function: String = #function, line: Int = #line) -> String {
+        #if DEBUG
+        let filename = (file as NSString).lastPathComponent
+        return "[\(filename):\(line)] \(function) - \(message)"
+        #else
+        return message
+        #endif
+    }
+    
     /// Log a message with the debug level
     /// - Parameters:
     ///   - message: The message to log
@@ -49,8 +58,7 @@ extension Logger {
     ///   - function: The function where the log was called
     ///   - line: The line where the log was called
     func debug(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let filename = (file as NSString).lastPathComponent
-        log(level: .debug, "[\(filename):\(line)] \(function) - \(message)")
+        log(level: .debug, "\(formatMessage(message, file: file, function: function, line: line))")
     }
     
     /// Log a message with the info level
@@ -60,8 +68,7 @@ extension Logger {
     ///   - function: The function where the log was called
     ///   - line: The line where the log was called
     func info(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let filename = (file as NSString).lastPathComponent
-        log(level: .info, "[\(filename):\(line)] \(function) - \(message)")
+        log(level: .info, "\(formatMessage(message, file: file, function: function, line: line))")
     }
     
     /// Log a message with the error level
@@ -71,18 +78,16 @@ extension Logger {
     ///   - function: The function where the log was called
     ///   - line: The line where the log was called
     func error(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let filename = (file as NSString).lastPathComponent
-        log(level: .error, "[\(filename):\(line)] \(function) - \(message)")
+        log(level: .error, "\(formatMessage(message, file: file, function: function, line: line))")
     }
     
-    /// Log a message with the warning level (using .default)
+    /// Log a message with the warning level
     /// - Parameters:
     ///   - message: The message to log
     ///   - file: The file where the log was called
     ///   - function: The function where the log was called
     ///   - line: The line where the log was called
     func warning(_ message: String, file: String = #file, function: String = #function, line: Int = #line) {
-        let filename = (file as NSString).lastPathComponent
-        log(level: .default, "[\(filename):\(line)] \(function) - \(message)")
+        log(level: .default, "\(formatMessage(message, file: file, function: function, line: line))")
     }
 }
