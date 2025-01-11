@@ -1,3 +1,5 @@
+# AppAccount.swift
+```swift
 import SwiftUI
 import Timeline
 import Network
@@ -53,3 +55,4 @@ struct AppAccount: Codable, Identifiable {
     }
   }
 }
+```
