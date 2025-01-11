@@ -1,3 +1,5 @@
+# QuickLook.swift
+```swift
 import QuickLook
 import SwiftUI
 
@@ -52,3 +54,4 @@ public class QuickLook: ObservableObject {
     return path
   }
 }
+```

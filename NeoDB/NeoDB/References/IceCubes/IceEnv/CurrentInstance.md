@@ -1,3 +1,5 @@
+# CurrentInstance.swift
+```swift
 import Foundation
 import Models
 import Network
@@ -26,3 +28,4 @@ public class CurrentInstance: ObservableObject {
     }
   }
 }
+```

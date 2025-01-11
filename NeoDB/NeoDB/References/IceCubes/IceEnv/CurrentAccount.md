@@ -1,3 +1,5 @@
+# CurrentAccount.swift
+```swift
 import Foundation
 import Models
 import Network
@@ -58,3 +60,4 @@ public class CurrentAccount: ObservableObject {
     }
   }
 }
+```
