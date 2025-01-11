@@ -31,12 +31,44 @@ Logger.auth       // User authentication
 // View Lifecycle
 Logger.view       // View lifecycle events
 
-// User Interactions
+// Navigation
+Logger.router     // Navigation and routing operations
+
+// Specific Views
+Logger.library    // Library view operations
+Logger.home       // Home view operations
+Logger.htmlContent // HTML content processing
+
+// User Actions
 Logger.userAction // User interactions
 
 // Performance
 Logger.performance // Performance metrics
 ```
+
+### Category Hierarchy
+
+1. Network Operations (`network.*`)
+   - General network: `network`
+   - Auth operations: `network.auth`
+   - Timeline operations: `network.timeline`
+   - Item operations: `network.item`
+   - Shelf operations: `network.shelf`
+   - User operations: `network.user`
+
+2. View Operations (`view.*`)
+   - General view lifecycle: `view`
+   - Library view: `view.library`
+   - Home view: `view.home`
+   - HTML content: `view.html`
+
+3. Standalone Categories
+   - Lifecycle: `lifecycle`
+   - Data: `data`
+   - Auth: `auth`
+   - Router: `router`
+   - User Action: `userAction`
+   - Performance: `performance`
 
 ### 2. Log Levels
 
