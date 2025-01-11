@@ -1,3 +1,5 @@
+# AppAccountViewModel.swift
+```swift
 import SwiftUI
 import Models
 import Network
@@ -22,3 +24,4 @@ public class AppAccountViewModel: ObservableObject {
     }
   }
 }
+```

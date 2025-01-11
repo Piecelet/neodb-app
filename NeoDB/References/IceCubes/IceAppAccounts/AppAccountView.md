@@ -1,3 +1,5 @@
+# AppAccountView.swift
+```swift
 import SwiftUI
 import DesignSystem
 
@@ -33,3 +35,4 @@ struct AppAccountView: View {
     }
   }
 }
+```

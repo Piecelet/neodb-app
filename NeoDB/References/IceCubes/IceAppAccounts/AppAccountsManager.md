@@ -1,3 +1,6 @@
+# AppAccountsManager.swift
+
+```swift
 import SwiftUI
 import Network
 
@@ -47,3 +50,4 @@ class AppAccountsManager: ObservableObject {
     }
   }
 }
+```
