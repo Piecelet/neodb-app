@@ -6,6 +6,7 @@ class ItemDetailViewModel: ObservableObject {
     private let itemDetailService: ItemDetailService
     private let logger = Logger(subsystem: "app.neodb", category: "ItemDetail")
     private var loadedItemId: String?
+    private var currentTask: Task<Void, Never>?
     
     @Published var item: (any ItemDetailProtocol)?
     @Published var isLoading = false
@@ -18,65 +19,95 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(id: String, category: ItemCategory) {
+        // Cancel any existing task
+        currentTask?.cancel()
+        
         // Skip if already loaded and not refreshing
-        if loadedItemId == id, item != nil, !isRefreshing {
+        if loadedItemId == id, item != nil {
             return
         }
         
-        isLoading = loadedItemId != id // Only show loading for initial load
+        isLoading = item == nil // Only show loading if we don't have cached data
         error = nil
         
-        Task {
+        let task = Task {
             do {
                 logger.debug("Loading item: \(id) of category: \(category.rawValue)")
-                // Get item (either from cache or network)
-                item = try await itemDetailService.fetchItemDetail(id: id, category: category)
-                loadedItemId = id
                 
-                // If we got data (either from cache or network), start a background refresh
-                if item != nil {
+                // Try to get item (either from cache or network)
+                let loadedItem = try await itemDetailService.fetchItemDetail(id: id, category: category)
+                
+                if !Task.isCancelled {
+                    item = loadedItem
+                    loadedItemId = id
+                    
+                    // Start background refresh
                     isRefreshing = true
                     await itemDetailService.refreshItemInBackground(id: id, category: category)
-                    isRefreshing = false
+                    if !Task.isCancelled {
+                        isRefreshing = false
+                    }
                 }
             } catch {
-                logger.error("Failed to load item: \(error.localizedDescription)")
-                self.error = error
-                self.showError = true
+                if !Task.isCancelled {
+                    logger.error("Failed to load item: \(error.localizedDescription)")
+                    self.error = error
+                    self.showError = true
+                }
             }
-            isLoading = false
+            
+            if !Task.isCancelled {
+                isLoading = false
+            }
         }
+        
+        currentTask = task
     }
     
     func loadItem(item: ItemSchema) {
+        // Cancel any existing task
+        currentTask?.cancel()
+        
         // Skip if already loaded and not refreshing
-        if loadedItemId == item.uuid, self.item != nil, !isRefreshing {
+        if loadedItemId == item.uuid, self.item != nil {
             return
         }
         
-        isLoading = loadedItemId != item.uuid // Only show loading for initial load
+        isLoading = self.item == nil // Only show loading if we don't have cached data
         error = nil
         
-        Task {
+        let task = Task {
             do {
                 logger.debug("Loading item details for: \(item.displayTitle)")
-                // Get item (either from cache or network)
-                self.item = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
-                loadedItemId = item.uuid
                 
-                // If we got data (either from cache or network), start a background refresh
-                if self.item != nil {
+                // Try to get item (either from cache or network)
+                let loadedItem = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
+                
+                if !Task.isCancelled {
+                    self.item = loadedItem
+                    loadedItemId = item.uuid
+                    
+                    // Start background refresh
                     isRefreshing = true
                     await itemDetailService.refreshItemInBackground(id: item.uuid, category: item.category)
-                    isRefreshing = false
+                    if !Task.isCancelled {
+                        isRefreshing = false
+                    }
                 }
             } catch {
-                logger.error("Failed to load item details: \(error.localizedDescription)")
-                self.error = error
-                self.showError = true
+                if !Task.isCancelled {
+                    logger.error("Failed to load item details: \(error.localizedDescription)")
+                    self.error = error
+                    self.showError = true
+                }
             }
-            isLoading = false
+            
+            if !Task.isCancelled {
+                isLoading = false
+            }
         }
+        
+        currentTask = task
     }
     
     var displayTitle: String {
