@@ -7,9 +7,16 @@
 
 import Foundation
 
-public struct OauthToken: Codable {
-  public let accessToken: String
-  public let tokenType: String
-  public let scope: String
-  public let createdAt: Double
+struct OauthToken: Codable {
+    let accessToken: String
+    let tokenType: String
+    let scope: String
+    let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+        case tokenType = "token_type"
+        case scope
+        case createdAt = "created_at"
+    }
 }

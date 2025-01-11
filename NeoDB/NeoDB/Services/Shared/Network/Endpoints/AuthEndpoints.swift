@@ -1,64 +1,62 @@
 import Foundation
 
 enum AuthEndpoints {
-    case authorize(clientId: String, redirectUri: String, scope: String)
+    case register(clientName: String, redirectUri: String, scopes: String)
     case token(code: String, clientId: String, clientSecret: String, redirectUri: String)
-    case revokeToken(token: String)
 }
 
 extension AuthEndpoints: NetworkEndpoint {
     var path: String {
         switch self {
-        case .authorize:
-            return "/oauth/authorize"
+        case .register:
+            return "/api/v1/apps"
         case .token:
             return "/oauth/token"
-        case .revokeToken:
-            return "/oauth/revoke"
         }
     }
     
     var method: HTTPMethod {
         switch self {
-        case .authorize:
-            return .get
-        case .token, .revokeToken:
+        case .register, .token:
             return .post
         }
     }
     
     var queryItems: [URLQueryItem]? {
-        switch self {
-        case .authorize(let clientId, let redirectUri, let scope):
-            return [
-                URLQueryItem(name: "client_id", value: clientId),
-                URLQueryItem(name: "redirect_uri", value: redirectUri),
-                URLQueryItem(name: "response_type", value: "code"),
-                URLQueryItem(name: "scope", value: scope)
-            ]
-        default:
-            return nil
-        }
+        return nil
     }
     
     var body: Data? {
         switch self {
+        case .register(let clientName, let redirectUri, let scopes):
+            let parameters: [String: String] = [
+                "client_name": clientName,
+                "redirect_uris": redirectUri,
+                "scopes": scopes
+            ]
+            return try? JSONSerialization.data(withJSONObject: parameters)
+            
         case .token(let code, let clientId, let clientSecret, let redirectUri):
-            let params = [
-                "grant_type": "authorization_code",
-                "code": code,
+            let parameters: [String: String] = [
                 "client_id": clientId,
                 "client_secret": clientSecret,
-                "redirect_uri": redirectUri
+                "code": code,
+                "redirect_uri": redirectUri,
+                "grant_type": "authorization_code"
             ]
-            return try? JSONSerialization.data(withJSONObject: params)
-            
-        case .revokeToken(let token):
-            let params = ["token": token]
-            return try? JSONSerialization.data(withJSONObject: params)
-            
-        default:
-            return nil
+            return parameters
+                .map { "\($0.key)=\($0.value)" }
+                .joined(separator: "&")
+                .data(using: .utf8)
+        }
+    }
+    
+    var headers: [String: String]? {
+        switch self {
+        case .register:
+            return ["Content-Type": "application/json"]
+        case .token:
+            return ["Content-Type": "application/x-www-form-urlencoded"]
         }
     }
 } 
