@@ -28,12 +28,6 @@ struct AppRegistrationResponse: Codable {
     let redirect_uri: String
 }
 
-struct InstanceClient: Codable {
-    let clientId: String
-    let clientSecret: String
-    let instance: String
-}
-
 @MainActor
 class AuthService: ObservableObject {
     private let logger = Logger.networkAuth
