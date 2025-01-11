@@ -6,6 +6,13 @@ protocol NetworkEndpoint {
     var method: HTTPMethod { get }
     var queryItems: [URLQueryItem]? { get }
     var body: Data? { get }
+    var headers: [String: String]? { get }
+}
+
+extension NetworkEndpoint {
+    var headers: [String: String]? {
+        return nil
+    }
 }
 
 enum HTTPMethod: String {
@@ -58,6 +65,10 @@ class NetworkClient {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.body
+        
+        endpoint.headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
         
         if let token = accessToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -116,6 +127,10 @@ class NetworkClient {
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
         request.httpBody = endpoint.body
+        
+        endpoint.headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
         
         if let token = accessToken {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
