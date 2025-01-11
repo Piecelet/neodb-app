@@ -190,17 +190,23 @@ The UI reflects different loading states:
 
 ## Recent Changes
 
-1. **Optimized Refresh Logic**
+1. **Loading State Improvements**
+   - Fixed double fetching issue while preserving refresh indicator
+   - Improved refresh indicator timing in ViewModel
+   - Added proper refresh state management for error cases
+   - Enhanced user feedback during data loading
+
+2. **Optimized Refresh Logic**
    - Eliminated unnecessary double fetch when no cache exists
    - Background refresh only triggered for cache hits
    - Improved loading state management
 
-2. **Cache Management**
+3. **Cache Management**
    - Separate storage for each content type
    - Configurable expiry times
    - Memory and disk cache limits
 
-3. **Error Handling**
+4. **Error Handling**
    - Better error messages
    - Improved error logging
    - Graceful fallback to cached data
