@@ -33,6 +33,9 @@ The item detail system handles various types of media items including books, mov
    - Memory cache limit: 10MB
    - Disk cache limit: 50MB per type
    - Automatic cache cleanup for expired items
+   - Cache-then-network strategy for immediate response
+   - Background refresh for cached data
+   - Optimistic UI updates with loading states
 
 ## Layout Guidelines
 1. Header Section
@@ -114,6 +117,11 @@ The item detail system handles various types of media items including books, mov
    - Added cache expiration policies
    - Implemented cache cleanup methods
    - Enhanced performance with local caching
+   - Added cache-then-network loading strategy
+   - Implemented background data refresh
+   - Improved loading state management
+   - Added optimistic UI updates
+   - Enhanced user experience with immediate content display
 
 ## Best Practices
 1. Visual Design
@@ -143,6 +151,11 @@ The item detail system handles various types of media items including books, mov
    - Clear expired items automatically
    - Handle cache misses gracefully
    - Implement type-safe caching
+   - Show cached content immediately
+   - Refresh data in background
+   - Update UI optimistically
+   - Handle loading states appropriately
+   - Maintain data consistency
 
 ## Future Improvements
 - Enhanced image loading states

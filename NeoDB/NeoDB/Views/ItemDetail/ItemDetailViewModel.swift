@@ -9,6 +9,7 @@ class ItemDetailViewModel: ObservableObject {
     
     @Published var item: (any ItemDetailProtocol)?
     @Published var isLoading = false
+    @Published var isRefreshing = false
     @Published var error: Error?
     @Published var showError = false
     
@@ -17,19 +18,27 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(id: String, category: ItemCategory) {
-        // Skip if already loaded
-        if loadedItemId == id, item != nil {
+        // Skip if already loaded and not refreshing
+        if loadedItemId == id, item != nil, !isRefreshing {
             return
         }
         
-        isLoading = true
+        isLoading = loadedItemId != id // Only show loading for initial load
         error = nil
         
         Task {
             do {
                 logger.debug("Loading item: \(id) of category: \(category.rawValue)")
+                // Get item (either from cache or network)
                 item = try await itemDetailService.fetchItemDetail(id: id, category: category)
                 loadedItemId = id
+                
+                // If we got data (either from cache or network), start a background refresh
+                if item != nil {
+                    isRefreshing = true
+                    await itemDetailService.refreshItemInBackground(id: id, category: category)
+                    isRefreshing = false
+                }
             } catch {
                 logger.error("Failed to load item: \(error.localizedDescription)")
                 self.error = error
@@ -40,19 +49,27 @@ class ItemDetailViewModel: ObservableObject {
     }
     
     func loadItem(item: ItemSchema) {
-        // Skip if already loaded
-        if loadedItemId == item.uuid, self.item != nil {
+        // Skip if already loaded and not refreshing
+        if loadedItemId == item.uuid, self.item != nil, !isRefreshing {
             return
         }
         
-        isLoading = true
+        isLoading = loadedItemId != item.uuid // Only show loading for initial load
         error = nil
         
         Task {
             do {
                 logger.debug("Loading item details for: \(item.displayTitle)")
+                // Get item (either from cache or network)
                 self.item = try await itemDetailService.fetchItemDetail(id: item.uuid, category: item.category)
                 loadedItemId = item.uuid
+                
+                // If we got data (either from cache or network), start a background refresh
+                if self.item != nil {
+                    isRefreshing = true
+                    await itemDetailService.refreshItemInBackground(id: item.uuid, category: item.category)
+                    isRefreshing = false
+                }
             } catch {
                 logger.error("Failed to load item details: \(error.localizedDescription)")
                 self.error = error

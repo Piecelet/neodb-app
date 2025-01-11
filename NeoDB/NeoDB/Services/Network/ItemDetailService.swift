@@ -194,13 +194,17 @@ class ItemDetailService {
     }
     
     func fetchItemDetail(id: String, category: ItemCategory) async throws -> any ItemDetailProtocol {
+        var shouldRefresh = true
+        
         // Try to get from cache first
         if let cachedItem = try? getCachedItem(id: id, category: category) {
             logger.debug("Cache hit for item: \(id)")
+            shouldRefresh = true
+            // Return cached data immediately
             return cachedItem
         }
         
-        // If not in cache, fetch from network
+        // If not in cache or should refresh, fetch from network
         logger.debug("Cache miss for item: \(id), fetching from network")
         let item = try await fetchItemFromNetwork(id: id, category: category)
         
@@ -330,6 +334,18 @@ class ItemDetailService {
         try? podcastStorage.removeExpiredObjects()
         try? performanceStorage.removeExpiredObjects()
         logger.debug("Removed expired items from all caches")
+    }
+    
+    // Add a new method for background refresh
+    func refreshItemInBackground(id: String, category: ItemCategory) async {
+        do {
+            logger.debug("Background refresh for item: \(id)")
+            let item = try await fetchItemFromNetwork(id: id, category: category)
+            try? cacheItem(item, id: id, category: category)
+            logger.debug("Background refresh completed for item: \(id)")
+        } catch {
+            logger.error("Background refresh failed for item: \(id): \(error.localizedDescription)")
+        }
     }
 }
 
