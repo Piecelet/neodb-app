@@ -25,6 +25,15 @@ The item detail system handles various types of media items including books, mov
    - ExpandableDescriptionView: Collapsible description
    - ItemActionsView: Primary and secondary actions
 
+4. Caching System
+   - Hybrid memory and disk caching using Cache library
+   - Type-safe caching for each media type
+   - Memory cache expiry: 30 minutes
+   - Disk cache expiry: 24 hours
+   - Memory cache limit: 10MB
+   - Disk cache limit: 50MB per type
+   - Automatic cache cleanup for expired items
+
 ## Layout Guidelines
 1. Header Section
    - Cover image (100pt width, 2:3 ratio)
@@ -99,6 +108,13 @@ The item detail system handles various types of media items including books, mov
    - Fixed relative URL resolution
    - Added instance-aware sharing
 
+6. Caching Implementation
+   - Added hybrid caching system
+   - Implemented type-safe storage for each media type
+   - Added cache expiration policies
+   - Implemented cache cleanup methods
+   - Enhanced performance with local caching
+
 ## Best Practices
 1. Visual Design
    - Use system colors and fonts
@@ -120,6 +136,13 @@ The item detail system handles various types of media items including books, mov
    - Intuitive gestures
    - Responsive feedback
    - Accessible controls
+
+4. Caching Strategy
+   - Use memory cache for frequently accessed items
+   - Persist to disk for longer-term storage
+   - Clear expired items automatically
+   - Handle cache misses gracefully
+   - Implement type-safe caching
 
 ## Future Improvements
 - Enhanced image loading states
