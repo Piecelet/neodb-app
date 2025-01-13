@@ -11,7 +11,7 @@ struct OauthToken: Codable {
     let accessToken: String
     let tokenType: String
     let scope: String
-    let createdAt: Date
+    let createdAt: TimeInterval
     
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
