@@ -17,13 +17,12 @@ struct NeoDBApp: App {
             Group {
                 if accountsManager.isAuthenticated {
                     ContentView()
-                        .environmentObject(accountsManager)
                         .environmentObject(router)
                 } else {
                     LoginView()
-                        .environmentObject(accountsManager)
                 }
             }
+            .environmentObject(accountsManager)
             .onOpenURL { url in
                 // First try to handle OAuth callback
                 if url.scheme == "neodb" && url.host == "oauth" {
