@@ -13,7 +13,6 @@ struct LoginView: View {
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
-    @State private var instanceUrl: String = AppConfig.defaultInstance
     @State private var showInstanceInput = false
     
     var body: some View {
@@ -98,10 +97,9 @@ struct LoginView: View {
             Text(errorMessage ?? "An unknown error occurred")
         })
         .sheet(isPresented: $showInstanceInput) {
-            InstanceInputView(selectedInstance: instanceUrl) { newInstance in
+            InstanceInputView(selectedInstance: accountsManager.currentAccount.instance) { newInstance in
                 let account = AppAccount(instance: newInstance, oauthToken: nil)
                 accountsManager.add(account: account)
-                instanceUrl = newInstance
                 showInstanceInput = false
             }
             .presentationDetents([.medium, .large])
@@ -116,7 +114,7 @@ struct LoginView: View {
 
 struct InstanceInputView: View {
     @State private var selectedInstance: String
-    @State private var customInstance: String = ""
+    @AppStorage(\.customInstance) private var customInstance: String
     @Environment(\.dismiss) private var dismiss
     
     let onSubmit: (String) -> Void
@@ -142,7 +140,7 @@ struct InstanceInputView: View {
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .font(.title2)
                 }
             }
@@ -210,6 +208,16 @@ struct InstanceInputView: View {
                                 dismiss()
                             }
                         }
+                        .overlay(
+                            HStack {
+                                Spacer()
+                                if selectedInstance == customInstance && !customInstance.isEmpty {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                        .padding(.trailing, 8)
+                                }
+                            }
+                        )
                 } header: {
                     Text("Custom Instance")
                 } footer: {
