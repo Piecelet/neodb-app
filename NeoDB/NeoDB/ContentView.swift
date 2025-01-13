@@ -65,7 +65,7 @@ struct ContentView: View {
             
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
-                ProfileView(accountsManager: accountsManager)
+                ProfileView()
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }

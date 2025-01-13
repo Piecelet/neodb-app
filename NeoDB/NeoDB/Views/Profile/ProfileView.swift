@@ -86,6 +86,7 @@ class ProfileViewModel: ObservableObject {
 }
 
 struct ProfileView: View {
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel: ProfileViewModel
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -93,11 +94,8 @@ struct ProfileView: View {
 
     private let avatarSize: CGFloat = 60
 
-    init(accountsManager: AppAccountsManager) {
-        _viewModel = StateObject(
-            wrappedValue: ProfileViewModel(
-                accountsManager: accountsManager
-            ))
+    init() {
+        _viewModel = StateObject(wrappedValue: ProfileViewModel(accountsManager: AppAccountsManager()))
     }
 
     var body: some View {
