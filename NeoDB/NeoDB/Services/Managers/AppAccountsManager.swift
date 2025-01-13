@@ -104,12 +104,12 @@ class AppAccountsManager: ObservableObject {
                 throw AccountError.invalidURL
             }
             
-            logger.debug("Generated OAuth URL for instance: \(instance)")
+            logger.debug("Generated OAuth URL")
             return url
             
         } catch {
             isAuthenticating = false
-            logger.error("Authentication failed: \(error.localizedDescription)")
+            logger.error("Authentication failed")
             throw error
         }
     }
@@ -146,7 +146,7 @@ class AppAccountsManager: ObservableObject {
             isAuthenticated = true
             
         } catch {
-            logger.error("Token exchange failed: \(error.localizedDescription)")
+            logger.error("Token exchange failed")
             throw error
         }
         
@@ -160,7 +160,7 @@ class AppAccountsManager: ObservableObject {
         instance: String
     ) async throws -> OauthToken {
         let networkClient = NetworkClient(instance: instance)
-        let endpoint = AuthEndpoints.token(
+        let endpoint = OauthEndpoint.token(
             code: code,
             clientId: client.clientId,
             clientSecret: client.clientSecret,
@@ -179,10 +179,10 @@ class AppAccountsManager: ObservableObject {
                 throw AccountError.invalidResponse
             case .httpError(let code):
                 throw AccountError.tokenRefreshFailed("HTTP error: \(code)")
-            case .decodingError(let decodingError):
-                throw AccountError.tokenRefreshFailed("Failed to decode response: \(decodingError.localizedDescription)")
-            case .networkError(let networkError):
-                throw AccountError.tokenRefreshFailed("Network error: \(networkError.localizedDescription)")
+            case .decodingError:
+                throw AccountError.tokenRefreshFailed("Failed to decode response")
+            case .networkError:
+                throw AccountError.tokenRefreshFailed("Network error")
             case .unauthorized:
                 throw AccountError.tokenRefreshFailed("Unauthorized")
             }
