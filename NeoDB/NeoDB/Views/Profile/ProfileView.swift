@@ -11,15 +11,15 @@ import Kingfisher
 @MainActor
 class ProfileViewModel: ObservableObject {
     private let userService: UserService
-    private let authService: AuthService
+    private let accountsManager: AppAccountsManager
     
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
     
-    init(userService: UserService, authService: AuthService) {
+    init(userService: UserService, accountsManager: AppAccountsManager) {
         self.userService = userService
-        self.authService = authService
+        self.accountsManager = accountsManager
     }
     
     func loadUserProfile(forceRefresh: Bool = false) async {
@@ -39,7 +39,7 @@ class ProfileViewModel: ObservableObject {
     
     func logout() {
         userService.clearCache()
-        authService.logout()
+        accountsManager.delete(account: accountsManager.currentAccount)
     }
 }
 
@@ -51,11 +51,11 @@ struct ProfileView: View {
     
     private let avatarSize: CGFloat = 60
     
-    init(authService: AuthService) {
-        let userService = UserService(authService: authService)
+    init(accountsManager: AppAccountsManager) {
+        let userService = UserService(accountsManager: accountsManager)
         _viewModel = StateObject(wrappedValue: ProfileViewModel(
             userService: userService,
-            authService: authService
+            accountsManager: accountsManager
         ))
     }
     

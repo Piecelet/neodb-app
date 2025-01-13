@@ -22,7 +22,7 @@ class AppAccountsManager: ObservableObject {
             Self.latestCurrentAccountKey = currentAccount.id
             currentClient = NetworkClient(
                 instance: currentAccount.instance,
-                accessToken: currentAccount.oauthToken?.accessToken
+                oauthToken: currentAccount.oauthToken
             )
         }
     }
@@ -50,7 +50,7 @@ class AppAccountsManager: ObservableObject {
         currentAccount = defaultAccount
         currentClient = NetworkClient(
             instance: defaultAccount.instance,
-            accessToken: defaultAccount.oauthToken?.accessToken
+            oauthToken: defaultAccount.oauthToken
         )
         isAuthenticated = defaultAccount.oauthToken != nil
     }
