@@ -238,7 +238,7 @@ class AuthService: ObservableObject {
             throw AuthError.registrationFailed("Registration failed with status code: \(httpResponse.statusCode)")
         }
         
-        let registrationResponse = try JSONDecoder().decode(AppRegistrationResponse.self, from: data)
+        let registrationResponse = try JSONDecoder().decode(AppClientResponse.self, from: data)
         
         // Save the client credentials for this instance
 //        let client = InstanceClient(

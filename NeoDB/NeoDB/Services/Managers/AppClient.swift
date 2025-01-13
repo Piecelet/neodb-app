@@ -112,7 +112,7 @@ struct AppClient: Codable, Identifiable {
 
         do {
             let response = try await networkClient.fetch(
-                endpoint, type: AppRegistrationResponse.self)
+                endpoint, type: AppClientResponse.self)
 
             let client = AppClient(
                 clientId: response.clientId,
