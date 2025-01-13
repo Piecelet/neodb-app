@@ -11,7 +11,7 @@ import OSLog
 
 struct AppClient: Codable, Identifiable {
     private static let logger = Logger.managers.client
-    private static let keychain = KeychainSwift(keyPrefix: KeychainKeys.client(nil).prefix)
+    private static let keychain = KeychainSwift(keyPrefix: KeychainPrefixes.client)
     
     let id: String
     let name: String
@@ -23,7 +23,9 @@ struct AppClient: Codable, Identifiable {
     let instance: String
     
     var key: String {
-        KeychainKeys.client(instance).key
+        let key = instance.lowercased()
+        Self.logger.debug("Generated key for client: \(key)")
+        return key
     }
     
     func save() throws {
@@ -109,5 +111,45 @@ struct AppClient: Codable, Identifiable {
                 throw AccountError.registrationFailed("Unauthorized")
             }
         }
+    }
+    
+    static func retrieveAll() throws -> [AppClient] {
+        let basePrefix = KeychainPrefixes.client
+        let keys = keychain.allKeys
+        
+        logger.debug("Keychain access group: \(keychain.accessGroup ?? "nil")")
+        logger.debug("All keychain keys: \(keys)")
+        
+        let filteredKeys = keys.filter { $0.hasPrefix(basePrefix) }
+        var clients: [AppClient] = []
+        
+        logger.debug("Retrieving all clients with base prefix: \(basePrefix)")
+        logger.debug("Found \(keys.count) total keys, \(filteredKeys.count) matching prefix")
+        
+        for key in filteredKeys {
+            logger.debug("Processing key: \(key)")
+            if let data = keychain.getData(key) {
+                if let jsonString = String(data: data, encoding: .utf8) {
+                    logger.debug("Retrieved data for key \(key): \(jsonString)")
+                }
+                
+                do {
+                    let client = try JSONDecoder().decode(AppClient.self, from: data)
+                    clients.append(client)
+                    logger.debug("Successfully decoded client for key: \(key), instance: \(client.instance)")
+                } catch {
+                    logger.error("Failed to decode client data for key: \(key), error: \(error.localizedDescription)")
+                    if let jsonString = String(data: data, encoding: .utf8) {
+                        logger.error("Failed to decode JSON: \(jsonString)")
+                    }
+                    throw error
+                }
+            } else {
+                logger.error("No data found for key: \(key)")
+            }
+        }
+
+        logger.debug("Retrieved \(clients.count) client(s) from \(filteredKeys.count) keys")
+        return clients
     }
 }
