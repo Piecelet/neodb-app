@@ -7,11 +7,11 @@
 
 import Foundation
 
-enum AppsEndpoints {
+enum AppsEndpoint {
   case create
 }
 
-extension AppsEndpoints: NetworkEndpoint {
+extension AppsEndpoint: NetworkEndpoint {
   var path: String {
     switch self {
     case .create:
