@@ -18,9 +18,9 @@ struct AppAccount: Codable, Identifiable {
     
     var key: String {
         if let oauthToken {
-            return "\(instance):\(oauthToken.createdAt)"
+            return KeychainKeys.account("\(instance):\(oauthToken.createdAt)").key
         } else {
-            return "\(instance):anonymous:\(Date().timeIntervalSince1970)"
+            return KeychainKeys.account("\(instance):anonymous:\(Date().timeIntervalSince1970)").key
         }
     }
     
@@ -36,7 +36,7 @@ struct AppAccount: Codable, Identifiable {
     }
     
     static func retrieveAll() throws -> [AppAccount] {
-        let keychain = KeychainSwift()
+        let keychain = KeychainSwift(keyPrefix: KeychainKeys.account(nil).prefix)
         let decoder = JSONDecoder()
         let keys = keychain.allKeys
         var accounts: [AppAccount] = []

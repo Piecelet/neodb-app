@@ -14,7 +14,6 @@ import KeychainSwift
 class AppRegisterClient {
     private let logger = Logger.networkAuth
     private let keychain = KeychainSwift(keyPrefix: "neodb_")
-    private let redirectUri = "neodb://oauth/callback"
     
     func registerApp(instance: String) async throws -> InstanceClient {
         // Check existing client credentials
