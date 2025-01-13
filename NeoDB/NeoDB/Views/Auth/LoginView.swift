@@ -124,6 +124,7 @@ struct LoginView: View {
 
 struct InstanceInputView: View {
     @State private var selectedInstance: String
+    @State private var customInstance: String = ""
     @Environment(\.dismiss) private var dismiss
     
     let onSubmit: (String) -> Void
@@ -170,8 +171,34 @@ struct InstanceInputView: View {
                 }
             } header: {
                 Text("Choose an Instance")
+            }
+            
+            Section {
+                VStack(alignment: .leading, spacing: 8) {
+                    TextField("Enter custom instance", text: $customInstance)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .keyboardType(.URL)
+                    
+                    Button(action: {
+                        if !customInstance.isEmpty {
+                            selectedInstance = customInstance
+                            onSubmit(customInstance)
+                            dismiss()
+                        }
+                    }) {
+                        Text("Use Custom Instance")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(customInstance.isEmpty)
+                }
+                .padding(.vertical, 8)
+            } header: {
+                Text("Custom Instance")
             } footer: {
-                Text("Select the NeoDB instance you want to connect to.")
+                Text("Enter your own instance URL if it's not listed above.")
             }
         }
         .listStyle(.insetGrouped)
@@ -182,3 +209,4 @@ struct InstanceInputView: View {
     @ObserveInjection var forceRedraw
     #endif
 }
+
