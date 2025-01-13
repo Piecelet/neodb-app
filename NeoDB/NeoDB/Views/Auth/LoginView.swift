@@ -199,26 +199,17 @@ struct InstanceInputView: View {
                 }
                 
                 Section {
-                    HStack {
-                        TextField("instance.social", text: $customInstance)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .autocapitalization(.none)
-                            .disableAutocorrection(true)
-                            .keyboardType(.URL)
-                        
-                        Button(action: {
+                    TextField("instance.social", text: $customInstance)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .keyboardType(.URL)
+                        .onSubmit {
                             if !customInstance.isEmpty {
                                 selectedInstance = customInstance
                                 onSubmit(customInstance)
                                 dismiss()
                             }
-                        }) {
-                            Text("Connect")
-                                .fontWeight(.medium)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(customInstance.isEmpty)
-                    }
                 } header: {
                     Text("Custom Instance")
                 } footer: {
