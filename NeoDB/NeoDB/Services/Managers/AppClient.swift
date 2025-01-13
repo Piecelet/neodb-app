@@ -22,7 +22,7 @@ struct AppClient: Codable, Identifiable {
     let vapidKey: String
     let instance: String
     
-    private var cleanInstanceHost: String {
+    private static func cleanInstanceHost(from instance: String) -> String {
         if let components = URLComponents(string: instance),
            let host = components.host {
             return host
@@ -34,7 +34,7 @@ struct AppClient: Codable, Identifiable {
     }
     
     var key: String {
-        let key = cleanInstanceHost
+        let key = Self.cleanInstanceHost(from: instance)
         Self.logger.debug("Generated key for client")
         return key
     }
@@ -56,7 +56,7 @@ struct AppClient: Codable, Identifiable {
     }
     
     static func retrieve(for instance: String) throws -> AppClient? {
-        let key = instance.lowercased()
+        let key = cleanInstanceHost(from: instance)
         guard let data = keychain.getData(key) else {
             return nil
         }
@@ -114,9 +114,9 @@ struct AppClient: Codable, Identifiable {
                 throw AccountError.invalidResponse
             case .httpError(let code):
                 throw AccountError.registrationFailed("HTTP error: \(code)")
-            case .decodingError(let decodingError):
+            case .decodingError:
                 throw AccountError.registrationFailed("Failed to decode response")
-            case .networkError(let networkError):
+            case .networkError:
                 throw AccountError.registrationFailed("Network error")
             case .unauthorized:
                 throw AccountError.registrationFailed("Unauthorized")
