@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct InstanceApp: Codable, Identifiable {
+struct AppClientResponse: Codable, Identifiable {
   let id: String
   let name: String
   let website: URL?

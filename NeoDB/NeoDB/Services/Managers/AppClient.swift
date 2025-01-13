@@ -11,13 +11,14 @@ import OSLog
 
 struct AppClient: Codable, Identifiable {
     private static let logger = Logger.managers.client
+    let id: String
+    let name: String
+    let website: URL?
+    let redirectUri: String
     let clientId: String
     let clientSecret: String
+    let vapidKey: String
     let instance: String
-
-    var id: String {
-        key
-    }
 
     var key: String {
         return KeychainKeys.client(cleanInstanceHost).key
@@ -35,6 +36,17 @@ struct AppClient: Codable, Identifiable {
         }
         // If not a valid URL, return as is (might be just a hostname)
         return instance
+    }
+
+    init(response: AppClientResponse, instance: String) {
+        self.id = response.id
+        self.name = response.name
+        self.website = response.website
+        self.redirectUri = response.redirectUri
+        self.clientId = response.clientId
+        self.clientSecret = response.clientSecret
+        self.vapidKey = response.vapidKey
+        self.instance = instance
     }
 
     func save() throws {
@@ -115,8 +127,7 @@ struct AppClient: Codable, Identifiable {
                 endpoint, type: AppClientResponse.self)
 
             let client = AppClient(
-                clientId: response.clientId,
-                clientSecret: response.clientSecret,
+                response: response,
                 instance: instance
             )
 
