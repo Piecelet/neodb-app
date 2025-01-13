@@ -1,20 +1,6 @@
 import Foundation
 import OSLog
 
-protocol NetworkEndpoint {
-    var path: String { get }
-    var method: HTTPMethod { get }
-    var queryItems: [URLQueryItem]? { get }
-    var body: Data? { get }
-    var headers: [String: String]? { get }
-}
-
-extension NetworkEndpoint {
-    var headers: [String: String]? {
-        return nil
-    }
-}
-
 enum HTTPMethod: String {
     case get = "GET"
     case post = "POST"
@@ -69,7 +55,12 @@ class NetworkClient {
         let url = try makeURL(endpoint: endpoint)
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
-        request.httpBody = endpoint.body
+        
+        // Handle request body and content type
+        if let body = endpoint.body {
+            request.setValue(endpoint.bodyContentType?.headerValue, forHTTPHeaderField: "Content-Type")
+            request.httpBody = body
+        }
         
         endpoint.headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
