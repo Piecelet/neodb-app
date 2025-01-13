@@ -57,7 +57,7 @@ class ProfileViewModel: ObservableObject {
         }
         
         logger.debug("Fetching user profile from network")
-        let user = try await accountsManager.currentClient.fetch(UserEndpoints.me, type: User.self)
+        let user = try await accountsManager.currentClient.fetch(UserEndpoint.me, type: User.self)
         
         // Cache the user
         try? await cacheService.cache(user, forKey: cacheKey, type: User.self)
@@ -121,7 +121,7 @@ struct ProfileView: View {
             Section {
                 HStack(spacing: 16) {
                     if let user = viewModel.user {
-                        KFImage(URL(string: user.avatar))
+                        KFImage(user.avatar)
                             .placeholder {
                                 placeholderAvatar
                             }
