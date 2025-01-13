@@ -48,6 +48,12 @@ extension Logger {
     // MARK: - Performance
     /// Logs related to performance metrics
     static let performance = Logger(subsystem: subsystem, category: "performance")
+    
+    // MARK: - Managers
+    enum managers {
+        static let account = Logger(subsystem: subsystem, category: "manager.account")
+        static let client = Logger(subsystem: subsystem, category: "manager.client")
+    }
 }
 
 // MARK: - Convenience Methods

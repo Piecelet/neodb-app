@@ -1,50 +1,113 @@
 //
-//  AppRegisterClient.swift
+//  AppClient.swift
 //  NeoDB
 //
 //  Created by citron on 1/13/25.
 //
 
 import Foundation
-import OSLog
 import KeychainSwift
+import OSLog
 
+struct AppClient: Codable, Identifiable {
+    let clientId: String
+    let clientSecret: String
+    let instance: String
 
-@MainActor
-class AppRegisterClient {
-    private let logger = Logger.networkAuth
-    private let keychain = KeychainSwift(keyPrefix: "neodb_")
-    
-    func registerApp(instance: String) async throws -> InstanceClient {
-        // Check existing client credentials
-        if let client = getInstanceClient(for: instance) {
-            logger.debug("Using existing client credentials for instance: \(instance)")
+    var id: String {
+        key
+    }
+
+    var key: String {
+        return KeychainKeys.client(cleanInstanceHost).key
+    }
+
+    private var cleanInstanceHost: String {
+        if let components = URLComponents(string: instance),
+            let host = components.host
+        {
+            return host
+        } else if let components = URLComponents(string: "https://\(instance)"),
+            let host = components.host
+        {
+            return host
+        }
+        // If not a valid URL, return as is (might be just a hostname)
+        return instance
+    }
+
+    func save() throws {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(self)
+        let keychain = KeychainSwift()
+
+        if !keychain.set(data, forKey: key) {
+            throw AccountError.keyChainError(
+                "Failed to save client credentials")
+        }
+    }
+
+    func delete() {
+        KeychainSwift().delete(key)
+    }
+
+    static func retrieve(for instance: String) -> AppClient? {
+        let cleanInstance = cleanInstanceHost(from: instance)
+        let key = KeychainKeys.client(cleanInstance).key
+
+        guard let data = KeychainSwift().getData(key),
+            let client = try? JSONDecoder().decode(AppClient.self, from: data)
+        else {
+            return nil
+        }
+        return client
+    }
+
+    static func retrieveAll() -> [AppClient] {
+        let keychain = KeychainSwift(keyPrefix: KeychainKeys.client(nil).prefix)
+        let keys = keychain.allKeys
+        return keys.compactMap { key in
+            guard let data = keychain.getData(key),
+                let client = try? JSONDecoder().decode(
+                    AppClient.self, from: data)
+            else {
+                return nil
+            }
             return client
         }
-        
-        // Create network client for registration
-        let networkClient = NetworkClient(instance: instance)
+    }
+
+    static func deleteAll() {
+        let keychain = KeychainSwift(keyPrefix: KeychainKeys.client(nil).prefix)
+        let keys = keychain.allKeys
+        for key in keys {
+            keychain.delete(key)
+        }
+    }
+
+    static func register(instance: String) async throws -> AppClient {
+        // Check existing client
+        if let existingClient = retrieve(for: instance) {
+            return existingClient
+        }
+
+        // Create new client
+        let networkClient = await NetworkClient(instance: instance)
         let endpoint = AppsEndpoints.create
-        
+
         do {
-            // Send registration request
-            logger.debug("Registering app with instance: \(instance)")
-            let response = try await networkClient.fetch(endpoint, type: AppRegistrationResponse.self)
-            
-            // Create and save client credentials
-            let client = InstanceClient(
+            let response = try await networkClient.fetch(
+                endpoint, type: AppRegistrationResponse.self)
+
+            let client = AppClient(
                 clientId: response.clientId,
                 clientSecret: response.clientSecret,
                 instance: instance
             )
-            
-            if !saveInstanceClient(client) {
-                throw AccountError.keyChainError("Failed to save client credentials")
-            }
-            
-            logger.debug("App registered successfully with client_id: \(response.clientId) for instance: \(instance)")
+
+            try client.save()
             return client
-            
+
         } catch let error as NetworkError {
             switch error {
             case .invalidURL:
@@ -54,38 +117,25 @@ class AppRegisterClient {
             case .httpError(let code):
                 throw AccountError.registrationFailed("HTTP error: \(code)")
             case .decodingError(let decodingError):
-                throw AccountError.registrationFailed("Failed to decode response: \(decodingError.localizedDescription)")
+                throw AccountError.registrationFailed(
+                    "Failed to decode response: \(decodingError.localizedDescription)"
+                )
             case .networkError(let networkError):
-                throw AccountError.registrationFailed("Network error: \(networkError.localizedDescription)")
+                throw AccountError.registrationFailed(
+                    "Network error: \(networkError.localizedDescription)")
             case .unauthorized:
                 throw AccountError.registrationFailed("Unauthorized")
             }
         }
     }
-    
-    private func getInstanceClient(for instance: String) -> InstanceClient? {
-        guard let data = keychain.getData("client_\(instance)"),
-              let client = try? JSONDecoder().decode(InstanceClient.self, from: data)
-        else {
-            logger.debug("No client credentials found for instance: \(instance)")
-            return nil
+
+    private static func cleanInstanceHost(from instance: String) -> String {
+        if let components = URLComponents(string: instance),
+            let host = components.host
+        {
+            return host
         }
-        logger.debug("Retrieved client credentials for instance: \(instance)")
-        return client
-    }
-    
-    private func saveInstanceClient(_ client: InstanceClient) -> Bool {
-        guard let data = try? JSONEncoder().encode(client) else {
-            logger.error("Failed to encode client credentials for instance: \(client.instance)")
-            return false
-        }
-        
-        let saved = keychain.set(data, forKey: "client_\(client.instance)")
-        if saved {
-            logger.debug("Saved client credentials for instance: \(client.instance)")
-        } else {
-            logger.error("Failed to save client credentials to keychain for instance: \(client.instance)")
-        }
-        return saved
+        // If not a valid URL, return as is (might be just a hostname)
+        return instance
     }
 }
