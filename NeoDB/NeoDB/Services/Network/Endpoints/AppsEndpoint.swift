@@ -8,7 +8,7 @@
 import Foundation
 
 enum AppsEndpoints {
-  case create(redirectUri: String)
+  case create
 }
 
 extension AppsEndpoints: NetworkEndpoint {

@@ -9,6 +9,7 @@ import Foundation
 import OSLog
 import KeychainSwift
 
+
 @MainActor
 class AppRegisterClient {
     private let logger = Logger.networkAuth
@@ -22,59 +23,45 @@ class AppRegisterClient {
             return client
         }
         
-        // Build registration request
-        guard let url = URL(string: "https://\(instance)/api/v1/apps") else {
-            throw AccountError.invalidURL
-        }
+        // Create network client for registration
+        let networkClient = NetworkClient(instance: instance)
+        let endpoint = AppsEndpoints.create
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        
-        let parameters = [
-            "client_name": "NeoDB iOS App",
-            "redirect_uris": redirectUri,
-            "website": "https://github.com/citron/neodb-app"
-        ]
-        
-        let body = parameters
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: "&")
-        
-        request.httpBody = body.data(using: .utf8)
-        
-        // Send registration request
-        logger.debug("Registering app with instance: \(instance)")
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw AccountError.invalidResponse
-        }
-        
-        guard httpResponse.statusCode == 200 else {
-            if let errorMessage = String(data: data, encoding: .utf8) {
-                logger.error("Registration failed for instance \(instance): \(errorMessage)")
-                throw AccountError.registrationFailed(errorMessage)
+        do {
+            // Send registration request
+            logger.debug("Registering app with instance: \(instance)")
+            let response = try await networkClient.fetch(endpoint, type: AppRegistrationResponse.self)
+            
+            // Create and save client credentials
+            let client = InstanceClient(
+                clientId: response.clientId,
+                clientSecret: response.clientSecret,
+                instance: instance
+            )
+            
+            if !saveInstanceClient(client) {
+                throw AccountError.keyChainError("Failed to save client credentials")
             }
-            throw AccountError.registrationFailed("Registration failed with status code: \(httpResponse.statusCode)")
+            
+            logger.debug("App registered successfully with client_id: \(response.clientId) for instance: \(instance)")
+            return client
+            
+        } catch let error as NetworkError {
+            switch error {
+            case .invalidURL:
+                throw AccountError.invalidURL
+            case .invalidResponse:
+                throw AccountError.invalidResponse
+            case .httpError(let code):
+                throw AccountError.registrationFailed("HTTP error: \(code)")
+            case .decodingError(let decodingError):
+                throw AccountError.registrationFailed("Failed to decode response: \(decodingError.localizedDescription)")
+            case .networkError(let networkError):
+                throw AccountError.registrationFailed("Network error: \(networkError.localizedDescription)")
+            case .unauthorized:
+                throw AccountError.registrationFailed("Unauthorized")
+            }
         }
-        
-        // Parse response
-        let registrationResponse = try JSONDecoder().decode(AppRegistrationResponse.self, from: data)
-        
-        // Create and save client credentials
-        let client = InstanceClient(
-            clientId: registrationResponse.clientId,
-            clientSecret: registrationResponse.clientSecret,
-            instance: instance
-        )
-        
-        if !saveInstanceClient(client) {
-            throw AccountError.keyChainError("Failed to save client credentials")
-        }
-        
-        logger.debug("App registered successfully with client_id: \(registrationResponse.clientId) for instance: \(instance)")
-        return client
     }
     
     private func getInstanceClient(for instance: String) -> InstanceClient? {
