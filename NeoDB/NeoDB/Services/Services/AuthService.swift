@@ -21,13 +21,6 @@ enum AuthError: Error {
     case noClientCredentials
 }
 
-struct AppRegistrationResponse: Codable {
-    let client_id: String
-    let client_secret: String
-    let name: String
-    let redirect_uri: String
-}
-
 @MainActor
 class AuthService: ObservableObject {
     private let logger = Logger.networkAuth
@@ -248,14 +241,14 @@ class AuthService: ObservableObject {
         let registrationResponse = try JSONDecoder().decode(AppRegistrationResponse.self, from: data)
         
         // Save the client credentials for this instance
-        let client = InstanceClient(
-            clientId: registrationResponse.client_id,
-            clientSecret: registrationResponse.client_secret,
-            instance: currentInstance
-        )
-        saveInstanceClient(client)
-        
-        logger.debug("App registered successfully with client_id: \(registrationResponse.client_id) for instance: \(self.currentInstance)")
+//        let client = InstanceClient(
+//            clientId: registrationResponse.client_id,
+//            clientSecret: registrationResponse.client_secret,
+//            instance: currentInstance
+//        )
+//        saveInstanceClient(client)
+//        
+//        logger.debug("App registered successfully with client_id: \(registrationResponse.client_id) for instance: \(self.currentInstance)")
     }
     
     func handleCallback(url: URL) async throws {
