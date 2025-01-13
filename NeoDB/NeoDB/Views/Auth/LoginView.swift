@@ -13,7 +13,7 @@ struct LoginView: View {
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
-    @State private var instanceUrl: String = "neodb.social"
+    @State private var instanceUrl: String = AppConfig.defaultInstance
     @State private var showInstanceInput = false
     
     var body: some View {
@@ -104,7 +104,7 @@ struct LoginView: View {
                 instanceUrl = newInstance
                 showInstanceInput = false
             }
-            .presentationDetents([.medium])
+            .presentationDetents([.medium, .large])
         }
         .enableInjection()
     }
@@ -122,10 +122,10 @@ struct InstanceInputView: View {
     let onSubmit: (String) -> Void
     
     private let instances = [
-        (name: "NeoDB", host: "neodb.social", description: "中文"),
-        (name: "Eggplant", host: "eggplant.place", description: "English Test Server"),
-        (name: "ReviewDB", host: "reviewdb.app", description: "International"),
-        (name: "Minreol", host: "minreol.dk", description: "German")
+        (name: "NeoDB", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文"]),
+        (name: "Eggplant", host: "eggplant.place", description: "reviews about book, film, music, podcast and game.", tags: ["English", "Beta"]),
+        (name: "ReviewDB", host: "reviewdb.app", description: "reviews about book, film, music, podcast and game.", tags: ["International"]),
+        (name: "Minreol", host: "minreol.dk", description: "MinReol er et dansk fællesskab centreret om bøger, film, TV-serier, spil og podcasts.", tags: ["German"])
     ]
     
     init(selectedInstance: String, onSubmit: @escaping (String) -> Void) {
@@ -157,15 +157,31 @@ struct InstanceInputView: View {
                             dismiss()
                         }) {
                             HStack {
-                                VStack(alignment: .leading) {
-                                    Text(instance.name)
-                                        .font(.body)
-                                    Text(instance.host)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 4) {
+                                        Text(instance.name)
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                        Text(instance.host)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Text(instance.description)
                                         .font(.caption)
                                         .foregroundColor(.secondary)
-                                    Text(instance.description)
-                                        .font(.caption2)
-                                        .foregroundColor(.secondary)
+                                        .lineLimit(2)
+                                    
+                                    HStack(spacing: 4) {
+                                        ForEach(instance.tags, id: \.self) { tag in
+                                            Text(tag)
+                                                .font(.caption2)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Color.secondary.opacity(0.1))
+                                                .cornerRadius(4)
+                                        }
+                                    }
                                 }
                                 
                                 Spacer()
@@ -183,8 +199,8 @@ struct InstanceInputView: View {
                 }
                 
                 Section {
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("Enter custom instance", text: $customInstance)
+                    HStack {
+                        TextField("instance.social", text: $customInstance)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .autocapitalization(.none)
                             .disableAutocorrection(true)
@@ -197,17 +213,18 @@ struct InstanceInputView: View {
                                 dismiss()
                             }
                         }) {
-                            Text("Use Custom Instance")
-                                .frame(maxWidth: .infinity)
+                            Text("Connect")
+                                .fontWeight(.medium)
                         }
-                        .buttonStyle(.bordered)
+                        .buttonStyle(.borderedProminent)
                         .disabled(customInstance.isEmpty)
                     }
-                    .padding(.vertical, 8)
                 } header: {
                     Text("Custom Instance")
                 } footer: {
                     Text("Enter your own instance URL if it's not listed above.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
             .listStyle(.insetGrouped)

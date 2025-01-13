@@ -33,7 +33,7 @@ class AppAccountsManager: ObservableObject {
 
     init() {
         var defaultAccount = AppAccount(
-            instance: "neodb.social", oauthToken: nil)
+            instance: AppConfig.defaultInstance, oauthToken: nil)
         do {
             let keychainAccounts = try AppAccount.retrieveAll()
             availableAccounts = keychainAccounts

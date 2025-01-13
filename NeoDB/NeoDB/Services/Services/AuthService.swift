@@ -372,7 +372,7 @@ class AuthService: ObservableObject {
         // Clear current instance
         UserDefaults.standard.removeObject(forKey: "neodb.currentInstance")
         // Reset state
-        currentInstance = "neodb.social"
+        currentInstance = AppConfig.defaultInstance
         isAuthenticated = false
         accessToken = nil
         logger.debug("Cleared all data")
