@@ -7,19 +7,21 @@
 
 import SwiftUI
 import Kingfisher
+import OSLog
 
 @MainActor
 class ProfileViewModel: ObservableObject {
-    private let userService: UserService
     private let accountsManager: AppAccountsManager
+    private let cacheService: CacheService
+    private let logger = Logger.networkUser
     
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
     
-    init(userService: UserService, accountsManager: AppAccountsManager) {
-        self.userService = userService
+    init(accountsManager: AppAccountsManager) {
         self.accountsManager = accountsManager
+        self.cacheService = CacheService()
     }
     
     func loadUserProfile(forceRefresh: Bool = false) async {
@@ -29,7 +31,7 @@ class ProfileViewModel: ObservableObject {
         error = nil
         
         do {
-            user = try await userService.getCurrentUser(forceRefresh: forceRefresh)
+            user = try await getCurrentUser(forceRefresh: forceRefresh)
         } catch {
             self.error = error.localizedDescription
         }
@@ -37,8 +39,38 @@ class ProfileViewModel: ObservableObject {
         isLoading = false
     }
     
+    private func getCurrentUser(forceRefresh: Bool = false) async throws -> User {
+        let cacheKey = "\(accountsManager.currentAccount.instance)_user"
+        
+        // Return cached user if available and not forcing refresh
+        if !forceRefresh, let cachedUser = try? await cacheService.retrieve(
+            forKey: cacheKey,
+            type: User.self
+        ) {
+            logger.debug("Returning cached user for instance: \(accountsManager.currentAccount.instance)")
+            return cachedUser
+        }
+        
+        guard accountsManager.isAuthenticated else {
+            logger.error("No access token available")
+            throw NetworkError.unauthorized
+        }
+        
+        logger.debug("Fetching user profile from network")
+        let user = try await accountsManager.currentClient.fetch(UserEndpoints.me, type: User.self)
+        
+        // Cache the user
+        try? await cacheService.cache(user, forKey: cacheKey, type: User.self)
+        logger.debug("Cached user profile for instance: \(accountsManager.currentAccount.instance)")
+        
+        return user
+    }
+    
     func logout() {
-        userService.clearCache()
+        Task {
+            try? await cacheService.remove(forKey: "\(accountsManager.currentAccount.instance)_user", type: User.self)
+            logger.debug("Cleared user cache")
+        }
         accountsManager.delete(account: accountsManager.currentAccount)
     }
 }
@@ -52,9 +84,7 @@ struct ProfileView: View {
     private let avatarSize: CGFloat = 60
     
     init(accountsManager: AppAccountsManager) {
-        let userService = UserService(accountsManager: accountsManager)
         _viewModel = StateObject(wrappedValue: ProfileViewModel(
-            userService: userService,
             accountsManager: accountsManager
         ))
     }

@@ -72,14 +72,7 @@ struct ContentView: View {
             
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
-                /* Temporarily disabled during migration
-                ProfileView(authService: authService)
-                    .navigationDestination(for: RouterDestination.self) { destination in
-                        destinationView(for: destination)
-                    }
-                */
-                Text("Profile")  // TODO: Update ProfileView to use AppAccountsManager
-                    .navigationTitle("Profile")
+                ProfileView(accountsManager: accountsManager)
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
