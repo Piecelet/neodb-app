@@ -53,6 +53,7 @@ extension Logger {
     enum managers {
         static let account = Logger(subsystem: subsystem, category: "manager.account")
         static let client = Logger(subsystem: subsystem, category: "manager.client")
+        static let accountsManager = Logger(subsystem: subsystem, category: "manager.accountsManager")
     }
 }
 

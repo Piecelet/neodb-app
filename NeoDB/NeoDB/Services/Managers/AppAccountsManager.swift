@@ -10,7 +10,7 @@ import OSLog
 
 @MainActor
 class AppAccountsManager: ObservableObject {
-    private let logger = Logger.managers.account
+    private let logger = Logger.managers.accountsManager
     private let redirectUri = AppConfig.OAuth.redirectUri
     private var oauthClient: AppClient?
     
