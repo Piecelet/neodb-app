@@ -1,11 +1,18 @@
+//
+//  TimelinesEndpoint.swift
+//  NeoDB
+//
+//  Created by citron on 1/13/25.
+//
+
 import Foundation
 
-enum TimelineEndpoint {
+enum TimelinesEndpoint {
     case pub(sinceId: String?, maxId: String?, minId: String?, local: Bool)
     case home(sinceId: String?, maxId: String?, minId: String?)
 }
 
-extension TimelineEndpoint: NetworkEndpoint {
+extension TimelinesEndpoint: NetworkEndpoint {
     var path: String {
         switch self {
         case .pub:
