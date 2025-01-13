@@ -19,7 +19,7 @@ enum RouterDestination: Hashable {
     case userProfile(id: String)
     case userProfileWithUser(user: User)
     case statusDetail(id: String)
-    case statusDetailWithStatus(status: Status)
+    case statusDetailWithStatus(status: MastodonStatus)
     case hashTag(tag: String)
     
     // Lists
@@ -97,8 +97,8 @@ enum RouterDestination: Hashable {
 
 enum SheetDestination: Identifiable {
     case newStatus
-    case editStatus(status: Status)
-    case replyToStatus(status: Status)
+    case editStatus(status: MastodonStatus)
+    case replyToStatus(status: MastodonStatus)
     case addToShelf(item: ItemSchema)
     case editShelfItem(mark: MarkSchema)
     
@@ -194,7 +194,7 @@ class Router: ObservableObject {
         return false
     }
     
-    func handleStatus(status: Status, url: URL) -> Bool {
+    func handleStatus(status: MastodonStatus, url: URL) -> Bool {
         logger.debug("Handling status URL: \(url.absoluteString)")
         
         let pathComponents = url.pathComponents

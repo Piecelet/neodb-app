@@ -13,7 +13,7 @@ class HomeViewModel: ObservableObject {
     private let timelineService: TimelineService
     private let logger = Logger.home
     
-    @Published var statuses: [Status] = []
+    @Published var statuses: [MastodonStatus] = []
     @Published var isLoading = false
     @Published var error: String?
     @Published var detailedError: String?

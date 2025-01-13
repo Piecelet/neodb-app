@@ -34,6 +34,7 @@ protocol AnyMastodonStatus {
     var repliesCount: Int { get }
     var reblogsCount: Int { get }
     var favouritesCount: Int { get }
+    var tags: [MastodonTag] { get }
     var card: MastodonCard? { get }
     var favourited: Bool? { get }
     var reblogged: Bool? { get }
@@ -63,6 +64,7 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable {
     let repliesCount: Int
     let reblogsCount: Int
     let favouritesCount: Int
+    let tags: [MastodonTag]
     let card: MastodonCard?
     let favourited: Bool?
     let reblogged: Bool?
@@ -88,6 +90,7 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable {
             repliesCount: 0,
             reblogsCount: 0,
             favouritesCount: 0,
+            tags: [],
             card: nil,
             favourited: false,
             reblogged: false,
@@ -124,6 +127,7 @@ struct MastodonReblogStatus: AnyMastodonStatus, Codable, Identifiable {
     let repliesCount: Int
     let reblogsCount: Int
     let favouritesCount: Int
+    let tags: [MastodonTag]
     let card: MastodonCard?
     let favourited: Bool?
     let reblogged: Bool?

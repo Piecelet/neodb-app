@@ -11,7 +11,7 @@ import HTML2Markdown
 import MarkdownUI
 
 struct StatusView: View {
-    let status: Status
+    let status: MastodonStatus
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     
@@ -22,7 +22,7 @@ struct StatusView: View {
                 Button {
                     router.navigate(to: .userProfile(id: status.account.id))
                 } label: {
-                    KFImage(URL(string: status.account.avatar))
+                    KFImage(status.account.avatar)
                         .placeholder {
                             Circle()
                                 .fill(Color.gray.opacity(0.2))
@@ -52,7 +52,7 @@ struct StatusView: View {
                 
                 Spacer()
                 
-                Text(status.createdAt.formatted(.relative(presentation: .named)))
+                Text(status.createdAt)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -107,7 +107,7 @@ struct StatusView: View {
         
         LazyVGrid(columns: columns, spacing: 4) {
             ForEach(status.mediaAttachments) { attachment in
-                KFImage(URL(string: attachment.url))
+                KFImage(attachment.url)
                     .placeholder {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))

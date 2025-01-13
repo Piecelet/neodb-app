@@ -17,7 +17,7 @@ class TimelineService {
         self.accountsManager = accountsManager
     }
     
-    func getTimeline(maxId: String? = nil, sinceId: String? = nil, minId: String? = nil, limit: Int = 20, local: Bool = true) async throws -> [Status] {
+    func getTimeline(maxId: String? = nil, sinceId: String? = nil, minId: String? = nil, limit: Int = 20, local: Bool = true) async throws -> [MastodonStatus] {
         guard accountsManager.isAuthenticated else {
             logger.error("No access token available")
             throw NetworkError.unauthorized
@@ -28,7 +28,7 @@ class TimelineService {
         let endpoint = TimelinesEndpoint.pub(sinceId: sinceId, maxId: maxId, minId: minId, local: local)
         
         do {
-            let statuses = try await accountsManager.currentClient.fetch(endpoint, type: [Status].self)
+            let statuses = try await accountsManager.currentClient.fetch(endpoint, type: [MastodonStatus].self)
             logger.debug("Successfully fetched \(statuses.count) statuses")
             return statuses
         } catch {
