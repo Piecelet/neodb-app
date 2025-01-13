@@ -83,8 +83,8 @@ class AppAccountsManager: ObservableObject {
         isAuthenticating = true
         
         do {
-            // Register app if needed
-            let client = try await AppClient.register(instance: instance)
+            // Get app client (will register if needed)
+            let client = try await AppClient.get(for: instance)
             oauthClient = client
             
             // Construct OAuth URL

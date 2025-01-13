@@ -109,14 +109,19 @@ struct AppClient: Codable, Identifiable {
         logger.debug("Deleted all client credentials")
     }
 
-    static func register(instance: String) async throws -> AppClient {
-        // Check existing client
+    static func get(for instance: String) async throws -> AppClient {
+        // Try to retrieve existing client first
         if let existingClient = retrieve(for: instance) {
-            logger.debug(
-                "Using existing client credentials for instance: \(instance)")
+            logger.debug("Using existing client credentials for instance: \(instance)")
             return existingClient
         }
+        
+        // If no existing client, register a new one
+        logger.debug("No existing client found, registering new client for instance: \(instance)")
+        return try await register(instance: instance)
+    }
 
+    private static func register(instance: String) async throws -> AppClient {
         logger.debug("Registering new client for instance: \(instance)")
         // Create new client
         let networkClient = await NetworkClient(instance: instance)
