@@ -98,19 +98,11 @@ struct LoginView: View {
             Text(errorMessage ?? "An unknown error occurred")
         })
         .sheet(isPresented: $showInstanceInput) {
-            NavigationStack {
-                InstanceInputView(selectedInstance: instanceUrl) { newInstance in
-                    let account = AppAccount(instance: newInstance, oauthToken: nil)
-                    accountsManager.add(account: account)
-                    instanceUrl = newInstance
-                    showInstanceInput = false
-                }
-                .navigationTitle("Select Instance")
-                .navigationBarItems(
-                    trailing: Button("Done") {
-                        showInstanceInput = false
-                    }
-                )
+            InstanceInputView(selectedInstance: instanceUrl) { newInstance in
+                let account = AppAccount(instance: newInstance, oauthToken: nil)
+                accountsManager.add(account: account)
+                instanceUrl = newInstance
+                showInstanceInput = false
             }
             .presentationDetents([.medium])
         }
@@ -130,10 +122,10 @@ struct InstanceInputView: View {
     let onSubmit: (String) -> Void
     
     private let instances = [
-        (name: "neodb.app", description: "中文"),
-        (name: "eggplant.place", description: "English Test Server"),
-        (name: "reviewdb.app", description: "International"),
-        (name: "minreol.dk", description: "German")
+        (name: "NeoDB", host: "neodb.social", description: "中文"),
+        (name: "Eggplant", host: "eggplant.place", description: "English Test Server"),
+        (name: "ReviewDB", host: "reviewdb.app", description: "International"),
+        (name: "Minreol", host: "minreol.dk", description: "German")
     ]
     
     init(selectedInstance: String, onSubmit: @escaping (String) -> Void) {
@@ -142,66 +134,86 @@ struct InstanceInputView: View {
     }
     
     var body: some View {
-        List {
-            Section {
-                ForEach(instances, id: \.name) { instance in
-                    Button(action: {
-                        selectedInstance = instance.name
-                        onSubmit(instance.name)
-                        dismiss()
-                    }) {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(instance.name)
-                                    .font(.body)
-                                Text(instance.description)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                            
-                            if selectedInstance == instance.name {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.accentColor)
-                            }
-                        }
-                    }
-                    .foregroundColor(.primary)
+        VStack(spacing: 0) {
+            // Custom title bar
+            HStack {
+                Text("Select Instance")
+                    .font(.headline)
+                Spacer()
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.secondary)
+                        .font(.title2)
                 }
-            } header: {
-                Text("Choose an Instance")
             }
+            .padding()
             
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    TextField("Enter custom instance", text: $customInstance)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .keyboardType(.URL)
-                    
-                    Button(action: {
-                        if !customInstance.isEmpty {
-                            selectedInstance = customInstance
-                            onSubmit(customInstance)
+            List {
+                Section {
+                    ForEach(instances, id: \.host) { instance in
+                        Button(action: {
+                            selectedInstance = instance.host
+                            onSubmit(instance.host)
                             dismiss()
+                        }) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(instance.name)
+                                        .font(.body)
+                                    Text(instance.host)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                    Text(instance.description)
+                                        .font(.caption2)
+                                        .foregroundColor(.secondary)
+                                }
+                                
+                                Spacer()
+                                
+                                if selectedInstance == instance.host {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
                         }
-                    }) {
-                        Text("Use Custom Instance")
-                            .frame(maxWidth: .infinity)
+                        .foregroundColor(.primary)
                     }
-                    .buttonStyle(.bordered)
-                    .disabled(customInstance.isEmpty)
+                } header: {
+                    Text("Choose an Instance")
                 }
-                .padding(.vertical, 8)
-            } header: {
-                Text("Custom Instance")
-            } footer: {
-                Text("Enter your own instance URL if it's not listed above.")
+                
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Enter custom instance", text: $customInstance)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .autocapitalization(.none)
+                            .disableAutocorrection(true)
+                            .keyboardType(.URL)
+                        
+                        Button(action: {
+                            if !customInstance.isEmpty {
+                                selectedInstance = customInstance
+                                onSubmit(customInstance)
+                                dismiss()
+                            }
+                        }) {
+                            Text("Use Custom Instance")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .disabled(customInstance.isEmpty)
+                    }
+                    .padding(.vertical, 8)
+                } header: {
+                    Text("Custom Instance")
+                } footer: {
+                    Text("Enter your own instance URL if it's not listed above.")
+                }
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
         }
-        .listStyle(.insetGrouped)
+        .background(.ultraThinMaterial)
         .enableInjection()
     }
 
