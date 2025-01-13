@@ -9,19 +9,19 @@ import SwiftUI
 
 @main
 struct NeoDBApp: App {
-    @StateObject private var authService = AuthService()
+    @StateObject private var accountsManager = AppAccountsManager()
     @StateObject private var router = Router()
     
     var body: some Scene {
         WindowGroup {
             Group {
-                if authService.isAuthenticated {
+                if accountsManager.isAuthenticated {
                     ContentView()
-                        .environmentObject(authService)
+                        .environmentObject(accountsManager)
                         .environmentObject(router)
                 } else {
                     LoginView()
-                        .environmentObject(authService)
+                        .environmentObject(accountsManager)
                 }
             }
             .onOpenURL { url in
@@ -29,7 +29,7 @@ struct NeoDBApp: App {
                 if url.scheme == "neodb" && url.host == "oauth" {
                     Task {
                         do {
-                            try await authService.handleCallback(url: url)
+                            try await accountsManager.handleCallback(url: url)
                         } catch {
                             print("Authentication error: \(error)")
                         }

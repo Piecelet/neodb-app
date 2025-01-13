@@ -9,7 +9,7 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var accountsManager: AppAccountsManager
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
@@ -38,7 +38,7 @@ struct LoginView: View {
                     .font(.headline)
                 
                 HStack {
-                    Text(authService.currentInstance)
+                    Text(accountsManager.currentAccount.instance)
                         .foregroundColor(.secondary)
                     
                     Spacer()
@@ -56,17 +56,15 @@ struct LoginView: View {
             Button(action: {
                 Task {
                     do {
-                        try await authService.registerApp()
-                        if let url = authService.authorizationURL {
-                            openURL(url)
-                        } else {
-                            errorMessage = "Failed to create authorization URL"
-                            showError = true
-                        }
-                    } catch AuthError.registrationFailed(let message) {
+                        let authUrl = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
+                        openURL(authUrl)
+                    } catch AccountError.invalidURL {
+                        errorMessage = "Invalid instance URL"
+                        showError = true
+                    } catch AccountError.registrationFailed(let message) {
                         errorMessage = "Registration failed: \(message)"
                         showError = true
-                    } catch AuthError.tokenExchangeFailed(let message) {
+                    } catch AccountError.authenticationFailed(let message) {
                         errorMessage = "Authentication failed: \(message)"
                         showError = true
                     } catch {
@@ -76,7 +74,7 @@ struct LoginView: View {
                 }
             }) {
                 HStack {
-                    if authService.isRegistering {
+                    if accountsManager.isAuthenticating {
                         ProgressView()
                             .tint(.white)
                     } else {
@@ -90,7 +88,7 @@ struct LoginView: View {
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .disabled(authService.isRegistering)
+            .disabled(accountsManager.isAuthenticating)
             .padding(.horizontal)
         }
         .padding()
@@ -102,14 +100,10 @@ struct LoginView: View {
         .sheet(isPresented: $showInstanceInput) {
             NavigationStack {
                 InstanceInputView(instanceUrl: instanceUrl) { newInstance in
-                    do {
-                        try authService.switchInstance(newInstance)
-                        instanceUrl = newInstance
-                        showInstanceInput = false
-                    } catch {
-                        errorMessage = "Invalid instance URL"
-                        showError = true
-                    }
+                    let account = AppAccount(instance: newInstance, oauthToken: nil)
+                    accountsManager.add(account: account)
+                    instanceUrl = newInstance
+                    showInstanceInput = false
                 }
                 .navigationTitle("Change Instance")
                 .navigationBarItems(

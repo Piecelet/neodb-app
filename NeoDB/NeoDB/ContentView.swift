@@ -8,13 +8,21 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
     
     var body: some View {
         TabView(selection: $router.selectedTab) {
+            // Home Tab
             NavigationStack(path: router.path(for: .home)) {
+                /* Temporarily disabled during migration
                 HomeView(authService: authService)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+                */
+                Text("Home")
+                    .navigationTitle("Home")
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -24,7 +32,14 @@ struct ContentView: View {
             }
             .tag(TabSection.home)
             
+            // Search Tab
             NavigationStack(path: router.path(for: .search)) {
+                /* Temporarily disabled during migration
+                SearchView(authService: authService)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+                */
                 Text("Search")
                     .navigationTitle("Search")
                     .navigationDestination(for: RouterDestination.self) { destination in
@@ -36,8 +51,16 @@ struct ContentView: View {
             }
             .tag(TabSection.search)
             
+            // Library Tab
             NavigationStack(path: router.path(for: .library)) {
+                /* Temporarily disabled during migration
                 LibraryView(authService: authService)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+                */
+                Text("Library")
+                    .navigationTitle("Library")
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -47,8 +70,16 @@ struct ContentView: View {
             }
             .tag(TabSection.library)
             
+            // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
+                /* Temporarily disabled during migration
                 ProfileView(authService: authService)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+                */
+                Text("Profile")  // TODO: Update ProfileView to use AppAccountsManager
+                    .navigationTitle("Profile")
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -79,6 +110,7 @@ struct ContentView: View {
     @ViewBuilder
     private func destinationView(for destination: RouterDestination) -> some View {
         switch destination {
+        /* Temporarily disabled during migration
         case .itemDetail(let id):
             ItemDetailViewContainer(
                 itemDetailService: ItemDetailService(authService: authService, router: router),
@@ -92,6 +124,11 @@ struct ContentView: View {
                 category: item.category,
                 item: item
             )
+        */
+        case .itemDetail(let id):
+            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
+        case .itemDetailWithItem(let item):
+            Text("Item Detail: \(item.id)")  // TODO: Implement ItemDetailView
         case .shelfDetail(let type):
             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
         case .userShelf(let userId, let type):
@@ -116,5 +153,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AuthService())
+        .environmentObject(AppAccountsManager())
 }
