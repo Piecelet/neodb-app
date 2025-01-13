@@ -99,20 +99,20 @@ struct LoginView: View {
         })
         .sheet(isPresented: $showInstanceInput) {
             NavigationStack {
-                InstanceInputView(instanceUrl: instanceUrl) { newInstance in
+                InstanceInputView(selectedInstance: instanceUrl) { newInstance in
                     let account = AppAccount(instance: newInstance, oauthToken: nil)
                     accountsManager.add(account: account)
                     instanceUrl = newInstance
                     showInstanceInput = false
                 }
-                .navigationTitle("Change Instance")
+                .navigationTitle("Select Instance")
                 .navigationBarItems(
-                    leading: Button("Cancel") {
+                    trailing: Button("Done") {
                         showInstanceInput = false
                     }
                 )
             }
-            .presentationDetents([.height(200)])
+            .presentationDetents([.medium])
         }
         .enableInjection()
     }
@@ -123,84 +123,62 @@ struct LoginView: View {
 }
 
 struct InstanceInputView: View {
-    @State private var instanceUrl: String
-    @State private var isValidating = false
-    @State private var localError: String?
-    @FocusState private var isUrlFieldFocused: Bool
+    @State private var selectedInstance: String
+    @Environment(\.dismiss) private var dismiss
     
     let onSubmit: (String) -> Void
     
-    init(instanceUrl: String, onSubmit: @escaping (String) -> Void) {
-        _instanceUrl = State(initialValue: instanceUrl)
+    private let instances = [
+        (name: "neodb.app", description: "中文"),
+        (name: "eggplant.place", description: "English Test Server"),
+        (name: "reviewdb.app", description: "International"),
+        (name: "minreol.dk", description: "German")
+    ]
+    
+    init(selectedInstance: String, onSubmit: @escaping (String) -> Void) {
+        _selectedInstance = State(initialValue: selectedInstance)
         self.onSubmit = onSubmit
     }
     
-    var isValidUrl: Bool {
-        let urlPattern = "^[a-zA-Z0-9][a-zA-Z0-9-_.]+\\.[a-zA-Z]{2,}$"
-        let urlPredicate = NSPredicate(format: "SELF MATCHES %@", urlPattern)
-        return urlPredicate.evaluate(with: instanceUrl)
-    }
-    
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Enter the URL of your NeoDB instance")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            TextField("Instance URL", text: $instanceUrl)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .textInputAutocapitalization(.never)
-                .keyboardType(.URL)
-                .submitLabel(.done)
-                .focused($isUrlFieldFocused)
-                .onChange(of: instanceUrl) { _ in
-                    localError = nil
-                }
-                .onSubmit {
-                    submitInstance()
-                }
-                .accessibilityHint("Enter your NeoDB instance URL, for example: neodb.social")
-            
-            if let error = localError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
-            
-            Button(action: submitInstance) {
-                HStack {
-                    if isValidating {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Text("Connect")
+        List {
+            Section {
+                ForEach(instances, id: \.name) { instance in
+                    Button(action: {
+                        selectedInstance = instance.name
+                        onSubmit(instance.name)
+                        dismiss()
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(instance.name)
+                                    .font(.body)
+                                Text(instance.description)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if selectedInstance == instance.name {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
                     }
+                    .foregroundColor(.primary)
                 }
-                .frame(maxWidth: .infinity)
+            } header: {
+                Text("Choose an Instance")
+            } footer: {
+                Text("Select the NeoDB instance you want to connect to.")
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(isValidating || instanceUrl.isEmpty || !isValidUrl)
         }
-        .padding()
-        .onAppear {
-            isUrlFieldFocused = true
-        }
+        .listStyle(.insetGrouped)
         .enableInjection()
     }
 
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
-    private func submitInstance() {
-        guard isValidUrl else {
-            localError = "Please enter a valid instance URL"
-            return
-        }
-        
-        isValidating = true
-        onSubmit(instanceUrl)
-        isValidating = false
-    }
 }
