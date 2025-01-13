@@ -29,7 +29,3 @@ enum KeychainKeys {
         }
     }
 }
-
-extension KeychainSwift {
-    
-}

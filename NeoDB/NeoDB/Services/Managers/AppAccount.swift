@@ -11,6 +11,7 @@ import OSLog
 
 struct AppAccount: Codable, Identifiable {
     private static let logger = Logger.managers.account
+    private static let keychain = KeychainSwift(keyPrefix: KeychainKeys.account(nil).prefix)
     let instance: String
     let oauthToken: OauthToken?
 
@@ -20,21 +21,17 @@ struct AppAccount: Codable, Identifiable {
 
     var key: String {
         if let oauthToken {
-            return KeychainKeys.account("\(instance):\(oauthToken.createdAt)")
-                .key
+            return "\(instance):\(oauthToken.createdAt)"
         } else {
-            return KeychainKeys.account(
-                "\(instance):anonymous:\(Date().timeIntervalSince1970)"
-            ).key
+            return "\(instance):anonymous:\(Date().timeIntervalSince1970)"
         }
     }
 
     func save() throws {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)
-        let keychain = KeychainSwift()
 
-        if !keychain.set(data, forKey: key) {
+        if !Self.keychain.set(data, forKey: key) {
             Self.logger.error(
                 "Failed to save account for instance: \(instance)")
             throw AccountError.keyChainError("Failed to save account")
@@ -43,13 +40,11 @@ struct AppAccount: Codable, Identifiable {
     }
 
     func delete() {
-        KeychainSwift().delete(key)
+        Self.keychain.delete(key)
         Self.logger.debug("Deleted account for instance: \(instance)")
     }
 
     static func retrieveAll() throws -> [AppAccount] {
-        let keychain = KeychainSwift(
-            keyPrefix: KeychainKeys.account(nil).prefix)
         let decoder = JSONDecoder()
         let keys = keychain.allKeys
         var accounts: [AppAccount] = []
@@ -74,7 +69,6 @@ struct AppAccount: Codable, Identifiable {
     }
 
     static func deleteAll() {
-        let keychain = KeychainSwift()
         let keys = keychain.allKeys
         for key in keys {
             keychain.delete(key)
