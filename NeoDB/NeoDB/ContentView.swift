@@ -15,14 +15,7 @@ struct ContentView: View {
         TabView(selection: $router.selectedTab) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
-                /* Temporarily disabled during migration
-                HomeView(authService: authService)
-                    .navigationDestination(for: RouterDestination.self) { destination in
-                        destinationView(for: destination)
-                    }
-                */
-                Text("Home")
-                    .navigationTitle("Home")
+                HomeView(timelineService: TimelineService(accountsManager: accountsManager))
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }

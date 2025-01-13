@@ -70,7 +70,9 @@ class HomeViewModel: ObservableObject {
                     logger.error("Failed to load timeline: \(error.localizedDescription)")
                     self.error = "Failed to load timeline"
                     
-                    if let decodingError = error as? DecodingError {
+                    if let networkError = error as? NetworkError {
+                        detailedError = networkError.localizedDescription
+                    } else if let decodingError = error as? DecodingError {
                         switch decodingError {
                         case .dataCorrupted(let context):
                             detailedError = "Data corrupted: \(context.debugDescription)"
@@ -102,9 +104,9 @@ struct HomeView: View {
     @StateObject private var viewModel: HomeViewModel
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     
-    init(authService: AuthService) {
-        let timelineService = TimelineService(authService: authService)
+    init(timelineService: TimelineService) {
         _viewModel = StateObject(wrappedValue: HomeViewModel(timelineService: timelineService))
     }
     
