@@ -38,7 +38,7 @@ struct AppClient: Codable, Identifiable {
         return instance
     }
 
-    init(response: AppClientResponse, instance: String) {
+    init(response: AppsResponse, instance: String) {
         self.id = response.id
         self.name = response.name
         self.website = response.website
@@ -124,7 +124,7 @@ struct AppClient: Codable, Identifiable {
 
         do {
             let response = try await networkClient.fetch(
-                endpoint, type: AppClientResponse.self)
+                endpoint, type: AppsResponse.self)
 
             let client = AppClient(
                 response: response,
