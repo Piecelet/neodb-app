@@ -30,7 +30,7 @@ struct ItemActionsView: View {
                             Text("\(rating)/5")
                         }
                         Text("・")
-                        Text(mark.createdTime.relativeTime)
+                        Text(mark.createdTime.formatted)
                             .foregroundStyle(.secondary)
                     }
                     .font(.subheadline)
