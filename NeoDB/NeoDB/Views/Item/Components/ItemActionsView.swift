@@ -20,11 +20,37 @@ struct ItemActionsView: View {
     
     var body: some View {
         VStack(spacing: 12) {
+            if let mark = viewModel.mark {
+                // Show existing mark info
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(.yellow)
+                        if let rating = mark.ratingGrade {
+                            Text("\(rating)/5")
+                        }
+                        Text("・")
+                        Text(mark.createdTime)
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.subheadline)
+                    
+                    if let comment = mark.commentText, !comment.isEmpty {
+                        Text(comment)
+                            .font(.subheadline)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
             // Primary Action
             Button(action: viewModel.onAddToShelf) {
                 HStack {
                     Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
-                    Text(viewModel.shelfType == nil ? "Add to Shelf" : "In Shelf")
+                    Text(viewModel.shelfType == nil ? "Add to Shelf" : "Edit")
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
