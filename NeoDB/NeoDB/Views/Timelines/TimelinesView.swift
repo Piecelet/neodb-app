@@ -20,6 +20,7 @@ class TimelinesViewModel: ObservableObject {
 
     private let cacheService: CacheService
     private let logger = Logger.home
+    private var loadTask: Task<Void, Never>?
 
     @Published var statuses: [MastodonStatus] = []
     @Published var isLoading = false
@@ -35,81 +36,106 @@ class TimelinesViewModel: ObservableObject {
     }
 
     func loadTimeline(refresh: Bool = false) async {
-        guard let accountsManager = accountsManager else {
-            logger.debug("No accountsManager available")
-            return
-        }
-
-        logger.debug(
-            "Loading timeline for instance: \(accountsManager.currentAccount.instance)"
-        )
-
-        if refresh {
-            logger.debug("Refreshing timeline, resetting pagination")
-            maxId = nil
-            hasMore = true
-            statuses = []
-        }
-
-        guard !isLoading, hasMore else {
-            logger.debug(
-                "Skip loading: isLoading=\(isLoading), hasMore=\(hasMore)")
-            return
-        }
-
-        isLoading = true
-        error = nil
-        detailedError = nil
-
-        let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
-        logger.debug("Using cache key: \(cacheKey)")
-
-        do {
-            if !refresh,
-                let cached = try? await cacheService.retrieve(
-                    forKey: cacheKey, type: [MastodonStatus].self)
-            {
-                statuses = cached
-                logger.debug("Loaded \(cached.count) statuses from cache")
+        // Cancel any existing load task
+        loadTask?.cancel()
+        
+        // Create a new task for this load operation
+        loadTask = Task {
+            guard let accountsManager = accountsManager else {
+                logger.debug("No accountsManager available")
+                return
             }
 
-            guard accountsManager.isAuthenticated else {
-                logger.error("User not authenticated")
-                throw NetworkError.unauthorized
-            }
-
-            let endpoint = TimelinesEndpoint.pub(
-                sinceId: nil, maxId: maxId, minId: nil, local: true)
             logger.debug(
-                "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
+                "Loading timeline for instance: \(accountsManager.currentAccount.instance)"
             )
 
-            let newStatuses = try await accountsManager.currentClient.fetch(
-                endpoint, type: [MastodonStatus].self)
-
             if refresh {
-                statuses = newStatuses
-            } else {
-                statuses.append(contentsOf: newStatuses)
+                logger.debug("Refreshing timeline, resetting pagination")
+                maxId = nil
+                hasMore = true
+                statuses = []
             }
 
-            try? await cacheService.cache(
-                statuses, forKey: cacheKey, type: [MastodonStatus].self)
+            guard !isLoading, hasMore else {
+                logger.debug(
+                    "Skip loading: isLoading=\(isLoading), hasMore=\(hasMore)")
+                return
+            }
 
-            maxId = newStatuses.last?.id
-            hasMore = !newStatuses.isEmpty
-            logger.debug("Successfully loaded \(newStatuses.count) statuses")
+            isLoading = true
+            error = nil
+            detailedError = nil
 
-        } catch {
-            logger.error(
-                "Failed to load timeline: \(error.localizedDescription)")
-            self.error = "Failed to load timeline"
-            if let networkError = error as? NetworkError {
-                detailedError = networkError.localizedDescription
+            let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
+            logger.debug("Using cache key: \(cacheKey)")
+
+            do {
+                if !refresh,
+                    let cached = try? await cacheService.retrieve(
+                        forKey: cacheKey, type: [MastodonStatus].self)
+                {
+                    if !Task.isCancelled {
+                        statuses = cached
+                        logger.debug("Loaded \(cached.count) statuses from cache")
+                    }
+                }
+
+                guard !Task.isCancelled else {
+                    logger.debug("Timeline loading cancelled")
+                    return
+                }
+
+                guard accountsManager.isAuthenticated else {
+                    logger.error("User not authenticated")
+                    throw NetworkError.unauthorized
+                }
+
+                let endpoint = TimelinesEndpoint.pub(
+                    sinceId: nil, maxId: maxId, minId: nil, local: true)
+                logger.debug(
+                    "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
+                )
+
+                let newStatuses = try await accountsManager.currentClient.fetch(
+                    endpoint, type: [MastodonStatus].self)
+
+                guard !Task.isCancelled else {
+                    logger.debug("Timeline loading cancelled after fetch")
+                    return
+                }
+
+                if refresh {
+                    statuses = newStatuses
+                } else {
+                    statuses.append(contentsOf: newStatuses)
+                }
+
+                try? await cacheService.cache(
+                    statuses, forKey: cacheKey, type: [MastodonStatus].self)
+
+                maxId = newStatuses.last?.id
+                hasMore = !newStatuses.isEmpty
+                logger.debug("Successfully loaded \(newStatuses.count) statuses")
+
+            } catch {
+                if !Task.isCancelled {
+                    logger.error(
+                        "Failed to load timeline: \(error.localizedDescription)")
+                    self.error = "Failed to load timeline"
+                    if let networkError = error as? NetworkError {
+                        detailedError = networkError.localizedDescription
+                    }
+                }
+            }
+
+            if !Task.isCancelled {
+                isLoading = false
             }
         }
-
-        isLoading = false
+        
+        // Wait for the task to complete
+        await loadTask?.value
     }
 }
 
