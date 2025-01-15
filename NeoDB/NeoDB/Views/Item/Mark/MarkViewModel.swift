@@ -7,6 +7,7 @@
 
 import Foundation
 import OSLog
+import SwiftUI
 
 @MainActor
 class MarkViewModel: ObservableObject {
@@ -18,8 +19,8 @@ class MarkViewModel: ObservableObject {
     @Published var shelfType: ShelfType = .wishlist
     @Published var rating: Int?
     @Published var comment: String = ""
-    @Published var isPublic: Bool = true
-    @Published var postToFediverse: Bool = false
+    @AppStorage(\.mark.isPublic) public var isPublic: Bool = true
+    @AppStorage(\.mark.postToFediverse) public var postToFediverse: Bool = true
     @Published var createdTime: Date = Date()
     @Published var useCurrentTime = true
     @Published var isLoading = false
