@@ -42,14 +42,7 @@ struct ItemView: View {
                 metadata: viewModel.getKeyMetadata(for: viewModel.item)
             ),
             description: viewModel.description,
-            actions: ItemActionsView(
-                item: viewModel.item,
-                onAddToShelf: { 
-                    if let item = viewModel.item {
-                        router.presentedSheet = .addToShelf(item: item)
-                    }
-                }
-            ),
+            actions: ItemActionsView(isRefreshing: viewModel.isRefreshing),
             isRefreshing: viewModel.isRefreshing
         )
         .navigationBarTitleDisplayMode(.inline)
@@ -70,6 +63,7 @@ struct ItemView: View {
         .onDisappear {
             viewModel.cleanup()
         }
+        .environmentObject(viewModel)
     }
 }
 

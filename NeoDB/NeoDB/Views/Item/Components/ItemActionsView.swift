@@ -10,15 +10,15 @@ import SwiftUI
 struct ItemActionsView: View {
     @StateObject private var viewModel: ItemActionsViewModel
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var itemViewModel: ItemViewModel
     
     let isRefreshing: Bool
     
-    init(item: (any ItemProtocol)?, isRefreshing: Bool = false, onAddToShelf: @escaping () -> Void) {
-        let model = ItemActionsViewModel(item: item)
-        model.onAddToShelf = onAddToShelf
-        _viewModel = StateObject(wrappedValue: model)
+    init(isRefreshing: Bool = false) {
         self.isRefreshing = isRefreshing
+        self._viewModel = StateObject(wrappedValue: ItemActionsViewModel())
     }
     
     var body: some View {
@@ -63,7 +63,11 @@ struct ItemActionsView: View {
             }
             
             // Primary Action
-            Button(action: viewModel.onAddToShelf) {
+            Button {
+                if let item = itemViewModel.item {
+                    router.presentedSheet = .addToShelf(item: item)
+                }
+            } label: {
                 HStack {
                     Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
                     if let shelfType = viewModel.shelfType {
@@ -93,7 +97,7 @@ struct ItemActionsView: View {
                 }
                 
                 // External Links
-                if let resources = viewModel.item?.externalResources, !resources.isEmpty {
+                if let resources = itemViewModel.item?.externalResources, !resources.isEmpty {
                     Menu {
                         ForEach(resources, id: \.url) { resource in
                             Button {
@@ -123,6 +127,7 @@ struct ItemActionsView: View {
         }
         .onAppear {
             viewModel.accountsManager = accountsManager
+            viewModel.itemViewModel = itemViewModel
         }
         .onChange(of: isRefreshing) { newValue in
             if newValue {
@@ -133,12 +138,11 @@ struct ItemActionsView: View {
 }
 
 #Preview {
-    ItemActionsView(
-        item: ItemSchema.preview,
-        onAddToShelf: {}
-    )
-    .environmentObject(AppAccountsManager())
-    .padding()
+    ItemActionsView()
+        .environmentObject(Router())
+        .environmentObject(AppAccountsManager())
+        .environmentObject(ItemViewModel())
+        .padding()
 }
 
 private extension ItemSchema {

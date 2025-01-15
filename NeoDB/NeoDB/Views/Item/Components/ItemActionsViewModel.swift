@@ -12,8 +12,13 @@ import OSLog
 class ItemActionsViewModel: ObservableObject {
     private let logger = Logger.views.itemActions
     private let cacheService = CacheService()
-    let item: (any ItemProtocol)?
     private var loadTask: Task<Void, Never>?
+    
+    @Published var mark: MarkSchema?
+    @Published var isLoading = false
+    @Published var isRefreshing = false
+    @Published var error: Error?
+    @Published var showError = false
     
     var accountsManager: AppAccountsManager? {
         didSet {
@@ -23,16 +28,12 @@ class ItemActionsViewModel: ObservableObject {
         }
     }
     
-    var onAddToShelf: () -> Void = {}
-    
-    @Published var mark: MarkSchema?
-    @Published var isLoading = false
-    @Published var isRefreshing = false
-    @Published var error: Error?
-    @Published var showError = false
-    
-    init(item: (any ItemProtocol)?) {
-        self.item = item
+    var itemViewModel: ItemViewModel? {
+        didSet {
+            if oldValue !== itemViewModel {
+                loadMarkIfNeeded()
+            }
+        }
     }
     
     // MARK: - Computed Properties
@@ -48,7 +49,7 @@ class ItemActionsViewModel: ObservableObject {
     }
     
     var shareURL: URL? {
-        guard let item = item,
+        guard let item = itemViewModel?.item,
               let accountsManager = accountsManager else { return nil }
         return ItemURL.makeShareURL(for: item, instance: accountsManager.currentAccount.instance)
     }
@@ -72,12 +73,13 @@ class ItemActionsViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadMarkIfNeeded() {
-        guard mark == nil, let item = item else { return }
+        guard mark == nil,
+              let item = itemViewModel?.item else { return }
         loadMark(itemId: item.uuid, refresh: false)
     }
     
     func refresh() {
-        guard let item = item else { return }
+        guard let item = itemViewModel?.item else { return }
         loadMark(itemId: item.uuid, refresh: true)
     }
     
