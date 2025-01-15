@@ -47,7 +47,7 @@ class MarkViewModel: ObservableObject {
     }
     
     var title: String {
-        existingMark == nil ? "Add to Shelf" : "Edit Mark"
+        existingMark == nil ? "Mark \"\(item.title)\"" : "Edit \"\(item.title)\""
     }
     
     func saveMark() async {
