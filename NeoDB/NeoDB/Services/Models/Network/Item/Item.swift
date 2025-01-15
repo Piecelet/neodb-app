@@ -12,8 +12,8 @@ protocol ItemProtocol: Codable, Hashable, Identifiable {
     var id: String { get }
     var type: String { get }
     var uuid: String { get }
-    var url: URL { get }
-    var apiUrl: URL { get }
+    var url: String { get }
+    var apiUrl: String { get }
     var category: ItemCategory { get }
     var parentUuid: String? { get }
     var displayTitle: String { get }
@@ -44,8 +44,8 @@ struct ItemSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -65,8 +65,8 @@ struct EditionSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -102,8 +102,8 @@ struct MovieSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -137,8 +137,8 @@ struct TVShowSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -173,8 +173,8 @@ struct TVSeasonSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -210,8 +210,8 @@ struct TVEpisodeSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -234,8 +234,8 @@ struct AlbumSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -265,8 +265,8 @@ struct PodcastSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -295,8 +295,8 @@ struct GameSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -325,8 +325,8 @@ struct PerformanceSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
@@ -363,8 +363,8 @@ struct PerformanceProductionSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: URL
-    let apiUrl: URL
+    let url: String
+    let apiUrl: String
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String

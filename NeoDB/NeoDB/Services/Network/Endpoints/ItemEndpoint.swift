@@ -10,11 +10,11 @@ import Foundation
 enum ItemEndpoint {
     case book(uuid: String)
     case movie(uuid: String)
-    case tv(uuid: String, isSeason: Bool?, isEpisode: Bool?)
+    case tv(uuid: String, isSeason: Bool? = nil, isEpisode: Bool? = nil)
     case podcast(uuid: String)
     case album(uuid: String)
     case game(uuid: String)
-    case performance(uuid: String, isProduction: Bool?)
+    case performance(uuid: String, isProduction: Bool? = nil)
 }
 
 extension ItemEndpoint: NetworkEndpoint {

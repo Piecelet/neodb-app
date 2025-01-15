@@ -1,15 +1,20 @@
-// 
+//
 //  ItemDetailView.swift
 //  NeoDB
 //
-//  Created by citron(https://github.com/lcandy2) on 1/7/25.
+//  Created by citron on 1/15/25.
 //
 
 import SwiftUI
+import Kingfisher
 
 struct ItemDetailView: View {
     @ObservedObject var viewModel: ItemDetailViewModel
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    
+    let id: String
+    let category: ItemCategory
     
     var body: some View {
         ScrollView {
@@ -45,25 +50,9 @@ struct ItemDetailView: View {
                     }
                     
                     // Actions Section
-                    ItemActionsView(item: ItemSchema(
-                        title: item.title,
-                        description: item.description,
-                        localizedTitle: item.localizedTitle,
-                        localizedDescription: item.localizedDescription,
-                        coverImageUrl: item.coverImageUrl,
-                        rating: item.rating,
-                        ratingCount: item.ratingCount,
-                        id: item.id,
-                        type: item.type,
-                        uuid: item.uuid,
-                        url: item.url,
-                        apiUrl: item.apiUrl,
-                        category: item.category,
-                        parentUuid: item.parentUuid,
-                        displayTitle: item.displayTitle,
-                        externalResources: item.externalResources,
-                        brief: nil
-                    ))
+                    ItemActionsView(item: item)
+                        .padding(.horizontal)
+                    
                 } else if viewModel.isLoading {
                     VStack(spacing: 16) {
                         ProgressView()
@@ -82,6 +71,9 @@ struct ItemDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .refreshable {
+            await viewModel.loadItemDetail(id: id, category: category, refresh: true)
+        }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -89,54 +81,25 @@ struct ItemDetailView: View {
                 Text(error.localizedDescription)
             }
         }
+        .task {
+            viewModel.accountsManager = accountsManager
+            await viewModel.loadItemDetail(id: id, category: category)
+        }
+        .onDisappear {
+            viewModel.cleanup()
+        }
     }
 }
 
-//#Preview {
-//    NavigationStack {
-//        let router = Router()
-//        let viewModel = ItemDetailViewModel(itemDetailService: ItemDetailService(authService: AuthService(), router: router))
-//        viewModel.item = EditionSchema.preview
-//        return ItemDetailView(viewModel: viewModel)
-//            .environmentObject(router)
-//    }
-//}
-//
-//extension EditionSchema {
-//    static var preview: EditionSchema {
-//        EditionSchema(
-//            id: "1",
-//            type: "book",
-//            uuid: "1",
-//            url: "https://example.com/book/1",
-//            apiUrl: "https://api.example.com/book/1",
-//            category: .book,
-//            parentUuid: nil,
-//            displayTitle: "The Lord of the Rings",
-//            externalResources: [
-//                ExternalResourceSchema(url: "https://example.com/book/1/external")
-//            ],
-//            title: "The Lord of the Rings",
-//            description: "An epic high-fantasy novel by English author and scholar J. R. R. Tolkien.",
-//            localizedTitle: [],
-//            localizedDescription: [],
-//            coverImageUrl: "https://example.com/lotr.jpg",
-//            rating: 4.8,
-//            ratingCount: 12345,
-//            subtitle: "",
-//            origTitle: "",
-//            author: ["J. R. R. Tolkien"],
-//            translator: [],
-//            language: ["English"],
-//            pubHouse: "Allen & Unwin",
-//            pubYear: 1954,
-//            pubMonth: nil,
-//            binding: "",
-//            price: nil,
-//            pages: 1178,
-//            series: nil,
-//            imprint: nil,
-//            isbn: "978-0261103252"
-//        )
-//    }
-//}
+// MARK: - Preview
+#Preview {
+    NavigationStack {
+        ItemDetailView(
+            viewModel: ItemDetailViewModel(),
+            id: "preview_id",
+            category: .book
+        )
+        .environmentObject(Router())
+        .environmentObject(AppAccountsManager())
+    }
+}

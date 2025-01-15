@@ -1,35 +1,41 @@
+//
+//  ItemDetailViewContainer.swift
+//  NeoDB
+//
+//  Created by citron on 1/15/25.
+//
+
 import SwiftUI
 
 struct ItemDetailViewContainer: View {
-    @StateObject private var viewModel: ItemDetailViewModel
-    @EnvironmentObject private var router: Router
-    let id: String?
-    let category: ItemCategory?
-    let item: ItemSchema?
+    @StateObject private var viewModel = ItemDetailViewModel()
     
-    init(itemDetailService: ItemDetailService, id: String? = nil, category: ItemCategory? = nil, item: ItemSchema? = nil) {
-        _viewModel = StateObject(wrappedValue: ItemDetailViewModel(itemDetailService: itemDetailService))
+    let id: String
+    let category: ItemCategory
+    let item: (any ItemProtocol)?
+    
+    init(id: String, category: ItemCategory, item: (any ItemProtocol)? = nil) {
         self.id = id
         self.category = category
         self.item = item
     }
     
     var body: some View {
-        ItemDetailView(viewModel: viewModel)
-            .onAppear {
-                // Load item details
-                if let item = item ?? router.itemToLoad {
-                    viewModel.loadItem(item: item)
-                    router.itemToLoad = nil // Clear stored item
-                } else if let id = id, let category = category {
-                    viewModel.loadItem(id: id, category: category)
-                }
-            }
+        ItemDetailView(
+            viewModel: viewModel,
+            id: id,
+            category: category
+        )
     }
 }
 
 #Preview {
-    let router = Router()
-    return ItemDetailViewContainer(itemDetailService: ItemDetailService(authService: AuthService(), router: router))
-        .environmentObject(router)
+    NavigationStack {
+        ItemDetailViewContainer(
+            id: "preview_id",
+            category: .book
+        )
+        .environmentObject(Router())
+        .environmentObject(AppAccountsManager())
+    }
 } 

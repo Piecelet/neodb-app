@@ -20,7 +20,7 @@ enum NetworkError: Error {
 @MainActor
 class NetworkClient {
     /// Debug flag to control logging of network requests and responses
-    private static var isDebugEnabled: Bool = false
+    private static var isDebugEnabled: Bool = true
     
     private let logger = Logger.network
     private let urlSession: URLSession

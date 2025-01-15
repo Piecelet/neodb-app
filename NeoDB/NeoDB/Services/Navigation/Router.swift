@@ -99,7 +99,7 @@ enum SheetDestination: Identifiable {
     case newStatus
     case editStatus(status: MastodonStatus)
     case replyToStatus(status: MastodonStatus)
-    case addToShelf(item: ItemSchema)
+    case addToShelf(item: any ItemProtocol)
     case editShelfItem(mark: MarkSchema)
     
     var id: String {
@@ -125,7 +125,7 @@ enum TabSection: String, CaseIterable {
 class Router: ObservableObject {
     @Published var paths: [TabSection: [RouterDestination]] = [:]
     @Published var presentedSheet: SheetDestination?
-    @Published var itemToLoad: ItemSchema?
+    @Published var itemToLoad: (any ItemProtocol)?
     @Published var selectedTab: TabSection = .home
     
     private let logger = Logger.router

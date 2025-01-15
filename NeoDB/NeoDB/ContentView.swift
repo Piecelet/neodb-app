@@ -94,25 +94,17 @@ struct ContentView: View {
         -> some View
     {
         switch destination {
-        /* Temporarily disabled during migration
         case .itemDetail(let id):
             ItemDetailViewContainer(
-                itemDetailService: ItemDetailService(authService: authService, router: router),
                 id: id,
-                category: router.itemToLoad?.category
+                category: router.itemToLoad?.category ?? .book
             )
         case .itemDetailWithItem(let item):
             ItemDetailViewContainer(
-                itemDetailService: ItemDetailService(authService: authService, router: router),
                 id: item.id,
                 category: item.category,
                 item: item
             )
-        */
-        case .itemDetail(let id):
-            Text("Item Detail: \(id)")  // TODO: Implement ItemDetailView
-        case .itemDetailWithItem(let item):
-            Text("Item Detail: \(item.id)")  // TODO: Implement ItemDetailView
         case .shelfDetail(let type):
             Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
         case .userShelf(let userId, let type):

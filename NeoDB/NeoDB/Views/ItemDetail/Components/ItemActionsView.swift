@@ -8,15 +8,14 @@
 import SwiftUI
 
 struct ItemActionsView: View {
-    let item: ItemSchema
+    let item: any ItemProtocol
     @EnvironmentObject private var router: Router
-    @EnvironmentObject private var authService: AuthService
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @Environment(\.openURL) private var openURL
     
     private var shareURL: URL? {
-        // Ensure the URL has the domain
         if let url = URL(string: item.url), url.host == nil {
-            return URL(string: "https://\(authService.currentInstance)\(item.url)")
+            return URL(string: "https://\(accountsManager.currentAccount.instance)\(item.url)")
         }
         return URL(string: item.url)
     }
@@ -54,13 +53,11 @@ struct ItemActionsView: View {
                 if let resources = item.externalResources, !resources.isEmpty {
                     Menu {
                         ForEach(resources, id: \.url) { resource in
-                            if let url = URL(string: resource.url) {
                                 Button {
-                                    openURL(url)
+                                    openURL(resource.url)
                                 } label: {
-                                    Label(url.host ?? "External Link", systemImage: "link")
+                                    Label(resource.url.host ?? "External Link", systemImage: "link")
                                 }
-                            }
                         }
                     } label: {
                         HStack {
