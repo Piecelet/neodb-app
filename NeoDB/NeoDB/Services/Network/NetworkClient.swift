@@ -100,16 +100,11 @@ class NetworkClient {
         async throws -> T
     {
         let request = try makeRequest(for: endpoint)
-
-            logRequest(request)
-
+        logRequest(request)
 
         do {
             let (data, response) = try await urlSession.data(for: request)
-
-
-                logResponse(response, data: data)
-
+            logResponse(response, data: data)
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 logger.error("Invalid response type")
@@ -136,6 +131,13 @@ class NetworkClient {
             }
         } catch let error as NetworkError {
             throw error
+        } catch let error as URLError {
+            if error.code == .cancelled {
+                logger.debug("Request cancelled")
+                throw NetworkError.cancelled
+            }
+            logger.error("Network error: \(error.localizedDescription)")
+            throw NetworkError.networkError(error)
         } catch {
             logger.error("Network error: \(error.localizedDescription)")
             throw NetworkError.networkError(error)
