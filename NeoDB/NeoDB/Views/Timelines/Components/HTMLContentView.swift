@@ -33,7 +33,7 @@ struct HTMLContentView: View {
     }
     
     private func handleURL(_ url: URL) {
-        URLHandler.handleNeoDBURL(url) { destination in
+        URLHandler.handleItemURL(url) { destination in
             if let destination = destination {
                 router.navigate(to: destination)
             } else {
