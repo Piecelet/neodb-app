@@ -8,7 +8,7 @@
 import Foundation
 
 enum TimelinesEndpoint {
-    case pub(sinceId: String?, maxId: String?, minId: String?, local: Bool)
+    case pub(sinceId: String?, maxId: String?, minId: String?, local: Bool, limit: Int?)
     case home(sinceId: String?, maxId: String?, minId: String?)
 }
 
@@ -23,11 +23,12 @@ extension TimelinesEndpoint: NetworkEndpoint {
     }
     var queryItems: [URLQueryItem]? {
         switch self {
-        case .pub(let sinceId, let maxId, let minId, let local):
+        case .pub(let sinceId, let maxId, let minId, let local, let limit):
             var params =
                 makePaginationParam(
                     sinceId: sinceId, maxId: maxId, mindId: minId) ?? []
             params.append(.init(name: "local", value: local ? "true" : "false"))
+            params.append(.init(name: "limit", value: limit.map(String.init)))
             return params
         case .home(let sinceId, let maxId, let mindId):
             return makePaginationParam(

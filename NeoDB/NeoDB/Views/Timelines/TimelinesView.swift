@@ -89,7 +89,7 @@ class TimelinesViewModel: ObservableObject {
                 }
 
                 let endpoint = TimelinesEndpoint.pub(
-                    sinceId: nil, maxId: maxId, minId: nil, local: true)
+                    sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
                 logger.debug(
                     "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
                 )
