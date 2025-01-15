@@ -24,12 +24,18 @@ struct ItemActionsView: View {
                 // Show existing mark info
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(.yellow)
                         if let rating = mark.ratingGrade {
-                            Text("\(rating)/5")
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                            Text("\(rating)")
+                                .foregroundStyle(.primary)
+                            Text("/10")
+                                .foregroundStyle(.secondary)
                         }
-                        Text("・")
+                        if mark.ratingGrade != nil {
+                            Text("・")
+                                .foregroundStyle(.secondary)
+                        }
                         Text(mark.createdTime.formatted)
                             .foregroundStyle(.secondary)
                     }
@@ -50,7 +56,11 @@ struct ItemActionsView: View {
             Button(action: viewModel.onAddToShelf) {
                 HStack {
                     Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
-                    Text(viewModel.shelfType == nil ? "Add to Shelf" : "Edit")
+                    if let shelfType = viewModel.shelfType {
+                        Text(shelfType.displayName)
+                    } else {
+                        Text("Add to Shelf")
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
