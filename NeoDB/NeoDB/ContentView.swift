@@ -15,7 +15,7 @@ struct ContentView: View {
         TabView(selection: $router.selectedTab) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
-                HomeView()
+                TimelinesView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)

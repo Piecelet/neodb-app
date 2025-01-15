@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  TimelinesView.swift
 //  NeoDB
 //
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
@@ -9,7 +9,7 @@ import OSLog
 import SwiftUI
 
 @MainActor
-class HomeViewModel: ObservableObject {
+class TimelinesViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
@@ -113,8 +113,8 @@ class HomeViewModel: ObservableObject {
     }
 }
 
-struct HomeView: View {
-    @StateObject private var viewModel = HomeViewModel()
+struct TimelinesView: View {
+    @StateObject private var viewModel = TimelinesViewModel()
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
