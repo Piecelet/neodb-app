@@ -28,7 +28,7 @@ extension TimelinesEndpoint: NetworkEndpoint {
                 makePaginationParam(
                     sinceId: sinceId, maxId: maxId, mindId: minId) ?? []
             params.append(.init(name: "local", value: local ? "true" : "false"))
-            params.append(.init(name: "limit", value: limit.map(String.init)))
+            if let limit = limit { params.append(.init(name: "limit", value: String(describing: limit))) }
             return params
         case .home(let sinceId, let maxId, let mindId):
             return makePaginationParam(
