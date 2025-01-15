@@ -148,29 +148,3 @@ struct ItemActionsView: View {
         .environmentObject(ItemViewModel())
         .padding()
 }
-
-private extension ItemSchema {
-    static var preview: ItemSchema {
-        ItemSchema(
-            id: "1",
-            type: "book",
-            uuid: "1",
-            url: "/book/1",  // Testing relative URL
-            apiUrl: "https://api.example.com/item/1",
-            category: .book,
-            parentUuid: nil,
-            displayTitle: "Sample Item",
-            externalResources: [
-                ExternalResourceSchema(url: URL(string: "https://example.com/external/1")!)
-            ],
-            title: "Sample Item",
-            description: "A sample item description",
-            localizedTitle: [],
-            localizedDescription: [],
-            coverImageUrl: nil,
-            rating: 4.5,
-            ratingCount: 1234,
-            brief: "A sample item brief description"
-        )
-    }
-} 

@@ -13,6 +13,6 @@ struct MarkInSchema: Codable {
     let commentText: String?
     let ratingGrade: Int?
     let tags: [String]?
-    let createdTime: Date?
+    let createdTime: ServerDate?
     let postToFediverse: Bool?
 }

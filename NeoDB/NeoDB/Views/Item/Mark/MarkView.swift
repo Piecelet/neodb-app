@@ -11,6 +11,7 @@ struct MarkView: View {
     @StateObject private var viewModel: MarkViewModel
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @State private var showAdvanced = false
     
     init(item: any ItemProtocol, mark: MarkSchema? = nil) {
         _viewModel = StateObject(wrappedValue: MarkViewModel(item: item, mark: mark))
@@ -72,6 +73,21 @@ struct MarkView: View {
                     Toggle("Public", isOn: $viewModel.isPublic)
                 } footer: {
                     Text("Public marks will be visible to other users")
+                }
+                
+                // Advanced Options
+                Section {
+                    DisclosureGroup("Advanced", isExpanded: $showAdvanced) {
+                        Toggle("Share to Fediverse", isOn: $viewModel.postToFediverse)
+                        
+                        if viewModel.existingMark != nil {
+                            DatePicker(
+                                "Created Time",
+                                selection: $viewModel.createdTime,
+                                displayedComponents: [.date, .hourAndMinute]
+                            )
+                        }
+                    }
                 }
                 
                 // Delete Button

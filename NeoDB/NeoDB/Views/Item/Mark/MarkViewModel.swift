@@ -19,6 +19,8 @@ class MarkViewModel: ObservableObject {
     @Published var rating: Int?
     @Published var comment: String = ""
     @Published var isPublic: Bool = true
+    @Published var postToFediverse: Bool = false
+    @Published var createdTime: Date = Date()
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
@@ -35,6 +37,9 @@ class MarkViewModel: ObservableObject {
             self.rating = mark.ratingGrade
             self.comment = mark.commentText ?? ""
             self.isPublic = mark.visibility == 0
+            if let date = mark.createdTime.asDate {
+                self.createdTime = date
+            }
         }
     }
     
@@ -55,8 +60,8 @@ class MarkViewModel: ObservableObject {
                 commentText: comment.isEmpty ? nil : comment,
                 ratingGrade: rating,
                 tags: [],
-                createdTime: nil,
-                postToFediverse: false
+                createdTime: existingMark != nil ? ServerDate.from(createdTime) : nil,
+                postToFediverse: postToFediverse
             )
             
             let endpoint = MarkEndpoint.mark(itemId: item.uuid, mark: mark)

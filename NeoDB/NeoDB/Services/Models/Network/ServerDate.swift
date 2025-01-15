@@ -54,6 +54,12 @@ extension ServerDate {
                 for: date, relativeTo: Date())
         }
     }
+
+    static func from(_ date: Date) -> ServerDate {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return ServerDate(formatter.string(from: date))
+    }
 }
 
 extension Calendar {
