@@ -12,13 +12,27 @@ struct MarkView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @State private var showAdvanced = false
+    @State private var detent: PresentationDetent = .medium
     
     init(item: any ItemProtocol, mark: MarkSchema? = nil) {
         _viewModel = StateObject(wrappedValue: MarkViewModel(item: item, mark: mark))
     }
     
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            // Custom title bar
+            HStack {
+                Text(viewModel.title)
+                    .font(.headline)
+                Spacer()
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.title2)
+                }
+            }
+            .padding()
+            
             Form {
                 // Shelf Type
                 Section {
@@ -106,39 +120,44 @@ struct MarkView: View {
                     }
                 }
             }
-            .navigationTitle(viewModel.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            
+            // Bottom Save Button
+            VStack(spacing: 16) {
+                Button {
+                    Task {
+                        await viewModel.saveMark()
                     }
+                } label: {
+                    Text("Save")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
                 }
-                
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        Task {
-                            await viewModel.saveMark()
-                        }
-                    }
-                    .disabled(viewModel.isLoading)
-                }
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.isLoading)
+                .padding(.horizontal)
             }
-            .onChange(of: viewModel.isDismissed) { dismissed in
-                if dismissed {
-                    dismiss()
-                }
+            .padding(.vertical)
+            .background(.ultraThinMaterial)
+        }
+        .background(.ultraThinMaterial)
+        .presentationDetents([.medium, .large], selection: $detent)
+        .presentationDragIndicator(.visible)
+        .onChange(of: viewModel.isDismissed) { dismissed in
+            if dismissed {
+                dismiss()
             }
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                if let error = viewModel.error {
-                    Text(error.localizedDescription)
-                }
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
             }
-            .onAppear {
-                viewModel.accountsManager = accountsManager
-            }
+        }
+        .onAppear {
+            viewModel.accountsManager = accountsManager
         }
     }
 }
