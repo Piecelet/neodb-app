@@ -58,6 +58,8 @@ class URLHandler {
             default:
                 category = .tv
             }
+        } else if type == "album" {
+            category = .music
         } else if type == "performance" && pathComponents[2] == "production" {
             category = .performanceProduction
         } else if let itemCategory = ItemCategory(rawValue: type) {
