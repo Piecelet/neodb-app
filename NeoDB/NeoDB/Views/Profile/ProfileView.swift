@@ -23,12 +23,8 @@ class ProfileViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
 
-    private let cacheService: CacheService
+    private let cacheService = CacheService()
     private let logger = Logger.views.profile
-
-    init() {
-        self.cacheService = CacheService()
-    }
 
     func loadUserProfile(forceRefresh: Bool = false) async {
         guard accountsManager != nil else { return }

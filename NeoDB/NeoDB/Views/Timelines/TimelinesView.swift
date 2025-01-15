@@ -18,7 +18,7 @@ class TimelinesViewModel: ObservableObject {
         }
     }
 
-    private let cacheService: CacheService
+    private let cacheService = CacheService()
     private let logger = Logger.home
     private var loadTask: Task<Void, Never>?
 
@@ -31,14 +31,10 @@ class TimelinesViewModel: ObservableObject {
     private var maxId: String?
     private var hasMore = true
 
-    init() {
-        self.cacheService = CacheService()
-    }
-
     func loadTimeline(refresh: Bool = false) async {
         // Cancel any existing load task
         loadTask?.cancel()
-        
+
         // Create a new task for this load operation
         loadTask = Task {
             guard let accountsManager = accountsManager else {
@@ -77,7 +73,8 @@ class TimelinesViewModel: ObservableObject {
                 {
                     if !Task.isCancelled {
                         statuses = cached
-                        logger.debug("Loaded \(cached.count) statuses from cache")
+                        logger.debug(
+                            "Loaded \(cached.count) statuses from cache")
                     }
                 }
 
@@ -116,12 +113,14 @@ class TimelinesViewModel: ObservableObject {
 
                 maxId = newStatuses.last?.id
                 hasMore = !newStatuses.isEmpty
-                logger.debug("Successfully loaded \(newStatuses.count) statuses")
+                logger.debug(
+                    "Successfully loaded \(newStatuses.count) statuses")
 
             } catch {
                 if !Task.isCancelled {
                     logger.error(
-                        "Failed to load timeline: \(error.localizedDescription)")
+                        "Failed to load timeline: \(error.localizedDescription)"
+                    )
                     self.error = "Failed to load timeline"
                     if let networkError = error as? NetworkError {
                         detailedError = networkError.localizedDescription
@@ -133,7 +132,7 @@ class TimelinesViewModel: ObservableObject {
                 isLoading = false
             }
         }
-        
+
         // Wait for the task to complete
         await loadTask?.value
     }
