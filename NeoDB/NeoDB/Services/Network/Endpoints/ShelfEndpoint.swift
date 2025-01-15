@@ -8,7 +8,7 @@
 import Foundation
 
 enum ShelfEndpoint {
-    case get(type: ShelfType, category: ItemCategory?, page: Int? = 1)
+    case get(type: ShelfType, category: ItemCategory? = nil, page: Int? = 1)
     case getItem(itemId: String)
     case markItem(itemId: String, mark: MarkInSchema)
     case deleteMark(itemId: String)
