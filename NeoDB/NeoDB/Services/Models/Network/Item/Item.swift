@@ -5,53 +5,82 @@
 //  Created by citron on 1/15/25.
 //
 
-// MARK: - Base Item Schema
-struct ItemSchema: Codable, Hashable {
-    let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
-    let rating: Double?
-    let ratingCount: Int?
-    let id: String
-    let type: String
-    let uuid: String
-    let url: String
-    let apiUrl: String
-    let category: ItemCategory
-    let parentUuid: String?
-    let displayTitle: String
-    let externalResources: [ExternalResourceSchema]?
-    let brief: String?
-    
+import Foundation
+
+// MARK: - Base Item Protocol
+protocol ItemProtocol: Codable, Hashable, Identifiable {
+    var id: String { get }
+    var type: String { get }
+    var uuid: String { get }
+    var url: URL { get }
+    var apiUrl: URL { get }
+    var category: ItemCategory { get }
+    var parentUuid: String? { get }
+    var displayTitle: String { get }
+    var externalResources: [ExternalResourceSchema]? { get }
+    var title: String { get }
+    var description: String? { get }
+    var localizedTitle: [LocalizedTitleSchema]? { get }
+    var localizedDescription: [LocalizedTitleSchema]? { get }
+    var coverImageUrl: URL? { get }
+    var rating: Double? { get }
+    var ratingCount: Int? { get }
+    var brief: String { get }
+}
+
+// Default implementation for Hashable
+extension ItemProtocol {
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
     
-    static func == (lhs: ItemSchema, rhs: ItemSchema) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
 }
 
-// MARK: - Edition Schema
-struct EditionSchema: Codable {
+// MARK: - Base Item Schema
+struct ItemSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+}
+
+// MARK: - Edition Schema
+struct EditionSchema: ItemProtocol {
+    let id: String
+    let type: String
+    let uuid: String
+    let url: URL
+    let apiUrl: URL
+    let category: ItemCategory
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
+    let title: String
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
+    let rating: Double?
+    let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Edition
     let subtitle: String?
     let origTitle: String?
     let author: [String]
@@ -69,23 +98,26 @@ struct EditionSchema: Codable {
 }
 
 // MARK: - Movie Schema
-struct MovieSchema: Codable {
+struct MovieSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Movie
     let origTitle: String?
     let otherTitle: [String]
     let director: [String]
@@ -101,23 +133,26 @@ struct MovieSchema: Codable {
 }
 
 // MARK: - TV Show Schema
-struct TVShowSchema: Codable {
+struct TVShowSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to TV Show
     let seasonCount: Int?
     let origTitle: String?
     let otherTitle: [String]
@@ -134,23 +169,26 @@ struct TVShowSchema: Codable {
 }
 
 // MARK: - TV Season Schema
-struct TVSeasonSchema: Codable {
+struct TVSeasonSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to TV Season
     let seasonNumber: Int?
     let origTitle: String?
     let otherTitle: [String]
@@ -168,44 +206,50 @@ struct TVSeasonSchema: Codable {
 }
 
 // MARK: - TV Episode Schema
-struct TVEpisodeSchema: Codable {
-    let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
-    let rating: Double?
-    let ratingCount: Int?
+struct TVEpisodeSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
+    let title: String
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
+    let rating: Double?
+    let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to TV Episode
     let episodeNumber: Int?
 }
 
 // MARK: - Album Schema
-struct AlbumSchema: Codable {
+struct AlbumSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Album
     let otherTitle: [String]
     let genre: [String]
     let artist: [String]
@@ -217,23 +261,26 @@ struct AlbumSchema: Codable {
 }
 
 // MARK: - Podcast Schema
-struct PodcastSchema: Codable {
+struct PodcastSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Podcast
     let host: [String]
     let genre: [String]
     let language: [String]
@@ -244,23 +291,26 @@ struct PodcastSchema: Codable {
 }
 
 // MARK: - Game Schema
-struct GameSchema: Codable {
+struct GameSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
     let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Game
     let genre: [String]
     let developer: [String]
     let publisher: [String]
@@ -271,23 +321,26 @@ struct GameSchema: Codable {
 }
 
 // MARK: - Performance Schema
-struct PerformanceSchema: Codable {
-    let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
-    let rating: Double?
-    let ratingCount: Int?
+struct PerformanceSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
+    let title: String
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
+    let rating: Double?
+    let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Performance
     let origTitle: String?
     let otherTitle: [String]
     let genre: [String]
@@ -306,23 +359,26 @@ struct PerformanceSchema: Codable {
 }
 
 // MARK: - Performance Production Schema
-struct PerformanceProductionSchema: Codable {
-    let title: String
-    let description: String
-    let localizedTitle: [LocalizedTitleSchema]
-    let localizedDescription: [LocalizedTitleSchema]
-    let coverImageUrl: String?
-    let rating: Double?
-    let ratingCount: Int?
+struct PerformanceProductionSchema: ItemProtocol {
     let id: String
     let type: String
     let uuid: String
-    let url: String
-    let apiUrl: String
+    let url: URL
+    let apiUrl: URL
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String
     let externalResources: [ExternalResourceSchema]?
+    let title: String
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
+    let rating: Double?
+    let ratingCount: Int?
+    let brief: String
+    
+    // Additional properties specific to Performance Production
     let origTitle: String?
     let otherTitle: [String]
     let language: [String]

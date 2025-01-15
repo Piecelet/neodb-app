@@ -71,22 +71,22 @@ struct HTMLContentView: View {
             
             // Create a temporary ItemSchema
             let tempItem = ItemSchema(
-                title: "",
-                description: "",
-                localizedTitle: [],
-                localizedDescription: [],
-                coverImageUrl: nil,
-                rating: nil,
-                ratingCount: nil,
-                id: id,
-                type: itemType,
-                uuid: id,
-                url: url.absoluteString,
-                apiUrl: "",
-                category: category,
+                id: "",
+                type: "",
+                uuid: "",
+                url: "",
+                apiUrl: nil,
+                category: nil,
                 parentUuid: nil,
-                displayTitle: "",
-                externalResources: nil,
+                displayTitle: id,
+                externalResources: itemType,
+                title: id,
+                description: url.absoluteString,
+                localizedTitle: "",
+                localizedDescription: category,
+                coverImageUrl: nil,
+                rating: "",
+                ratingCount: nil,
                 brief: nil
             )
             
