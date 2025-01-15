@@ -61,6 +61,7 @@ extension Logger {
         static let profile = Logger(subsystem: subsystem, category: "view.profile")
         static let library = Logger(subsystem: subsystem, category: "view.library")
         static let item = Logger(subsystem: subsystem, category: "view.item")
+        static let itemActions = Logger(subsystem: subsystem, category: "view.itemActions")
     }
 
     // MARK: - User Actions

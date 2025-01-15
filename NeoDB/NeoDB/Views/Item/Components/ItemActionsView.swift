@@ -11,8 +11,15 @@ struct ItemActionsView: View {
     let item: (any ItemProtocol)?
     let onAddToShelf: () -> Void
     
+    @StateObject private var viewModel: ItemActionsViewModel
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    
+    init(item: (any ItemProtocol)?, onAddToShelf: @escaping () -> Void) {
+        self.item = item
+        self.onAddToShelf = onAddToShelf
+        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(itemId: item?.id ?? ""))
+    }
     
     private var shareURL: URL? {
         guard let item = item else { return nil }
@@ -27,13 +34,14 @@ struct ItemActionsView: View {
             // Primary Action
             Button(action: onAddToShelf) {
                 HStack {
-                    Image(systemName: "plus")
-                    Text("Add to Shelf")
+                    Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                    Text(viewModel.shelfType == nil ? "Add to Shelf" : "In Shelf")
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
+            .disabled(viewModel.isLoading)
             
             HStack(spacing: 12) {
                 // Share Button
@@ -70,6 +78,16 @@ struct ItemActionsView: View {
                     .buttonStyle(.bordered)
                 }
             }
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
+            }
+        }
+        .onAppear {
+            viewModel.accountsManager = accountsManager
         }
     }
 }
