@@ -54,7 +54,9 @@ extension ShelfEndpoint: NetworkEndpoint {
     var body: Data? {
         switch self {
         case .markItem(_, let mark):
-            return try? JSONEncoder().encode(mark)
+            let encoder = JSONEncoder()
+            encoder.keyEncodingStrategy = .convertToSnakeCase
+            return try? encoder.encode(mark)
         default:
             return nil
         }
