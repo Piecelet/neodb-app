@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
@@ -23,6 +24,9 @@ struct SearchView: View {
             }
             .onAppear {
                 viewModel.accountsManager = accountsManager
+                Task {
+                    await viewModel.loadGallery()
+                }
             }
             .onDisappear {
                 viewModel.cleanup()
@@ -31,8 +35,12 @@ struct SearchView: View {
     
     private var searchContent: some View {
         List {
-            searchResults
-            loadingIndicator
+            if viewModel.searchText.isEmpty {
+                galleryContent
+            } else {
+                searchResults
+                loadingIndicator
+            }
         }
         .listStyle(.plain)
         .searchable(text: $viewModel.searchText)
@@ -45,6 +53,37 @@ struct SearchView: View {
         } message: {
             if let error = viewModel.error {
                 Text(error.localizedDescription)
+            }
+        }
+    }
+    
+    private var galleryContent: some View {
+        ForEach(viewModel.galleryItems) { gallery in
+            Section(header: Text(gallery.name).textCase(.none)) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 12) {
+                        ForEach(gallery.items, id: \.uuid) { item in
+                            Button {
+                                router.navigate(to: .itemDetailWithItem(item: item))
+                            } label: {
+                                VStack(alignment: .leading) {
+                                    ItemCoverImage(url: item.coverImageUrl)
+                                        .frame(width: 100, height: 150)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    
+                                    Text(item.displayTitle)
+                                        .font(.caption)
+                                        .foregroundStyle(.primary)
+                                        .lineLimit(2)
+                                        .frame(width: 100)
+                                }
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.horizontal)
+                }
+                .listRowInsets(EdgeInsets())
             }
         }
     }
@@ -76,6 +115,28 @@ struct SearchView: View {
                 .listRowSeparator(.hidden)
             }
         }
+    }
+}
+
+struct ItemCoverImage: View {
+    let url: URL?
+    
+    var body: some View {
+        KFImage(url)
+            .placeholder {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+            }
+            .onFailure { _ in
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+                    .overlay {
+                        Image(systemName: "photo")
+                            .foregroundStyle(.secondary)
+                    }
+            }
+            .resizable()
+            .aspectRatio(contentMode: .fill)
     }
 }
 

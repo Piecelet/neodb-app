@@ -21,7 +21,7 @@ extension CatalogEndpoint: NetworkEndpoint {
         case .fetch:
             return "/catalog/fetch"
         case .gallery:
-            return "/catalog/gallery"
+            return "/catalog/gallery/"
         }
     }
 

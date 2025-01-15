@@ -12,10 +12,13 @@ import OSLog
 class SearchViewModel: ObservableObject {
     private let logger = Logger.views.search
     private var searchTask: Task<Void, Never>?
+    private var galleryTask: Task<Void, Never>?
     
     @Published var searchText = ""
     @Published var items: [ItemSchema] = []
+    @Published var galleryItems: [GalleryResult] = []
     @Published var isLoading = false
+    @Published var isLoadingGallery = false
     @Published var error: Error?
     @Published var showError = false
     @Published var currentPage = 1
@@ -35,6 +38,36 @@ class SearchViewModel: ObservableObject {
         searchTask = Task {
             await performSearch()
         }
+    }
+    
+    func loadGallery() async {
+        galleryTask?.cancel()
+        
+        galleryTask = Task {
+            guard let accountsManager = accountsManager else { return }
+            
+            isLoadingGallery = true
+            defer { isLoadingGallery = false }
+            
+            do {
+                let endpoint = CatalogEndpoint.gallery
+                let result = try await accountsManager.currentClient.fetch(endpoint, type: [GalleryResult].self)
+                if !Task.isCancelled {
+                    galleryItems = result
+                }
+            } catch {
+                if case NetworkError.cancelled = error {
+                    logger.debug("Gallery loading cancelled")
+                    return
+                }
+                
+                self.error = error
+                self.showError = true
+                logger.error("Gallery loading failed: \(error.localizedDescription)")
+            }
+        }
+        
+        await galleryTask?.value
     }
     
     func loadMore() {
@@ -77,6 +110,8 @@ class SearchViewModel: ObservableObject {
     
     func cleanup() {
         searchTask?.cancel()
+        galleryTask?.cancel()
         searchTask = nil
+        galleryTask = nil
     }
 } 
