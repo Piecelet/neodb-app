@@ -85,6 +85,8 @@ struct ContentView: View {
                 Text("Add to Shelf: \(item.displayTitle)")  // TODO: Implement ShelfEditorView
             case .editShelfItem(let mark):
                 Text("Edit Shelf Item: \(mark.item.displayTitle)")  // TODO: Implement ShelfEditorView
+            case .editMark(let item, let mark):
+                Text("Edit Mark: \(item.displayTitle)")  // TODO: Implement ShelfEditorView
             }
         }
     }

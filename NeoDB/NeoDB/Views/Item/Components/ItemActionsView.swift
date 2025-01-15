@@ -65,7 +65,7 @@ struct ItemActionsView: View {
             // Primary Action
             Button {
                 if let item = itemViewModel.item {
-                    router.presentedSheet = .addToShelf(item: item)
+                    router.presentedSheet = .editMark(item: item)
                 }
             } label: {
                 HStack {
