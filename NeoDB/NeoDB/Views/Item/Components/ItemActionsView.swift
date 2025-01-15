@@ -8,23 +8,20 @@
 import SwiftUI
 
 struct ItemActionsView: View {
-    let item: (any ItemProtocol)?
-    let onAddToShelf: () -> Void
-    
     @StateObject private var viewModel: ItemActionsViewModel
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var accountsManager: AppAccountsManager
     
     init(item: (any ItemProtocol)?, onAddToShelf: @escaping () -> Void) {
-        self.item = item
-        self.onAddToShelf = onAddToShelf
-        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(item: item))
+        let model = ItemActionsViewModel(item: item)
+        model.onAddToShelf = onAddToShelf
+        _viewModel = StateObject(wrappedValue: model)
     }
     
     var body: some View {
         VStack(spacing: 12) {
             // Primary Action
-            Button(action: onAddToShelf) {
+            Button(action: viewModel.onAddToShelf) {
                 HStack {
                     Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
                     Text(viewModel.shelfType == nil ? "Add to Shelf" : "In Shelf")
@@ -50,7 +47,7 @@ struct ItemActionsView: View {
                 }
                 
                 // External Links
-                if let resources = item?.externalResources, !resources.isEmpty {
+                if let resources = viewModel.item?.externalResources, !resources.isEmpty {
                     Menu {
                         ForEach(resources, id: \.url) { resource in
                             Button {

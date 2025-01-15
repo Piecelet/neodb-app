@@ -11,7 +11,7 @@ import OSLog
 @MainActor
 class ItemActionsViewModel: ObservableObject {
     private let logger = Logger.views.itemActions
-    private let item: (any ItemProtocol)?
+    let item: (any ItemProtocol)?
     private var loadTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager? {
@@ -21,6 +21,8 @@ class ItemActionsViewModel: ObservableObject {
             }
         }
     }
+    
+    var onAddToShelf: () -> Void = {}
     
     @Published var mark: MarkSchema?
     @Published var isLoading = false
