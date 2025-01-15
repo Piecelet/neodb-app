@@ -44,6 +44,12 @@ extension Logger {
     // MARK: - Navigation
     /// Logs related to navigation and routing
     static let router = Logger(subsystem: subsystem, category: "router")
+    
+    // MARK: - Shared Services
+    
+    enum services {
+        static let urlHandler = Logger(subsystem: subsystem, category: "services.urlHandler")
+    }
 
     // MARK: - Views
     /// Logs related to specific views

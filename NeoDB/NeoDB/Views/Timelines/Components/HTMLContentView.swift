@@ -33,67 +33,12 @@ struct HTMLContentView: View {
     }
     
     private func handleURL(_ url: URL) {
-        guard let host = url.host, host == "neodb.social" else {
-            openURL(url)
-            return
-        }
-        
-        let pathComponents = url.pathComponents
-        guard pathComponents.count >= 4 else {
-            openURL(url)
-            return
-        }
-        
-        logger.debug("Processing URL: \(url.absoluteString)")
-        logger.debug("Path components: \(pathComponents)")
-        
-        // Parse NeoDB URL pattern: /~username~/type/id
-        // or /~username~/type/subtype/id for TV seasons and episodes
-        if pathComponents[1].hasPrefix("~"), pathComponents[1].hasSuffix("~") {
-            let type = pathComponents[2]
-            let id: String
-            let itemType: String
-            let category: ItemCategory
-            
-            if type == "tv" && pathComponents.count >= 5 {
-                // Handle TV seasons and episodes
-                let subtype = pathComponents[3] // "season" or "episode"
-                id = pathComponents[4]
-                itemType = subtype
-                category = categoryFromType(subtype) // Use subtype for category
-                logger.debug("TV content - type: \(type), subtype: \(subtype), id: \(id)")
+        URLHandler.handleNeoDBURL(url) { destination in
+            if let destination = destination {
+                router.navigate(to: destination)
             } else {
-                id = pathComponents[3]
-                itemType = type
-                category = categoryFromType(type)
-                logger.debug("Regular content - type: \(type), id: \(id)")
+                openURL(url)
             }
-            
-            // Create a temporary ItemSchema
-            let tempItem = ItemSchema(
-                id: "",
-                type: "",
-                uuid: "",
-                url: url.absoluteString,
-                apiUrl: "https://neodb.social/api/",
-                category: category,
-                parentUuid: nil,
-                displayTitle: id,
-                externalResources: nil,
-                title: id,
-                description: url.absoluteString,
-                localizedTitle: nil,
-                localizedDescription: nil,
-                coverImageUrl: nil,
-                rating: nil,
-                ratingCount: nil,
-                brief: itemType
-            )
-            
-            logger.debug("Created ItemSchema - type: \(tempItem.type), category: \(tempItem.category.rawValue)")
-            router.navigate(to: .itemDetailWithItem(item: tempItem))
-        } else {
-            openURL(url)
         }
     }
     

@@ -23,6 +23,8 @@ ItemDetailView displays detailed information about various types of items (books
 3. `ItemActionsView`
    - Action buttons (add to shelf, share, etc.)
    - Integration with router for navigation
+   - Migrated from `AuthService` to `AppAccountsManager` for instance handling
+   - Uses `currentAccount.instance` for URL construction
 
 ## Implementation Details
 
@@ -51,6 +53,8 @@ ItemDetailView
 3. Added background refresh support
 4. Improved UI with loading states
 5. Added proper type handling for different items
+6. Migrated from `AuthService` to `AppAccountsManager`
+7. Added UUID extraction from full URLs
 
 ## Known Issues
 - Need to implement proper action handling
