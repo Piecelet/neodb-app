@@ -16,5 +16,5 @@ struct MarkSchema: Codable, Identifiable {
     let ratingGrade: Int?
     let tags: [String]
     
-    var id: String { "\(item.id)_\(Int(createdTime.timeIntervalSince1970))" }
+    var id: String { "\(item.id)_\(createdTime)" }
 }
