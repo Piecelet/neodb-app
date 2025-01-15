@@ -14,7 +14,7 @@ struct ShelfItemView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Cover Image
-            KFImage(URL(string: mark.item.coverImageUrl ?? ""))
+            KFImage(mark.item.coverImageUrl)
                 .placeholder {
                     Rectangle()
                         .fill(Color.gray.opacity(0.2))
@@ -83,6 +83,15 @@ extension MarkSchema {
             shelfType: .wishlist,
             visibility: 0,
             item: ItemSchema(
+                id: "1",
+                type: "book",
+                uuid: "1",
+                url: URL(string: "https://example.com")!,
+                apiUrl: URL(string: "https://api.example.com")!,
+                category: .book,
+                parentUuid: nil,
+                displayTitle: "Sample Book",
+                externalResources: nil,
                 title: "Sample Book",
                 description: "A sample book description",
                 localizedTitle: [],
@@ -90,16 +99,7 @@ extension MarkSchema {
                 coverImageUrl: nil,
                 rating: 4.5,
                 ratingCount: 100,
-                id: "1",
-                type: "book",
-                uuid: "1",
-                url: "https://example.com",
-                apiUrl: "https://api.example.com",
-                category: .book,
-                parentUuid: nil,
-                displayTitle: "Sample Book",
-                externalResources: nil,
-                brief: nil
+                brief: "A brief description"
             ),
             createdTime: Date(),
             commentText: "Great book!",

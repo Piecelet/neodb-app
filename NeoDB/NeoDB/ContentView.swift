@@ -48,18 +48,17 @@ struct ContentView: View {
 
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
-                /* Temporarily disabled during migration
-                LibraryView(authService: authService)
+                LibraryView()
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
-                */
-                Text("Library")
-                    .navigationTitle("Library")
-                    .navigationDestination(for: RouterDestination.self) {
-                        destination in
-                        destinationView(for: destination)
-                    }
+//                
+//                Text("Library")
+//                    .navigationTitle("Library")
+//                    .navigationDestination(for: RouterDestination.self) {
+//                        destination in
+//                        destinationView(for: destination)
+//                    }
             }
             .tabItem {
                 Label("Library", systemImage: "books.vertical.fill")

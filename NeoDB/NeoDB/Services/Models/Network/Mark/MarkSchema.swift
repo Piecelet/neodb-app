@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MarkSchema: Codable {
+struct MarkSchema: Codable, Identifiable {
     let shelfType: ShelfType
     let visibility: Int
     let item: ItemSchema
@@ -15,4 +15,6 @@ struct MarkSchema: Codable {
     let commentText: String?
     let ratingGrade: Int?
     let tags: [String]
+    
+    var id: String { "\(item.id)_\(Int(createdTime.timeIntervalSince1970))" }
 }
