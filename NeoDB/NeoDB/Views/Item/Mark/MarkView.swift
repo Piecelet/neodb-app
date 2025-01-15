@@ -81,11 +81,15 @@ struct MarkView: View {
                         Toggle("Share to Fediverse", isOn: $viewModel.postToFediverse)
                         
                         if viewModel.existingMark != nil {
-                            DatePicker(
-                                "Created Time",
-                                selection: $viewModel.createdTime,
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
+                            Toggle("Use Current Time", isOn: $viewModel.useCurrentTime)
+                            
+                            if !viewModel.useCurrentTime {
+                                DatePicker(
+                                    "Created Time",
+                                    selection: $viewModel.createdTime,
+                                    displayedComponents: [.date, .hourAndMinute]
+                                )
+                            }
                         }
                     }
                 }

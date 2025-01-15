@@ -21,6 +21,7 @@ class MarkViewModel: ObservableObject {
     @Published var isPublic: Bool = true
     @Published var postToFediverse: Bool = false
     @Published var createdTime: Date = Date()
+    @Published var useCurrentTime = true
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
@@ -39,6 +40,7 @@ class MarkViewModel: ObservableObject {
             self.isPublic = mark.visibility == 0
             if let date = mark.createdTime.asDate {
                 self.createdTime = date
+                self.useCurrentTime = false
             }
         }
     }
@@ -60,7 +62,7 @@ class MarkViewModel: ObservableObject {
                 commentText: comment.isEmpty ? nil : comment,
                 ratingGrade: rating,
                 tags: [],
-                createdTime: existingMark != nil ? ServerDate.from(createdTime) : nil,
+                createdTime: useCurrentTime ? nil : ServerDate.from(createdTime),
                 postToFediverse: postToFediverse
             )
             
