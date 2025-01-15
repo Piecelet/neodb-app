@@ -10,44 +10,102 @@ import OSLog
 
 @MainActor
 class LibraryViewModel: ObservableObject {
-    private let shelfService: ShelfService
-    private let logger = Logger.library
+    var accountsManager: AppAccountsManager? {
+        didSet {
+            if oldValue !== accountsManager {
+                shelfItems = []
+            }
+        }
+    }
+    
+    private let cacheService = CacheService()
+    private let logger = Logger.views.library
+    private var loadTask: Task<Void, Never>?
     
     @Published var selectedShelfType: ShelfType = .wishlist
     @Published var shelfItems: [MarkSchema] = []
     @Published var isLoading = false
     @Published var error: String?
-    @Published var currentPage = 1
-    @Published var totalPages = 1
+    @Published var detailedError: String?
+    @Published var isRefreshing = false
     @Published var selectedCategory: ItemCategory?
     
-    private var currentLoadTask: Task<Void, Never>?
-
-    init(shelfService: ShelfService) {
-        self.shelfService = shelfService
-    }
+    @Published var currentPage = 1
+    @Published var totalPages = 1
     
     func loadShelfItems(refresh: Bool = false) async {
-        currentLoadTask?.cancel()
+        loadTask?.cancel()
         
-        let task = Task { @MainActor in
-            if refresh {
-                currentPage = 1
-                shelfItems = []
+        loadTask = Task {
+            guard let accountsManager = accountsManager else {
+                logger.debug("No accountsManager available")
+                return
             }
             
-            guard !isLoading else { return }
-            isLoading = true
+            logger.debug("Loading shelf items for instance: \(accountsManager.currentAccount.instance)")
+            
+            if refresh {
+                logger.debug("Refreshing shelf items, resetting pagination")
+                currentPage = 1
+                if !Task.isCancelled {
+                    isRefreshing = true
+                }
+            } else {
+                if !Task.isCancelled {
+                    isLoading = true
+                }
+            }
+            
+            defer {
+                if !Task.isCancelled {
+                    isLoading = false
+                    isRefreshing = false
+                }
+            }
+            
             error = nil
+            detailedError = nil
+            
+            let cacheKey = "\(accountsManager.currentAccount.instance)_shelf_\(selectedShelfType.rawValue)_\(selectedCategory?.rawValue ?? "all")"
+            logger.debug("Using cache key: \(cacheKey)")
             
             do {
-                let result = try await shelfService.getShelfItems(
+                // Only load from cache if not refreshing and shelfItems is empty
+                if !refresh && shelfItems.isEmpty,
+                   let cached = try? await cacheService.retrieve(
+                    forKey: cacheKey, type: PagedMarkSchema.self)
+                {
+                    if !Task.isCancelled {
+                        shelfItems = cached.data
+                        totalPages = cached.pages
+                        logger.debug("Loaded \(cached.data.count) items from cache")
+                    }
+                }
+                
+                guard !Task.isCancelled else {
+                    logger.debug("Shelf items loading cancelled")
+                    return
+                }
+                
+                guard accountsManager.isAuthenticated else {
+                    logger.error("User not authenticated")
+                    throw NetworkError.unauthorized
+                }
+                
+                let endpoint = ShelfEndpoint.get(
                     type: selectedShelfType,
                     category: selectedCategory,
                     page: currentPage
                 )
+                logger.debug("Fetching shelf items with endpoint: \(String(describing: endpoint))")
                 
-                try Task.checkCancellation()
+                let result = try await accountsManager.currentClient.fetch(
+                    endpoint, type: PagedMarkSchema.self)
+                
+                guard !Task.isCancelled else {
+                    logger.debug("Shelf items loading cancelled after fetch")
+                    return
+                }
                 
                 if refresh {
                     shelfItems = result.data
@@ -55,22 +113,24 @@ class LibraryViewModel: ObservableObject {
                     shelfItems.append(contentsOf: result.data)
                 }
                 totalPages = result.pages
-            } catch is CancellationError {
-                logger.debug("Load task was cancelled")
+                
+                try? await cacheService.cache(
+                    result, forKey: cacheKey, type: PagedMarkSchema.self)
+                
+                logger.debug("Successfully loaded \(result.data.count) items")
+                
             } catch {
                 if !Task.isCancelled {
-                    self.error = error.localizedDescription
-                    logger.error("Failed to load shelf items: \(error)")
+                    logger.error("Failed to load shelf items: \(error.localizedDescription)")
+                    self.error = "Failed to load library"
+                    if let networkError = error as? NetworkError {
+                        detailedError = networkError.localizedDescription
+                    }
                 }
-            }
-            
-            if !Task.isCancelled {
-                isLoading = false
             }
         }
         
-        currentLoadTask = task
-        await task.value
+        await loadTask?.value
     }
     
     func loadNextPage() async {
@@ -81,36 +141,32 @@ class LibraryViewModel: ObservableObject {
     
     func changeShelfType(_ type: ShelfType) {
         selectedShelfType = type
-        currentLoadTask?.cancel()
-        currentLoadTask = Task {
+        loadTask?.cancel()
+        loadTask = Task {
             await loadShelfItems(refresh: true)
         }
     }
     
     func changeCategory(_ category: ItemCategory?) {
         selectedCategory = category
-        currentLoadTask?.cancel()
-        currentLoadTask = Task {
+        loadTask?.cancel()
+        loadTask = Task {
             await loadShelfItems(refresh: true)
         }
     }
     
     func cleanup() {
-        currentLoadTask?.cancel()
-        currentLoadTask = nil
+        loadTask?.cancel()
+        loadTask = nil
     }
 }
 
 struct LibraryView: View {
-    @StateObject private var viewModel: LibraryViewModel
-    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
-    
-    init(authService: AuthService) {
-        let shelfService = ShelfService(authService: authService)
-        _viewModel = StateObject(wrappedValue: LibraryViewModel(shelfService: shelfService))
-    }
-    
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    @StateObject private var viewModel = LibraryViewModel()
+    @Environment(\.colorScheme) private var colorScheme
+        
     var body: some View {
         VStack(spacing: 0) {
             // Shelf Type Picker
@@ -130,14 +186,20 @@ struct LibraryView: View {
                     EmptyStateView(
                         "Couldn't Load Library",
                         systemImage: "exclamationmark.triangle",
-                        description: Text(error)
+                        description: Text(viewModel.detailedError ?? error)
                     )
-                } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading {
+                    .refreshable {
+                        await viewModel.loadShelfItems(refresh: true)
+                    }
+                } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading && !viewModel.isRefreshing {
                     EmptyStateView(
                         "No Items Found",
                         systemImage: "books.vertical",
                         description: Text("Add some items to your \(viewModel.selectedShelfType.displayName.lowercased()) list")
                     )
+                    .refreshable {
+                        await viewModel.loadShelfItems(refresh: true)
+                    }
                 } else {
                     libraryContent
                 }
@@ -146,6 +208,7 @@ struct LibraryView: View {
         .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.large)
         .task {
+            viewModel.accountsManager = accountsManager
             await viewModel.loadShelfItems()
         }
         .onDisappear {
@@ -172,7 +235,7 @@ struct LibraryView: View {
                     .buttonStyle(.plain)
                 }
                 
-                if viewModel.isLoading {
+                if viewModel.isLoading && !viewModel.isRefreshing {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding()

@@ -8,14 +8,16 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
-    
+
     var body: some View {
         TabView(selection: $router.selectedTab) {
+            // Home Tab
             NavigationStack(path: router.path(for: .home)) {
-                HomeView(authService: authService)
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                TimelinesView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -23,11 +25,19 @@ struct ContentView: View {
                 Label("Home", systemImage: "house.fill")
             }
             .tag(TabSection.home)
-            
+
+            // Search Tab
             NavigationStack(path: router.path(for: .search)) {
+                /* Temporarily disabled during migration
+                SearchView(authService: authService)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destinationView(for: destination)
+                    }
+                */
                 Text("Search")
                     .navigationTitle("Search")
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -35,9 +45,10 @@ struct ContentView: View {
                 Label("Search", systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
-            
+
+            // Library Tab
             NavigationStack(path: router.path(for: .library)) {
-                LibraryView(authService: authService)
+                LibraryView()
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
@@ -46,10 +57,12 @@ struct ContentView: View {
                 Label("Library", systemImage: "books.vertical.fill")
             }
             .tag(TabSection.library)
-            
+
+            // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
-                ProfileView(authService: authService)
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                ProfileView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -75,19 +88,19 @@ struct ContentView: View {
             }
         }
     }
-    
+
     @ViewBuilder
-    private func destinationView(for destination: RouterDestination) -> some View {
+    private func destinationView(for destination: RouterDestination)
+        -> some View
+    {
         switch destination {
         case .itemDetail(let id):
-            ItemDetailViewContainer(
-                itemDetailService: ItemDetailService(authService: authService, router: router),
+            ItemView(
                 id: id,
-                category: router.itemToLoad?.category
+                category: router.itemToLoad?.category ?? .book
             )
         case .itemDetailWithItem(let item):
-            ItemDetailViewContainer(
-                itemDetailService: ItemDetailService(authService: authService, router: router),
+            ItemView(
                 id: item.id,
                 category: item.category,
                 item: item
@@ -116,5 +129,5 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(AuthService())
+        .environmentObject(AppAccountsManager())
 }

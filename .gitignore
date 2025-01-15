@@ -98,3 +98,4 @@ DerivedData/
 .netrc
 
 buildServer.json
+.specstory/

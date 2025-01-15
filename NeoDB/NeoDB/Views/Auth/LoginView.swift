@@ -9,11 +9,10 @@ import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
-    @EnvironmentObject var authService: AuthService
+    @EnvironmentObject var accountsManager: AppAccountsManager
     @Environment(\.openURL) private var openURL
     @State private var errorMessage: String?
     @State private var showError = false
-    @State private var instanceUrl: String = "neodb.social"
     @State private var showInstanceInput = false
     
     var body: some View {
@@ -38,7 +37,7 @@ struct LoginView: View {
                     .font(.headline)
                 
                 HStack {
-                    Text(authService.currentInstance)
+                    Text(accountsManager.currentAccount.instance)
                         .foregroundColor(.secondary)
                     
                     Spacer()
@@ -56,17 +55,15 @@ struct LoginView: View {
             Button(action: {
                 Task {
                     do {
-                        try await authService.registerApp()
-                        if let url = authService.authorizationURL {
-                            openURL(url)
-                        } else {
-                            errorMessage = "Failed to create authorization URL"
-                            showError = true
-                        }
-                    } catch AuthError.registrationFailed(let message) {
+                        let authUrl = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
+                        openURL(authUrl)
+                    } catch AccountError.invalidURL {
+                        errorMessage = "Invalid instance URL"
+                        showError = true
+                    } catch AccountError.registrationFailed(let message) {
                         errorMessage = "Registration failed: \(message)"
                         showError = true
-                    } catch AuthError.tokenExchangeFailed(let message) {
+                    } catch AccountError.authenticationFailed(let message) {
                         errorMessage = "Authentication failed: \(message)"
                         showError = true
                     } catch {
@@ -76,7 +73,7 @@ struct LoginView: View {
                 }
             }) {
                 HStack {
-                    if authService.isRegistering {
+                    if accountsManager.isAuthenticating {
                         ProgressView()
                             .tint(.white)
                     } else {
@@ -90,7 +87,7 @@ struct LoginView: View {
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
-            .disabled(authService.isRegistering)
+            .disabled(accountsManager.isAuthenticating)
             .padding(.horizontal)
         }
         .padding()
@@ -100,25 +97,12 @@ struct LoginView: View {
             Text(errorMessage ?? "An unknown error occurred")
         })
         .sheet(isPresented: $showInstanceInput) {
-            NavigationStack {
-                InstanceInputView(instanceUrl: instanceUrl) { newInstance in
-                    do {
-                        try authService.switchInstance(newInstance)
-                        instanceUrl = newInstance
-                        showInstanceInput = false
-                    } catch {
-                        errorMessage = "Invalid instance URL"
-                        showError = true
-                    }
-                }
-                .navigationTitle("Change Instance")
-                .navigationBarItems(
-                    leading: Button("Cancel") {
-                        showInstanceInput = false
-                    }
-                )
+            InstanceInputView(selectedInstance: accountsManager.currentAccount.instance) { newInstance in
+                let account = AppAccount(instance: newInstance, oauthToken: nil)
+                accountsManager.add(account: account)
+                showInstanceInput = false
             }
-            .presentationDetents([.height(200)])
+            .presentationDetents([.medium, .large])
         }
         .enableInjection()
     }
@@ -129,84 +113,128 @@ struct LoginView: View {
 }
 
 struct InstanceInputView: View {
-    @State private var instanceUrl: String
-    @State private var isValidating = false
-    @State private var localError: String?
-    @FocusState private var isUrlFieldFocused: Bool
+    @State private var selectedInstance: String
+    @AppStorage(\.customInstance) private var customInstance: String
+    @Environment(\.dismiss) private var dismiss
     
     let onSubmit: (String) -> Void
     
-    init(instanceUrl: String, onSubmit: @escaping (String) -> Void) {
-        _instanceUrl = State(initialValue: instanceUrl)
+    private let instances = [
+        (name: "NeoDB", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文"]),
+        (name: "Eggplant", host: "eggplant.place", description: "reviews about book, film, music, podcast and game.", tags: ["English", "Beta"]),
+        (name: "ReviewDB", host: "reviewdb.app", description: "reviews about book, film, music, podcast and game.", tags: ["International"]),
+        (name: "Minreol", host: "minreol.dk", description: "MinReol er et dansk fællesskab centreret om bøger, film, TV-serier, spil og podcasts.", tags: ["German"])
+    ]
+    
+    init(selectedInstance: String, onSubmit: @escaping (String) -> Void) {
+        _selectedInstance = State(initialValue: selectedInstance)
         self.onSubmit = onSubmit
     }
     
-    var isValidUrl: Bool {
-        let urlPattern = "^[a-zA-Z0-9][a-zA-Z0-9-_.]+\\.[a-zA-Z]{2,}$"
-        let urlPredicate = NSPredicate(format: "SELF MATCHES %@", urlPattern)
-        return urlPredicate.evaluate(with: instanceUrl)
-    }
-    
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Enter the URL of your NeoDB instance")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-            
-            TextField("Instance URL", text: $instanceUrl)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .textInputAutocapitalization(.never)
-                .keyboardType(.URL)
-                .submitLabel(.done)
-                .focused($isUrlFieldFocused)
-                .onChange(of: instanceUrl) { _ in
-                    localError = nil
+        VStack(spacing: 0) {
+            // Custom title bar
+            HStack {
+                Text("Select Instance")
+                    .font(.headline)
+                Spacer()
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundStyle(.secondary)
+                        .font(.title2)
                 }
-                .onSubmit {
-                    submitInstance()
-                }
-                .accessibilityHint("Enter your NeoDB instance URL, for example: neodb.social")
-            
-            if let error = localError {
-                Text(error)
-                    .font(.caption)
-                    .foregroundColor(.red)
             }
+            .padding()
             
-            Button(action: submitInstance) {
-                HStack {
-                    if isValidating {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Text("Connect")
+            List {
+                Section {
+                    ForEach(instances, id: \.host) { instance in
+                        Button(action: {
+                            selectedInstance = instance.host
+                            onSubmit(instance.host)
+                            dismiss()
+                        }) {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 4) {
+                                        Text(instance.name)
+                                            .font(.body)
+                                            .foregroundColor(.primary)
+                                        Text(instance.host)
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                    
+                                    Text(instance.description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(2)
+                                    
+                                    HStack(spacing: 4) {
+                                        ForEach(instance.tags, id: \.self) { tag in
+                                            Text(tag)
+                                                .font(.caption2)
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 2)
+                                                .background(Color.secondary.opacity(0.1))
+                                                .cornerRadius(4)
+                                        }
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                if selectedInstance == instance.host {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                        }
+                        .foregroundColor(.primary)
                     }
+                } header: {
+                    Text("Choose an Instance")
                 }
-                .frame(maxWidth: .infinity)
+                
+                Section {
+                    TextField("instance.social", text: $customInstance)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .keyboardType(.URL)
+                        .onSubmit {
+                            if !customInstance.isEmpty {
+                                selectedInstance = customInstance
+                                onSubmit(customInstance)
+                                dismiss()
+                            }
+                        }
+                        .overlay(
+                            HStack {
+                                Spacer()
+                                if selectedInstance == customInstance && !customInstance.isEmpty {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                        .padding(.trailing, 8)
+                                }
+                            }
+                        )
+                } header: {
+                    Text("Custom Instance")
+                } footer: {
+                    Text("Enter your own instance URL if it's not listed above.")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(isValidating || instanceUrl.isEmpty || !isValidUrl)
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
         }
-        .padding()
-        .onAppear {
-            isUrlFieldFocused = true
-        }
+        .background(.ultraThinMaterial)
         .enableInjection()
     }
 
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
-    private func submitInstance() {
-        guard isValidUrl else {
-            localError = "Please enter a valid instance URL"
-            return
-        }
-        
-        isValidating = true
-        onSubmit(instanceUrl)
-        isValidating = false
-    }
 }
+
