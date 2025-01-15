@@ -29,13 +29,8 @@ class ItemActionsViewModel: ObservableObject {
     private let itemId: String
     
     init(itemId: String) {
-        // Extract UUID from URL if needed
-        if let url = URL(string: itemId), url.pathComponents.count >= 2 {
-            self.itemId = url.lastPathComponent
-        } else {
-            self.itemId = itemId
-        }
-        logger.debug("Initialized ItemActionsViewModel with itemId: \(self.itemId)")
+        self.itemId = itemId
+        logger.debug("Initialized ItemActionsViewModel with itemId: \(itemId)")
     }
     
     // MARK: - Computed Properties

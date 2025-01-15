@@ -164,37 +164,28 @@ class ItemViewModel: ObservableObject {
         return metadata
     }
     
-    private func extractUUID(from id: String) -> String {
-        if let url = URL(string: id), url.pathComponents.count >= 3 {
-            // Return last path component as UUID
-            return url.pathComponents.last ?? id
-        }
-        return id
-    }
-    
     private func makeEndpoint(id: String, category: ItemCategory) -> NetworkEndpoint {
-        let uuid = extractUUID(from: id)
         switch category {
         case .book:
-            return ItemEndpoint.book(uuid: uuid)
+            return ItemEndpoint.book(uuid: id)
         case .movie:
-            return ItemEndpoint.movie(uuid: uuid)
+            return ItemEndpoint.movie(uuid: id)
         case .tv:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: nil, isEpisode: nil)
+            return ItemEndpoint.tv(uuid: id, isSeason: nil, isEpisode: nil)
         case .tvSeason:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: true, isEpisode: nil)
+            return ItemEndpoint.tv(uuid: id, isSeason: true, isEpisode: nil)
         case .tvEpisode:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: nil, isEpisode: true)
+            return ItemEndpoint.tv(uuid: id, isSeason: nil, isEpisode: true)
         case .music:
-            return ItemEndpoint.album(uuid: uuid)
+            return ItemEndpoint.album(uuid: id)
         case .game:
-            return ItemEndpoint.game(uuid: uuid)
+            return ItemEndpoint.game(uuid: id)
         case .podcast:
-            return ItemEndpoint.podcast(uuid: uuid)
+            return ItemEndpoint.podcast(uuid: id)
         case .performance:
-            return ItemEndpoint.performance(uuid: uuid, isProduction: nil)
+            return ItemEndpoint.performance(uuid: id, isProduction: nil)
         case .performanceProduction:
-            return ItemEndpoint.performance(uuid: uuid, isProduction: true)
+            return ItemEndpoint.performance(uuid: id, isProduction: true)
         default:
             fatalError("Unsupported category: \(category)")
         }

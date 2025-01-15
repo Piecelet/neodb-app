@@ -25,7 +25,9 @@ struct ItemView: View {
     }
     
     private var itemUUID: String {
-        if let url = URL(string: id), url.pathComponents.count >= 2 {
+        if let url = URL(string: id) {
+            // Extract UUID from URL path
+            // Example: https://neodb.social/book/7KwdHc6YRjnkbtOf4U0ORl -> 7KwdHc6YRjnkbtOf4U0ORl
             return url.lastPathComponent
         }
         return id
@@ -43,7 +45,7 @@ struct ItemView: View {
             ),
             description: viewModel.description,
             actions: ItemActionsView(
-                item: viewModel.item,
+                item: viewModel.item?.uuid != nil ? viewModel.item : nil,
                 onAddToShelf: { 
                     if let item = viewModel.item {
                         router.presentedSheet = .addToShelf(item: item)
