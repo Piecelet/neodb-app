@@ -32,13 +32,6 @@ struct LoginView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
-            Text("This is a open sourced third-party client for NeoDB made by citron.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                
-            
             VStack(alignment: .leading, spacing: 8) {
                 Text("Instance")
                     .font(.headline)
@@ -96,6 +89,12 @@ struct LoginView: View {
             }
             .disabled(accountsManager.isAuthenticating)
             .padding(.horizontal)
+        
+            Text("This is a open sourced third-party client for NeoDB made by citron.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
         }
         .padding()
         .alert("Error", isPresented: $showError, actions: {

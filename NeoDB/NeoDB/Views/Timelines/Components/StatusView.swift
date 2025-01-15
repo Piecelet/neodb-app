@@ -20,7 +20,7 @@ struct StatusView: View {
             // Header
             HStack(spacing: 8) {
                 Button {
-                    router.navigate(to: .userProfile(id: status.account.id))
+//                    router.navigate(to: .userProfile(id: status.account.id))
                 } label: {
                     KFImage(status.account.avatar)
                         .placeholder {
