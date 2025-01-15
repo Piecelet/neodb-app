@@ -95,12 +95,12 @@ struct ContentView: View {
     {
         switch destination {
         case .itemDetail(let id):
-            ItemDetailViewContainer(
+            ItemDetailView(
                 id: id,
                 category: router.itemToLoad?.category ?? .book
             )
         case .itemDetailWithItem(let item):
-            ItemDetailViewContainer(
+            ItemDetailView(
                 id: item.id,
                 category: item.category,
                 item: item

@@ -9,6 +9,12 @@ import Foundation
 import OSLog
 import SwiftUI
 
+enum ItemDetailState {
+    case loading
+    case loaded
+    case error
+}
+
 @MainActor
 class ItemDetailViewModel: ObservableObject {
     private let logger = Logger.views.itemDetail
@@ -18,7 +24,9 @@ class ItemDetailViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
-                item = nil
+                if item == nil {
+                    item = initialItem
+                }
             }
         }
     }
@@ -28,6 +36,23 @@ class ItemDetailViewModel: ObservableObject {
     @Published var isRefreshing = false
     @Published var error: Error?
     @Published var showError = false
+    
+    private let initialItem: (any ItemProtocol)?
+    
+    init(initialItem: (any ItemProtocol)? = nil) {
+        self.initialItem = initialItem
+        self.item = initialItem
+    }
+    
+    var state: ItemDetailState {
+        if isLoading {
+            return .loading
+        }
+        if error != nil {
+            return .error
+        }
+        return .loaded
+    }
     
     // Computed properties for UI
     var displayTitle: String { item?.displayTitle ?? "" }
@@ -102,7 +127,9 @@ class ItemDetailViewModel: ObservableObject {
         await loadTask?.value
     }
     
-    func getKeyMetadata(for item: any ItemProtocol) -> [(String, String)] {
+    func getKeyMetadata(for item: (any ItemProtocol)?) -> [(String, String)] {
+        guard let item = item else { return [] }
+        
         var metadata: [(String, String)] = []
         
         switch item {

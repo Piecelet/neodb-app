@@ -9,67 +9,42 @@ import SwiftUI
 import Kingfisher
 
 struct ItemDetailView: View {
-    @ObservedObject var viewModel: ItemDetailViewModel
+    @StateObject private var viewModel: ItemDetailViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     
     let id: String
     let category: ItemCategory
+    private let initialItem: (any ItemProtocol)?
+    
+    init(id: String, category: ItemCategory, item: (any ItemProtocol)? = nil) {
+        self.id = id
+        self.category = category
+        self.initialItem = item
+        self._viewModel = StateObject(wrappedValue: ItemDetailViewModel(initialItem: item))
+    }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 0) {
-                if let item = viewModel.item {
-                    // Header Section
-                    ItemHeaderView(
-                        title: viewModel.displayTitle,
-                        coverImageURL: viewModel.coverImageURL,
-                        rating: viewModel.rating,
-                        ratingCount: viewModel.ratingCount,
-                        keyMetadata: viewModel.getKeyMetadata(for: item)
-                    )
-                    .overlay(alignment: .topTrailing) {
-                        if viewModel.isRefreshing {
-                            ProgressView()
-                                .padding(8)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Circle())
-                                .padding([.top, .trailing], 8)
-                        }
+        ItemDetailContent(
+            state: viewModel.state,
+            header: ItemDetailHeader(
+                title: viewModel.displayTitle,
+                coverURL: viewModel.coverImageURL,
+                rating: viewModel.rating,
+                ratingCount: viewModel.ratingCount,
+                metadata: viewModel.getKeyMetadata(for: viewModel.item)
+            ),
+            description: viewModel.description,
+            actions: ItemDetailActions(
+                item: viewModel.item,
+                onAddToShelf: { 
+                    if let item = viewModel.item {
+                        router.presentedSheet = .addToShelf(item: item)
                     }
-                    
-                    Divider()
-                        .padding(.vertical)
-                    
-                    // Description Section
-                    if !viewModel.description.isEmpty {
-                        ExpandableDescriptionView(description: viewModel.description)
-                        
-                        Divider()
-                            .padding(.vertical)
-                    }
-                    
-                    // Actions Section
-                    ItemActionsView(item: item)
-                        .padding(.horizontal)
-                    
-                } else if viewModel.isLoading {
-                    VStack(spacing: 16) {
-                        ProgressView()
-                        Text("Loading...")
-                            .foregroundStyle(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.top, 100)
-                } else {
-                    EmptyStateView(
-                        "Item Not Found",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text("The requested item could not be found or has been removed.")
-                    )
                 }
-            }
-        }
+            ),
+            isRefreshing: viewModel.isRefreshing
+        )
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
             await viewModel.loadItemDetail(id: id, category: category, refresh: true)
@@ -91,11 +66,67 @@ struct ItemDetailView: View {
     }
 }
 
+private struct ItemDetailContent: View {
+    let state: ItemDetailState
+    let header: ItemDetailHeader
+    let description: String
+    let actions: ItemDetailActions
+    let isRefreshing: Bool
+    
+    var body: some View {
+        ScrollView {
+            switch state {
+            case .loading:
+                VStack(spacing: 16) {
+                    ProgressView()
+                    Text("Loading...")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(.top, 100)
+                
+            case .loaded:
+                VStack(alignment: .leading, spacing: 0) {
+                    header
+                        .overlay(alignment: .topTrailing) {
+                            if isRefreshing {
+                                ProgressView()
+                                    .padding(8)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(Circle())
+                                    .padding([.top, .trailing], 8)
+                            }
+                        }
+                    
+                    Divider()
+                        .padding(.vertical)
+                    
+                    if !description.isEmpty {
+                        ExpandableDescriptionView(description: description)
+                        
+                        Divider()
+                            .padding(.vertical)
+                    }
+                    
+                    actions
+                        .padding(.horizontal)
+                }
+                
+            case .error:
+                EmptyStateView(
+                    "Item Not Found",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text("The requested item could not be found or has been removed.")
+                )
+            }
+        }
+    }
+}
+
 // MARK: - Preview
 #Preview {
     NavigationStack {
         ItemDetailView(
-            viewModel: ItemDetailViewModel(),
             id: "preview_id",
             category: .book
         )
