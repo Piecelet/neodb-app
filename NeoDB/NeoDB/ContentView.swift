@@ -33,13 +33,6 @@ struct ContentView: View {
                         destination in
                         destinationView(for: destination)
                     }
-
-                //                Text("Search")
-                //                    .navigationTitle("Search")
-                //                    .navigationDestination(for: RouterDestination.self) {
-                //                        destination in
-                //                        destinationView(for: destination)
-                //                    }
             }
             .tabItem {
                 Label("Search", systemImage: "magnifyingglass")
@@ -117,9 +110,9 @@ struct ContentView: View {
         case .userProfileWithUser(let user):
             Text("User Profile: \(user.displayName)")  // TODO: Implement UserProfileView
         case .statusDetail(let id):
-            Text("Status: \(id)")  // TODO: Implement StatusDetailView
+            MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):
-            Text("Status: \(status.id)")  // TODO: Implement StatusDetailView
+            MastodonStatusView(id: status.id, status: status)
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):
