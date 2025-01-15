@@ -11,20 +11,28 @@ import SwiftUI
 
 @MainActor
 class ProfileViewModel: ObservableObject {
-    private let accountsManager: AppAccountsManager
-    private let cacheService: CacheService
-    private let logger = Logger.networkUser
-
+    var accountsManager: AppAccountsManager? {
+        didSet {
+            if oldValue !== accountsManager {
+                user = nil
+            }
+        }
+    }
+    
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
 
-    init(accountsManager: AppAccountsManager) {
-        self.accountsManager = accountsManager
+    private let cacheService: CacheService
+    private let logger = Logger.views.profile
+
+    init() {
         self.cacheService = CacheService()
     }
 
     func loadUserProfile(forceRefresh: Bool = false) async {
+        guard let accountsManager = accountsManager else { return }
+        
         if forceRefresh {
             isLoading = true
         }
@@ -39,11 +47,13 @@ class ProfileViewModel: ObservableObject {
         isLoading = false
     }
 
-    private func getCurrentUser(forceRefresh: Bool = false) async throws -> User
-    {
+    private func getCurrentUser(forceRefresh: Bool = false) async throws -> User {
+        guard let accountsManager = accountsManager else {
+            throw NetworkError.unauthorized
+        }
+        
         let cacheKey = "\(accountsManager.currentAccount.instance)_user"
 
-        // Return cached user if available and not forcing refresh
         if !forceRefresh,
             let cachedUser = try? await cacheService.retrieve(
                 forKey: cacheKey,
@@ -65,7 +75,6 @@ class ProfileViewModel: ObservableObject {
         let user = try await accountsManager.currentClient.fetch(
             UserEndpoint.me, type: User.self)
 
-        // Cache the user
         try? await cacheService.cache(user, forKey: cacheKey, type: User.self)
         logger.debug(
             "Cached user profile for instance: \(accountsManager.currentAccount.instance)"
@@ -75,6 +84,7 @@ class ProfileViewModel: ObservableObject {
     }
 
     func logout() {
+        guard let accountsManager = accountsManager else { return }
         Task {
             try? await cacheService.remove(
                 forKey: "\(accountsManager.currentAccount.instance)_user",
@@ -85,97 +95,157 @@ class ProfileViewModel: ObservableObject {
     }
 }
 
+struct ProfileHeaderView: View {
+    let user: User?
+    let isLoading: Bool
+    let avatarSize: CGFloat
+
+    var body: some View {
+        HStack(spacing: 16) {
+            if let user = user {
+                KFImage(user.avatar)
+                    .placeholder {
+                        AvatarPlaceholderView(
+                            isLoading: isLoading, size: avatarSize)
+                    }
+                    .onFailure { _ in
+                        Image(systemName: "person.circle.fill")
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.secondary)
+                            .font(.system(size: avatarSize * 0.8))
+                    }
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: avatarSize, height: avatarSize)
+                    .clipShape(Circle())
+                    .transition(.scale.combined(with: .opacity))
+            } else {
+                AvatarPlaceholderView(isLoading: isLoading, size: avatarSize)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                if let user = user {
+                    Text(user.displayName)
+                        .font(.headline)
+                    Text("@\(user.username)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Loading Name")
+                        .font(.headline)
+                    Text("@username")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .redacted(reason: user == nil || isLoading ? .placeholder : [])
+        }
+    }
+}
+
+struct AvatarPlaceholderView: View {
+    let isLoading: Bool
+    let size: CGFloat
+
+    var body: some View {
+        Circle()
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: size, height: size)
+            .overlay {
+                if isLoading {
+                    ProgressView()
+                        .scaleEffect(0.5)
+                } else {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: size * 0.5))
+                        .foregroundStyle(.secondary)
+                }
+            }
+    }
+}
+
 struct ProfileView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @StateObject private var viewModel: ProfileViewModel
+    @StateObject private var viewModel = ProfileViewModel()
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
     @Environment(\.refresh) private var refresh
 
     private let avatarSize: CGFloat = 60
 
-    init() {
-        _viewModel = StateObject(wrappedValue: ProfileViewModel(accountsManager: AppAccountsManager()))
-    }
-
+    // MARK: - Body
     var body: some View {
-        NavigationStack {
-            Group {
-                if let error = viewModel.error {
-                    EmptyStateView(
-                        "Couldn't Load Profile",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(error)
-                    )
-                } else {
-                    profileContent
-                }
-            }
-            .navigationTitle("Profile")
-            .navigationBarTitleDisplayMode(.large)
+        Group {
+            contentView
         }
         .task {
+            viewModel.accountsManager = accountsManager
             await viewModel.loadUserProfile()
         }
+        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.large)
+        #if DEBUG
         .enableInjection()
+        #endif
     }
 
-    #if DEBUG
-        @ObserveInjection var forceRedraw
-    #endif
+    // MARK: - Content Views
+    @ViewBuilder
+    private var contentView: some View {
+        Group {
+            if viewModel.isLoading && viewModel.user == nil {
+                loadingView
+            } else if let error = viewModel.error {
+                errorView(error)
+            } else {
+                profileContent
+            }
+        }
+        .animation(.smooth, value: viewModel.isLoading)
+        .animation(.smooth, value: viewModel.error)
+    }
+
+    private var loadingView: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func errorView(_ error: String) -> some View {
+        EmptyStateView(
+            "Couldn't Load Profile",
+            systemImage: "exclamationmark.triangle",
+            description: Text(error)
+        )
+    }
 
     private var profileContent: some View {
         List {
-            // Profile Header Section
-            Section {
-                HStack(spacing: 16) {
-                    if let user = viewModel.user {
-                        KFImage(user.avatar)
-                            .placeholder {
-                                placeholderAvatar
-                            }
-                            .onFailure { _ in
-                                Image(systemName: "person.circle.fill")
-                                    .symbolRenderingMode(.hierarchical)
-                                    .foregroundStyle(.secondary)
-                                    .font(.system(size: avatarSize * 0.8))
-                            }
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: avatarSize, height: avatarSize)
-                            .clipShape(Circle())
-                            .transition(.scale.combined(with: .opacity))
-                    } else {
-                        placeholderAvatar
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        if let user = viewModel.user {
-                            Text(user.displayName)
-                                .font(.headline)
-                            Text("@\(user.username)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        } else {
-                            Text("Loading Name")
-                                .font(.headline)
-                            Text("@username")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    .redacted(
-                        reason: viewModel.user == nil || viewModel.isLoading
-                            ? .placeholder : [])
-                }
-            }
-
-            // External Account Section
+            profileHeaderSection
+            accountInformationSection
+            logoutSection
+        }
+        .listStyle(.insetGrouped)
+        .refreshable {
+            await viewModel.loadUserProfile(forceRefresh: true)
+        }
+    }
+    
+    // MARK: - Section Views
+    private var profileHeaderSection: some View {
+        Section {
+            ProfileHeaderView(
+                user: viewModel.user,
+                isLoading: viewModel.isLoading,
+                avatarSize: avatarSize
+            )
+        }
+    }
+    
+    private var accountInformationSection: some View {
+        Group {
             if let user = viewModel.user, let externalAcct = user.externalAcct {
                 Section("Account Information") {
                     LabeledContent("External Account", value: externalAcct)
-                        .redacted(
-                            reason: viewModel.isLoading ? .placeholder : [])
+                        .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 }
             } else if viewModel.user == nil {
                 Section("Account Information") {
@@ -183,54 +253,21 @@ struct ProfileView: View {
                         .redacted(reason: .placeholder)
                 }
             }
-
-            // Logout Button
-            Section {
-                Button(
-                    role: .destructive,
-                    action: {
-                        withAnimation {
-                            viewModel.logout()
-                            dismiss()
-                        }
-                    }
-                ) {
-                    Text("Sign Out")
-                        .frame(maxWidth: .infinity)
-                }
-                .disabled(viewModel.user == nil)
-            }
         }
-        .listStyle(.insetGrouped)
-        .refreshable {
-            await viewModel.loadUserProfile(forceRefresh: true)
-        }
-        .overlay {
-            if viewModel.isLoading && viewModel.user == nil {
-                Color.clear
-                    .background(.ultraThinMaterial)
-                    .overlay {
-                        ProgressView()
-                    }
-                    .allowsHitTesting(false)
-            }
-        }
-        .enableInjection()
     }
-
-    private var placeholderAvatar: some View {
-        Circle()
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: avatarSize, height: avatarSize)
-            .overlay {
-                if viewModel.isLoading {
-                    ProgressView()
-                        .scaleEffect(0.5)
-                } else {
-                    Image(systemName: "person.fill")
-                        .font(.system(size: avatarSize * 0.5))
-                        .foregroundStyle(.secondary)
+    
+    private var logoutSection: some View {
+        Section {
+            Button(role: .destructive) {
+                withAnimation {
+                    viewModel.logout()
+                    dismiss()
                 }
+            } label: {
+                Text("Sign Out")
+                    .frame(maxWidth: .infinity)
             }
+            .disabled(viewModel.user == nil)
+        }
     }
 }

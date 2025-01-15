@@ -48,6 +48,7 @@ extension Logger {
 
     enum views {
         static let login = Logger(subsystem: subsystem, category: "view.login")
+        static let profile = Logger(subsystem: subsystem, category: "view.profile")
     }
 
     // MARK: - User Actions
