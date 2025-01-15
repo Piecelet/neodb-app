@@ -10,12 +10,16 @@ import Foundation
 public typealias ServerDate = String
 
 extension ServerDate {
-    private static var createdAtDateFormatter: ISO8601DateFormatter = {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [
-            .withInternetDateTime, .withFractionalSeconds,
-        ]
-        return formatter
+    private static var dateFormatters: [ISO8601DateFormatter] = {
+        // With milliseconds: 2025-01-15T07:17:24.123Z
+        let withMS = ISO8601DateFormatter()
+        withMS.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        
+        // Without milliseconds: 2024-11-06T16:00:00Z
+        let withoutMS = ISO8601DateFormatter()
+        withoutMS.formatOptions = [.withInternetDateTime]
+        
+        return [withMS, withoutMS]
     }()
 
     private static var createdAtRelativeFormatter: RelativeDateTimeFormatter {
@@ -31,7 +35,12 @@ extension ServerDate {
     }
 
     public var asDate: Date? {
-        Self.createdAtDateFormatter.date(from: self)
+        for formatter in Self.dateFormatters {
+            if let date = formatter.date(from: self) {
+                return date
+            }
+        }
+        return nil
     }
 
     public var formatted: String {
