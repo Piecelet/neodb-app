@@ -5,32 +5,30 @@
 //  Created by citron on 1/15/25.
 //
 
-import Foundation
-
 // MARK: - Base Item Schema
 struct ItemSchema: Codable, Hashable {
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let id: String
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let brief: String?
-
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
-
+    
     static func == (lhs: ItemSchema, rhs: ItemSchema) -> Bool {
         lhs.id == rhs.id
     }
@@ -42,26 +40,26 @@ struct EditionSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let subtitle: String?
-    let orig_title: String?
+    let origTitle: String?
     let author: [String]
     let translator: [String]
     let language: [String]
-    let pub_house: String?
-    let pub_year: Int?
-    let pub_month: Int?
+    let pubHouse: String?
+    let pubYear: Int?
+    let pubMonth: Int?
     let binding: String?
     let price: String?
     let pages: Int?
@@ -76,20 +74,20 @@ struct MovieSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
-    let orig_title: String?
-    let other_title: [String]
+    let ratingCount: Int?
+    let origTitle: String?
+    let otherTitle: [String]
     let director: [String]
     let playwright: [String]
     let actor: [String]
@@ -108,21 +106,21 @@ struct TVShowSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
-    let season_count: Int?
-    let orig_title: String?
-    let other_title: [String]
+    let ratingCount: Int?
+    let seasonCount: Int?
+    let origTitle: String?
+    let otherTitle: [String]
     let director: [String]
     let playwright: [String]
     let actor: [String]
@@ -131,7 +129,7 @@ struct TVShowSchema: Codable {
     let area: [String]
     let year: Int?
     let site: String?
-    let episode_count: Int?
+    let episodeCount: Int?
     let imdb: String?
 }
 
@@ -141,21 +139,21 @@ struct TVSeasonSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
-    let season_number: Int?
-    let orig_title: String?
-    let other_title: [String]
+    let ratingCount: Int?
+    let seasonNumber: Int?
+    let origTitle: String?
+    let otherTitle: [String]
     let director: [String]
     let playwright: [String]
     let actor: [String]
@@ -164,8 +162,8 @@ struct TVSeasonSchema: Codable {
     let area: [String]
     let year: Int?
     let site: String?
-    let episode_count: Int?
-    let episode_uuids: [String]
+    let episodeCount: Int?
+    let episodeUuids: [String]
     let imdb: String?
 }
 
@@ -173,21 +171,21 @@ struct TVSeasonSchema: Codable {
 struct TVEpisodeSchema: Codable {
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let id: String
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
-    let episode_number: Int?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
+    let episodeNumber: Int?
 }
 
 // MARK: - Album Schema
@@ -196,25 +194,25 @@ struct AlbumSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
-    let other_title: [String]
+    let ratingCount: Int?
+    let otherTitle: [String]
     let genre: [String]
     let artist: [String]
     let company: [String]
     let duration: Int?
-    let release_date: String?
-    let track_list: String?
+    let releaseDate: String?
+    let trackList: String?
     let barcode: String?
 }
 
@@ -224,25 +222,25 @@ struct PodcastSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let host: [String]
     let genre: [String]
     let language: [String]
-    let episode_count: Int?
-    let last_episode_date: String?
-    let rss_url: String?
-    let website_url: String?
+    let episodeCount: Int?
+    let lastEpisodeDate: String?
+    let rssUrl: String?
+    let websiteUrl: String?
 }
 
 // MARK: - Game Schema
@@ -251,92 +249,92 @@ struct GameSchema: Codable {
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let genre: [String]
     let developer: [String]
     let publisher: [String]
     let platform: [String]
-    let release_type: String?
-    let release_date: String?
-    let official_site: String?
+    let releaseType: String?
+    let releaseDate: String?
+    let officialSite: String?
 }
 
 // MARK: - Performance Schema
 struct PerformanceSchema: Codable {
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let id: String
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
-    let orig_title: String?
-    let other_title: [String]
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
+    let origTitle: String?
+    let otherTitle: [String]
     let genre: [String]
     let language: [String]
-    let opening_date: String?
-    let closing_date: String?
+    let openingDate: String?
+    let closingDate: String?
     let director: [String]
     let playwright: [String]
-    let orig_creator: [String]
+    let origCreator: [String]
     let composer: [String]
     let choreographer: [String]
     let performer: [String]
     let actor: [CrewMemberSchema]
     let crew: [CrewMemberSchema]
-    let official_site: String?
+    let officialSite: String?
 }
 
 // MARK: - Performance Production Schema
 struct PerformanceProductionSchema: Codable {
     let title: String
     let description: String
-    let localized_title: [LocalizedTitleSchema]
-    let localized_description: [LocalizedTitleSchema]
-    let cover_image_url: String?
+    let localizedTitle: [LocalizedTitleSchema]
+    let localizedDescription: [LocalizedTitleSchema]
+    let coverImageUrl: String?
     let rating: Double?
-    let rating_count: Int?
+    let ratingCount: Int?
     let id: String
     let type: String
     let uuid: String
     let url: String
-    let api_url: String
+    let apiUrl: String
     let category: ItemCategory
-    let parent_uuid: String?
-    let display_title: String
-    let external_resources: [ExternalResourceSchema]?
-    let orig_title: String?
-    let other_title: [String]
+    let parentUuid: String?
+    let displayTitle: String
+    let externalResources: [ExternalResourceSchema]?
+    let origTitle: String?
+    let otherTitle: [String]
     let language: [String]
-    let opening_date: String?
-    let closing_date: String?
+    let openingDate: String?
+    let closingDate: String?
     let director: [String]
     let playwright: [String]
-    let orig_creator: [String]
+    let origCreator: [String]
     let composer: [String]
     let choreographer: [String]
     let performer: [String]
     let actor: [CrewMemberSchema]
     let crew: [CrewMemberSchema]
-    let official_site: String?
+    let officialSite: String?
 }
