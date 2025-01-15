@@ -74,20 +74,20 @@ struct HTMLContentView: View {
                 id: "",
                 type: "",
                 uuid: "",
-                url: "",
-                apiUrl: nil,
-                category: nil,
+                url: URL(string: url.absoluteString)!,
+                apiUrl: URL(string: "https://neodb.social/api/")!,
+                category: category,
                 parentUuid: nil,
                 displayTitle: id,
-                externalResources: itemType,
+                externalResources: nil,
                 title: id,
                 description: url.absoluteString,
-                localizedTitle: "",
-                localizedDescription: category,
+                localizedTitle: nil,
+                localizedDescription: nil,
                 coverImageUrl: nil,
-                rating: "",
+                rating: nil,
                 ratingCount: nil,
-                brief: nil
+                brief: itemType
             )
             
             logger.debug("Created ItemSchema - type: \(tempItem.type), category: \(tempItem.category.rawValue)")
