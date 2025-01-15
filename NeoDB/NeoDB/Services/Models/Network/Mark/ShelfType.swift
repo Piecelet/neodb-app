@@ -16,20 +16,20 @@ enum ShelfType: String, Codable, CaseIterable {
     var displayName: String {
         switch self {
         case .wishlist:
-            return "Want to Read"
+            return "Wishlist"
         case .progress:
-            return "Reading"
+            return "Progress"
         case .complete:
-            return "Completed"
+            return "Complete"
         case .dropped:
             return "Dropped"
         }
     }
 
-    var systemImage: String {
+    var iconName: String {
         switch self {
         case .wishlist:
-            return "star"
+            return "heart"
         case .progress:
             return "book"
         case .complete:

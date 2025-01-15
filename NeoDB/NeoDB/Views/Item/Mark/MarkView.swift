@@ -36,40 +36,60 @@ struct MarkView: View {
             Form {
                 // Shelf Type
                 Section {
-                    Picker("Shelf", selection: $viewModel.shelfType) {
+                    HStack(spacing: 16) {
                         ForEach(ShelfType.allCases, id: \.self) { type in
-                            Text(type.displayName)
-                                .tag(type)
+                            Button {
+                                viewModel.shelfType = type
+                            } label: {
+                                VStack(spacing: 4) {
+                                    Image(systemName: type.iconName)
+                                        .font(.title2)
+                                    Text(type.displayName)
+                                        .font(.caption)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .foregroundStyle(viewModel.shelfType == type ? .primary : .secondary)
+                            }
                         }
                     }
+                    .padding(.vertical, 8)
                 }
                 
                 // Rating
                 Section {
                     HStack {
-                        Text("Rating")
-                        Spacer()
-                        if let rating = viewModel.rating {
-                            Text("\(rating)/10")
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    
-                    HStack {
-                        ForEach(1...10, id: \.self) { score in
-                            Button {
-                                if viewModel.rating == score {
-                                    viewModel.rating = nil
-                                } else {
-                                    viewModel.rating = score
+                        ForEach(1...5, id: \.self) { score in
+                            let rating = Double(score)
+                            HStack(spacing: 0) {
+                                // Full star
+                                Button {
+                                    viewModel.rating = score * 2
+                                } label: {
+                                    Image(systemName: rating <= (Double(viewModel.rating ?? 0) / 2) ? "star.fill" : "star")
+                                        .foregroundStyle(rating <= (Double(viewModel.rating ?? 0) / 2) ? .yellow : .gray)
                                 }
-                            } label: {
-                                Image(systemName: score <= (viewModel.rating ?? 0) ? "star.fill" : "star")
-                                    .foregroundStyle(score <= (viewModel.rating ?? 0) ? .yellow : .gray)
+                                
+                                // Half star
+                                Button {
+                                    viewModel.rating = score * 2 - 1
+                                } label: {
+                                    Image(systemName: rating - 0.5 <= (Double(viewModel.rating ?? 0) / 2) ? "star.leadinghalf.filled" : "star")
+                                        .foregroundStyle(rating - 0.5 <= (Double(viewModel.rating ?? 0) / 2) ? .yellow : .gray)
+                                }
                             }
                         }
+                        
+                        if viewModel.rating != nil {
+                            Button {
+                                viewModel.rating = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.leading, 8)
+                        }
                     }
-                    .buttonStyle(.plain)
+                    .frame(maxWidth: .infinity)
                 }
                 
                 // Comment
@@ -82,16 +102,10 @@ struct MarkView: View {
                     Text("Optional")
                 }
                 
-                // Visibility
-                Section {
-                    Toggle("Public", isOn: $viewModel.isPublic)
-                } footer: {
-                    Text("Public marks will be visible to other users")
-                }
-                
                 // Advanced Options
                 Section {
                     DisclosureGroup("Advanced", isExpanded: $showAdvanced) {
+                        Toggle("Public", isOn: $viewModel.isPublic)
                         Toggle("Share to Fediverse", isOn: $viewModel.postToFediverse)
                         
                         Toggle("Use Current Time", isOn: $viewModel.useCurrentTime)

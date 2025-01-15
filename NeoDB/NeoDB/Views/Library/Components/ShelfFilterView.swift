@@ -24,7 +24,7 @@ struct ShelfFilterView: View {
                             onShelfTypeChange(type)
                         } label: {
                             HStack {
-                                Image(systemName: type.systemImage)
+                                Image(systemName: type.iconName)
                                 Text(type.displayName)
                             }
                             .padding(.horizontal, 12)
