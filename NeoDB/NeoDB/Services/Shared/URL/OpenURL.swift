@@ -45,7 +45,7 @@ class URLHandler {
         }
 
         let type = pathComponents[1]
-        let id = pathComponents[2]
+        var id = pathComponents[2]
 
         // Handle special cases for tv seasons and episodes
         let category: ItemCategory
@@ -58,10 +58,12 @@ class URLHandler {
             default:
                 category = .tv
             }
+            id = pathComponents[3]
         } else if type == "album" {
             category = .music
         } else if type == "performance" && pathComponents[2] == "production" {
             category = .performanceProduction
+            id = pathComponents[3]
         } else if let itemCategory = ItemCategory(rawValue: type) {
             category = itemCategory
         } else {
