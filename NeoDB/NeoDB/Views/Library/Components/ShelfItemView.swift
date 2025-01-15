@@ -101,7 +101,7 @@ extension MarkSchema {
                 ratingCount: 100,
                 brief: "A brief description"
             ),
-            createdTime: Date(),
+            createdTime: ServerDate(),
             commentText: "Great book!",
             ratingGrade: 8,
             tags: ["fiction", "mystery"]

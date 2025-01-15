@@ -35,7 +35,6 @@ class NetworkClient {
         
         // Configure decoder
         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.decoder.dateDecodingStrategy = .iso8601
     }
 
     private func makeURL(endpoint: NetworkEndpoint) throws -> URL {
