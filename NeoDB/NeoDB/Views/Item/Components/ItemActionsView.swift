@@ -12,10 +12,13 @@ struct ItemActionsView: View {
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var accountsManager: AppAccountsManager
     
-    init(item: (any ItemProtocol)?, onAddToShelf: @escaping () -> Void) {
+    let isRefreshing: Bool
+    
+    init(item: (any ItemProtocol)?, isRefreshing: Bool = false, onAddToShelf: @escaping () -> Void) {
         let model = ItemActionsViewModel(item: item)
         model.onAddToShelf = onAddToShelf
         _viewModel = StateObject(wrappedValue: model)
+        self.isRefreshing = isRefreshing
     }
     
     var body: some View {
@@ -120,6 +123,11 @@ struct ItemActionsView: View {
         }
         .onAppear {
             viewModel.accountsManager = accountsManager
+        }
+        .onChange(of: isRefreshing) { newValue in
+            if newValue {
+                viewModel.refresh()
+            }
         }
     }
 }
