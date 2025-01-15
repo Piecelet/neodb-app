@@ -16,9 +16,9 @@ extension TimelinesEndpoint: NetworkEndpoint {
     var path: String {
         switch self {
         case .pub:
-            return "/timelines/public"
+            return "/v1/timelines/public"
         case .home:
-            return "/timelines/home"
+            return "/v1/timelines/home"
         }
     }
     var queryItems: [URLQueryItem]? {

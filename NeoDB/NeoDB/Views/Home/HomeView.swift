@@ -1,115 +1,124 @@
-// 
+//
 //  HomeView.swift
 //  NeoDB
 //
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 @MainActor
 class HomeViewModel: ObservableObject {
-    private let timelineService: TimelineService
+    var accountsManager: AppAccountsManager? {
+        didSet {
+            if oldValue !== accountsManager {
+                statuses = []
+            }
+        }
+    }
+
+    private let cacheService: CacheService
     private let logger = Logger.home
-    
+
     @Published var statuses: [MastodonStatus] = []
     @Published var isLoading = false
     @Published var error: String?
     @Published var detailedError: String?
-    
+
     // Pagination
     private var maxId: String?
     private var hasMore = true
-    
-    // Task management
-    private var currentLoadTask: Task<Void, Never>?
-    
-    init(timelineService: TimelineService) {
-        self.timelineService = timelineService
+
+    init() {
+        self.cacheService = CacheService()
     }
-    
+
     func loadTimeline(refresh: Bool = false) async {
-        // Cancel any existing load task
-        currentLoadTask?.cancel()
-        
-        let task = Task { @MainActor in
+        guard let accountsManager = accountsManager else {
+            logger.debug("No accountsManager available")
+            return
+        }
+
+        logger.debug(
+            "Loading timeline for instance: \(accountsManager.currentAccount.instance)"
+        )
+
+        if refresh {
+            logger.debug("Refreshing timeline, resetting pagination")
+            maxId = nil
+            hasMore = true
+            statuses = []
+        }
+
+        guard !isLoading, hasMore else {
+            logger.debug(
+                "Skip loading: isLoading=\(isLoading), hasMore=\(hasMore)")
+            return
+        }
+
+        isLoading = true
+        error = nil
+        detailedError = nil
+
+        let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
+        logger.debug("Using cache key: \(cacheKey)")
+
+        do {
+            if !refresh,
+                let cached = try? await cacheService.retrieve(
+                    forKey: cacheKey, type: [MastodonStatus].self)
+            {
+                statuses = cached
+                logger.debug("Loaded \(cached.count) statuses from cache")
+            }
+
+            guard accountsManager.isAuthenticated else {
+                logger.error("User not authenticated")
+                throw NetworkError.unauthorized
+            }
+
+            let endpoint = TimelinesEndpoint.pub(
+                sinceId: nil, maxId: maxId, minId: nil, local: true)
+            logger.debug(
+                "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
+            )
+
+            let newStatuses = try await accountsManager.currentClient.fetch(
+                endpoint, type: [MastodonStatus].self)
+
             if refresh {
-                maxId = nil
-                hasMore = true
-                // Only clear statuses if we're refreshing
-                statuses = []
+                statuses = newStatuses
+            } else {
+                statuses.append(contentsOf: newStatuses)
             }
-            
-            guard !isLoading, hasMore else { return }
-            
-            isLoading = true
-            error = nil
-            detailedError = nil
-            
-            do {
-                try Task.checkCancellation()
-                let newStatuses = try await timelineService.getTimeline(maxId: maxId)
-                
-                // Check if task was cancelled after the network call
-                try Task.checkCancellation()
-                
-                if refresh {
-                    statuses = newStatuses
-                } else {
-                    statuses.append(contentsOf: newStatuses)
-                }
-                maxId = newStatuses.last?.id
-                hasMore = !newStatuses.isEmpty
-                logger.debug("Successfully loaded \(newStatuses.count) statuses")
-            } catch is CancellationError {
-                logger.debug("Timeline load was cancelled")
-                // Don't update error state for cancellation
-            } catch {
-                if !Task.isCancelled {
-                    logger.error("Failed to load timeline: \(error.localizedDescription)")
-                    self.error = "Failed to load timeline"
-                    
-                    if let networkError = error as? NetworkError {
-                        detailedError = networkError.localizedDescription
-                    } else if let decodingError = error as? DecodingError {
-                        switch decodingError {
-                        case .dataCorrupted(let context):
-                            detailedError = "Data corrupted: \(context.debugDescription)"
-                        case .keyNotFound(let key, let context):
-                            detailedError = "Key not found: \(key.stringValue) in \(context.debugDescription)"
-                        case .typeMismatch(let type, let context):
-                            detailedError = "Type mismatch: expected \(type) at \(context.debugDescription)"
-                        case .valueNotFound(let type, let context):
-                            detailedError = "Value not found: expected \(type) at \(context.debugDescription)"
-                        @unknown default:
-                            detailedError = "Unknown decoding error: \(decodingError)"
-                        }
-                    } else {
-                        detailedError = error.localizedDescription
-                    }
-                }
-            }
-            
-            if !Task.isCancelled {
-                isLoading = false
+
+            try? await cacheService.cache(
+                statuses, forKey: cacheKey, type: [MastodonStatus].self)
+
+            maxId = newStatuses.last?.id
+            hasMore = !newStatuses.isEmpty
+            logger.debug("Successfully loaded \(newStatuses.count) statuses")
+
+        } catch {
+            logger.error(
+                "Failed to load timeline: \(error.localizedDescription)")
+            self.error = "Failed to load timeline"
+            if let networkError = error as? NetworkError {
+                detailedError = networkError.localizedDescription
             }
         }
-        
-        currentLoadTask = task
+
+        isLoading = false
     }
 }
 
 struct HomeView: View {
-    @StateObject private var viewModel: HomeViewModel
+    @StateObject private var viewModel = HomeViewModel()
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    
-    init(timelineService: TimelineService) {
-        _viewModel = StateObject(wrappedValue: HomeViewModel(timelineService: timelineService))
-    }
-    
+
     var body: some View {
         Group {
             if let error = viewModel.error {
@@ -122,7 +131,8 @@ struct HomeView: View {
                 EmptyStateView(
                     "No Posts Yet",
                     systemImage: "text.bubble",
-                    description: Text("Follow some users to see their posts here")
+                    description: Text(
+                        "Follow some users to see their posts here")
                 )
             } else {
                 timelineContent
@@ -130,16 +140,18 @@ struct HomeView: View {
         }
         .navigationTitle("Home")
         .task {
+            viewModel.accountsManager = accountsManager
             await viewModel.loadTimeline()
         }
     }
-    
+
     private var timelineContent: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(viewModel.statuses) { status in
                     Button {
-                        router.navigate(to: .statusDetailWithStatus(status: status))
+                        router.navigate(
+                            to: .statusDetailWithStatus(status: status))
                     } label: {
                         StatusView(status: status)
                             .onAppear {
@@ -152,7 +164,7 @@ struct HomeView: View {
                     }
                     .buttonStyle(.plain)
                 }
-                
+
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)

@@ -10,13 +10,14 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
-    
+
     var body: some View {
         TabView(selection: $router.selectedTab) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
-                HomeView(timelineService: TimelineService(accountsManager: accountsManager))
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                HomeView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -24,7 +25,7 @@ struct ContentView: View {
                 Label("Home", systemImage: "house.fill")
             }
             .tag(TabSection.home)
-            
+
             // Search Tab
             NavigationStack(path: router.path(for: .search)) {
                 /* Temporarily disabled during migration
@@ -35,7 +36,8 @@ struct ContentView: View {
                 */
                 Text("Search")
                     .navigationTitle("Search")
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -43,7 +45,7 @@ struct ContentView: View {
                 Label("Search", systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
-            
+
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
                 /* Temporarily disabled during migration
@@ -54,7 +56,8 @@ struct ContentView: View {
                 */
                 Text("Library")
                     .navigationTitle("Library")
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -62,11 +65,12 @@ struct ContentView: View {
                 Label("Library", systemImage: "books.vertical.fill")
             }
             .tag(TabSection.library)
-            
+
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
                 ProfileView()
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
@@ -92,9 +96,11 @@ struct ContentView: View {
             }
         }
     }
-    
+
     @ViewBuilder
-    private func destinationView(for destination: RouterDestination) -> some View {
+    private func destinationView(for destination: RouterDestination)
+        -> some View
+    {
         switch destination {
         /* Temporarily disabled during migration
         case .itemDetail(let id):
