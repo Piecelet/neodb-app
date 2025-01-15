@@ -31,7 +31,7 @@ class ProfileViewModel: ObservableObject {
     }
 
     func loadUserProfile(forceRefresh: Bool = false) async {
-        guard let accountsManager = accountsManager else { return }
+        guard accountsManager != nil else { return }
         
         if forceRefresh {
             isLoading = true
