@@ -58,41 +58,15 @@ struct MarkView: View {
                 }
                 
                 // Rating
-                Section {
-                    HStack {
-                        ForEach(1...5, id: \.self) { score in
-                            let rating = Double(score)
-                            HStack(spacing: 0) {
-                                // Full star
-                                Button {
-                                    viewModel.rating = score * 2
-                                } label: {
-                                    Image(systemName: rating <= (Double(viewModel.rating ?? 0) / 2) ? "star.fill" : "star")
-                                        .foregroundStyle(rating <= (Double(viewModel.rating ?? 0) / 2) ? .yellow : .gray)
-                                }
-                                
-                                // Half star
-                                Button {
-                                    viewModel.rating = score * 2 - 1
-                                } label: {
-                                    Image(systemName: rating - 0.5 <= (Double(viewModel.rating ?? 0) / 2) ? "star.leadinghalf.filled" : "star")
-                                        .foregroundStyle(rating - 0.5 <= (Double(viewModel.rating ?? 0) / 2) ? .yellow : .gray)
-                                }
-                            }
-                        }
-                        
-                        if viewModel.rating != nil {
-                            Button {
-                                viewModel.rating = nil
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundStyle(.secondary)
-                            }
-                            .padding(.leading, 8)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Rating")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    
+                    RatingView(rating: $viewModel.rating)
+                        .frame(maxWidth: .infinity)
                 }
+                .padding(.horizontal)
                 
                 // Comment
                 Section {
