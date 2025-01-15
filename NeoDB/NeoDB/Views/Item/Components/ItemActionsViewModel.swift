@@ -11,6 +11,7 @@ import OSLog
 @MainActor
 class ItemActionsViewModel: ObservableObject {
     private let logger = Logger.views.itemActions
+    private let item: (any ItemProtocol)?
     private var loadTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager? {
@@ -26,13 +27,17 @@ class ItemActionsViewModel: ObservableObject {
     @Published var error: Error?
     @Published var showError = false
     
-    private let itemId: String
-    
-    init(itemId: String) {
-        self.itemId = itemId
+    init(item: (any ItemProtocol)?) {
+        self.item = item
     }
     
     // MARK: - Computed Properties
+    
+    var shareURL: URL? {
+        guard let item = item,
+              let accountsManager = accountsManager else { return nil }
+        return ItemURL.makeShareURL(for: item, instance: accountsManager.currentAccount.instance)
+    }
     
     var shelfType: ShelfType? {
         mark?.shelfType
@@ -53,11 +58,11 @@ class ItemActionsViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadMarkIfNeeded() {
-        guard mark == nil else { return }
-        loadMark()
+        guard mark == nil, let item = item else { return }
+        loadMark(itemId: item.uuid)
     }
     
-    func loadMark() {
+    private func loadMark(itemId: String) {
         loadTask?.cancel()
         
         loadTask = Task {

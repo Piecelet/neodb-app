@@ -18,15 +18,7 @@ struct ItemActionsView: View {
     init(item: (any ItemProtocol)?, onAddToShelf: @escaping () -> Void) {
         self.item = item
         self.onAddToShelf = onAddToShelf
-        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(itemId: item?.uuid ?? ""))
-    }
-    
-    private var shareURL: URL? {
-        guard let item = item else { return nil }
-        if let url = URL(string: item.url), url.host == nil {
-            return URL(string: "https://\(accountsManager.currentAccount.instance)\(item.url)")
-        }
-        return URL(string: item.url)
+        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(item: item))
     }
     
     var body: some View {
@@ -45,7 +37,7 @@ struct ItemActionsView: View {
             
             HStack(spacing: 12) {
                 // Share Button
-                if let url = shareURL {
+                if let url = viewModel.shareURL {
                     ShareLink(item: url) {
                         HStack {
                             Image(systemName: "square.and.arrow.up")
