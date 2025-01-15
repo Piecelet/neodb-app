@@ -20,7 +20,10 @@ struct ItemActionsView: View {
     
     var body: some View {
         VStack(spacing: 12) {
-            if let mark = viewModel.mark {
+            if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            } else if let mark = viewModel.mark {
                 // Show existing mark info
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -36,6 +39,10 @@ struct ItemActionsView: View {
                             Text("・")
                                 .foregroundStyle(.secondary)
                         }
+                        Text(mark.shelfType.displayName)
+                            .foregroundStyle(.primary)
+                        Text("・")
+                            .foregroundStyle(.secondary)
                         Text(mark.createdTime.formatted)
                             .foregroundStyle(.secondary)
                     }
