@@ -20,7 +20,8 @@ enum NetworkError: Error {
 @MainActor
 class NetworkClient {
     /// Debug flag to control logging of network requests and responses
-    private static var isDebugEnabled: Bool = true
+    private static let isDebugRequestEnabled: Bool = true
+    private static let isDebugResponseEnabled: Bool = false
     
     private let logger = Logger.network
     private let urlSession: URLSession
@@ -99,16 +100,15 @@ class NetworkClient {
     {
         let request = try makeRequest(for: endpoint)
 
-        if Self.isDebugEnabled {
             logRequest(request)
-        }
+
 
         do {
             let (data, response) = try await urlSession.data(for: request)
 
-            if Self.isDebugEnabled {
+
                 logResponse(response, data: data)
-            }
+
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 logger.error("Invalid response type")
@@ -165,6 +165,7 @@ class NetworkClient {
     // MARK: - Debug Logging
     
     private func logRequest(_ request: URLRequest) {
+        if !Self.isDebugRequestEnabled { return }
         let loggerRequest = Logger.networkRequest
         
         loggerRequest.debug("🌐 REQUEST [\(request.httpMethod ?? "Unknown")] \(request.url?.absoluteString ?? "")")
@@ -180,6 +181,7 @@ class NetworkClient {
     }
     
     private func logResponse(_ response: URLResponse, data: Data) {
+        if !Self.isDebugResponseEnabled { return }
         let loggerResponse = Logger.networkResponse
         
         guard let httpResponse = response as? HTTPURLResponse else { return }

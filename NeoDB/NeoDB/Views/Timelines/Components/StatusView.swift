@@ -52,7 +52,7 @@ struct StatusView: View {
                 
                 Spacer()
                 
-                RelativeTimeView(date: status.createdAt.asDate)
+                Text(status.createdAt.formatted)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -94,12 +94,7 @@ struct StatusView: View {
         }
         .padding()
         .background(Color(.systemBackground))
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
     
     @ViewBuilder
     private var mediaGrid: some View {

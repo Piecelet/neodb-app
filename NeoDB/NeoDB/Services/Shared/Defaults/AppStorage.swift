@@ -10,10 +10,14 @@ import SwiftUI
 
 struct AppStorageKeys {
     init() { }
-}
-
-extension AppStorageKeys {
+    
     var customInstance: AppStorageKey<String> { .init("custom_instance", defaultValue: "") }
+    var mark: Mark { .init() }
+    
+    struct Mark {
+        var postToFediverse: AppStorageKey<Bool> { .init("mark_post_to_fediverse", defaultValue: false) }
+        var isPublic: AppStorageKey<Bool> { .init("mark_is_public", defaultValue: true) }
+    }
 }
 
 struct AppStorageKey<Value> {
@@ -50,6 +54,14 @@ extension AppStorage where Value == String {
     
     init(_ strongKeyPath: KeyPath<AppStorageKeys, AppStorageKey<Value>>) {
         self.init(strongKeyPath, store: nil)
+    }
+}
+
+extension AppStorage where Value == Bool {
+    init(wrappedValue: Value,
+         _ strongKeyPath: KeyPath<AppStorageKeys, AppStorageKey<Value>>) {
+        let strongKey = AppStorageKeys()[keyPath: strongKeyPath]
+        self.init(wrappedValue: wrappedValue, strongKey.name)
     }
 }
 

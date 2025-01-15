@@ -24,6 +24,13 @@ struct ItemView: View {
         self._viewModel = StateObject(wrappedValue: ItemViewModel(initialItem: item))
     }
     
+    private var itemUUID: String {
+        if let url = URL(string: id), url.pathComponents.count >= 2 {
+            return url.lastPathComponent
+        }
+        return id
+    }
+    
     var body: some View {
         ItemContent(
             state: viewModel.state,
@@ -35,19 +42,12 @@ struct ItemView: View {
                 metadata: viewModel.getKeyMetadata(for: viewModel.item)
             ),
             description: viewModel.description,
-            actions: ItemActionsView(
-                item: viewModel.item,
-                onAddToShelf: { 
-                    if let item = viewModel.item {
-                        router.presentedSheet = .addToShelf(item: item)
-                    }
-                }
-            ),
+            actions: ItemActionsView(isRefreshing: viewModel.isRefreshing),
             isRefreshing: viewModel.isRefreshing
         )
         .navigationBarTitleDisplayMode(.inline)
         .refreshable {
-            await viewModel.loadItemDetail(id: id, category: category, refresh: true)
+            await viewModel.loadItemDetail(id: itemUUID, category: category, refresh: true)
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
@@ -58,11 +58,12 @@ struct ItemView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            await viewModel.loadItemDetail(id: id, category: category)
+            await viewModel.loadItemDetail(id: itemUUID, category: category)
         }
         .onDisappear {
             viewModel.cleanup()
         }
+        .environmentObject(viewModel)
     }
 }
 

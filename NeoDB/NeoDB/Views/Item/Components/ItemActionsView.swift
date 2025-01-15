@@ -8,36 +8,87 @@
 import SwiftUI
 
 struct ItemActionsView: View {
-    let item: (any ItemProtocol)?
-    let onAddToShelf: () -> Void
-    
+    @StateObject private var viewModel: ItemActionsViewModel
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var itemViewModel: ItemViewModel
     
-    private var shareURL: URL? {
-        guard let item = item else { return nil }
-        if let url = URL(string: item.url), url.host == nil {
-            return URL(string: "https://\(accountsManager.currentAccount.instance)\(item.url)")
-        }
-        return URL(string: item.url)
+    let isRefreshing: Bool
+    
+    init(isRefreshing: Bool = false) {
+        self.isRefreshing = isRefreshing
+        self._viewModel = StateObject(wrappedValue: ItemActionsViewModel())
     }
     
     var body: some View {
         VStack(spacing: 12) {
+            if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            } else if let mark = viewModel.mark {
+                // Show existing mark info
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        if let rating = mark.ratingGrade {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                            Text("\(rating)")
+                                .foregroundStyle(.primary)
+                            Text("/10")
+                                .foregroundStyle(.secondary)
+                        }
+                        if mark.ratingGrade != nil {
+                            Text("・")
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(mark.shelfType.displayName)
+                            .foregroundStyle(.primary)
+                        Text("・")
+                            .foregroundStyle(.secondary)
+                        Text(mark.createdTime.formatted)
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.subheadline)
+                    
+                    if let comment = mark.commentText, !comment.isEmpty {
+                        Text(comment)
+                            .font(.subheadline)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            
             // Primary Action
-            Button(action: onAddToShelf) {
+            Button {
+                if let item = itemViewModel.item {
+                    if let mark = viewModel.mark {
+                        router.presentedSheet = .editShelfItem(mark: mark)
+                    } else {
+                        router.presentedSheet = .addToShelf(item: item)
+                    }
+                }
+            } label: {
                 HStack {
-                    Image(systemName: "plus")
-                    Text("Add to Shelf")
+                    Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                    if let shelfType = viewModel.shelfType {
+                        Text(shelfType.displayName)
+                    } else {
+                        Text("Add to Shelf")
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
             }
             .buttonStyle(.borderedProminent)
+            .disabled(viewModel.isLoading)
             
             HStack(spacing: 12) {
                 // Share Button
-                if let url = shareURL {
+                if let url = viewModel.shareURL {
                     ShareLink(item: url) {
                         HStack {
                             Image(systemName: "square.and.arrow.up")
@@ -50,7 +101,7 @@ struct ItemActionsView: View {
                 }
                 
                 // External Links
-                if let resources = item?.externalResources, !resources.isEmpty {
+                if let resources = itemViewModel.item?.externalResources, !resources.isEmpty {
                     Menu {
                         ForEach(resources, id: \.url) { resource in
                             Button {
@@ -71,40 +122,29 @@ struct ItemActionsView: View {
                 }
             }
         }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
+            }
+        }
+        .onAppear {
+            viewModel.accountsManager = accountsManager
+            viewModel.itemViewModel = itemViewModel
+        }
+        .onChange(of: isRefreshing) { newValue in
+            if newValue {
+                viewModel.refresh()
+            }
+        }
     }
 }
 
 #Preview {
-    ItemActionsView(
-        item: ItemSchema.preview,
-        onAddToShelf: {}
-    )
-    .environmentObject(AppAccountsManager())
-    .padding()
+    ItemActionsView()
+        .environmentObject(Router())
+        .environmentObject(AppAccountsManager())
+        .environmentObject(ItemViewModel())
+        .padding()
 }
-
-private extension ItemSchema {
-    static var preview: ItemSchema {
-        ItemSchema(
-            id: "1",
-            type: "book",
-            uuid: "1",
-            url: "/book/1",  // Testing relative URL
-            apiUrl: "https://api.example.com/item/1",
-            category: .book,
-            parentUuid: nil,
-            displayTitle: "Sample Item",
-            externalResources: [
-                ExternalResourceSchema(url: URL(string: "https://example.com/external/1")!)
-            ],
-            title: "Sample Item",
-            description: "A sample item description",
-            localizedTitle: [],
-            localizedDescription: [],
-            coverImageUrl: nil,
-            rating: 4.5,
-            ratingCount: 1234,
-            brief: "A sample item brief description"
-        )
-    }
-} 
