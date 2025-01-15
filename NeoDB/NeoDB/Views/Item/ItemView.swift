@@ -1,5 +1,5 @@
 //
-//  ItemDetailView.swift
+//  ItemView.swift
 //  NeoDB
 //
 //  Created by citron on 1/15/25.
@@ -8,8 +8,8 @@
 import SwiftUI
 import Kingfisher
 
-struct ItemDetailView: View {
-    @StateObject private var viewModel: ItemDetailViewModel
+struct ItemView: View {
+    @StateObject private var viewModel: ItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     
@@ -21,13 +21,13 @@ struct ItemDetailView: View {
         self.id = id
         self.category = category
         self.initialItem = item
-        self._viewModel = StateObject(wrappedValue: ItemDetailViewModel(initialItem: item))
+        self._viewModel = StateObject(wrappedValue: ItemViewModel(initialItem: item))
     }
     
     var body: some View {
-        ItemDetailContent(
+        ItemContent(
             state: viewModel.state,
-            header: ItemDetailHeader(
+            header: ItemHeaderView(
                 title: viewModel.displayTitle,
                 coverURL: viewModel.coverImageURL,
                 rating: viewModel.rating,
@@ -35,7 +35,7 @@ struct ItemDetailView: View {
                 metadata: viewModel.getKeyMetadata(for: viewModel.item)
             ),
             description: viewModel.description,
-            actions: ItemDetailActions(
+            actions: ItemActionsView(
                 item: viewModel.item,
                 onAddToShelf: { 
                     if let item = viewModel.item {
@@ -66,11 +66,11 @@ struct ItemDetailView: View {
     }
 }
 
-private struct ItemDetailContent: View {
-    let state: ItemDetailState
-    let header: ItemDetailHeader
+private struct ItemContent: View {
+    let state: ItemState
+    let header: ItemHeaderView
     let description: String
-    let actions: ItemDetailActions
+    let actions: ItemActionsView
     let isRefreshing: Bool
     
     var body: some View {
@@ -126,7 +126,7 @@ private struct ItemDetailContent: View {
 // MARK: - Preview
 #Preview {
     NavigationStack {
-        ItemDetailView(
+        ItemView(
             id: "preview_id",
             category: .book
         )

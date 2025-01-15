@@ -1,5 +1,5 @@
 //
-//  ItemDetailActions.swift
+//  ItemActions.swift
 //  NeoDB
 //
 //  Created by citron on 1/15/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ItemDetailActions: View {
+struct ItemActionsView: View {
     let item: (any ItemProtocol)?
     let onAddToShelf: () -> Void
     
@@ -75,7 +75,7 @@ struct ItemDetailActions: View {
 }
 
 #Preview {
-    ItemDetailActions(
+    ItemActionsView(
         item: ItemSchema.preview,
         onAddToShelf: {}
     )

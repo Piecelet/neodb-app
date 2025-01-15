@@ -1,5 +1,5 @@
 //
-//  ItemDetailViewModel.swift
+//  ItemViewModel.swift
 //  NeoDB
 //
 //  Created by citron on 1/15/25.
@@ -9,15 +9,15 @@ import Foundation
 import OSLog
 import SwiftUI
 
-enum ItemDetailState {
+enum ItemState {
     case loading
     case loaded
     case error
 }
 
 @MainActor
-class ItemDetailViewModel: ObservableObject {
-    private let logger = Logger.views.itemDetail
+class ItemViewModel: ObservableObject {
+    private let logger = Logger.views.item
     private let cacheService = CacheService()
     private var loadTask: Task<Void, Never>?
     
@@ -44,7 +44,7 @@ class ItemDetailViewModel: ObservableObject {
         self.item = initialItem
     }
     
-    var state: ItemDetailState {
+    var state: ItemState {
         if isLoading {
             return .loading
         }

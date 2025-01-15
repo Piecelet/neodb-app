@@ -1,5 +1,5 @@
 //
-//  ItemDetailHeader.swift
+//  ItemHeader.swift
 //  NeoDB
 //
 //  Created by citron on 1/15/25.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ItemDetailHeader: View {
+struct ItemHeaderView: View {
     let title: String
     let coverURL: URL?
     let rating: String
@@ -83,7 +83,7 @@ struct ItemDetailHeader: View {
 }
 
 #Preview {
-    ItemDetailHeader(
+    ItemHeaderView(
         title: "Sample Book Title That is Very Long and Might Need Multiple Lines",
         coverURL: nil,
         rating: "4.5",
