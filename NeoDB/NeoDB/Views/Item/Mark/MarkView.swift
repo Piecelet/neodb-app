@@ -59,9 +59,6 @@ struct MarkView: View {
                 
                 // Rating
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Rating")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
                     
                     RatingView(rating: $viewModel.rating)
                         .frame(maxWidth: .infinity)
@@ -149,7 +146,12 @@ struct MarkView: View {
         .onAppear {
             viewModel.accountsManager = accountsManager
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {

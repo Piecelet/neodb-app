@@ -42,7 +42,12 @@ struct RatingView: View {
                 .padding(.leading, 8)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 private struct StarRatingView: View {
@@ -83,7 +88,12 @@ private struct StarRatingView: View {
                     }
             )
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var fullStars: Int {
         Int(rating)
@@ -129,7 +139,12 @@ private struct StarRatingView: View {
         var body: some View {
             RatingView(rating: $rating)
                 .padding()
+            .enableInjection()
         }
+
+        #if DEBUG
+        @ObserveInjection var forceRedraw
+        #endif
     }
     
     return PreviewWrapper()
