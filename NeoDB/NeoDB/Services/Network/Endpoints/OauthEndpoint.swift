@@ -30,11 +30,11 @@ extension OauthEndpoint: NetworkEndpoint {
         switch self {
         case .token(let code, let clientId, let clientSecret, let redirectUri):
             return [
-                URLQueryItem(name: "grant_type", value: "authorization_code"),
-                URLQueryItem(name: "code", value: code),
-                URLQueryItem(name: "client_id", value: clientId),
-                URLQueryItem(name: "client_secret", value: clientSecret),
-                URLQueryItem(name: "redirect_uri", value: redirectUri),
+                .init(name: "grant_type", value: "authorization_code"),
+                .init(name: "code", value: code),
+                .init(name: "client_id", value: clientId),
+                .init(name: "client_secret", value: clientSecret),
+                .init(name: "redirect_uri", value: redirectUri),
             ]
         }
     }
