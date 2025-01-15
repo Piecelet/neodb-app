@@ -64,6 +64,11 @@ class SearchViewModel: ObservableObject {
             
             hasMorePages = currentPage < result.pages
         } catch {
+            if case NetworkError.cancelled = error {
+                logger.debug("Search cancelled")
+                return
+            }
+            
             self.error = error
             self.showError = true
             logger.error("Search failed: \(error.localizedDescription)")

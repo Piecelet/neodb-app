@@ -120,6 +120,8 @@ struct AppClient: Codable, Identifiable {
                 throw AccountError.registrationFailed("Network error")
             case .unauthorized:
                 throw AccountError.registrationFailed("Unauthorized")
+            case .cancelled:
+                throw AccountError.registrationFailed("Registration cancelled")
             }
         }
     }

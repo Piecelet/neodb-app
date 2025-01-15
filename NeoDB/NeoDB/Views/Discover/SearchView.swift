@@ -14,6 +14,13 @@ struct SearchView: View {
     
     var body: some View {
         searchContent
+            .overlay {
+                if viewModel.isLoading && viewModel.items.isEmpty {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .background(.ultraThinMaterial)
+                }
+            }
             .onAppear {
                 viewModel.accountsManager = accountsManager
             }
@@ -60,7 +67,7 @@ struct SearchView: View {
     
     private var loadingIndicator: some View {
         Group {
-            if viewModel.isLoading {
+            if viewModel.isLoading && !viewModel.items.isEmpty {
                 HStack {
                     Spacer()
                     ProgressView()

@@ -15,6 +15,7 @@ enum NetworkError: Error {
     case httpError(Int)
     case decodingError(Error)
     case networkError(Error)
+    case cancelled
 }
 
 @MainActor

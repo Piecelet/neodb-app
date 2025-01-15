@@ -185,6 +185,8 @@ class AppAccountsManager: ObservableObject {
                 throw AccountError.tokenRefreshFailed("Network error")
             case .unauthorized:
                 throw AccountError.tokenRefreshFailed("Unauthorized")
+            case .cancelled:
+                throw AccountError.tokenRefreshFailed("Token refresh cancelled")
             }
         }
     }
