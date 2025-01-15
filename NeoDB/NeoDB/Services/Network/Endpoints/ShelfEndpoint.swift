@@ -42,10 +42,18 @@ extension ShelfEndpoint: NetworkEndpoint {
     var queryItems: [URLQueryItem]? {
         switch self {
         case .get(_, let category, let page):
-            return [
-                .init(name: "category", value: category?.rawValue),
-                .init(name: "page", value: page.map(String.init)),
-            ]
+            var items: [URLQueryItem] = []
+            
+            if let category = category {
+                items.append(.init(name: "category", value: category.rawValue))
+            }
+            
+            if let page = page {
+                items.append(.init(name: "page", value: String(page)))
+            }
+            
+            return items.isEmpty ? nil : items
+            
         default:
             return nil
         }

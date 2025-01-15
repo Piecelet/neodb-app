@@ -46,11 +46,16 @@ class NetworkClient {
             path = "/api" + path
         }
         components.path = path
-        components.queryItems = endpoint.queryItems
+        
+        // Filter out nil query items and only set if there are valid items
+        if let queryItems = endpoint.queryItems?.compactMap({ item in
+            item.value.map { URLQueryItem(name: item.name, value: $0) }
+        }), !queryItems.isEmpty {
+            components.queryItems = queryItems
+        }
 
         guard let url = components.url else {
-            logger.error(
-                "Failed to construct URL for endpoint: \(endpoint.path)")
+            logger.error("Failed to construct URL for endpoint: \(endpoint.path)")
             throw NetworkError.invalidURL
         }
 
