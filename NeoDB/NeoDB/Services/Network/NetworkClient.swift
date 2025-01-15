@@ -32,7 +32,10 @@ class NetworkClient {
         self.instance = instance
         self.oauthToken = oauthToken
         self.urlSession = URLSession.shared
+        
+        // Configure decoder
         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder.dateDecodingStrategy = .iso8601
     }
 
     private func makeURL(endpoint: NetworkEndpoint) throws -> URL {
@@ -128,10 +131,7 @@ class NetworkClient {
                 let result = try decoder.decode(type, from: data)
                 return result
             } catch {
-                if let rawResponse = String(data: data, encoding: .utf8) {
-                    logger.error("Raw response: \(rawResponse)")
-                }
-                logger.error("Decoding error: \(error.localizedDescription)")
+                logDecodingError(error, data: data)
                 throw NetworkError.decodingError(error)
             }
         } catch let error as NetworkError {
@@ -193,6 +193,27 @@ class NetworkClient {
         
         if let bodyString = String(data: data, encoding: .utf8) {
             loggerResponse.debug("Body: \(bodyString)")
+        }
+    }
+
+    private func logDecodingError(_ error: Error, data: Data) {
+        if let decodingError = error as? DecodingError {
+            switch decodingError {
+            case .dataCorrupted(let context):
+                logger.error("Data corrupted: \(context.debugDescription)")
+            case .keyNotFound(let key, let context):
+                logger.error("Key not found: \(key.stringValue) - \(context.debugDescription)")
+            case .typeMismatch(let type, let context):
+                logger.error("Type mismatch: \(type) - \(context.debugDescription)")
+            case .valueNotFound(let type, let context):
+                logger.error("Value not found: \(type) - \(context.debugDescription)")
+            @unknown default:
+                logger.error("Unknown decoding error: \(decodingError)")
+            }
+        }
+        
+        if let rawResponse = String(data: data, encoding: .utf8) {
+            logger.error("Raw response: \(rawResponse)")
         }
     }
 }

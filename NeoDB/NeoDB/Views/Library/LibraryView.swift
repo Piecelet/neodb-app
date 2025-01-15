@@ -19,7 +19,7 @@ class LibraryViewModel: ObservableObject {
     }
     
     private let cacheService = CacheService()
-    private let logger = Logger.library
+    private let logger = Logger.views.library
     private var loadTask: Task<Void, Never>?
     
     @Published var selectedShelfType: ShelfType = .wishlist

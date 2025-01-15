@@ -47,13 +47,13 @@ extension Logger {
 
     // MARK: - Views
     /// Logs related to specific views
-    static let library = Logger(subsystem: subsystem, category: "view.library")
     static let home = Logger(subsystem: subsystem, category: "view.home")
     static let htmlContent = Logger(subsystem: subsystem, category: "view.html")
 
     enum views {
         static let login = Logger(subsystem: subsystem, category: "view.login")
         static let profile = Logger(subsystem: subsystem, category: "view.profile")
+        static let library = Logger(subsystem: subsystem, category: "view.library")
     }
 
     // MARK: - User Actions
