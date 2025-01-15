@@ -82,11 +82,11 @@ struct ContentView: View {
             case .replyToStatus(let status):
                 Text("Reply to: \(status.id)")  // TODO: Implement StatusEditorView
             case .addToShelf(let item):
-                Text("Add to Shelf: \(item.displayTitle)")  // TODO: Implement ShelfEditorView
+                MarkView(item: item)
+                    .environmentObject(accountsManager)
             case .editShelfItem(let mark):
-                Text("Edit Shelf Item: \(mark.item.displayTitle)")  // TODO: Implement ShelfEditorView
-            case .editMark(let item, let mark):
-                Text("Edit Mark: \(item.displayTitle)")  // TODO: Implement ShelfEditorView
+                MarkView(item: mark.item, mark: mark)
+                    .environmentObject(accountsManager)
             }
         }
     }
