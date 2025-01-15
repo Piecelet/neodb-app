@@ -27,7 +27,7 @@ struct MarkView: View {
                 Spacer()
                 Button(action: { dismiss() }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.gray)
                         .font(.title2)
                 }
             }
@@ -50,6 +50,8 @@ struct MarkView: View {
                                 .frame(maxWidth: .infinity)
                                 .foregroundStyle(viewModel.shelfType == type ? .primary : .secondary)
                             }
+                            .buttonStyle(.borderless)
+
                         }
                     }
                     .padding(.vertical, 8)
