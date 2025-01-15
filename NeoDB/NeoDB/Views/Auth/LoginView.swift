@@ -22,7 +22,7 @@ struct LoginView: View {
                 .scaledToFit()
                 .frame(width: 120, height: 120)
             
-            Text("Welcome to NeoDB")
+            Text("Welcome to NeoApp")
                 .font(.title)
                 .fontWeight(.bold)
             
@@ -31,6 +31,13 @@ struct LoginView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+            
+            Text("This is a open sourced third-party client for NeoDB made by citron.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+                
             
             VStack(alignment: .leading, spacing: 8) {
                 Text("Instance")

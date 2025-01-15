@@ -28,18 +28,18 @@ struct ContentView: View {
 
             // Search Tab
             NavigationStack(path: router.path(for: .search)) {
-                /* Temporarily disabled during migration
-                SearchView(authService: authService)
-                    .navigationDestination(for: RouterDestination.self) { destination in
-                        destinationView(for: destination)
-                    }
-                */
-                Text("Search")
-                    .navigationTitle("Search")
+                SearchView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)
                     }
+
+                //                Text("Search")
+                //                    .navigationTitle("Search")
+                //                    .navigationDestination(for: RouterDestination.self) {
+                //                        destination in
+                //                        destinationView(for: destination)
+                //                    }
             }
             .tabItem {
                 Label("Search", systemImage: "magnifyingglass")
@@ -49,7 +49,8 @@ struct ContentView: View {
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
                 LibraryView()
-                    .navigationDestination(for: RouterDestination.self) { destination in
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
                         destinationView(for: destination)
                     }
             }
