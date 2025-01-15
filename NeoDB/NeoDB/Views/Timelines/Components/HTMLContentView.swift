@@ -42,31 +42,6 @@ struct HTMLContentView: View {
         }
     }
     
-    private func categoryFromType(_ type: String) -> ItemCategory {
-        switch type {
-        case "movie":
-            return .movie
-        case "book":
-            return .book
-        case "tv":
-            return .tv
-        case "season":
-            return .tvSeason
-        case "episode":
-            return .tvEpisode
-        case "game":
-            return .game
-        case "album":
-            return .music
-        case "podcast":
-            return .podcast
-        case "performance":
-            return .performance
-        default:
-            return .book // Default fallback
-        }
-    }
-    
     private func convertHTMLToMarkdown(_ html: String) -> String? {
         // Remove extra newlines and spaces
         let cleanedHTML = html.replacingOccurrences(of: "\n", with: "")
