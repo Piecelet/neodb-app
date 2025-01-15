@@ -18,7 +18,7 @@ struct ItemActionsView: View {
     init(item: (any ItemProtocol)?, onAddToShelf: @escaping () -> Void) {
         self.item = item
         self.onAddToShelf = onAddToShelf
-        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(itemId: item?.id ?? ""))
+        _viewModel = StateObject(wrappedValue: ItemActionsViewModel(itemId: item?.uuid ?? ""))
     }
     
     private var shareURL: URL? {

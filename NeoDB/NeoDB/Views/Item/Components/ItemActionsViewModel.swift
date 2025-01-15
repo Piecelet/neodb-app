@@ -10,7 +10,7 @@ import OSLog
 
 @MainActor
 class ItemActionsViewModel: ObservableObject {
-    private let logger = Logger.views.item
+    private let logger = Logger.views.itemActions
     private var loadTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager? {
@@ -30,7 +30,6 @@ class ItemActionsViewModel: ObservableObject {
     
     init(itemId: String) {
         self.itemId = itemId
-        logger.debug("Initialized ItemActionsViewModel with itemId: \(itemId)")
     }
     
     // MARK: - Computed Properties
@@ -54,10 +53,7 @@ class ItemActionsViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadMarkIfNeeded() {
-        guard mark == nil else {
-            logger.debug("Mark already loaded, skipping loadMark")
-            return
-        }
+        guard mark == nil else { return }
         loadMark()
     }
     
@@ -69,13 +65,6 @@ class ItemActionsViewModel: ObservableObject {
                 logger.debug("No accountsManager available")
                 return
             }
-            
-            guard !itemId.isEmpty else {
-                logger.error("Invalid itemId: empty string")
-                return
-            }
-            
-            logger.debug("Loading mark for itemId: \(itemId)")
             
             if !Task.isCancelled {
                 isLoading = true
@@ -89,19 +78,10 @@ class ItemActionsViewModel: ObservableObject {
             
             do {
                 let endpoint = MarkEndpoint.get(itemId: itemId)
-                logger.debug("Fetching mark with endpoint: \(String(describing: endpoint))")
-                
                 let result = try await accountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
-                logger.debug("Successfully loaded mark: \(String(describing: result))")
                 
                 if !Task.isCancelled {
                     mark = result
-                }
-            } catch let error as NetworkError {
-                if !Task.isCancelled {
-                    self.error = error
-                    self.showError = true
-                    logger.error("Network error loading mark: \(error.localizedDescription), status: \(String(describing: error))")
                 }
             } catch {
                 if !Task.isCancelled {
@@ -114,7 +94,6 @@ class ItemActionsViewModel: ObservableObject {
     }
     
     func cleanup() {
-        logger.debug("Cleaning up ItemActionsViewModel")
         loadTask?.cancel()
         loadTask = nil
     }
