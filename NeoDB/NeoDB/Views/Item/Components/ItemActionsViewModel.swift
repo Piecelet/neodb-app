@@ -92,9 +92,17 @@ class ItemActionsViewModel: ObservableObject {
                 }
             } catch {
                 if !Task.isCancelled {
-                    self.error = error
-                    self.showError = true
-                    logger.error("Failed to load mark: \(error.localizedDescription)")
+                    if let networkError = error as? NetworkError,
+                       case .httpError(let statusCode) = networkError,
+                       statusCode == 404 {
+                        // 404 means no mark exists, which is a normal case
+                        mark = nil
+                        logger.debug("No mark found for item: \(itemId)")
+                    } else {
+                        self.error = error
+                        self.showError = true
+                        logger.error("Failed to load mark: \(error.localizedDescription)")
+                    }
                 }
             }
         }
