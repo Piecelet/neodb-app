@@ -1,5 +1,5 @@
 //
-//  ProfileView.swift
+//  SettingsView.swift
 //  NeoDB
 //
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
@@ -10,7 +10,7 @@ import OSLog
 import SwiftUI
 
 @MainActor
-class ProfileViewModel: ObservableObject {
+class SettingsViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
@@ -24,7 +24,7 @@ class ProfileViewModel: ObservableObject {
     @Published var error: String?
 
     private let cacheService = CacheService()
-    private let logger = Logger.views.profile
+    private let logger = Logger.views.settings
 
     func loadUserProfile(forceRefresh: Bool = false) async {
         guard accountsManager != nil else { return }
@@ -160,9 +160,9 @@ struct AvatarPlaceholderView: View {
     }
 }
 
-struct ProfileView: View {
+struct SettingsView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @StateObject private var viewModel = ProfileViewModel()
+    @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.refresh) private var refresh
 
@@ -177,7 +177,7 @@ struct ProfileView: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadUserProfile()
         }
-        .navigationTitle("Profile")
+        .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.large)
         #if DEBUG
         .enableInjection()

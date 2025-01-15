@@ -59,6 +59,7 @@ extension Logger {
     enum views {
         static let login = Logger(subsystem: subsystem, category: "view.login")
         static let profile = Logger(subsystem: subsystem, category: "view.profile")
+        static let settings = Logger(subsystem: subsystem, category: "view.settings")
         static let library = Logger(subsystem: subsystem, category: "view.library")
         static let item = Logger(subsystem: subsystem, category: "view.item")
         static let itemActions = Logger(subsystem: subsystem, category: "view.itemActions")

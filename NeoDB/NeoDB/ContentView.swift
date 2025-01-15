@@ -54,14 +54,14 @@ struct ContentView: View {
 
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
-                ProfileView()
+                SettingsView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)
                     }
             }
             .tabItem {
-                Label("Profile", systemImage: "person.fill")
+                Label("Settings", systemImage: "gear")
             }
             .tag(TabSection.profile)
         }
