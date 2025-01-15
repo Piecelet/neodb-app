@@ -19,6 +19,9 @@ enum NetworkError: Error {
 
 @MainActor
 class NetworkClient {
+    /// Debug flag to control logging of network requests and responses
+    private static var isDebugEnabled: Bool = false
+    
     private let logger = Logger.network
     private let urlSession: URLSession
     private let instance: String
@@ -89,8 +92,16 @@ class NetworkClient {
     {
         let request = try makeRequest(for: endpoint)
 
+        if Self.isDebugEnabled {
+            logRequest(request)
+        }
+
         do {
             let (data, response) = try await urlSession.data(for: request)
+
+            if Self.isDebugEnabled {
+                logResponse(response, data: data)
+            }
 
             guard let httpResponse = response as? HTTPURLResponse else {
                 logger.error("Invalid response type")
@@ -144,6 +155,53 @@ class NetworkClient {
             }
             logger.error("HTTP error: \(httpResponse.statusCode)")
             throw NetworkError.httpError(httpResponse.statusCode)
+        }
+    }
+
+    // MARK: - Debug Logging
+    
+    private func logRequest(_ request: URLRequest) {
+        let loggerRequest = Logger.networkRequest
+        
+        loggerRequest.debug("🌐 REQUEST [\(request.httpMethod ?? "Unknown")] \(request.url?.absoluteString ?? "")")
+        
+        if let headers = request.allHTTPHeaderFields {
+            loggerRequest.debug("Headers: \(headers)")
+        }
+        
+        if let body = request.httpBody,
+           let bodyString = String(data: body, encoding: .utf8) {
+            loggerRequest.debug("Body: \(bodyString)")
+        }
+    }
+    
+    private func logResponse(_ response: URLResponse, data: Data) {
+        let loggerResponse = Logger.networkResponse
+        
+        guard let httpResponse = response as? HTTPURLResponse else { return }
+        
+        loggerResponse.debug("📥 RESPONSE [\(httpResponse.statusCode)] \(httpResponse.url?.absoluteString ?? "")")
+        
+        if let headers = httpResponse.allHeaderFields as? [String: String] {
+            loggerResponse.debug("Headers: \(headers)")
+        }
+        
+        if let bodyString = String(data: data, encoding: .utf8) {
+            loggerResponse.debug("Body: \(bodyString)")
+        }
+    }
+}
+
+// MARK: - URLRequest Extension
+private extension URLRequest {
+    var allHTTPHeaders: [String: String]? {
+        allHTTPHeaderFields?.reduce(into: [String: String]()) { result, header in
+            // 敏感信息处理
+            if header.key.lowercased() == "authorization" {
+                result[header.key] = "Bearer [REDACTED]"
+            } else {
+                result[header.key] = header.value
+            }
         }
     }
 }

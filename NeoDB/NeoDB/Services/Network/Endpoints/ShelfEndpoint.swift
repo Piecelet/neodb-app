@@ -18,13 +18,13 @@ extension ShelfEndpoint: NetworkEndpoint {
     var path: String {
         switch self {
         case .get(let type, _, _):
-            return "/shelf/\(type.rawValue)"
+            return "/me/shelf/\(type.rawValue)"
         case .getItem(let itemId):
-            return "/item/\(itemId)"
+            return "/me/shelf/item/\(itemId)"
         case .markItem(let itemId, _):
-            return "/item/\(itemId)"
+            return "/me/shelf/item/\(itemId)"
         case .deleteMark(let itemId):
-            return "/item/\(itemId)"
+            return "/me/shelf/item/\(itemId)"
         }
     }
 
