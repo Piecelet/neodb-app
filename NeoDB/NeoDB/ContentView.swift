@@ -52,13 +52,6 @@ struct ContentView: View {
                     .navigationDestination(for: RouterDestination.self) { destination in
                         destinationView(for: destination)
                     }
-//                
-//                Text("Library")
-//                    .navigationTitle("Library")
-//                    .navigationDestination(for: RouterDestination.self) {
-//                        destination in
-//                        destinationView(for: destination)
-//                    }
             }
             .tabItem {
                 Label("Library", systemImage: "books.vertical.fill")

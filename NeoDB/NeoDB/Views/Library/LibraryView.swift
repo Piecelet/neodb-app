@@ -162,15 +162,11 @@ class LibraryViewModel: ObservableObject {
 }
 
 struct LibraryView: View {
-    @StateObject private var viewModel: LibraryViewModel
-    @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    
-    init() {
-        _viewModel = StateObject(wrappedValue: LibraryViewModel())
-    }
-    
+    @StateObject private var viewModel = LibraryViewModel()
+    @Environment(\.colorScheme) private var colorScheme
+        
     var body: some View {
         VStack(spacing: 0) {
             // Shelf Type Picker
