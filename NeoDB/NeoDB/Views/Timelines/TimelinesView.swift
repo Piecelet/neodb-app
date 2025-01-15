@@ -26,48 +26,58 @@ class TimelinesViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: String?
     @Published var detailedError: String?
+    @Published var isRefreshing = false
 
     // Pagination
     private var maxId: String?
     private var hasMore = true
 
     func loadTimeline(refresh: Bool = false) async {
-        // Cancel any existing load task
         loadTask?.cancel()
-
-        // Create a new task for this load operation
+        
         loadTask = Task {
             guard let accountsManager = accountsManager else {
                 logger.debug("No accountsManager available")
                 return
             }
-
+            
             logger.debug(
                 "Loading timeline for instance: \(accountsManager.currentAccount.instance)"
             )
-
+            
             if refresh {
                 logger.debug("Refreshing timeline, resetting pagination")
                 maxId = nil
                 hasMore = true
-                statuses = []
+                if !Task.isCancelled {
+                    isRefreshing = true
+                }
+            } else {
+                guard hasMore else {
+                    logger.debug("No more content to load")
+                    return
+                }
+                if !Task.isCancelled {
+                    isLoading = true
+                }
             }
-
-            guard !isLoading, hasMore else {
-                logger.debug(
-                    "Skip loading: isLoading=\(isLoading), hasMore=\(hasMore)")
-                return
+            
+            defer {
+                if !Task.isCancelled {
+                    isLoading = false
+                    isRefreshing = false
+                }
             }
-
-            isLoading = true
+            
             error = nil
             detailedError = nil
-
+            
             let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
             logger.debug("Using cache key: \(cacheKey)")
-
+            
             do {
-                if !refresh,
+                // Only load from cache if not refreshing and statuses is empty
+                if !refresh && statuses.isEmpty,
                     let cached = try? await cacheService.retrieve(
                         forKey: cacheKey, type: [MastodonStatus].self)
                 {
@@ -77,45 +87,45 @@ class TimelinesViewModel: ObservableObject {
                             "Loaded \(cached.count) statuses from cache")
                     }
                 }
-
+                
                 guard !Task.isCancelled else {
                     logger.debug("Timeline loading cancelled")
                     return
                 }
-
+                
                 guard accountsManager.isAuthenticated else {
                     logger.error("User not authenticated")
                     throw NetworkError.unauthorized
                 }
-
+                
                 let endpoint = TimelinesEndpoint.pub(
                     sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
                 logger.debug(
                     "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
                 )
-
+                
                 let newStatuses = try await accountsManager.currentClient.fetch(
                     endpoint, type: [MastodonStatus].self)
-
+                
                 guard !Task.isCancelled else {
                     logger.debug("Timeline loading cancelled after fetch")
                     return
                 }
-
+                
                 if refresh {
                     statuses = newStatuses
                 } else {
                     statuses.append(contentsOf: newStatuses)
                 }
-
+                
                 try? await cacheService.cache(
                     statuses, forKey: cacheKey, type: [MastodonStatus].self)
-
+                
                 maxId = newStatuses.last?.id
                 hasMore = !newStatuses.isEmpty
                 logger.debug(
                     "Successfully loaded \(newStatuses.count) statuses")
-
+                
             } catch {
                 if !Task.isCancelled {
                     logger.error(
@@ -127,13 +137,8 @@ class TimelinesViewModel: ObservableObject {
                     }
                 }
             }
-
-            if !Task.isCancelled {
-                isLoading = false
-            }
         }
-
-        // Wait for the task to complete
+        
         await loadTask?.value
     }
 }
@@ -152,13 +157,18 @@ struct TimelinesView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(viewModel.detailedError ?? error)
                 )
-            } else if viewModel.statuses.isEmpty && !viewModel.isLoading {
+                .refreshable {
+                    await viewModel.loadTimeline(refresh: true)
+                }
+            } else if viewModel.statuses.isEmpty && !viewModel.isLoading && !viewModel.isRefreshing {
                 EmptyStateView(
                     "No Posts Yet",
                     systemImage: "text.bubble",
-                    description: Text(
-                        "Follow some users to see their posts here")
+                    description: Text("Follow some users to see their posts here")
                 )
+                .refreshable {
+                    await viewModel.loadTimeline(refresh: true)
+                }
             } else {
                 timelineContent
             }
@@ -190,7 +200,7 @@ struct TimelinesView: View {
                     .buttonStyle(.plain)
                 }
 
-                if viewModel.isLoading {
+                if viewModel.isLoading && !viewModel.isRefreshing {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding()

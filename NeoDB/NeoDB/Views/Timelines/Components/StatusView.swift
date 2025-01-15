@@ -52,7 +52,7 @@ struct StatusView: View {
                 
                 Spacer()
                 
-                Text(status.createdAt)
+                RelativeTimeView(date: status.createdAt.asDate)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
