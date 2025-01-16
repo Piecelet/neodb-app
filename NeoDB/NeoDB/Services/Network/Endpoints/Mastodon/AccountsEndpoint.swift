@@ -28,33 +28,33 @@ extension AccountsEndpoint: NetworkEndpoint {
   var path: String {
     switch self {
     case .accounts(let id):
-      return "accounts/\(id)"
+      return "/v1/accounts/\(id)"
     case .favourites:
-      return "favourites"
+      return "/v1/favourites"
     case .followedTags:
-      return "followed_tags"
+      return "/v1/followed_tags"
     case .featuredTags(let id):
-      return "accounts/\(id)/featured_tags"
+      return "/v1/accounts/\(id)/featured_tags"
     case .verifyCredentials:
-      return "accounts/verify_credentials"
+      return "/v1/accounts/verify_credentials"
     case .statuses(let id, _, _, _, _):
-      return "accounts/\(id)/statuses"
+      return "/v1/accounts/\(id)/statuses"
     case .relationships:
-      return "accounts/relationships"
+      return "/v1/accounts/relationships"
     case .follow(let id):
-      return "accounts/\(id)/follow"
+      return "/v1/accounts/\(id)/follow"
     case .unfollow(let id):
-      return "accounts/\(id)/unfollow"
+      return "/v1/accounts/\(id)/unfollow"
     case .familiarFollowers:
-      return "accounts/familiar_followers"
+      return "/v1/accounts/familiar_followers"
     case .suggestions:
-      return "suggestions"
+      return "/v1/suggestions"
     case .following(let id, _):
-      return "accounts/\(id)/following"
+      return "/v1/accounts/\(id)/following"
     case .followers(let id, _):
-      return "accounts/\(id)/followers"
+      return "/v1/accounts/\(id)/followers"
     case .lists(let id):
-      return "accounts/\(id)/lists"
+      return "/v1/accounts/\(id)/lists"
     }
   }
   

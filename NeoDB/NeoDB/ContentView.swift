@@ -106,9 +106,9 @@ struct ContentView: View {
         case .userShelf(let userId, let type):
             Text("User Shelf: \(userId) - \(type.displayName)")  // TODO: Implement UserShelfView
         case .userProfile(let id):
-            Text("User Profile: \(id)")  // TODO: Implement UserProfileView
+            ProfileView(id: id)
         case .userProfileWithUser(let user):
-            Text("User Profile: \(user.displayName)")  // TODO: Implement UserProfileView
+            ProfileView(id: user.username, user: user)
         case .statusDetail(let id):
             MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):

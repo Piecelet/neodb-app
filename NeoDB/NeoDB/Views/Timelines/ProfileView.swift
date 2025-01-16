@@ -5,3 +5,216 @@
 //  Created by citron on 1/15/25.
 //
 
+import SwiftUI
+
+struct ProfileView: View {
+    let id: String
+    let account: MastodonAccount?
+    var user: User?
+    
+    @StateObject private var viewModel = ProfileViewModel()
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var router: Router
+    
+    init(id: String, account: MastodonAccount? = nil, user: User? = nil) {
+        self.id = id
+        self.account = account
+        self.user = user
+    }
+    
+    var body: some View {
+        Group {
+            if let error = viewModel.error {
+                EmptyStateView(
+                    "Couldn't Load Profile",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(error.localizedDescription)
+                )
+                .refreshable {
+                    await viewModel.loadAccount(id: id, refresh: true)
+                }
+            } else if let account = account ?? viewModel.account {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Header Image
+                        AsyncImage(url: account.header) { image in
+                            image.resizable()
+                                .aspectRatio(contentMode: .fill)
+                        } placeholder: {
+                            Rectangle()
+                                .fill(.quaternary)
+                        }
+                        .frame(height: 200)
+                        .clipped()
+                        
+                        // Avatar and Stats
+                        HStack(alignment: .bottom) {
+                            AsyncImage(url: account.avatar) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Rectangle()
+                                    .fill(.quaternary)
+                            }
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(.quaternary, lineWidth: 1))
+                            .padding(.leading)
+                            .offset(y: -40)
+                            
+                            Spacer()
+                            
+                            // Stats
+                            HStack(spacing: 20) {
+                                VStack {
+                                    Text("\(account.statusesCount)")
+                                        .font(.headline)
+                                    Text("Posts")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                
+                                Button {
+                                    router.navigate(to: .following(id: account.id))
+                                } label: {
+                                    VStack {
+                                        Text("\(account.followingCount)")
+                                            .font(.headline)
+                                        Text("Following")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                
+                                Button {
+                                    router.navigate(to: .followers(id: account.id))
+                                } label: {
+                                    VStack {
+                                        Text("\(account.followersCount)")
+                                            .font(.headline)
+                                        Text("Followers")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
+                        .padding(.bottom, -40)
+                        
+                        // Profile Info
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(account.displayName)
+                                .font(.title2)
+                                .bold()
+                            Text("@\(account.username)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            
+                            if !account.note.isEmpty {
+                                Text(account.note)
+                                    .font(.body)
+                                    .padding(.top, 4)
+                            }
+                            
+                            if !account.fields.isEmpty {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    ForEach(account.fields) { field in
+                                        VStack(alignment: .leading) {
+                                            Text(field.name)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                            Text(field.value)
+                                                .font(.callout)
+                                        }
+                                    }
+                                }
+                                .padding(.top, 8)
+                            }
+                            
+                            Text("Joined \(account.createdAt)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+                .refreshable {
+                    await viewModel.loadAccount(id: id, refresh: true)
+                }
+            } else if let user = user {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        // Avatar
+                        HStack(alignment: .center) {
+                            AsyncImage(url: user.avatar) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } placeholder: {
+                                Rectangle()
+                                    .fill(.quaternary)
+                            }
+                            .frame(width: 80, height: 80)
+                            .clipShape(Circle())
+                            .overlay(Circle().stroke(.quaternary, lineWidth: 1))
+                            .padding(.leading)
+                            
+                            Spacer()
+                        }
+                        .padding(.vertical)
+                        
+                        // Profile Info
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(user.displayName)
+                                .font(.title2)
+                                .bold()
+                            Text("@\(user.username)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                            
+                            if let externalAcct = user.externalAcct {
+                                Text(externalAcct)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.top, 4)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+            } else if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else {
+                EmptyStateView(
+                    "Profile Not Found",
+                    systemImage: "person.slash",
+                    description: Text("The profile you're looking for doesn't exist or has been deleted.")
+                )
+                .refreshable {
+                    await viewModel.loadAccount(id: id, refresh: true)
+                }
+            }
+        }
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            viewModel.accountsManager = accountsManager
+            if account == nil && user == nil {
+                await viewModel.loadAccount(id: id)
+            }
+        }
+        .onDisappear {
+            viewModel.cleanup()
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        ProfileView(id: "1", account: .placeholder())
+            .environmentObject(AppAccountsManager())
+            .environmentObject(Router())
+    }
+}
+
