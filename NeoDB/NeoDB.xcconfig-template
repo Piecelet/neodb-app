@@ -1,0 +1,14 @@
+//
+//  NeoDB.xcconfig
+//  NeoDB
+//
+//  Created by citron on 1/16/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+// Replace YOUR_DEVELOPMENT_TEAM_ID with your actual development team ID
+// Remove `-template` from the file name
+
+DEVELOPMENT_TEAM = YOUR_DEVELOPMENT_TEAM_ID

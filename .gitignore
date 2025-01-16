@@ -99,3 +99,6 @@ DerivedData/
 
 buildServer.json
 .specstory/
+
+NeoDB.xcconfig
+build/XCBuildData/
