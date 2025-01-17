@@ -114,8 +114,8 @@ class AppAccountsManager: ObservableObject {
         }
     }
     
-    func handleCallback(url: URL) async throws {
-        guard isAuthenticating else {
+    func handleCallback(url: URL, ignoreAuthenticationDuration: Bool = false) async throws {
+        guard (isAuthenticating && ignoreAuthenticationDuration != true) else {
             logger.error("Received callback but not in authentication process")
             throw AccountError.authenticationFailed("Not in authentication process")
         }

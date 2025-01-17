@@ -28,7 +28,7 @@ struct NeoDBApp: App {
                 if url.scheme == "neodb" && url.host == "oauth" {
                     Task {
                         do {
-                            try await accountsManager.handleCallback(url: url)
+                            try await accountsManager.handleCallback(url: url, ignoreAuthenticationDuration: true)
                         } catch {
                             print("Authentication error: \(error)")
                         }

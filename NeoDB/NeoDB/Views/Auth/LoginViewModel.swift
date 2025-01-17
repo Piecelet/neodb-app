@@ -19,40 +19,26 @@ class LoginViewModel: ObservableObject {
 
     var accountsManager: AppAccountsManager!
 
-    init() {}
-
     func authenticate(using session: WebAuthenticationSession) async {
         do {
             let authUrl = try await accountsManager.authenticate(
                 instance: accountsManager.currentAccount.instance)
 
             do {
-                guard
-                    let url = try? await session.authenticate(
-                        using: authUrl,
-                        callbackURLScheme: AppConfig.OAuth.redirectUri
-                            .addingPercentEncoding(
-                                withAllowedCharacters: .urlHostAllowed)
-                            ?? AppConfig.OAuth.redirectUri.replacingOccurrences(
-                                of: "://", with: ""),
-                        preferredBrowserSession: WebAuthenticationSession
-                            .BrowserSession.shared
-                    )
-                else {
-                    errorMessage = "Authentication failed"
-                    showError = true
-                    accountsManager.isAuthenticating = false
-                    return
-                }
+                let url = try await session.authenticate(
+                    using: authUrl,
+                    callbackURLScheme: AppConfig.OAuth.redirectUri
+                        .addingPercentEncoding(
+                            withAllowedCharacters: .urlHostAllowed)
+                        ?? AppConfig.OAuth.redirectUri.replacingOccurrences(
+                            of: "://", with: ""),
+                    preferredBrowserSession: WebAuthenticationSession
+                        .BrowserSession.shared
+                )
+                logger.debug("Received callback URL: \(url.absoluteString)")
                 try await accountsManager.handleCallback(url: url)
             } catch {
-                // Don't show error for cancellation
-                if (error as NSError).code
-                    != ASWebAuthenticationSessionError.canceledLogin.rawValue
-                {
-                    errorMessage = "Authentication failed"
-                    showError = true
-                }
+                // Silently handle cancellation
                 accountsManager.isAuthenticating = false
                 return
             }
