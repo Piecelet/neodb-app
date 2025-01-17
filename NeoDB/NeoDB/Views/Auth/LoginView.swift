@@ -10,7 +10,8 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
-    @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.webAuthenticationSession) private var webAuthenticationSession
     @State private var errorMessage: String?
     @State private var showError = false
     @State private var showInstanceInput = false
@@ -56,7 +57,20 @@ struct LoginView: View {
                 Task {
                     do {
                         let authUrl = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
-                        openURL(authUrl)
+                        
+                        // Use webAuthenticationSession
+                        guard let url = try? await webAuthenticationSession.authenticate(
+                            using: authUrl,
+                            callbackURLScheme: AppConfig.OAuth.redirectUri.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: ""),
+                            preferredBrowserSession: WebAuthenticationSession.BrowserSession.shared
+                        ) else {
+                            errorMessage = "Authentication failed"
+                            showError = true
+                            return
+                        }
+                        
+                        try await accountsManager.handleCallback(url: url)
+                        
                     } catch AccountError.invalidURL {
                         errorMessage = "Invalid instance URL"
                         showError = true
@@ -109,6 +123,14 @@ struct LoginView: View {
                 showInstanceInput = false
             }
             .presentationDetents([.medium, .large])
+        }
+        .onChange(of: scenePhase) { newValue in
+            switch newValue {
+            case .active:
+                accountsManager.isAuthenticating = false
+            default:
+                break
+            }
         }
         .enableInjection()
     }
