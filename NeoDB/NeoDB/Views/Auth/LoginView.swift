@@ -10,11 +10,13 @@ import AuthenticationServices
 
 struct LoginView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
+    @StateObject private var viewModel: LoginViewModel
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.webAuthenticationSession) private var webAuthenticationSession
-    @State private var errorMessage: String?
-    @State private var showError = false
-    @State private var showInstanceInput = false
+    
+    init() {
+        _viewModel = StateObject(wrappedValue: LoginViewModel())
+    }
     
     var body: some View {
         VStack(spacing: 20) {
@@ -44,7 +46,7 @@ struct LoginView: View {
                     Spacer()
                     
                     Button("Change") {
-                        showInstanceInput = true
+                        viewModel.showInstanceInput = true
                     }
                 }
                 .padding()
@@ -55,35 +57,7 @@ struct LoginView: View {
             
             Button(action: {
                 Task {
-                    do {
-                        let authUrl = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
-                        
-                        // Use webAuthenticationSession
-                        guard let url = try? await webAuthenticationSession.authenticate(
-                            using: authUrl,
-                            callbackURLScheme: AppConfig.OAuth.redirectUri.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed) ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: ""),
-                            preferredBrowserSession: WebAuthenticationSession.BrowserSession.shared
-                        ) else {
-                            errorMessage = "Authentication failed"
-                            showError = true
-                            return
-                        }
-                        
-                        try await accountsManager.handleCallback(url: url)
-                        
-                    } catch AccountError.invalidURL {
-                        errorMessage = "Invalid instance URL"
-                        showError = true
-                    } catch AccountError.registrationFailed(let message) {
-                        errorMessage = "Registration failed: \(message)"
-                        showError = true
-                    } catch AccountError.authenticationFailed(let message) {
-                        errorMessage = "Authentication failed: \(message)"
-                        showError = true
-                    } catch {
-                        errorMessage = error.localizedDescription
-                        showError = true
-                    }
+                    await viewModel.authenticate(using: webAuthenticationSession)
                 }
             }) {
                 HStack {
@@ -111,16 +85,14 @@ struct LoginView: View {
                 .padding(.horizontal)
         }
         .padding()
-        .alert("Error", isPresented: $showError, actions: {
+        .alert("Error", isPresented: $viewModel.showError, actions: {
             Button("OK", role: .cancel) {}
         }, message: {
-            Text(errorMessage ?? "An unknown error occurred")
+            Text(viewModel.errorMessage ?? "An unknown error occurred")
         })
-        .sheet(isPresented: $showInstanceInput) {
+        .sheet(isPresented: $viewModel.showInstanceInput) {
             InstanceInputView(selectedInstance: accountsManager.currentAccount.instance) { newInstance in
-                let account = AppAccount(instance: newInstance, oauthToken: nil)
-                accountsManager.add(account: account)
-                showInstanceInput = false
+                viewModel.updateInstance(newInstance)
             }
             .presentationDetents([.medium, .large])
         }
@@ -131,6 +103,9 @@ struct LoginView: View {
             default:
                 break
             }
+        }
+        .onAppear {
+            viewModel.accountsManager = accountsManager
         }
         .enableInjection()
     }
