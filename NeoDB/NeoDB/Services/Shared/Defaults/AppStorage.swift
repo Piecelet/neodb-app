@@ -12,6 +12,7 @@ struct AppStorageKeys {
     init() { }
     
     var customInstance: AppStorageKey<String> { .init("custom_instance", defaultValue: "") }
+    var timelinesPosition: AppStorageKey<Int> { .init("timelines_position", defaultValue: 0) }
     var mark: Mark { .init() }
     
     struct Mark {
@@ -62,6 +63,19 @@ extension AppStorage where Value == Bool {
          _ strongKeyPath: KeyPath<AppStorageKeys, AppStorageKey<Value>>) {
         let strongKey = AppStorageKeys()[keyPath: strongKeyPath]
         self.init(wrappedValue: wrappedValue, strongKey.name)
+    }
+}
+
+extension AppStorage where Value == Int {
+    init(wrappedValue: Value,
+         _ strongKeyPath: KeyPath<AppStorageKeys, AppStorageKey<Value>>) {
+        let strongKey = AppStorageKeys()[keyPath: strongKeyPath]
+        self.init(wrappedValue: wrappedValue, strongKey.name)
+    }
+    
+    init(_ strongKeyPath: KeyPath<AppStorageKeys, AppStorageKey<Value>>) {
+        let strongKey = AppStorageKeys()[keyPath: strongKeyPath]
+        self.init(wrappedValue: strongKey.defaultValue, strongKey.name)
     }
 }
 

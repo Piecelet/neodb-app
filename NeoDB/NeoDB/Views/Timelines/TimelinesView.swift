@@ -145,6 +145,7 @@ struct TimelinesView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage(\.timelinesPosition) private var scrollPosition: Int
 
     var body: some View {
         Group {
@@ -188,38 +189,55 @@ struct TimelinesView: View {
     }
 
     private var timelineContent: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(viewModel.statuses) { status in
-                    Button {
-                        router.navigate(
-                            to: .statusDetailWithStatus(status: status))
-                    } label: {
-                        StatusView(status: status)
-                            .onAppear {
-                                if status.id == viewModel.statuses.last?.id {
-                                    Task {
-                                        await viewModel.loadTimeline()
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 0) {
+                    ForEach(Array(viewModel.statuses.enumerated()), id: \.element.id) { index, status in
+                        VStack(spacing: 0) {
+                            Button {
+                                router.navigate(
+                                    to: .statusDetailWithStatus(status: status))
+                            } label: {
+                                StatusView(status: status)
+                                    .id(index)
+                                    .task {
+                                        scrollPosition = index
+                                        
+                                        if index >= viewModel.statuses.count - 3 {
+                                            await viewModel.loadTimeline()
+                                        }
                                     }
-                                }
                             }
+                            .buttonStyle(.plain)
+                            
+                            if status.id != viewModel.statuses.last?.id {
+                                Divider()
+                                    .padding(.horizontal)
+                            }
+                        }
                     }
-                    .buttonStyle(.plain)
-                }
 
-                if viewModel.isLoading && !viewModel.isRefreshing {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
+                    if viewModel.isLoading && !viewModel.isRefreshing {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                }
+            }
+            .onAppear {
+                withAnimation(.easeInOut) {
+                    proxy.scrollTo(scrollPosition, anchor: .top)
                 }
             }
         }
     }
 
+    private let skeletonCount = 5
+    
     private var timelineSkeletonContent: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
-                ForEach(0..<5, id: \.self) { _ in
+                ForEach(0..<skeletonCount, id: \.self) { _ in
                     statusSkeletonView
                 }
             }
