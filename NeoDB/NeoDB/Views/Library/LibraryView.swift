@@ -176,7 +176,7 @@ struct LibraryView: View {
                 onShelfTypeChange: viewModel.changeShelfType,
                 onCategoryChange: viewModel.changeCategory
             )
-            .padding(.horizontal)
+            .padding(.horizontal, 0)
             .padding(.vertical, 8)
             .background(Color(.systemBackground))
             
@@ -214,7 +214,12 @@ struct LibraryView: View {
         .onDisappear {
             viewModel.cleanup()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var libraryContent: some View {
         ScrollView {

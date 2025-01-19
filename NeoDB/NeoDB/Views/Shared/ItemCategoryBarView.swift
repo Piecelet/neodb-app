@@ -12,6 +12,9 @@ enum ItemCategoryModel: String, CaseIterable {
     case movie = "Movies"
     case tv = "TV Shows"
     case music = "Music"
+    case game = "Games"
+    case podcast = "Podcasts"
+    case performance = "Performance"
     case allItems = "All"
     
     var color: Color {
@@ -20,6 +23,9 @@ enum ItemCategoryModel: String, CaseIterable {
         case .movie: .green
         case .tv: .indigo
         case .music: .pink
+        case .game: .orange
+        case .podcast: .purple
+        case .performance: .red
         case .allItems: Color.primary
         }
     }
@@ -30,6 +36,9 @@ enum ItemCategoryModel: String, CaseIterable {
         case .movie: "film.fill"
         case .tv: "tv.fill"
         case .music: "music.note"
+        case .game: "gamecontroller.fill"
+        case .podcast: "mic.fill"
+        case .performance: "theatermasks.fill"
         case .allItems: "square.grid.2x2.fill"
         }
     }
@@ -40,6 +49,9 @@ enum ItemCategoryModel: String, CaseIterable {
         case .movie: return .movie
         case .tv: return .tv
         case .music: return .music
+        case .game: return .game
+        case .podcast: return .podcast
+        case .performance: return .performance
         case .allItems: return nil
         }
     }
@@ -48,27 +60,43 @@ enum ItemCategoryModel: String, CaseIterable {
 struct ItemCategoryBarView: View {
     @Binding var activeTab: ItemCategoryModel
     @Environment(\.colorScheme) private var scheme
+    @Namespace private var animation
+    @State private var scrollProxy: ScrollViewProxy?
+    
     var body: some View {
-        GeometryReader {
-            let size = $0.size
-            let allItemsOffset = size.width - (40 * CGFloat(ItemCategoryModel.allCases.count - 1))
-            
-            HStack(spacing: 8) {
-                HStack(spacing: activeTab == .allItems ? -15 : 8) {
-                    ForEach(ItemCategoryModel.allCases.filter({ $0 != .allItems }), id: \.rawValue) { tab in
-                        ResizableTabButton(tab)
+        GeometryReader { geometry in
+            ScrollViewReader { proxy in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        HStack(spacing: activeTab == .allItems ? -15 : 8) {
+                            ForEach(ItemCategoryModel.allCases.filter({ $0 != .allItems }), id: \.rawValue) { tab in
+                                ResizableTabButton(tab)
+                                    .id(tab)
+                            }
+                        }
+                        
+                        if activeTab == .allItems {
+                            ResizableTabButton(.allItems)
+                                .id(ItemCategoryModel.allItems)
+                                .matchedGeometryEffect(id: "allItems", in: animation)
+                        }
                     }
+                    .padding(.horizontal, 15)
+                    .frame(minWidth: geometry.size.width)
                 }
-                
-                if activeTab == .allItems {
-                    ResizableTabButton(.allItems)
-                        .transition(.offset(x: allItemsOffset))
+                .onAppear {
+                    scrollProxy = proxy
                 }
             }
-            .padding(.horizontal, 15)
         }
         .frame(height: 50)
+        .animation(.bouncy, value: activeTab)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     func ResizableTabButton(_ tab: ItemCategoryModel) -> some View {
@@ -85,7 +113,7 @@ struct ItemCategoryBarView: View {
                 Text(tab.rawValue)
                     .font(.callout)
                     .fontWeight(.semibold)
-                    .lineLimit(1)
+                    .lineLimit(1) 
             }
         }
         .foregroundStyle(tab == .allItems ? schemeColor : activeTab == tab ? .white : .gray)
@@ -105,11 +133,15 @@ struct ItemCategoryBarView: View {
         .contentShape(.rect)
         .onTapGesture {
             guard tab != .allItems else { return }
-            withAnimation(.bouncy) {
-                if activeTab == tab {
+            if activeTab == tab {
+                withAnimation(.bouncy) {
                     activeTab = .allItems
-                } else {
+                    scrollProxy?.scrollTo(ItemCategoryModel.allItems, anchor: .trailing)
+                }
+            } else {
+                withAnimation(.bouncy) {
                     activeTab = tab
+                    scrollProxy?.scrollTo(tab, anchor: .center)
                 }
             }
         }
