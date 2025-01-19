@@ -7,6 +7,7 @@
 
 import Kingfisher
 import SwiftUI
+import ExpandableText
 
 struct ItemView: View {
     @StateObject private var viewModel: ItemViewModel
@@ -88,7 +89,12 @@ struct ItemView: View {
             viewModel.cleanup()
         }
         .environmentObject(viewModel)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var itemUUID: String {
         if let url = URL(string: id), url.pathComponents.count >= 2 {
@@ -135,7 +141,7 @@ private struct ItemContent: View {
                         .padding(.vertical)
 
                     if !description.isEmpty {
-                        ExpandableDescriptionView(description: description)
+                        ItemDescriptionView(description: description)
 
                         Divider()
                             .padding(.vertical)
@@ -155,7 +161,12 @@ private struct ItemContent: View {
                 )
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 // MARK: - Header View
@@ -245,28 +256,20 @@ private struct ItemHeaderView: View {
 
 
 // MARK: - Description View
-private struct ExpandableDescriptionView: View {
+private struct ItemDescriptionView: View {
     let description: String
-    @State private var isExpanded = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Description")
                 .font(.headline)
 
-            Text(description)
-                .font(.body)
-                .lineLimit(isExpanded ? nil : 3)
+            ExpandableText(description)
+                .font(.callout)
+                .lineLimit(4)
+//                .expandAnimation(.spring)
+//                .expandAnimation(.bouncy)
 
-            Button {
-                withAnimation {
-                    isExpanded.toggle()
-                }
-            } label: {
-                Text(isExpanded ? "Show Less" : "Read More")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
@@ -351,7 +354,12 @@ private struct ItemActionsView: View {
                 viewModel.refresh()
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 // MARK: - Preview

@@ -11,6 +11,7 @@
 		2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */; };
 		2403F2762D32511E00ED4CB5 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 2403F2752D32511E00ED4CB5 /* Cache */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
+		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
 		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		243C38DC2D3D960B00EB356A /* ExpandableText */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ExpandableText; path = NeoDB/Packages/ExpandableText; sourceTree = "<group>"; };
 		24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = NeoDB.xcconfig; sourceTree = "<group>"; };
 		24CEACEF2D0DA6200083D4BA /* NeoDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24CEAD002D0DA6210083D4BA /* NeoDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeoDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,6 +86,7 @@
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 				249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */,
+				243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,6 +117,7 @@
 		24CEACE62D0DA6200083D4BA = {
 			isa = PBXGroup;
 			children = (
+				243C38DC2D3D960B00EB356A /* ExpandableText */,
 				24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */,
 				24CEACF12D0DA6200083D4BA /* NeoDB */,
 				24CEAD032D0DA6210083D4BA /* NeoDBTests */,
@@ -160,6 +164,7 @@
 				2403E7652D2EF7CC00ED4CB5 /* HTML2Markdown */,
 				2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */,
 				2403F2752D32511E00ED4CB5 /* Cache */,
+				243C38EA2D3D999B00EB356A /* ExpandableText */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -751,6 +756,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */;
 			productName = InjectionNext;
+		};
+		243C38EA2D3D999B00EB356A /* ExpandableText */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExpandableText;
 		};
 		245FD2122D2A817A005B55B3 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
