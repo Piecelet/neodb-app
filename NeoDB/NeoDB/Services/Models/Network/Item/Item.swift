@@ -37,6 +37,28 @@ extension ItemProtocol {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+
+    var toItemSchema: ItemSchema {
+        return ItemSchema(
+            id: self.id,
+            type: self.type,
+            uuid: self.uuid,
+            url: self.url,
+            apiUrl: self.apiUrl,
+            category: self.category,
+            parentUuid: self.parentUuid,
+            displayTitle: self.displayTitle,
+            externalResources: self.externalResources,
+            title: self.title,
+            description: self.description,
+            localizedTitle: self.localizedTitle,
+            localizedDescription: self.localizedDescription,
+            coverImageUrl: self.coverImageUrl,
+            rating: self.rating,
+            ratingCount: self.ratingCount,
+            brief: self.brief
+        )
+    }
 }
 
 // MARK: - Base Item Schema

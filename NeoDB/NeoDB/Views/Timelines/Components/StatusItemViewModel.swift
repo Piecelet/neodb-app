@@ -22,12 +22,12 @@ class StatusItemViewModel: ObservableObject {
         }
     }
     
-    @Published var item: ItemSchema
+    @Published var item: any ItemProtocol
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
     
-    init(item: ItemSchema) {
+    init(item: any ItemProtocol) {
         self.item = item
     }
     
@@ -67,7 +67,7 @@ class StatusItemViewModel: ObservableObject {
             do {
                 // Try cache first if not refreshing
                 if !refresh {
-                    if let cached = try? await getCachedItem(id: item.id) {
+                    if let cached = try? await getCachedItem(id: item.id, category: item.category) {
                         if !Task.isCancelled {
                             logger.debug("Using cached item: \(item.id)")
                             item = cached
@@ -83,12 +83,12 @@ class StatusItemViewModel: ObservableObject {
                 
                 // Fetch from network
                 let endpoint = ItemEndpoint.make(id: item.id, category: item.category)
-                let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
+                let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: item.category))
                 
                 if !Task.isCancelled {
                     logger.debug("Successfully loaded item: \(item.id)")
                     item = result
-                    try? await cacheItem(result)
+                    try? await cacheItem(result, id: item.id, category: item.category)
                 }
             } catch {
                 if !Task.isCancelled {
@@ -100,14 +100,58 @@ class StatusItemViewModel: ObservableObject {
         }
     }
     
-    private func getCachedItem(id: String) async throws -> ItemSchema? {
-        let cacheKey = "item_\(id)"
-        return try await cacheService.retrieve(forKey: cacheKey, type: ItemSchema.self)
+    private func getCachedItem(id: String, category: ItemCategory) async throws -> (any ItemProtocol)? {
+        let cacheKey = "\(id)_\(category.rawValue)"
+        let type = ItemSchema.make(category: category)
+        return try await cacheService.retrieve(forKey: cacheKey, type: type)
     }
     
-    private func cacheItem(_ item: ItemSchema) async throws {
-        let cacheKey = "item_\(item.id)"
-        try await cacheService.cache(item, forKey: cacheKey, type: ItemSchema.self)
+    private func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory) async throws {
+        let cacheKey = "\(id)_\(category.rawValue)"
+        switch category {
+        case .book:
+            if let book = item as? EditionSchema {
+                try await cacheService.cache(book, forKey: cacheKey, type: EditionSchema.self)
+            }
+        case .movie:
+            if let movie = item as? MovieSchema {
+                try await cacheService.cache(movie, forKey: cacheKey, type: MovieSchema.self)
+            }
+        case .tv:
+            if let show = item as? TVShowSchema {
+                try await cacheService.cache(show, forKey: cacheKey, type: TVShowSchema.self)
+            }
+        case .tvSeason:
+            if let season = item as? TVSeasonSchema {
+                try await cacheService.cache(season, forKey: cacheKey, type: TVSeasonSchema.self)
+            }
+        case .tvEpisode:
+            if let episode = item as? TVEpisodeSchema {
+                try await cacheService.cache(episode, forKey: cacheKey, type: TVEpisodeSchema.self)
+            }
+        case .music:
+            if let album = item as? AlbumSchema {
+                try await cacheService.cache(album, forKey: cacheKey, type: AlbumSchema.self)
+            }
+        case .game:
+            if let game = item as? GameSchema {
+                try await cacheService.cache(game, forKey: cacheKey, type: GameSchema.self)
+            }
+        case .podcast:
+            if let podcast = item as? PodcastSchema {
+                try await cacheService.cache(podcast, forKey: cacheKey, type: PodcastSchema.self)
+            }
+        case .performance:
+            if let performance = item as? PerformanceSchema {
+                try await cacheService.cache(performance, forKey: cacheKey, type: PerformanceSchema.self)
+            }
+        case .performanceProduction:
+            if let production = item as? PerformanceProductionSchema {
+                try await cacheService.cache(production, forKey: cacheKey, type: PerformanceProductionSchema.self)
+            }
+        default:
+            break
+        }
     }
     
     func cleanup() {
