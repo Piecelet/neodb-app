@@ -101,6 +101,7 @@ enum SheetDestination: Identifiable {
     case replyToStatus(status: MastodonStatus)
     case addToShelf(item: any ItemProtocol)
     case editShelfItem(mark: MarkSchema)
+    case itemDetails([String])
 //    case editMark(item: any ItemProtocol, mark: MarkSchema? = nil)
     
     var id: String {
@@ -111,6 +112,8 @@ enum SheetDestination: Identifiable {
             return "shelfEditor"
         case .editShelfItem:
             return "shelfItemEditor"
+        case .itemDetails:
+            return "itemDetails"
 //        case .editMark:
 //            return "markEditor"
         }
@@ -160,6 +163,10 @@ class Router: ObservableObject {
     
     func dismissSheet() {
         presentedSheet = nil
+    }
+    
+    func presentSheet(_ destination: SheetDestination) {
+        presentedSheet = destination
     }
     
     func handleURL(_ url: URL) -> Bool {

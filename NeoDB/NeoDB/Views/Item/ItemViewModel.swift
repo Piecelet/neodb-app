@@ -143,7 +143,7 @@ final class ItemViewModel: ObservableObject {
             do {
                 if !refresh,
                     let cached = try? await cacheService.retrieveItem(
-                        id: id, category: category)
+                        id: id, category: category, instance: accountsManager.currentAccount.instance)
                 {
                     await handleCachedItem(cached, id: id, category: category)
                     return
@@ -181,26 +181,6 @@ final class ItemViewModel: ObservableObject {
         markLoadTask?.cancel()
         loadTask = nil
         markLoadTask = nil
-    }
-
-    // MARK: - Private Methods
-    private func buildBookMetadata(_ book: EditionSchema) -> [String] {
-        var metadata: [String] = []
-
-        if !book.author.isEmpty {
-            metadata.append(book.author.joined(separator: ", "))
-        }
-        if let pubHouse = book.pubHouse {
-            metadata.append(pubHouse)
-        }
-        if let pubYear = book.pubYear {
-            metadata.append(String(pubYear))
-        }
-        if let pages = book.pages {
-            metadata.append("\(pages) pages")
-        }
-
-        return metadata
     }
 
     private func loadMark(itemId: String, refresh: Bool) {
@@ -281,7 +261,7 @@ final class ItemViewModel: ObservableObject {
             item = result
             state = .loaded
             try? await cacheService.cacheItem(
-                result, id: id, category: category)
+                result, id: id, category: category, instance: accountsManager?.currentAccount.instance)
         }
     }
 
@@ -324,15 +304,14 @@ final class ItemViewModel: ObservableObject {
     }
 
     private func getCachedMark(itemId: String) async throws -> MarkSchema? {
-        let cacheKey = "mark_\(itemId)"
-        return try await cacheService.retrieve(
-            forKey: cacheKey, type: MarkSchema.self)
+        // let cacheKey = "mark_\(itemId)"
+        return try await cacheService.retrieveMark(
+            key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId)
     }
 
     private func cacheMark(_ mark: MarkSchema, itemId: String) async throws {
-        let cacheKey = "mark_\(itemId)"
-        try await cacheService.cache(
-            mark, forKey: cacheKey, type: MarkSchema.self)
+        try await cacheService.cacheMark(
+            mark, key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId, instance: accountsManager?.currentAccount.instance)
     }
 
     private func refreshItemInBackground(id: String, category: ItemCategory)
@@ -346,7 +325,7 @@ final class ItemViewModel: ObservableObject {
                 client: accountsManager.currentClient)
             logger.debug("Cache \(id) \(category) item refreshed")
             try? await cacheService.cacheItem(
-                result, id: id, category: category)
+                result, id: id, category: category, instance: accountsManager.currentAccount.instance)
 
             if !Task.isCancelled {
                 item = result

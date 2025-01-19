@@ -175,6 +175,15 @@ struct ItemView: View {
                 Text(viewModel.metadata.joined(separator: " / "))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                    .lineLimit(2)
+                
+                Button {
+                    router.presentSheet(.itemDetails(viewModel.metadata))
+                } label: {
+                    Text("View Details")
+                        .font(.caption)
+                        .foregroundStyle(.blue)
+                }
             }
         }
     }
@@ -276,16 +285,14 @@ struct ItemView: View {
         Button {
             if let item = viewModel.item {
                 if let mark = viewModel.mark {
-                    router.presentedSheet = .editShelfItem(mark: mark)
+                    router.presentSheet(.editShelfItem(mark: mark))
                 } else {
-                    router.presentedSheet = .addToShelf(item: item)
+                    router.presentSheet(.addToShelf(item: item))
                 }
             }
         } label: {
             HStack {
-                Image(
-                    systemName: viewModel.shelfType == nil
-                        ? "plus" : "checkmark")
+                Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
                 if let shelfType = viewModel.shelfType {
                     Text(shelfType.displayName)
                 } else {
@@ -332,6 +339,31 @@ struct ItemView: View {
     // MARK: - Helper Properties
     private var itemUUID: String {
         URL(string: id)?.lastPathComponent ?? id
+    }
+
+    // MARK: - Details Sheet
+    struct ItemDetailsSheet: View {
+        @Environment(\.dismiss) private var dismiss
+        let metadata: [String]
+        @State private var selectedText: String?
+        
+        var body: some View {
+            NavigationStack {
+                List(metadata, id: \.self) { item in
+                    Text(item)
+                        .textSelection(.enabled)
+                }
+                .navigationTitle("Details")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            dismiss()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #if DEBUG

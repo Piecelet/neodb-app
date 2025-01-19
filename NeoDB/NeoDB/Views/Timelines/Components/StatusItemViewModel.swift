@@ -74,7 +74,7 @@ class StatusItemViewModel: ObservableObject {
             // Try cache first if not refreshing
             if !refresh {
                 logger.debug("Using cached item: \(item.uuid) with category: \(item.category)")
-                if let cached = try? await cacheService.retrieveItem(id: item.uuid, category: item.category) {
+                if let cached = try? await cacheService.retrieveItem(id: item.uuid, category: item.category, instance: accountsManager.currentAccount.instance) {
                     if !Task.isCancelled {
                         logger.debug("Using cached item: \(item.uuid)")
                         item = cached
@@ -96,7 +96,7 @@ class StatusItemViewModel: ObservableObject {
                 if !Task.isCancelled {
                     logger.debug("Successfully loaded item: \(item.uuid)")
                     item = result
-                    try? await cacheService.cacheItem(result, id: item.uuid, category: item.category)
+                    try? await cacheService.cacheItem(result, id: item.uuid, category: item.category, instance: accountsManager.currentAccount.instance)
                 }
             } catch {
                 if !Task.isCancelled {
