@@ -94,7 +94,7 @@ class ItemViewModel: ObservableObject {
             
             do {
                 // Try cache first if not refreshing
-                if !refresh, let cached = try? await getCachedItem(id: id, category: category) {
+                if !refresh, let cached = try? await cacheService.retrieveItem(id: id, category: category) {
                     if !Task.isCancelled {
                         item = cached
                         // Refresh in background
@@ -112,7 +112,7 @@ class ItemViewModel: ObservableObject {
                 
                 if !Task.isCancelled {
                     item = result
-                    try? await cacheItem(result, id: id, category: category)
+                    try? await cacheService.cacheItem(result, id: id, category: category)
                 }
                 
             } catch {
@@ -172,67 +172,13 @@ class ItemViewModel: ObservableObject {
         return id
     }
     
-    private func getCachedItem(id: String, category: ItemCategory) async throws -> (any ItemProtocol)? {
-        let cacheKey = "\(id)_\(category.rawValue)"
-        let type = ItemSchema.make(category: category)
-        return try await cacheService.retrieve(forKey: cacheKey, type: type)
-    }
-    
-    private func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory) async throws {
-        let cacheKey = "\(id)_\(category.rawValue)"
-        switch category {
-        case .book:
-            if let book = item as? EditionSchema {
-                try await cacheService.cache(book, forKey: cacheKey, type: EditionSchema.self)
-            }
-        case .movie:
-            if let movie = item as? MovieSchema {
-                try await cacheService.cache(movie, forKey: cacheKey, type: MovieSchema.self)
-            }
-        case .tv:
-            if let show = item as? TVShowSchema {
-                try await cacheService.cache(show, forKey: cacheKey, type: TVShowSchema.self)
-            }
-        case .tvSeason:
-            if let season = item as? TVSeasonSchema {
-                try await cacheService.cache(season, forKey: cacheKey, type: TVSeasonSchema.self)
-            }
-        case .tvEpisode:
-            if let episode = item as? TVEpisodeSchema {
-                try await cacheService.cache(episode, forKey: cacheKey, type: TVEpisodeSchema.self)
-            }
-        case .music:
-            if let album = item as? AlbumSchema {
-                try await cacheService.cache(album, forKey: cacheKey, type: AlbumSchema.self)
-            }
-        case .game:
-            if let game = item as? GameSchema {
-                try await cacheService.cache(game, forKey: cacheKey, type: GameSchema.self)
-            }
-        case .podcast:
-            if let podcast = item as? PodcastSchema {
-                try await cacheService.cache(podcast, forKey: cacheKey, type: PodcastSchema.self)
-            }
-        case .performance:
-            if let performance = item as? PerformanceSchema {
-                try await cacheService.cache(performance, forKey: cacheKey, type: PerformanceSchema.self)
-            }
-        case .performanceProduction:
-            if let production = item as? PerformanceProductionSchema {
-                try await cacheService.cache(production, forKey: cacheKey, type: PerformanceProductionSchema.self)
-            }
-        default:
-            break
-        }
-    }
-    
     private func refreshItemInBackground(id: String, category: ItemCategory) async {
         guard let accountsManager = accountsManager else { return }
         
         do {
             let endpoint = ItemEndpoint.make(id: id, category: category)
             let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: category))
-            try? await cacheItem(result, id: id, category: category)
+            try? await cacheService.cacheItem(result, id: id, category: category)
             
             if !Task.isCancelled {
                 item = result
