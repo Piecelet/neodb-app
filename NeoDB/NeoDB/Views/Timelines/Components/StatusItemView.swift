@@ -90,11 +90,11 @@ struct StatusItemView: View {
                 Text(error.localizedDescription)
             }
         }
-        .onDisappear {
-            viewModel.cleanup()
-        }
         .task {
             viewModel.accountsManager = accountsManager
+        }
+        .onDisappear {
+            viewModel.cleanup()
         }
     }
 } 

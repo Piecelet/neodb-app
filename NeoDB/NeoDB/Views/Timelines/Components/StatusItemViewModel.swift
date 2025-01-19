@@ -13,7 +13,14 @@ class StatusItemViewModel: ObservableObject {
     private let logger = Logger.views.status.item
     private let cacheService = CacheService()
     private var loadTask: Task<Void, Never>?
-    var accountsManager: AppAccountsManager?
+    
+    var accountsManager: AppAccountsManager? {
+        didSet {
+            if oldValue !== accountsManager {
+                loadItemIfNeeded()
+            }
+        }
+    }
     
     @Published var item: ItemSchema
     @Published var isLoading = false
@@ -22,20 +29,33 @@ class StatusItemViewModel: ObservableObject {
     
     init(item: ItemSchema) {
         self.item = item
-        loadItemIfNeeded()
     }
     
     private func loadItemIfNeeded() {
-        guard item.brief == item.type else { return }
+        guard accountsManager != nil else { return }
+        
+        logger.debug("Checking if item needs loading: \(item.id)")
+        // Only load if we don't have full details
+        guard item.description == nil || item.rating == nil else { 
+            logger.debug("Item already has full details")
+            return 
+        }
+        
         loadItem(refresh: false)
     }
     
     func loadItem(refresh: Bool) {
+        guard let accountsManager = accountsManager else {
+            logger.error("No accountsManager available")
+            return
+        }
+        
         loadTask?.cancel()
         
         loadTask = Task {
             if !Task.isCancelled {
                 isLoading = true
+                logger.debug("Started loading item: \(item.id)")
             }
             
             defer {
@@ -46,18 +66,27 @@ class StatusItemViewModel: ObservableObject {
             
             do {
                 // Try cache first if not refreshing
-                if !refresh, let cached = try? await getCachedItem(id: item.id) {
-                    if !Task.isCancelled {
-                        item = cached
-                        return
+                if !refresh {
+                    if let cached = try? await getCachedItem(id: item.id) {
+                        if !Task.isCancelled {
+                            logger.debug("Using cached item: \(item.id)")
+                            item = cached
+                            return
+                        }
                     }
+                }
+                
+                guard accountsManager.isAuthenticated else {
+                    logger.error("Not authenticated")
+                    throw NetworkError.unauthorized
                 }
                 
                 // Fetch from network
                 let endpoint = ItemEndpoint.make(id: item.id, category: item.category)
-                let result = try await accountsManager?.currentClient.fetch(endpoint, type: ItemSchema.self)
+                let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
                 
-                if !Task.isCancelled, let result = result {
+                if !Task.isCancelled {
+                    logger.debug("Successfully loaded item: \(item.id)")
                     item = result
                     try? await cacheItem(result)
                 }
