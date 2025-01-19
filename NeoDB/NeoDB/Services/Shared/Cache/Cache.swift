@@ -39,7 +39,8 @@ extension CacheService {
     // MARK: - Item Caching
     
     func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory) async throws {
-        let key = Keys.item(id: id)
+        let uuid = id.components(separatedBy: "/").last ?? id
+        let key = Keys.item(id: uuid)
         switch category {
         case .book:
             if let book = item as? EditionSchema {

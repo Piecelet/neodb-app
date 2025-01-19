@@ -32,6 +32,9 @@ extension Logger {
     // MARK: - Data
     /// Logs related to data persistence and caching
     static let data = Logger(subsystem: subsystem, category: "data")
+    
+    // MARK: - Cache
+    static let cache = Logger(subsystem: subsystem, category: "cache")
 
     // MARK: - Authentication
     /// Logs related to user authentication

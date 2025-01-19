@@ -22,8 +22,17 @@ class StatusItemViewModel: ObservableObject {
         }
     }
     
-    @Published var item: any ItemProtocol
-    @Published var isLoading = false
+    @Published var item: any ItemProtocol {
+        didSet {
+            updateShowSkeleton()
+        }
+    }
+    @Published private var isLoading = false {
+        didSet {
+            updateShowSkeleton()
+        }
+    }
+    @Published var showSkeleton = false
     @Published var error: Error?
     @Published var showError = false
     
@@ -31,10 +40,14 @@ class StatusItemViewModel: ObservableObject {
         self.item = item
     }
     
+    private func updateShowSkeleton() {
+        showSkeleton = item.displayTitle == nil && isLoading
+    }
+    
     private func loadItemIfNeeded() {
         guard accountsManager != nil else { return }
         
-        logger.debug("Checking if item needs loading: \(item.id)")
+        logger.debug("Checking if item needs loading: \(item.uuid)")
         // Only load if we don't have full details
         guard item.description == nil || item.rating == nil else { 
             logger.debug("Item already has full details")
@@ -55,40 +68,34 @@ class StatusItemViewModel: ObservableObject {
         loadTask = Task {
             if !Task.isCancelled {
                 isLoading = true
-                logger.debug("Started loading item: \(item.id)")
+                logger.debug("Started loading item: \(item.uuid)")
             }
             
-            defer {
-                if !Task.isCancelled {
-                    isLoading = false
+            // Try cache first if not refreshing
+            if !refresh {
+                if let cached = try? await cacheService.retrieveItem(id: item.uuid, category: item.category) {
+                    if !Task.isCancelled {
+                        logger.debug("Using cached item: \(item.uuid)")
+                        item = cached
+                        // Don't return here, continue with network request
+                    }
                 }
             }
             
             do {
-                // Try cache first if not refreshing
-                if !refresh {
-                    if let cached = try? await cacheService.retrieveItem(id: item.id, category: item.category) {
-                        if !Task.isCancelled {
-                            logger.debug("Using cached item: \(item.id)")
-                            item = cached
-                            return
-                        }
-                    }
-                }
-                
                 guard accountsManager.isAuthenticated else {
                     logger.error("Not authenticated")
                     throw NetworkError.unauthorized
                 }
                 
                 // Fetch from network
-                let endpoint = ItemEndpoint.make(id: item.id, category: item.category)
+                let endpoint = ItemEndpoint.make(id: item.uuid, category: item.category)
                 let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: item.category))
                 
                 if !Task.isCancelled {
-                    logger.debug("Successfully loaded item: \(item.id)")
+                    logger.debug("Successfully loaded item: \(item.uuid)")
                     item = result
-                    try? await cacheService.cacheItem(result, id: item.id, category: item.category)
+                    try? await cacheService.cacheItem(result, id: item.uuid, category: item.category)
                 }
             } catch {
                 if !Task.isCancelled {
@@ -96,6 +103,10 @@ class StatusItemViewModel: ObservableObject {
                     self.showError = true
                     logger.error("Failed to load item: \(error.localizedDescription)")
                 }
+            }
+            
+            if !Task.isCancelled {
+                isLoading = false
             }
         }
     }

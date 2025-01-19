@@ -29,13 +29,13 @@ struct StatusItemView: View {
                             Rectangle()
                                 .fill(Color.gray.opacity(0.2))
                                 .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(width: 60)
+                                .frame(height: 64)
                         }
                         .onFailure { _ in
                             Rectangle()
                                 .fill(Color.gray.opacity(0.2))
                                 .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(width: 60)
+                                .frame(height: 64)
                                 .overlay {
                                     Image(systemName: "photo")
                                         .foregroundStyle(.secondary)
@@ -46,7 +46,7 @@ struct StatusItemView: View {
                         .frame(height: 64)
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                         .overlay {
-                            if viewModel.isLoading {
+                            if viewModel.showSkeleton {
                                 Rectangle()
                                     .fill(.ultraThinMaterial)
                                     .overlay {

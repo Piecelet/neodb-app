@@ -4,7 +4,7 @@ import Cache
 
 @MainActor
 class CacheService {
-    private let logger = Logger.data
+    private let logger = Logger.cache
     
     // Default configurations
     private let defaultMemoryConfig = MemoryConfig(

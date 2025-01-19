@@ -20,9 +20,9 @@ struct StatusView: View {
     private var extractedItem: ItemSchema? {
         if let urls = status.content.extractURLs() {
             for url in urls {
-                logger.debug("Attempting to parse URL from status content: \(url.absoluteString)")
+//                logger.debug("Attempting to parse URL from status content: \(url.absoluteString)")
                 if case .itemDetailWithItem(let item) = NeoDBURL.parseItemURL(url) {
-                   logger.debug("Successfully extracted item: \(item.displayTitle)")
+//                   logger.debug("Successfully extracted item: \(item.displayTitle)")
                    return item
                 }
             }
