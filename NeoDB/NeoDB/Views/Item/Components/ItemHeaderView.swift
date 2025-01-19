@@ -13,13 +13,13 @@ struct ItemHeaderView: View {
     let coverURL: URL?
     let rating: String
     let ratingCount: String
-    let metadata: [(String, String)]
+    let metadata: [String]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Cover and Title
             HStack(alignment: .top, spacing: 16) {
-                // Cover Image
+                // Cover Image21
                 KFImage(coverURL)
                     .placeholder {
                         Rectangle()
@@ -38,8 +38,8 @@ struct ItemHeaderView: View {
                             }
                     }
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 120, height: 180)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 160)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -57,29 +57,24 @@ struct ItemHeaderView: View {
                             .foregroundStyle(.secondary)
                     }
                     .font(.subheadline)
+
+                    // Metadata
+                    if !metadata.isEmpty {
+                        Text(metadata.joined(separator: " / "))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-
-            // Metadata
-            if !metadata.isEmpty {
-                VStack(alignment: .leading, spacing: 8) {
-                    ForEach(metadata, id: \.0) { key, value in
-                        HStack(alignment: .top) {
-                            Text(key)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 80, alignment: .leading)
-                            Text(value)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        .font(.subheadline)
-                    }
-                }
-                .padding(.horizontal)
-            }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+        @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {
@@ -90,9 +85,9 @@ struct ItemHeaderView: View {
         rating: "4.5",
         ratingCount: "123",
         metadata: [
-            ("Author", "John Doe"),
-            ("Published", "2024"),
-            ("ISBN", "978-3-16-148410-0"),
+            "John Doe",
+            "2024",
+            "978-3-16-148410-0",
         ]
     )
 }

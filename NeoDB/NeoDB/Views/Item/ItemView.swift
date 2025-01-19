@@ -96,7 +96,12 @@ struct ItemView: View {
             viewModel.cleanup()
         }
         .environmentObject(viewModel)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 private struct ItemContent: View {
@@ -155,7 +160,12 @@ private struct ItemContent: View {
                 )
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 // MARK: - Preview

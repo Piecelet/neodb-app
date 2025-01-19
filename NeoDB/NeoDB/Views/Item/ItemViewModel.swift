@@ -144,34 +144,37 @@ class ItemViewModel: ObservableObject {
         await loadTask?.value
     }
 
-    func getKeyMetadata(for item: (any ItemProtocol)?) -> [(String, String)] {
+    func getKeyMetadata(for item: (any ItemProtocol)?) -> [String] {
         guard let item = item else { return [] }
 
-        var metadata: [(String, String)] = []
+        var metadata: [String] = []
 
         switch item {
         case let book as EditionSchema:
             if !book.author.isEmpty {
-                metadata.append(("Author", book.author.joined(separator: ", ")))
+                metadata.append(book.author.joined(separator: ", "))
+            }
+            if let pubHouse = book.pubHouse {
+                metadata.append(pubHouse)
             }
             if let pubYear = book.pubYear {
-                metadata.append(("Published", String(pubYear)))
+                metadata.append(String(pubYear))
             }
-            if let isbn = book.isbn {
-                metadata.append(("ISBN", isbn))
+            if let pages = book.pages {
+                metadata.append(String(pages))
             }
 
-        case let movie as MovieSchema:
-            if !movie.director.isEmpty {
-                metadata.append(
-                    ("Director", movie.director.joined(separator: ", ")))
-            }
-            if let year = movie.year {
-                metadata.append(("Year", String(year)))
-            }
-            if !movie.genre.isEmpty {
-                metadata.append(("Genre", movie.genre.joined(separator: ", ")))
-            }
+//        case let movie as MovieSchema:
+//            if !movie.director.isEmpty {
+//                metadata.append(
+//                    ("Director", movie.director.joined(separator: ", ")))
+//            }
+//            if let year = movie.year {
+//                metadata.append(("Year", String(year)))
+//            }
+//            if !movie.genre.isEmpty {
+//                metadata.append(("Genre", movie.genre.joined(separator: ", ")))
+//            }
 
         // Add cases for other item types...
 
