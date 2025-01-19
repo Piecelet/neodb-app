@@ -169,6 +169,48 @@ extension EditionSchema {
 
         return metadata
     }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !author.isEmpty {
+            metadata.append(("Author", author.joined(separator: metadataArraySeparator)))
+        }
+        if !translator.isEmpty {
+            metadata.append(("Translator", translator.joined(separator: metadataArraySeparator)))
+        }
+        if !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if let pubHouse = pubHouse {
+            metadata.append(("Publisher", pubHouse))
+        }
+        if let pubYear = pubYear {
+            metadata.append(("Year", String(pubYear)))
+        }
+        if let pubMonth = pubMonth {
+            metadata.append(("Month", String(pubMonth)))
+        }
+        if let binding = binding {
+            metadata.append(("Binding", binding))
+        }
+        if let price = price {
+            metadata.append(("Price", price))
+        }
+        if let pages = pages {
+            metadata.append(("Pages", String(pages)))
+        }
+        if let series = series {
+            metadata.append(("Series", series))
+        }
+        if let imprint = imprint {
+            metadata.append(("Imprint", imprint))
+        }
+        if let isbn = isbn {
+            metadata.append(("ISBN", isbn))
+        }
+        return metadata
+    }
 }
 
 // MARK: - Movie Schema
@@ -221,6 +263,39 @@ extension MovieSchema {
         }
         if let duration = duration {
             metadata.append(duration)
+        }
+        return metadata
+    }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !director.isEmpty {
+            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+        }
+        if !playwright.isEmpty {
+            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+        }
+        if !actor.isEmpty {
+            metadata.append(("Actor", actor.joined(separator: metadataArraySeparator)))
+        }
+        if !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if !area.isEmpty {
+            metadata.append(("Area", area.joined(separator: metadataArraySeparator)))
+        }
+        if let year = year {
+            metadata.append(("Year", String(year)))
+        }
+        if let duration = duration {
+            metadata.append(("Duration", duration))
+        }
+        if let imdb = imdb {
+            metadata.append(("IMDB", imdb))
         }
         return metadata
     }
@@ -287,6 +362,45 @@ extension TVShowSchema {
         }
         if let episodeCount = episodeCount {
             metadata.append("\(episodeCount) episodes")
+        }
+        return metadata
+    }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if let director = director, !director.isEmpty {
+            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+        }
+        if let playwright = playwright, !playwright.isEmpty {
+            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+        }
+        if let actor = actor, !actor.isEmpty {
+            metadata.append(("Actor", actor.joined(separator: metadataArraySeparator)))
+        }
+        if let genre = genre, !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if let language = language, !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if let area = area, !area.isEmpty {
+            metadata.append(("Area", area.joined(separator: metadataArraySeparator)))
+        }
+        if let year = year {
+            metadata.append(("Year", String(year)))
+        }
+        if let imdb = imdb {
+            metadata.append(("IMDB", imdb))
+        }
+        if let episodeCount = episodeCount {
+            metadata.append(("Episode Count", String(episodeCount)))
+        }
+        if let episodeNumber = episodeNumber {
+            metadata.append(("Episode Number", String(episodeNumber)))
+        }
+        if let seasonNumber = seasonNumber {
+            metadata.append(("Season Number", String(seasonNumber)))
         }
         return metadata
     }

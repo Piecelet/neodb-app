@@ -178,7 +178,7 @@ struct ItemView: View {
                     .lineLimit(2)
                 
                 Button {
-                    router.presentSheet(.itemDetails(viewModel.metadata))
+                    router.presentSheet(.itemDetails(viewModel.allMetadata))
                 } label: {
                     Text("View Details")
                         .font(.caption)
@@ -350,8 +350,20 @@ struct ItemView: View {
         var body: some View {
             NavigationStack {
                 List(metadata, id: \.self) { item in
-                    Text(item)
-                        .textSelection(.enabled)
+                    if let separatorIndex = item.firstIndex(of: ":") {
+                        HStack(alignment: .top, spacing: 12) {
+                            Text(String(item[..<separatorIndex]))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 120, alignment: .leading)
+                            
+                            Text(String(item[item.index(after: separatorIndex)...]).trimmingCharacters(in: .whitespaces))
+                                .textSelection(.enabled)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    } else {
+                        Text(item)
+                            .textSelection(.enabled)
+                    }
                 }
                 .navigationTitle("Details")
                 .navigationBarTitleDisplayMode(.inline)
@@ -363,6 +375,7 @@ struct ItemView: View {
                     }
                 }
             }
+            .presentationDetents([.medium, .large])
         }
     }
 
