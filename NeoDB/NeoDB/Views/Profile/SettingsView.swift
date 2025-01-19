@@ -51,10 +51,7 @@ class SettingsViewModel: ObservableObject {
         let cacheKey = "\(accountsManager.currentAccount.instance)_user"
 
         if !forceRefresh,
-            let cachedUser = try? await cacheService.retrieve(
-                forKey: cacheKey,
-                type: User.self
-            )
+           let cachedUser = try? await cacheService.retrieveUser(key: accountsManager.currentAccount.id)
         {
             logger.debug(
                 "Returning cached user for instance: \(accountsManager.currentAccount.instance)"
@@ -71,7 +68,7 @@ class SettingsViewModel: ObservableObject {
         let user = try await accountsManager.currentClient.fetch(
             UserEndpoint.me, type: User.self)
 
-        try? await cacheService.cache(user, forKey: cacheKey, type: User.self)
+        try? await cacheService.cacheUser(user, key: accountsManager.currentAccount.id)
         logger.debug(
             "Cached user profile for instance: \(accountsManager.currentAccount.instance)"
         )
@@ -82,9 +79,7 @@ class SettingsViewModel: ObservableObject {
     func logout() {
         guard let accountsManager = accountsManager else { return }
         Task {
-            try? await cacheService.remove(
-                forKey: "\(accountsManager.currentAccount.instance)_user",
-                type: User.self)
+            try? await cacheService.removeUser(key: accountsManager.currentAccount.id)
             logger.debug("Cleared user cache")
         }
         accountsManager.delete(account: accountsManager.currentAccount)

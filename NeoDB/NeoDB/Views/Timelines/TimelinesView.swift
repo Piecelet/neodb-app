@@ -175,6 +175,7 @@ struct TimelinesView: View {
             }
         }
         .navigationTitle("Home")
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
             await viewModel.loadTimeline()

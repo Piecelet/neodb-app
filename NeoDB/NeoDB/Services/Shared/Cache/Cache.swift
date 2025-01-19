@@ -18,8 +18,8 @@ extension CacheService {
         }
         
         // User related
-        static func user(instance: String) -> String {
-            "\(instance)_user"
+        static func currentUser(key: String) -> String {
+            "currentUser_\(key)"
         }
         
         // Marks related
@@ -101,18 +101,18 @@ extension CacheService {
     
     // MARK: - User Caching
     
-    func cacheUser(_ user: User, instance: String) async throws {
-        let key = Keys.user(instance: instance)
+    func cacheUser(_ user: User, key: String) async throws {
+        let key = Keys.currentUser(key: key)
         try await cache(user, forKey: key, type: User.self)
     }
     
-    func retrieveUser(instance: String) async throws -> User? {
-        let key = Keys.user(instance: instance)
+    func retrieveUser(key: String) async throws -> User? {
+        let key = Keys.currentUser(key: key)
         return try await retrieve(forKey: key, type: User.self)
     }
     
-    func removeUser(instance: String) async throws {
-        let key = Keys.user(instance: instance)
+    func removeUser(key: String) async throws {
+        let key = Keys.currentUser(key: key)
         try await remove(forKey: key, type: User.self)
     }
     
