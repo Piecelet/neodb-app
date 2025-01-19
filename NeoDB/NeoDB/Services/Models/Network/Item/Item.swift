@@ -516,6 +516,33 @@ extension AlbumSchema {
         }
         return metadata
     }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if !artist.isEmpty {
+            metadata.append(("Artist", artist.joined(separator: metadataArraySeparator)))
+        }
+        if !company.isEmpty {
+            metadata.append(("Company", company.joined(separator: metadataArraySeparator)))
+        }
+        if let duration = duration {
+            metadata.append(("Duration", "\(duration) minutes"))
+        }
+        if let releaseDate = releaseDate {
+            metadata.append(("Release Date", releaseDate))
+        }
+        if let trackList = trackList {
+            metadata.append(("Track List", trackList))
+        }
+        if let barcode = barcode {
+            metadata.append(("Barcode", barcode))
+        }
+        return metadata
+    }
 }
 
 // MARK: - Podcast Schema
@@ -566,6 +593,33 @@ extension PodcastSchema {
         }
         if let lastEpisodeDate = lastEpisodeDate {
             metadata.append(lastEpisodeDate)
+        }
+        return metadata
+    }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !host.isEmpty {
+            metadata.append(("Host", host.joined(separator: metadataArraySeparator)))
+        }
+        if !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if let episodeCount = episodeCount {
+            metadata.append(("Episode Count", String(episodeCount)))
+        }
+        if let lastEpisodeDate = lastEpisodeDate {
+            metadata.append(("Last Episode Date", lastEpisodeDate))
+        }
+        if let rssUrl = rssUrl {
+            metadata.append(("RSS URL", rssUrl))
+        }
+        if let websiteUrl = websiteUrl {
+            metadata.append(("Website URL", websiteUrl))
         }
         return metadata
     }
@@ -622,6 +676,33 @@ extension GameSchema {
         }
         return metadata
     }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if !developer.isEmpty {
+            metadata.append(("Developer", developer.joined(separator: metadataArraySeparator)))
+        }
+        if !publisher.isEmpty {
+            metadata.append(("Publisher", publisher.joined(separator: metadataArraySeparator)))
+        }
+        if !platform.isEmpty {
+            metadata.append(("Platform", platform.joined(separator: metadataArraySeparator)))
+        }
+        if let releaseType = releaseType {
+            metadata.append(("Release Type", releaseType))
+        }
+        if let releaseDate = releaseDate {
+            metadata.append(("Release Date", releaseDate))
+        }
+        if let officialSite = officialSite {
+            metadata.append(("Official Site", officialSite))
+        }
+        return metadata
+    }
 }
 
 // MARK: - Performance Schema
@@ -668,6 +749,51 @@ extension PerformanceSchema {
 
         if !genre.isEmpty {
             metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        return metadata
+    }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !genre.isEmpty {
+            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+        }
+        if !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if let openingDate = openingDate {
+            metadata.append(("Opening Date", openingDate))
+        }
+        if let closingDate = closingDate {
+            metadata.append(("Closing Date", closingDate))
+        }
+        if !director.isEmpty {
+            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+        }
+        if !playwright.isEmpty {
+            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+        }
+        if !origCreator.isEmpty {
+            metadata.append(("Orig Creator", origCreator.joined(separator: metadataArraySeparator)))
+        }
+        if !composer.isEmpty {
+            metadata.append(("Composer", composer.joined(separator: metadataArraySeparator)))
+        }
+        if !choreographer.isEmpty {
+            metadata.append(("Choreographer", choreographer.joined(separator: metadataArraySeparator)))
+        }
+        if !performer.isEmpty {
+            metadata.append(("Performer", performer.joined(separator: metadataArraySeparator)))
+        }
+        if !actor.isEmpty {
+            metadata.append(("Actor", actor.map { $0.name }.joined(separator: metadataArraySeparator)))
+        }
+        if !crew.isEmpty {
+            metadata.append(("Crew", crew.map { $0.name }.joined(separator: metadataArraySeparator)))
+        }
+        if let officialSite = officialSite {
+            metadata.append(("Official Site", officialSite))
         }
         return metadata
     }
@@ -719,4 +845,47 @@ extension PerformanceProductionSchema {
         }
         return metadata
     }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if !language.isEmpty {
+            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+        }
+        if let openingDate = openingDate {
+            metadata.append(("Opening Date", openingDate))
+        }
+        if let closingDate = closingDate {
+            metadata.append(("Closing Date", closingDate))
+        }
+        if !director.isEmpty {
+            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+        }
+        if !playwright.isEmpty {
+            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+        }
+        if !origCreator.isEmpty {
+            metadata.append(("Orig Creator", origCreator.joined(separator: metadataArraySeparator)))
+        }
+        if !composer.isEmpty {
+            metadata.append(("Composer", composer.joined(separator: metadataArraySeparator)))
+        }
+        if !choreographer.isEmpty {
+            metadata.append(("Choreographer", choreographer.joined(separator: metadataArraySeparator)))
+        }
+        if !performer.isEmpty {
+            metadata.append(("Performer", performer.joined(separator: metadataArraySeparator)))
+        }
+        if !actor.isEmpty {
+            metadata.append(("Actor", actor.map { $0.name }.joined(separator: metadataArraySeparator)))
+        }
+        if !crew.isEmpty {
+            metadata.append(("Crew", crew.map { $0.name }.joined(separator: metadataArraySeparator)))
+        }
+        if let officialSite = officialSite {
+            metadata.append(("Official Site", officialSite))
+        }
+        return metadata
+    }
 }
+
