@@ -1,4 +1,4 @@
-# NeoDB App
+# Piecelet - iOS App for NeoDB
 
 [Public TestFlight beta](https://testflight.apple.com/join/apxemRpF) (An proper App Store release will come eventually)
 
@@ -40,13 +40,13 @@ For contributors and myself, here is a todo list of features that could be added
 - [ ] macOS support
 
 
-NeoDB App is an open source application for accessing the decentralized social network [NeoDB](https://neodb.net/)! It's built entirely in SwiftUI, making it fast, lightweight, and easy to use.
+Piecelet is an open source application for accessing the decentralized social network [NeoDB](https://neodb.net/)! It's built entirely in SwiftUI, making it fast, lightweight, and easy to use.
 
 You can connect to any NeoDB instance and browse your timeline, interact with other users, and post updates and media.
 
-It's a great starting point for learning SwiftUI. The app covers many of the basic concepts of SwiftUI, such as building layouts, working with data, and handling user interaction. By exploring the code, you can gain a solid understanding of how to use SwiftUI in your daily life. Plus, the open source nature of NeoDB App means that you can see how real-world applications are built and get a sense of best practices for using SwiftUI.
+It's a great starting point for learning SwiftUI. The app covers many of the basic concepts of SwiftUI, such as building layouts, working with data, and handling user interaction. By exploring the code, you can gain a solid understanding of how to use SwiftUI in your daily life. Plus, the open source nature of Piecelet means that you can see how real-world applications are built and get a sense of best practices for using SwiftUI.
 
-Please note that NeoDB is currently in an early stage of development and as such, there are many features that are still missing. While the app is functional and can be used to browse and interact with NeoDB, there are still many features that are planned for the future.
+Please note that Piecelet is currently in an early stage of development and as such, there are many features that are still missing. While the app is functional and can be used to browse and interact with NeoDB, there are still many features that are planned for the future.
 
 Thanks!
 
@@ -54,4 +54,4 @@ Thanks!
 - [IceCubesApp](https://github.com/Dimillian/IceCubesApp)
 - [keychain-swift](https://github.com/evgenyneu/keychain-swift)
 
-![Icon](NeoDB/NeoDB/Assets.xcassets/AppIcon.appiconset/logo_square%201_no_alpha.png)
+![Icon](NeoDB/NeoDB/Assets.xcassets/AppIcon.appiconset/1024x1024%20copy%202%401x.png)
