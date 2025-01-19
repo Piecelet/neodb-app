@@ -107,8 +107,8 @@ class ItemViewModel: ObservableObject {
                 
                 guard !Task.isCancelled else { return }
                 
-                let endpoint = makeEndpoint(id: id, category: category)
-                let result = try await accountsManager.currentClient.fetch(endpoint, type: getItemType(for: category))
+                let endpoint = ItemEndpoint.make(id: id, category: category)
+                let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: category))
                 
                 if !Task.isCancelled {
                     item = result
@@ -172,64 +172,9 @@ class ItemViewModel: ObservableObject {
         return id
     }
     
-    private func makeEndpoint(id: String, category: ItemCategory) -> NetworkEndpoint {
-        let uuid = extractUUID(from: id)
-        switch category {
-        case .book:
-            return ItemEndpoint.book(uuid: uuid)
-        case .movie:
-            return ItemEndpoint.movie(uuid: uuid)
-        case .tv:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: nil, isEpisode: nil)
-        case .tvSeason:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: true, isEpisode: nil)
-        case .tvEpisode:
-            return ItemEndpoint.tv(uuid: uuid, isSeason: nil, isEpisode: true)
-        case .music:
-            return ItemEndpoint.album(uuid: uuid)
-        case .game:
-            return ItemEndpoint.game(uuid: uuid)
-        case .podcast:
-            return ItemEndpoint.podcast(uuid: uuid)
-        case .performance:
-            return ItemEndpoint.performance(uuid: uuid, isProduction: nil)
-        case .performanceProduction:
-            return ItemEndpoint.performance(uuid: uuid, isProduction: true)
-        default:
-            fatalError("Unsupported category: \(category)")
-        }
-    }
-    
-    private func getItemType(for category: ItemCategory) -> any ItemProtocol.Type {
-        switch category {
-        case .book:
-            return EditionSchema.self
-        case .movie:
-            return MovieSchema.self
-        case .tv:
-            return TVShowSchema.self
-        case .tvSeason:
-            return TVSeasonSchema.self
-        case .tvEpisode:
-            return TVEpisodeSchema.self
-        case .music:
-            return AlbumSchema.self
-        case .game:
-            return GameSchema.self
-        case .podcast:
-            return PodcastSchema.self
-        case .performance:
-            return PerformanceSchema.self
-        case .performanceProduction:
-            return PerformanceProductionSchema.self
-        default:
-            fatalError("Unsupported category: \(category)")
-        }
-    }
-    
     private func getCachedItem(id: String, category: ItemCategory) async throws -> (any ItemProtocol)? {
         let cacheKey = "\(id)_\(category.rawValue)"
-        let type = getItemType(for: category)
+        let type = ItemSchema.make(category: category)
         return try await cacheService.retrieve(forKey: cacheKey, type: type)
     }
     
@@ -285,8 +230,8 @@ class ItemViewModel: ObservableObject {
         guard let accountsManager = accountsManager else { return }
         
         do {
-            let endpoint = makeEndpoint(id: id, category: category)
-            let result = try await accountsManager.currentClient.fetch(endpoint, type: getItemType(for: category))
+            let endpoint = ItemEndpoint.make(id: id, category: category)
+            let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: category))
             try? await cacheItem(result, id: id, category: category)
             
             if !Task.isCancelled {

@@ -37,7 +37,7 @@ struct ItemRowView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 4))
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.displayTitle)
+                Text(item.displayTitle ?? "")
                     .font(.headline)
                     .lineLimit(2)
                 

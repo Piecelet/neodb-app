@@ -10,7 +10,7 @@ import OSLog
 
 @MainActor
 class MastodonStatusViewModel: ObservableObject {
-    private let logger = Logger.views.status
+    private let logger = Logger.views.status.status
     private var loadTask: Task<Void, Never>?
     private let cacheService = CacheService()
     

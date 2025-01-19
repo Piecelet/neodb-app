@@ -60,6 +60,35 @@ struct ItemSchema: ItemProtocol {
     let brief: String
 }
 
+extension ItemSchema {
+    static func make(category: ItemCategory) -> any ItemProtocol.Type {
+        switch category {
+        case .book:
+            return EditionSchema.self
+        case .movie:
+            return MovieSchema.self
+        case .tv:
+            return TVShowSchema.self
+        case .tvSeason:
+            return TVSeasonSchema.self
+        case .tvEpisode:
+            return TVEpisodeSchema.self
+        case .music:
+            return AlbumSchema.self
+        case .podcast:
+            return PodcastSchema.self
+        case .game:
+            return GameSchema.self
+        case .performance:
+            return PerformanceSchema.self
+        case .performanceProduction:
+            return PerformanceProductionSchema.self
+        default:
+            return ItemSchema.self
+        }
+    }
+}
+
 // MARK: - Edition Schema
 struct EditionSchema: ItemProtocol {
     let id: String

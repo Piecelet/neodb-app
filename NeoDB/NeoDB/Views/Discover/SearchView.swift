@@ -71,7 +71,7 @@ struct SearchView: View {
                                         .frame(width: 100, height: 150)
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
                                     
-                                    Text(item.displayTitle)
+                                    Text(item.displayTitle ?? "")
                                         .font(.caption)
                                         .foregroundStyle(.primary)
                                         .lineLimit(2)

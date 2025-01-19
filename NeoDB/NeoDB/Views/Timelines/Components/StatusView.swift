@@ -12,7 +12,7 @@ import MarkdownUI
 import OSLog
 
 struct StatusView: View {
-    private let logger = Logger.views.status
+    private let logger = Logger.views.status.status
     let status: MastodonStatus
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router

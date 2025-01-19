@@ -15,6 +15,34 @@ enum ItemEndpoint {
     case album(uuid: String)
     case game(uuid: String)
     case performance(uuid: String, isProduction: Bool? = nil)
+    
+    static func make(id: String, category: ItemCategory) -> ItemEndpoint {
+        let uuid = id.components(separatedBy: "/").last ?? id
+        switch category {
+        case .book:
+            return .book(uuid: uuid)
+        case .movie:
+            return .movie(uuid: uuid)
+        case .tv:
+            return .tv(uuid: uuid, isSeason: nil, isEpisode: nil)
+        case .tvSeason:
+            return .tv(uuid: uuid, isSeason: true, isEpisode: nil)
+        case .tvEpisode:
+            return .tv(uuid: uuid, isSeason: nil, isEpisode: true)
+        case .music:
+            return .album(uuid: uuid)
+        case .game:
+            return .game(uuid: uuid)
+        case .podcast:
+            return .podcast(uuid: uuid)
+        case .performance:
+            return .performance(uuid: uuid, isProduction: nil)
+        case .performanceProduction:
+            return .performance(uuid: uuid, isProduction: true)
+        default:
+            return .book(uuid: uuid)
+        }
+    }
 }
 
 extension ItemEndpoint: NetworkEndpoint {

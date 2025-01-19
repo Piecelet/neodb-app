@@ -9,16 +9,21 @@ import SwiftUI
 import Kingfisher
 
 struct StatusItemView: View {
-    let item: ItemSchema
+    @StateObject private var viewModel: StatusItemViewModel
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    
+    init(item: ItemSchema) {
+        _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
+    }
     
     var body: some View {
         Button {
-            router.navigate(to: .itemDetailWithItem(item: item))
+            router.navigate(to: .itemDetailWithItem(item: viewModel.item))
         } label: {
             HStack(spacing: 12) {
                 // Cover Image
-                KFImage(item.coverImageUrl)
+                KFImage(viewModel.item.coverImageUrl)
                     .placeholder {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
@@ -39,13 +44,20 @@ struct StatusItemView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 60, height: 90)
                     .clipShape(RoundedRectangle(cornerRadius: 4))
+                    .overlay {
+                        if viewModel.isLoading {
+                            ProgressView()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .background(.ultraThinMaterial)
+                        }
+                    }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.displayTitle)
+                    Text(viewModel.item.displayTitle ?? "")
                         .font(.headline)
                         .lineLimit(2)
                     
-                    if let rating = item.rating {
+                    if let rating = viewModel.item.rating {
                         HStack(spacing: 4) {
                             Image(systemName: "star.fill")
                                 .foregroundStyle(.yellow)
@@ -54,7 +66,7 @@ struct StatusItemView: View {
                         .font(.subheadline)
                     }
                     
-                    Text(item.brief)
+                    Text(viewModel.item.brief ?? viewModel.item.type)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -71,5 +83,18 @@ struct StatusItemView: View {
             .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
         .buttonStyle(.plain)
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let error = viewModel.error {
+                Text(error.localizedDescription)
+            }
+        }
+        .onDisappear {
+            viewModel.cleanup()
+        }
+        .task {
+            viewModel.accountsManager = accountsManager
+        }
     }
 } 

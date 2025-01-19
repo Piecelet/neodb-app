@@ -69,7 +69,10 @@ extension Logger {
         static let itemActions = Logger(subsystem: subsystem, category: "view.itemActions")
         static let mark = Logger(subsystem: subsystem, category: "view.mark")
         static let search = Logger(subsystem: subsystem, category: "view.search")
-        static let status = Logger(subsystem: subsystem, category: "view.status")
+        enum status {
+            static let status = Logger(subsystem: subsystem, category: "view.status")
+            static let item = Logger(subsystem: subsystem, category: "view.status.item")
+        }
     }
 
     // MARK: - User Actions
