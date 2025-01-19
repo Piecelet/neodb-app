@@ -52,6 +52,23 @@ final class ItemViewModel: ObservableObject {
 
     // MARK: - Computed Properties for UI
     var displayTitle: String { item?.displayTitle ?? "" }
+    var originalTitle: String {
+        switch item {
+        case let book as EditionSchema:
+            return book.origTitle ?? ""
+        case let movie as MovieSchema:
+            if let year = movie.year {
+                return "\(movie.origTitle ?? "") (\(year))"
+            }
+            return movie.origTitle ?? ""
+        case let tv as TVShowSchema:
+            return tv.origTitle ?? ""
+        case let performance as PerformanceSchema:
+            return performance.origTitle ?? ""
+        default:
+            return ""
+        }
+    }
     var coverImageURL: URL? { item?.coverImageUrl }
     var rating: String { item?.rating.map { String(format: "%.1f", $0) } ?? "" }
     var ratingCount: String { item?.ratingCount.map(String.init) ?? "0" }

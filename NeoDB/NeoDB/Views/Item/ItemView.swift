@@ -157,14 +157,19 @@ struct ItemView: View {
 
     private var itemDetailsView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(viewModel.displayTitle)
-                .font(.title2)
-                .fontWeight(.bold)
-                .lineLimit(3)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(viewModel.displayTitle)
+                    .font(.title2)
+                    .fontWeight(.bold)
 
-            if !viewModel.rating.isEmpty {
-                ratingView
+                if !viewModel.originalTitle.isEmpty {
+                    Text(viewModel.originalTitle)
+                        .font(.headline)
+                }
             }
+            .lineLimit(3)
+
+            ratingView
 
             if !viewModel.metadata.isEmpty {
                 Text(viewModel.metadata.joined(separator: " / "))
@@ -177,10 +182,17 @@ struct ItemView: View {
     private var ratingView: some View {
         HStack(spacing: 4) {
             Image(systemName: "star.fill")
-                .foregroundStyle(.yellow)
-            Text(viewModel.rating)
-            Text("(\(viewModel.ratingCount))")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(
+                    viewModel.rating.isEmpty
+                        ? .gray.opacity(0.5) : .orange.opacity(0.8))
+            if viewModel.rating.isEmpty {
+                Text("No Ratings")
+                    .foregroundStyle(.secondary)
+            } else {
+                Text(viewModel.rating)
+                Text("(\(viewModel.ratingCount))")
+                    .foregroundStyle(.secondary)
+            }
         }
         .font(.subheadline)
     }
