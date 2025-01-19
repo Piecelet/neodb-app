@@ -65,7 +65,19 @@ final class ItemViewModel: ObservableObject {
 
         switch item {
         case let book as EditionSchema:
-            metadata = buildBookMetadata(book)
+            metadata = book.keyMetadata
+        case let movie as MovieSchema:
+            metadata = movie.keyMetadata
+        case let tv as TVShowSchema:
+            metadata = tv.keyMetadata
+        case let music as AlbumSchema:
+            metadata = music.keyMetadata
+        case let performance as PerformanceSchema:
+            metadata = performance.keyMetadata
+        case let podcast as PodcastSchema:
+            metadata = podcast.keyMetadata
+        case let game as GameSchema:
+            metadata = game.keyMetadata
         default:
             break
         }

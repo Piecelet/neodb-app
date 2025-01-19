@@ -25,7 +25,8 @@ struct ItemView: View {
         self.id = id
         self.category = category
         self.initialItem = item
-        self._viewModel = StateObject(wrappedValue: ItemViewModel(initialItem: item))
+        self._viewModel = StateObject(
+            wrappedValue: ItemViewModel(initialItem: item))
     }
 
     // MARK: - Body
@@ -45,9 +46,13 @@ struct ItemView: View {
             toolbarContent
         }
         .refreshable {
-            await viewModel.loadItemDetail(id: itemUUID, category: category, refresh: true)
+            await viewModel.loadItemDetail(
+                id: itemUUID, category: category, refresh: true)
         }
-        .alert("Error", isPresented: $viewModel.showError, presenting: viewModel.error) { _ in
+        .alert(
+            "Error", isPresented: $viewModel.showError,
+            presenting: viewModel.error
+        ) { _ in
             Button("OK", role: .cancel) {}
         }
         .task {
@@ -139,14 +144,14 @@ struct ItemView: View {
             }
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(height: 160)
+            .frame(height: 140)
             .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private var placeholderView: some View {
         Rectangle()
             .fill(Color.gray.opacity(0.2))
-            .aspectRatio(2/3, contentMode: .fit)
+            .aspectRatio(2 / 3, contentMode: .fit)
             .frame(width: 120)
     }
 
@@ -163,7 +168,7 @@ struct ItemView: View {
 
             if !viewModel.metadata.isEmpty {
                 Text(viewModel.metadata.joined(separator: " / "))
-                    .font(.caption2)
+                    .font(.footnote)
                     .foregroundStyle(.secondary)
             }
         }
@@ -266,7 +271,9 @@ struct ItemView: View {
             }
         } label: {
             HStack {
-                Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                Image(
+                    systemName: viewModel.shelfType == nil
+                        ? "plus" : "checkmark")
                 if let shelfType = viewModel.shelfType {
                     Text(shelfType.displayName)
                 } else {

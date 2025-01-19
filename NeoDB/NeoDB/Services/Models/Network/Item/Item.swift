@@ -7,6 +7,8 @@
 
 import Foundation
 
+private let metadataArraySeparator = ", "
+
 // MARK: - Base Item Protocol
 protocol ItemProtocol: Codable, Hashable, Identifiable {
     var id: String { get }
@@ -148,6 +150,27 @@ struct EditionSchema: ItemProtocol {
     let isbn: String?
 }
 
+extension EditionSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !author.isEmpty {
+            metadata.append(author.joined(separator: metadataArraySeparator))
+        }
+        if let pubHouse = pubHouse {
+            metadata.append(pubHouse)
+        }
+        if let pubYear = pubYear {
+            metadata.append(String(pubYear))
+        }
+        if let pages = pages {
+            metadata.append("\(pages) pages")
+        }
+
+        return metadata
+    }
+}
+
 // MARK: - Movie Schema
 struct MovieSchema: ItemProtocol {
     let id: String
@@ -181,6 +204,26 @@ struct MovieSchema: ItemProtocol {
     let site: String?
     let duration: String?
     let imdb: String?
+}
+
+extension MovieSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !area.isEmpty {
+            metadata.append(area.joined(separator: metadataArraySeparator))
+        }
+        if !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        if !language.isEmpty {
+            metadata.append(language.joined(separator: metadataArraySeparator))
+        }
+        if let duration = duration {
+            metadata.append(duration)
+        }
+        return metadata
+    }
 }
 
 // MARK: - TV Show Schema
@@ -224,6 +267,29 @@ struct TVShowSchema: ItemProtocol {
     
     // TV Episode Schema
     let episodeNumber: Int?
+}
+
+extension TVShowSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if let area = area, !area.isEmpty {
+            metadata.append(area.joined(separator: metadataArraySeparator))
+        }
+        if let genre = genre, !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        if let language = language, !language.isEmpty {
+            metadata.append(language.joined(separator: metadataArraySeparator))
+        }
+        if let seasonCount = seasonCount {
+            metadata.append("\(seasonCount) seasons")
+        }
+        if let episodeCount = episodeCount {
+            metadata.append("\(episodeCount) episodes")
+        }
+        return metadata
+    }
 }
 
 // MARK: - TV Season Schema
@@ -318,6 +384,26 @@ struct AlbumSchema: ItemProtocol {
     let barcode: String?
 }
 
+extension AlbumSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !artist.isEmpty {
+            metadata.append(artist.joined(separator: metadataArraySeparator))
+        }
+        if !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        if let releaseDate = releaseDate {
+            metadata.append(releaseDate)
+        }
+        if let duration = duration {
+            metadata.append("\(duration) minutes")
+        }
+        return metadata
+    }
+}
+
 // MARK: - Podcast Schema
 struct PodcastSchema: ItemProtocol {
     let id: String
@@ -348,6 +434,29 @@ struct PodcastSchema: ItemProtocol {
     let websiteUrl: String?
 }
 
+extension PodcastSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !host.isEmpty {
+            metadata.append(host.joined(separator: metadataArraySeparator))
+        }
+        if !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        if !language.isEmpty {
+            metadata.append(language.joined(separator: metadataArraySeparator))
+        }
+        if let episodeCount = episodeCount {
+            metadata.append("\(episodeCount) episodes")
+        }
+        if let lastEpisodeDate = lastEpisodeDate {
+            metadata.append(lastEpisodeDate)
+        }
+        return metadata
+    }
+}
+
 // MARK: - Game Schema
 struct GameSchema: ItemProtocol {
     let id: String
@@ -376,6 +485,29 @@ struct GameSchema: ItemProtocol {
     let releaseType: String?
     let releaseDate: String?
     let officialSite: String?
+}
+
+extension GameSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        if !platform.isEmpty {
+            metadata.append(platform.joined(separator: metadataArraySeparator))
+        }
+        if !developer.isEmpty {
+            metadata.append(developer.joined(separator: metadataArraySeparator))
+        }
+        if !publisher.isEmpty {
+            metadata.append(publisher.joined(separator: metadataArraySeparator))
+        }
+        if let releaseDate = releaseDate {
+            metadata.append(releaseDate)
+        }
+        return metadata
+    }
 }
 
 // MARK: - Performance Schema
@@ -416,6 +548,17 @@ struct PerformanceSchema: ItemProtocol {
     let officialSite: String?
 }
 
+extension PerformanceSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !genre.isEmpty {
+            metadata.append(genre.joined(separator: metadataArraySeparator))
+        }
+        return metadata
+    }
+}
+
 // MARK: - Performance Production Schema
 struct PerformanceProductionSchema: ItemProtocol {
     let id: String
@@ -451,4 +594,15 @@ struct PerformanceProductionSchema: ItemProtocol {
     let actor: [CrewMemberSchema]
     let crew: [CrewMemberSchema]
     let officialSite: String?
+}
+
+extension PerformanceProductionSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+        if !language.isEmpty {
+            metadata.append(language.joined(separator: metadataArraySeparator))
+        }
+        return metadata
+    }
 }
