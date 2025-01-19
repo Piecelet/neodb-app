@@ -28,8 +28,8 @@ extension CacheService {
         }
         
         // Gallery related
-        static func gallery(instance: String) -> String {
-            "gallery_\(instance)"
+        static func gallery(instance: String? = nil) -> String {
+            "gallery_\(instance ?? "default")"
         }
 
         static func timelines(key: String) -> String {
@@ -136,17 +136,17 @@ extension CacheService {
     
     // MARK: - Gallery Caching
     
-    func cacheGallery(_ gallery: [GalleryResult], instance: String) async throws {
+    func cacheGallery(_ gallery: [GalleryResult], instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
         try await cache(gallery, forKey: key, type: [GalleryResult].self)
     }
     
-    func retrieveGallery(instance: String) async throws -> [GalleryResult]? {
+    func retrieveGallery(instance: String? = nil) async throws -> [GalleryResult]? {
         let key = Keys.gallery(instance: instance)
         return try await retrieve(forKey: key, type: [GalleryResult].self)
     }
     
-    func removeGallery(instance: String) async throws {
+    func removeGallery(instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
         try await remove(forKey: key, type: [GalleryResult].self)
     }

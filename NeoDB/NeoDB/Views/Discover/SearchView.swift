@@ -31,7 +31,12 @@ struct SearchView: View {
             .onDisappear {
                 viewModel.cleanup()
             }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private var searchContent: some View {
         List {
@@ -59,14 +64,14 @@ struct SearchView: View {
     
     private var galleryContent: some View {
         ForEach(viewModel.galleryItems) { gallery in
-            Section(header: Text(gallery.name).textCase(.none)) {
+            Section(header: Text(gallery.displayTitle).textCase(.none)) {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 12) {
                         ForEach(gallery.items, id: \.uuid) { item in
                             Button {
                                 router.navigate(to: .itemDetailWithItem(item: item))
                             } label: {
-                                VStack(alignment: .leading) {
+                                VStack(alignment: .leading, spacing: 0) {
                                     ItemCoverImage(url: item.coverImageUrl)
                                         .frame(width: 100, height: 150)
                                         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -136,8 +141,14 @@ struct ItemCoverImage: View {
                     }
             }
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 128)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {
