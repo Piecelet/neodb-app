@@ -92,9 +92,9 @@ extension ItemSchema {
         case .tv:
             return TVShowSchema.self
         case .tvSeason:
-            return TVSeasonSchema.self
+            return TVShowSchema.self
         case .tvEpisode:
-            return TVEpisodeSchema.self
+            return TVShowSchema.self
         case .music:
             return AlbumSchema.self
         case .podcast:
@@ -206,79 +206,86 @@ struct TVShowSchema: ItemProtocol {
     // Additional properties specific to TV Show
     let seasonCount: Int?
     let origTitle: String?
-    let otherTitle: [String]
-    let director: [String]
-    let playwright: [String]
-    let actor: [String]
-    let genre: [String]
-    let language: [String]
-    let area: [String]
+    let otherTitle: [String]?
+    let director: [String]?
+    let playwright: [String]?
+    let actor: [String]?
+    let genre: [String]?
+    let language: [String]?
+    let area: [String]?
     let year: Int?
     let site: String?
     let episodeCount: Int?
     let imdb: String?
+    
+    // TV Season Schema
+    let seasonNumber: Int?
+    let episodeUuids: [String]?
+    
+    // TV Episode Schema
+    let episodeNumber: Int?
 }
 
 // MARK: - TV Season Schema
-struct TVSeasonSchema: ItemProtocol {
-    let id: String
-    let type: String
-    let uuid: String
-    let url: String
-    let apiUrl: String
-    let category: ItemCategory
-    let parentUuid: String?
-    let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
-    let title: String?
-    let description: String?
-    let localizedTitle: [LocalizedTitleSchema]?
-    let localizedDescription: [LocalizedTitleSchema]?
-    let coverImageUrl: URL?
-    let rating: Double?
-    let ratingCount: Int?
-    let brief: String
-    
-    // Additional properties specific to TV Season
-    let seasonNumber: Int?
-    let origTitle: String?
-    let otherTitle: [String]
-    let director: [String]
-    let playwright: [String]
-    let actor: [String]
-    let genre: [String]
-    let language: [String]
-    let area: [String]
-    let year: Int?
-    let site: String?
-    let episodeCount: Int?
-    let episodeUuids: [String]
-    let imdb: String?
-}
+//struct TVSeasonSchema: ItemProtocol {
+//    let id: String
+//    let type: String
+//    let uuid: String
+//    let url: String
+//    let apiUrl: String
+//    let category: ItemCategory
+//    let parentUuid: String?
+//    let displayTitle: String?
+//    let externalResources: [ExternalResourceSchema]?
+//    let title: String?
+//    let description: String?
+//    let localizedTitle: [LocalizedTitleSchema]?
+//    let localizedDescription: [LocalizedTitleSchema]?
+//    let coverImageUrl: URL?
+//    let rating: Double?
+//    let ratingCount: Int?
+//    let brief: String
+//    
+//    // Additional properties specific to TV Season
+//    let seasonNumber: Int?
+//    let origTitle: String?
+//    let otherTitle: [String]
+//    let director: [String]
+//    let playwright: [String]
+//    let actor: [String]
+//    let genre: [String]
+//    let language: [String]
+//    let area: [String]
+//    let year: Int?
+//    let site: String?
+//    let episodeCount: Int?
+//    let episodeUuids: [String]
+//    let imdb: String?
+//}
 
 // MARK: - TV Episode Schema
-struct TVEpisodeSchema: ItemProtocol {
-    let id: String
-    let type: String
-    let uuid: String
-    let url: String
-    let apiUrl: String
-    let category: ItemCategory
-    let parentUuid: String?
-    let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
-    let title: String?
-    let description: String?
-    let localizedTitle: [LocalizedTitleSchema]?
-    let localizedDescription: [LocalizedTitleSchema]?
-    let coverImageUrl: URL?
-    let rating: Double?
-    let ratingCount: Int?
-    let brief: String
-    
-    // Additional properties specific to TV Episode
-    let episodeNumber: Int?
-}
+//struct TVEpisodeSchema: ItemProtocol {
+//    let id: String
+//    let type: String
+//    let uuid: String
+//    let url: String
+//    let apiUrl: String
+//    let category: ItemCategory
+//    let parentUuid: String?
+//    let displayTitle: String?
+//    let externalResources: [ExternalResourceSchema]?
+//    let title: String?
+//    let description: String?
+//    let localizedTitle: [LocalizedTitleSchema]?
+//    let localizedDescription: [LocalizedTitleSchema]?
+//    let coverImageUrl: URL?
+//    let rating: Double?
+//    let ratingCount: Int?
+//    let brief: String
+//    
+//    // Additional properties specific to TV Episode
+//    let episodeNumber: Int?
+//}
 
 // MARK: - Album Schema
 struct AlbumSchema: ItemProtocol {

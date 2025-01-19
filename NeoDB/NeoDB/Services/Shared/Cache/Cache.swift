@@ -55,12 +55,12 @@ extension CacheService {
                 try await cache(show, forKey: key, type: TVShowSchema.self)
             }
         case .tvSeason:
-            if let season = item as? TVSeasonSchema {
-                try await cache(season, forKey: key, type: TVSeasonSchema.self)
+            if let season = item as? TVShowSchema {
+                try await cache(season, forKey: key, type: TVShowSchema.self)
             }
         case .tvEpisode:
-            if let episode = item as? TVEpisodeSchema {
-                try await cache(episode, forKey: key, type: TVEpisodeSchema.self)
+            if let episode = item as? TVShowSchema {
+                try await cache(episode, forKey: key, type: TVShowSchema.self)
             }
         case .music:
             if let album = item as? AlbumSchema {

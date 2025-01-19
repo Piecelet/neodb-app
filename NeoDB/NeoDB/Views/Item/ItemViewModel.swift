@@ -178,6 +178,7 @@ class ItemViewModel: ObservableObject {
         do {
             let endpoint = ItemEndpoint.make(id: id, category: category)
             let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: category))
+            logger.debug("Cache \(id) \(category) item refreshed")
             try? await cacheService.cacheItem(result, id: id, category: category)
             
             if !Task.isCancelled {

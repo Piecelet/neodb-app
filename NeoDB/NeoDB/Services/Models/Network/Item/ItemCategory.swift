@@ -22,14 +22,25 @@ enum ItemCategory: String, Codable, CaseIterable {
     case exhibition
     case collection
     
-    var rawValue: String {
+//    var rawValue: String {
+//        switch self {
+//        case .tvSeason, .tvEpisode:
+//            return "tv"
+//        case .performanceProduction:
+//            return "performance"
+//        default:
+//            return String(describing: self)
+//        }
+//    }
+    
+    var urlPath: String {
         switch self {
         case .tvSeason, .tvEpisode:
             return "tv"
         case .performanceProduction:
             return "performance"
         default:
-            return String(describing: self)
+            return self.rawValue
         }
     }
 }

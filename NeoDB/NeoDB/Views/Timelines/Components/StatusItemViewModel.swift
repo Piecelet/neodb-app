@@ -73,6 +73,7 @@ class StatusItemViewModel: ObservableObject {
             
             // Try cache first if not refreshing
             if !refresh {
+                logger.debug("Using cached item: \(item.uuid) with category: \(item.category)")
                 if let cached = try? await cacheService.retrieveItem(id: item.uuid, category: item.category) {
                     if !Task.isCancelled {
                         logger.debug("Using cached item: \(item.uuid)")
