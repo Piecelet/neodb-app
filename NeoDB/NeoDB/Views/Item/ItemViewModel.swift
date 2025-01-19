@@ -16,12 +16,29 @@ enum ItemState {
 }
 
 @MainActor
-class ItemViewModel: ObservableObject {
+final class ItemViewModel: ObservableObject {
+    // MARK: - Dependencies
     private let logger = Logger.views.item
     private let cacheService = CacheService()
+
+    // MARK: - Task Management
     private var loadTask: Task<Void, Never>?
     private var markLoadTask: Task<Void, Never>?
 
+    // MARK: - Published Properties
+    @Published private(set) var item: (any ItemProtocol)?
+    @Published private(set) var mark: MarkSchema?
+    @Published private(set) var state: ItemState = .loading
+    @Published var error: Error?
+    @Published var showError = false
+    @Published private(set) var isLoading = false
+    @Published private(set) var isRefreshing = false
+    @Published private(set) var isMarkLoading = false
+
+    // MARK: - Private Properties
+    private let initialItem: (any ItemProtocol)?
+
+    // MARK: - Public Properties
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
@@ -33,69 +50,22 @@ class ItemViewModel: ObservableObject {
         }
     }
 
-    @Published var item: (any ItemProtocol)?
-    @Published var isLoading = false
-    @Published var isRefreshing = false
-    @Published var error: Error?
-    @Published var showError = false
-    
-    // Mark related state
-    @Published var mark: MarkSchema?
-    @Published var isMarkLoading = false
-    
-    // Description expansion state
-    @Published var isDescriptionExpanded = false
-
-    private let initialItem: (any ItemProtocol)?
-
-    init(initialItem: (any ItemProtocol)? = nil) {
-        self.initialItem = initialItem
-        self.item = initialItem
-    }
-
-    var state: ItemState {
-        if isLoading {
-            return .loading
-        }
-        if error != nil {
-            return .error
-        }
-        return .loaded
-    }
-
     // MARK: - Computed Properties for UI
     var displayTitle: String { item?.displayTitle ?? "" }
     var coverImageURL: URL? { item?.coverImageUrl }
-    var rating: String {
-        if let rating = item?.rating {
-            return String(format: "%.1f", rating)
-        }
-        return ""
-    }
+    var rating: String { item?.rating.map { String(format: "%.1f", $0) } ?? "" }
     var ratingCount: String { item?.ratingCount.map(String.init) ?? "0" }
     var description: String { item?.description ?? "" }
     var shelfType: ShelfType? { mark?.shelfType }
-    
+
     var metadata: [String] {
-        guard let item = item else { return [] }
+        guard let item else { return [] }
 
         var metadata: [String] = []
 
         switch item {
         case let book as EditionSchema:
-            if !book.author.isEmpty {
-                metadata.append(book.author.joined(separator: ", "))
-            }
-            if let pubHouse = book.pubHouse {
-                metadata.append(pubHouse)
-            }
-            if let pubYear = book.pubYear {
-                metadata.append(String(pubYear))
-            }
-            if let pages = book.pages {
-                metadata.append("\(pages) pages")
-            }
-        // Add cases for other item types as needed
+            metadata = buildBookMetadata(book)
         default:
             break
         }
@@ -104,39 +74,35 @@ class ItemViewModel: ObservableObject {
     }
 
     var shareURL: URL? {
-        guard let item = item,
-            let accountsManager = accountsManager
+        guard let item,
+            let accountsManager
         else { return nil }
+
         return ItemURL.makeShareURL(
-            for: item, instance: accountsManager.currentAccount.instance)
+            for: item,
+            instance: accountsManager.currentAccount.instance
+        )
     }
 
-    // MARK: - User Actions
-    func toggleDescription() {
-        isDescriptionExpanded.toggle()
+    // MARK: - Initialization
+    init(initialItem: (any ItemProtocol)? = nil) {
+        self.initialItem = initialItem
+        self.item = initialItem
     }
 
-    // MARK: - Data Loading
+    // MARK: - Public Methods
     func loadItemDetail(
         id: String, category: ItemCategory, refresh: Bool = false
     ) async {
         loadTask?.cancel()
 
         loadTask = Task {
-            guard let accountsManager = accountsManager else {
+            guard let accountsManager else {
                 logger.debug("No accountsManager available")
                 return
             }
 
-            if refresh {
-                if !Task.isCancelled {
-                    isRefreshing = true
-                }
-            } else {
-                if !Task.isCancelled {
-                    isLoading = true
-                }
-            }
+            await updateLoadingState(refresh: refresh)
 
             defer {
                 if !Task.isCancelled {
@@ -146,75 +112,81 @@ class ItemViewModel: ObservableObject {
             }
 
             do {
-                // Try cache first if not refreshing
                 if !refresh,
                     let cached = try? await cacheService.retrieveItem(
                         id: id, category: category)
                 {
-                    if !Task.isCancelled {
-                        item = cached
-                        // Refresh in background
-                        Task {
-                            await refreshItemInBackground(
-                                id: id, category: category)
-                        }
-                        return
-                    }
+                    await handleCachedItem(cached, id: id, category: category)
+                    return
                 }
 
                 guard !Task.isCancelled else { return }
 
-                let endpoint = ItemEndpoint.make(id: id, category: category)
-                let result = try await accountsManager.currentClient.fetch(
-                    endpoint, type: ItemSchema.make(category: category))
-
-                if !Task.isCancelled {
-                    item = result
-                    try? await cacheService.cacheItem(
-                        result, id: id, category: category)
-                }
+                let result = try await fetchItem(
+                    id: id, category: category,
+                    client: accountsManager.currentClient)
+                await handleFetchedItem(result, id: id, category: category)
 
             } catch {
-                if !Task.isCancelled {
-                    self.error = error
-                    self.showError = true
-                    logger.error(
-                        "Failed to load item: \(error.localizedDescription)")
-                }
+                await handleError(error)
             }
         }
 
         await loadTask?.value
     }
-    
-    // MARK: - Mark Related Functions
+
     func loadMarkIfNeeded() {
         guard mark == nil,
-            let item = item
+            let item
         else { return }
         loadMark(itemId: item.uuid, refresh: false)
     }
 
     func refresh() {
-        guard let item = item else { return }
+        guard let item else { return }
         loadMark(itemId: item.uuid, refresh: true)
+    }
+
+    func cleanup() {
+        loadTask?.cancel()
+        markLoadTask?.cancel()
+        loadTask = nil
+        markLoadTask = nil
+    }
+
+    // MARK: - Private Methods
+    private func buildBookMetadata(_ book: EditionSchema) -> [String] {
+        var metadata: [String] = []
+
+        if !book.author.isEmpty {
+            metadata.append(book.author.joined(separator: ", "))
+        }
+        if let pubHouse = book.pubHouse {
+            metadata.append(pubHouse)
+        }
+        if let pubYear = book.pubYear {
+            metadata.append(String(pubYear))
+        }
+        if let pages = book.pages {
+            metadata.append("\(pages) pages")
+        }
+
+        return metadata
     }
 
     private func loadMark(itemId: String, refresh: Bool) {
         markLoadTask?.cancel()
 
         markLoadTask = Task {
-            guard let accountsManager = accountsManager else {
+            guard let accountsManager else {
                 logger.debug("No accountsManager available")
                 return
             }
 
-            if refresh {
-                if !Task.isCancelled {
+            if !Task.isCancelled {
+                if refresh {
                     isRefreshing = true
-                }
-            } else {
-                if !Task.isCancelled {
+                } else {
                     isMarkLoading = true
                 }
             }
@@ -227,7 +199,6 @@ class ItemViewModel: ObservableObject {
             }
 
             do {
-                // Try cache first if not refreshing
                 if !refresh,
                     let cached = try? await getCachedMark(itemId: itemId)
                 {
@@ -236,7 +207,6 @@ class ItemViewModel: ObservableObject {
                     }
                 }
 
-                // Always fetch from network
                 let endpoint = MarkEndpoint.get(itemId: itemId)
                 let result = try await accountsManager.currentClient.fetch(
                     endpoint, type: MarkSchema.self)
@@ -246,27 +216,82 @@ class ItemViewModel: ObservableObject {
                     try? await cacheMark(result, itemId: itemId)
                 }
             } catch {
-                if !Task.isCancelled {
-                    if let networkError = error as? NetworkError,
-                        case .httpError(let statusCode) = networkError,
-                        statusCode == 404
-                    {
-                        // 404 means no mark exists, which is a normal case
-                        mark = nil
-                        logger.debug("No mark found for item: \(itemId)")
-                    } else {
-                        // Only show error if we don't have cached data
-                        if mark == nil {
-                            self.error = error
-                            self.showError = true
-                            logger.error(
-                                "Failed to load mark: \(error.localizedDescription)"
-                            )
-                        }
-                    }
+                await handleMarkError(error, itemId: itemId)
+            }
+        }
+    }
+
+    private func updateLoadingState(refresh: Bool) {
+        if !Task.isCancelled {
+            if refresh {
+                isRefreshing = true
+            } else {
+                isLoading = true
+                state = .loading
+            }
+        }
+    }
+
+    private func handleCachedItem(
+        _ cached: any ItemProtocol, id: String, category: ItemCategory
+    ) async {
+        if !Task.isCancelled {
+            item = cached
+            state = .loaded
+            // Refresh in background
+            Task {
+                await refreshItemInBackground(id: id, category: category)
+            }
+        }
+    }
+
+    private func handleFetchedItem(
+        _ result: any ItemProtocol, id: String, category: ItemCategory
+    ) async {
+        if !Task.isCancelled {
+            item = result
+            state = .loaded
+            try? await cacheService.cacheItem(
+                result, id: id, category: category)
+        }
+    }
+
+    private func handleError(_ error: Error) async {
+        if !Task.isCancelled {
+            self.error = error
+            self.showError = true
+            state = .error
+            logger.error("Failed to load item: \(error.localizedDescription)")
+        }
+    }
+
+    private func handleMarkError(_ error: Error, itemId: String) async {
+        if !Task.isCancelled {
+            if let networkError = error as? NetworkError,
+                case .httpError(let statusCode) = networkError,
+                statusCode == 404
+            {
+                // 404 means no mark exists, which is a normal case
+                mark = nil
+                logger.debug("No mark found for item: \(itemId)")
+            } else {
+                // Only show error if we don't have cached data
+                if mark == nil {
+                    self.error = error
+                    self.showError = true
+                    logger.error(
+                        "Failed to load mark: \(error.localizedDescription)")
                 }
             }
         }
+    }
+
+    private func fetchItem(
+        id: String, category: ItemCategory, client: NetworkClient
+    ) async throws -> any ItemProtocol {
+        let endpoint = ItemEndpoint.make(id: id, category: category)
+        return try await client.fetch(
+            endpoint, type: ItemSchema.make(category: category))
     }
 
     private func getCachedMark(itemId: String) async throws -> MarkSchema? {
@@ -284,12 +309,12 @@ class ItemViewModel: ObservableObject {
     private func refreshItemInBackground(id: String, category: ItemCategory)
         async
     {
-        guard let accountsManager = accountsManager else { return }
+        guard let accountsManager else { return }
 
         do {
-            let endpoint = ItemEndpoint.make(id: id, category: category)
-            let result = try await accountsManager.currentClient.fetch(
-                endpoint, type: ItemSchema.make(category: category))
+            let result = try await fetchItem(
+                id: id, category: category,
+                client: accountsManager.currentClient)
             logger.debug("Cache \(id) \(category) item refreshed")
             try? await cacheService.cacheItem(
                 result, id: id, category: category)
@@ -301,12 +326,5 @@ class ItemViewModel: ObservableObject {
             logger.error(
                 "Background refresh failed: \(error.localizedDescription)")
         }
-    }
-
-    func cleanup() {
-        loadTask?.cancel()
-        markLoadTask?.cancel()
-        loadTask = nil
-        markLoadTask = nil
     }
 }

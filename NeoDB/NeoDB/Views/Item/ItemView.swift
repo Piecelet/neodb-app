@@ -5,9 +5,9 @@
 //  Created by citron on 1/15/25.
 //
 
+import ExpandableText
 import Kingfisher
 import SwiftUI
-import ExpandableText
 
 struct ItemView: View {
     @StateObject private var viewModel: ItemViewModel
@@ -23,7 +23,8 @@ struct ItemView: View {
         self.id = id
         self.category = category
         self.initialItem = item
-        self._viewModel = StateObject(wrappedValue: ItemViewModel(initialItem: item))
+        self._viewModel = StateObject(
+            wrappedValue: ItemViewModel(initialItem: item))
     }
 
     var body: some View {
@@ -42,44 +43,17 @@ struct ItemView: View {
         )
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                HStack(spacing: 16) {
-                    if let resources = viewModel.item?.externalResources,
-                        !resources.isEmpty
-                    {
-                        Menu {
-                            ForEach(resources, id: \.url) { resource in
-                                Button {
-                                    openURL(resource.url)
-                                } label: {
-                                    Label(
-                                        resource.name,
-                                        systemImage: resource.icon)
-                                }
-                            }
-                        } label: {
-                            Image(systemName: "link")
-                        }
-                    }
-
-                    if let url = viewModel.shareURL {
-                        ShareLink(item: url) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
-                }
-            }
+            toolbarContent
         }
         .refreshable {
             await viewModel.loadItemDetail(
                 id: itemUUID, category: category, refresh: true)
         }
-        .alert("Error", isPresented: $viewModel.showError) {
+        .alert(
+            "Error", isPresented: $viewModel.showError,
+            presenting: viewModel.error
+        ) { _ in
             Button("OK", role: .cancel) {}
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
-            }
         }
         .task {
             viewModel.accountsManager = accountsManager
@@ -92,15 +66,37 @@ struct ItemView: View {
         .enableInjection()
     }
 
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
-    
-    private var itemUUID: String {
-        if let url = URL(string: id), url.pathComponents.count >= 2 {
-            return url.lastPathComponent
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            HStack(spacing: 16) {
+                if let resources = viewModel.item?.externalResources,
+                    !resources.isEmpty
+                {
+                    Menu {
+                        ForEach(resources, id: \.url) { resource in
+                            Button(role: .none) {
+                                openURL(resource.url)
+                            } label: {
+                                Label(resource.name, systemImage: resource.icon)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "link")
+                    }
+                }
+
+                if let url = viewModel.shareURL {
+                    ShareLink(item: url) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+            }
         }
-        return id
+    }
+
+    private var itemUUID: String {
+        URL(string: id)?.lastPathComponent ?? id
     }
 }
 
@@ -116,56 +112,66 @@ private struct ItemContent: View {
         ScrollView {
             switch state {
             case .loading:
-                VStack(spacing: 16) {
-                    ProgressView()
-                    Text("Loading...")
-                        .foregroundStyle(.secondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.top, 100)
-
+                loadingView
             case .loaded:
-                VStack(alignment: .leading, spacing: 0) {
-                    header
-                        .overlay(alignment: .topTrailing) {
-                            if isRefreshing {
-                                ProgressView()
-                                    .padding(8)
-                                    .background(.ultraThinMaterial)
-                                    .clipShape(Circle())
-                                    .padding([.top, .trailing], 8)
-                            }
-                        }
-
-                    Divider()
-                        .padding(.vertical)
-
-                    if !description.isEmpty {
-                        ItemDescriptionView(description: description)
-
-                        Divider()
-                            .padding(.vertical)
-                    }
-
-                    actions
-                        .padding(.horizontal)
-                }
-
+                loadedView
             case .error:
-                EmptyStateView(
-                    "Item Not Found",
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(
-                        "The requested item could not be found or has been removed."
-                    )
-                )
+                errorView
             }
         }
         .enableInjection()
     }
 
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+            Text("Loading...")
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(.top, 100)
+    }
+
+    private var loadedView: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            header
+                .overlay(alignment: .topTrailing) {
+                    if isRefreshing {
+                        ProgressView()
+                            .padding(8)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Circle())
+                            .padding([.top, .trailing], 8)
+                    }
+                }
+
+            Divider()
+                .padding(.vertical)
+
+            if !description.isEmpty {
+                ItemDescriptionView(description: description)
+
+                Divider()
+                    .padding(.vertical)
+            }
+
+            actions
+                .padding(.horizontal)
+        }
+    }
+
+    private var errorView: some View {
+        EmptyStateView(
+            "Item Not Found",
+            systemImage: "exclamationmark.triangle",
+            description: Text(
+                "The requested item could not be found or has been removed."
+            )
+        )
+    }
+
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -179,59 +185,70 @@ private struct ItemHeaderView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            // Cover and Title
             HStack(alignment: .top, spacing: 16) {
-                // Cover Image21
-                KFImage(coverURL)
-                    .placeholder {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(2 / 3, contentMode: .fit)
-                            .frame(width: 120)
-                    }
-                    .onFailure { _ in
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(2 / 3, contentMode: .fit)
-                            .frame(width: 120)
-                            .overlay {
-                                Image(systemName: "photo")
-                                    .foregroundStyle(.secondary)
-                            }
-                    }
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 160)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(title)
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .lineLimit(3)
-
-                    // Rating
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(.yellow)
-                        Text(rating)
-                        Text("(\(ratingCount))")
-                            .foregroundStyle(.secondary)
-                    }
-                    .font(.subheadline)
-
-                    // Metadata
-                    if !metadata.isEmpty {
-                        Text(metadata.joined(separator: " / "))
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    }
-                }
+                coverImageView
+                itemDetailsView
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
         }
+        .padding(.vertical)
         .enableInjection()
+    }
+
+    private var coverImageView: some View {
+        KFImage(coverURL)
+            .placeholder {
+                placeholderView
+            }
+            .onFailure { _ in
+                placeholderView
+                    .overlay {
+                        Image(systemName: "photo")
+                            .foregroundStyle(.secondary)
+                    }
+            }
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(height: 160)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private var placeholderView: some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.2))
+            .aspectRatio(2 / 3, contentMode: .fit)
+            .frame(width: 120)
+    }
+
+    private var itemDetailsView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.title2)
+                .fontWeight(.bold)
+                .lineLimit(3)
+
+            if !rating.isEmpty {
+                ratingView
+            }
+
+            if !metadata.isEmpty {
+                Text(metadata.joined(separator: " / "))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private var ratingView: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+                .foregroundStyle(.yellow)
+            Text(rating)
+            Text("(\(ratingCount))")
+                .foregroundStyle(.secondary)
+        }
+        .font(.subheadline)
     }
 
     #if DEBUG
@@ -254,7 +271,6 @@ private struct ItemHeaderView: View {
     )
 }
 
-
 // MARK: - Description View
 private struct ItemDescriptionView: View {
     let description: String
@@ -266,10 +282,8 @@ private struct ItemDescriptionView: View {
 
             ExpandableText(description)
                 .font(.callout)
+                .foregroundStyle(.black.opacity(0.8))
                 .lineLimit(4)
-//                .expandAnimation(.spring)
-//                .expandAnimation(.bouncy)
-
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
@@ -290,64 +304,10 @@ private struct ItemActionsView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if let mark = viewModel.mark {
-                // Show existing mark info
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        if let rating = mark.ratingGrade {
-                            Image(systemName: "star.fill")
-                                .foregroundStyle(.yellow)
-                            Text("\(rating)")
-                                .foregroundStyle(.primary)
-                            Text("/10")
-                                .foregroundStyle(.secondary)
-                        }
-                        if mark.ratingGrade != nil {
-                            Text("・")
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(mark.shelfType.displayName)
-                            .foregroundStyle(.primary)
-                        Text("・")
-                            .foregroundStyle(.secondary)
-                        Text(mark.createdTime.formatted)
-                            .foregroundStyle(.secondary)
-                    }
-                    .font(.subheadline)
-
-                    if let comment = mark.commentText, !comment.isEmpty {
-                        Text(comment)
-                            .font(.subheadline)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                markInfoView(mark)
             }
 
-            // Primary Action
-            Button {
-                if let item = viewModel.item {
-                    if let mark = viewModel.mark {
-                        router.presentedSheet = .editShelfItem(mark: mark)
-                    } else {
-                        router.presentedSheet = .addToShelf(item: item)
-                    }
-                }
-            } label: {
-                HStack {
-                    Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
-                    if let shelfType = viewModel.shelfType {
-                        Text(shelfType.displayName)
-                    } else {
-                        Text("Add to Shelf")
-                    }
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(viewModel.isMarkLoading)
+            actionButton
         }
         .onChange(of: isRefreshing) { newValue in
             if newValue {
@@ -357,8 +317,76 @@ private struct ItemActionsView: View {
         .enableInjection()
     }
 
+    private func markInfoView(_ mark: MarkSchema) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                if let rating = mark.ratingGrade {
+                    ratingView(rating)
+                }
+                if mark.ratingGrade != nil {
+                    Text("・")
+                        .foregroundStyle(.secondary)
+                }
+                Text(mark.shelfType.displayName)
+                    .foregroundStyle(.primary)
+                Text("・")
+                    .foregroundStyle(.secondary)
+                Text(mark.createdTime.formatted)
+                    .foregroundStyle(.secondary)
+            }
+            .font(.subheadline)
+
+            if let comment = mark.commentText, !comment.isEmpty {
+                Text(comment)
+                    .font(.subheadline)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(Color.secondary.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+    }
+
+    private func ratingView(_ rating: Int) -> some View {
+        HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+                .foregroundStyle(.yellow)
+            Text("\(rating)")
+                .foregroundStyle(.primary)
+            Text("/10")
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var actionButton: some View {
+        Button {
+            if let item = viewModel.item {
+                if let mark = viewModel.mark {
+                    router.presentedSheet = .editShelfItem(mark: mark)
+                } else {
+                    router.presentedSheet = .addToShelf(item: item)
+                }
+            }
+        } label: {
+            HStack {
+                Image(
+                    systemName: viewModel.shelfType == nil
+                        ? "plus" : "checkmark")
+                if let shelfType = viewModel.shelfType {
+                    Text(shelfType.displayName)
+                } else {
+                    Text("Add to Shelf")
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.isMarkLoading)
+    }
+
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
