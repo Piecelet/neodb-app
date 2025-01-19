@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 class NeoDBURL {
-    private static let logger = Logger.services.urlHandler
+    private static let logger = Logger.services.neodbURL
     private static let neodbItemIdentifier = "~neodb~"
     private static let isDebugLoggingEnabled = false
     

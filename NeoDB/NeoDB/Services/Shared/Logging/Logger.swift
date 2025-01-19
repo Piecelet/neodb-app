@@ -49,6 +49,7 @@ extension Logger {
     
     enum services {
         static let urlHandler = Logger(subsystem: subsystem, category: "services.urlHandler")
+        static let neodbURL = Logger(subsystem: subsystem, category: "services.neodbURL")
     }
 
     // MARK: - Views
