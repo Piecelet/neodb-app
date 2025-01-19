@@ -48,8 +48,11 @@ extension Logger {
     // MARK: - Shared Services
     
     enum services {
-        static let urlHandler = Logger(subsystem: subsystem, category: "services.urlHandler")
-        static let neodbURL = Logger(subsystem: subsystem, category: "services.neodbURL")
+        enum url {
+            static let urlHandler = Logger(subsystem: subsystem, category: "services.url.urlHandler")
+            static let neodbURL = Logger(subsystem: subsystem, category: "services.url.neodbURL")
+            static let urlUtilities = Logger(subsystem: subsystem, category: "services.url.urlUtilities")
+        }
     }
 
     // MARK: - Views

@@ -9,11 +9,29 @@ import SwiftUI
 import Kingfisher
 import HTML2Markdown
 import MarkdownUI
+import OSLog
 
 struct StatusView: View {
+    private let logger = Logger.views.status
     let status: MastodonStatus
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
+    
+    private var extractedItem: ItemSchema? {
+        if let urls = status.content.extractURLs() {
+            for url in urls {
+                logger.debug("Attempting to parse URL from status content: \(url.absoluteString)")
+                if case .itemDetailWithItem(let item) = NeoDBURL.parseItemURL(url) {
+                   logger.debug("Successfully extracted item: \(item.displayTitle)")
+                   return item
+                }
+            }
+            logger.debug("Failed to parse item from URL")
+        } else {
+            logger.debug("Could not extract URL from status content: \(status.content)")
+        }
+        return nil
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -60,6 +78,11 @@ struct StatusView: View {
             // Content
             HTMLContentView(htmlContent: status.content)
                 .textSelection(.enabled)
+            
+            // Item Preview if available
+            if let item = extractedItem {
+                StatusItemView(item: item)
+            }
             
             // Media
             if !status.mediaAttachments.isEmpty {

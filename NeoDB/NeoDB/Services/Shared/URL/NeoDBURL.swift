@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 class NeoDBURL {
-    private static let logger = Logger.services.neodbURL
+    private static let logger = Logger.services.url.neodbURL
     private static let neodbItemIdentifier = "~neodb~"
     private static let isDebugLoggingEnabled = false
     
@@ -88,10 +88,10 @@ class NeoDBURL {
             apiUrl: apiComponents.url?.absoluteString ?? url.absoluteString,
             category: category,
             parentUuid: nil,
-            displayTitle: id,
+            displayTitle: nil,
             externalResources: nil,
-            title: id,
-            description: url.absoluteString,
+            title: nil,
+            description: nil,
             localizedTitle: nil,
             localizedDescription: nil,
             coverImageUrl: nil,

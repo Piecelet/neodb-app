@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 class URLHandler {
-    private static let logger = Logger.services.urlHandler
+    private static let logger = Logger.services.url.urlHandler
 
     static func handleItemURL(
         _ url: URL, completion: @escaping (RouterDestination?) -> Void
