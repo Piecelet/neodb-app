@@ -20,7 +20,7 @@ struct LoginView: View {
                 .scaledToFit()
                 .frame(width: 120, height: 120)
 
-            Text("Welcome to NeoApp")
+            Text("Welcome to Piecelet")
                 .font(.title)
                 .fontWeight(.bold)
 
@@ -75,7 +75,7 @@ struct LoginView: View {
             .padding(.horizontal)
 
             Text(
-                "This is a open sourced third-party client for NeoDB made by citron."
+                "Piecelet is a open sourced third-party client for NeoDB made by citron."
             )
             .font(.caption)
             .foregroundStyle(.secondary)
