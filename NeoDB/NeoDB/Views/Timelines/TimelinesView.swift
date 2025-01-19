@@ -200,9 +200,7 @@ struct TimelinesView: View {
                             } label: {
                                 StatusView(status: status)
                                     .id(index)
-                                    .task {
-                                        scrollPosition = index
-                                        
+                                    .task {                                        
                                         if index >= viewModel.statuses.count - 3 {
                                             await viewModel.loadTimeline()
                                         }
@@ -222,11 +220,6 @@ struct TimelinesView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                     }
-                }
-            }
-            .onAppear {
-                withAnimation(.easeInOut) {
-                    proxy.scrollTo(scrollPosition, anchor: .top)
                 }
             }
         }
