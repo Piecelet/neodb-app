@@ -22,15 +22,7 @@ struct ItemView: View {
         self.id = id
         self.category = category
         self.initialItem = item
-        self._viewModel = StateObject(
-            wrappedValue: ItemViewModel(initialItem: item))
-    }
-
-    private var itemUUID: String {
-        if let url = URL(string: id), url.pathComponents.count >= 2 {
-            return url.lastPathComponent
-        }
-        return id
+        self._viewModel = StateObject(wrappedValue: ItemViewModel(initialItem: item))
     }
 
     var body: some View {
@@ -41,7 +33,7 @@ struct ItemView: View {
                 coverURL: viewModel.coverImageURL,
                 rating: viewModel.rating,
                 ratingCount: viewModel.ratingCount,
-                metadata: viewModel.getKeyMetadata(for: viewModel.item)
+                metadata: viewModel.metadata
             ),
             description: viewModel.description,
             actions: ItemActionsView(isRefreshing: viewModel.isRefreshing),
@@ -96,14 +88,17 @@ struct ItemView: View {
             viewModel.cleanup()
         }
         .environmentObject(viewModel)
-        .enableInjection()
     }
-
-    #if DEBUG
-    @ObserveInjection var forceRedraw
-    #endif
+    
+    private var itemUUID: String {
+        if let url = URL(string: id), url.pathComponents.count >= 2 {
+            return url.lastPathComponent
+        }
+        return id
+    }
 }
 
+// MARK: - Content Views
 private struct ItemContent: View {
     let state: ItemState
     let header: ItemHeaderView
@@ -160,12 +155,203 @@ private struct ItemContent: View {
                 )
             }
         }
+    }
+}
+
+// MARK: - Header View
+private struct ItemHeaderView: View {
+    let title: String
+    let coverURL: URL?
+    let rating: String
+    let ratingCount: String
+    let metadata: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // Cover and Title
+            HStack(alignment: .top, spacing: 16) {
+                // Cover Image21
+                KFImage(coverURL)
+                    .placeholder {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .aspectRatio(2 / 3, contentMode: .fit)
+                            .frame(width: 120)
+                    }
+                    .onFailure { _ in
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.2))
+                            .aspectRatio(2 / 3, contentMode: .fit)
+                            .frame(width: 120)
+                            .overlay {
+                                Image(systemName: "photo")
+                                    .foregroundStyle(.secondary)
+                            }
+                    }
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .lineLimit(3)
+
+                    // Rating
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(.yellow)
+                        Text(rating)
+                        Text("(\(ratingCount))")
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.subheadline)
+
+                    // Metadata
+                    if !metadata.isEmpty {
+                        Text(metadata.joined(separator: " / "))
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+        }
         .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
+}
+
+#Preview {
+    ItemHeaderView(
+        title:
+            "Sample Book Title That is Very Long and Might Need Multiple Lines",
+        coverURL: nil,
+        rating: "4.5",
+        ratingCount: "123",
+        metadata: [
+            "John Doe",
+            "2024",
+            "978-3-16-148410-0",
+        ]
+    )
+}
+
+
+// MARK: - Description View
+private struct ExpandableDescriptionView: View {
+    let description: String
+    @State private var isExpanded = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Description")
+                .font(.headline)
+
+            Text(description)
+                .font(.body)
+                .lineLimit(isExpanded ? nil : 3)
+
+            Button {
+                withAnimation {
+                    isExpanded.toggle()
+                }
+            } label: {
+                Text(isExpanded ? "Show Less" : "Read More")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+    }
+}
+
+// MARK: - Actions View
+private struct ItemActionsView: View {
+    @EnvironmentObject private var viewModel: ItemViewModel
+    @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
+
+    let isRefreshing: Bool
+
+    var body: some View {
+        VStack(spacing: 12) {
+            if viewModel.isMarkLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+            } else if let mark = viewModel.mark {
+                // Show existing mark info
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        if let rating = mark.ratingGrade {
+                            Image(systemName: "star.fill")
+                                .foregroundStyle(.yellow)
+                            Text("\(rating)")
+                                .foregroundStyle(.primary)
+                            Text("/10")
+                                .foregroundStyle(.secondary)
+                        }
+                        if mark.ratingGrade != nil {
+                            Text("・")
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(mark.shelfType.displayName)
+                            .foregroundStyle(.primary)
+                        Text("・")
+                            .foregroundStyle(.secondary)
+                        Text(mark.createdTime.formatted)
+                            .foregroundStyle(.secondary)
+                    }
+                    .font(.subheadline)
+
+                    if let comment = mark.commentText, !comment.isEmpty {
+                        Text(comment)
+                            .font(.subheadline)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.secondary.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            // Primary Action
+            Button {
+                if let item = viewModel.item {
+                    if let mark = viewModel.mark {
+                        router.presentedSheet = .editShelfItem(mark: mark)
+                    } else {
+                        router.presentedSheet = .addToShelf(item: item)
+                    }
+                }
+            } label: {
+                HStack {
+                    Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                    if let shelfType = viewModel.shelfType {
+                        Text(shelfType.displayName)
+                    } else {
+                        Text("Add to Shelf")
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(viewModel.isMarkLoading)
+        }
+        .onChange(of: isRefreshing) { newValue in
+            if newValue {
+                viewModel.refresh()
+            }
+        }
+    }
 }
 
 // MARK: - Preview
