@@ -13,11 +13,12 @@ struct MarkView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @State private var showAdvanced = false
     @State private var detent: PresentationDetent = .medium
-    
+
     init(item: any ItemProtocol, mark: MarkSchema? = nil) {
-        _viewModel = StateObject(wrappedValue: MarkViewModel(item: item, mark: mark))
+        _viewModel = StateObject(
+            wrappedValue: MarkViewModel(item: item, mark: mark))
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             // Custom title bar
@@ -32,7 +33,7 @@ struct MarkView: View {
                 }
             }
             .padding()
-            
+
             Form {
                 // Shelf Type
                 Section {
@@ -48,7 +49,9 @@ struct MarkView: View {
                                         .font(.caption)
                                 }
                                 .frame(maxWidth: .infinity)
-                                .foregroundStyle(viewModel.shelfType == type ? .primary : .secondary)
+                                .foregroundStyle(
+                                    viewModel.shelfType == type
+                                        ? .primary : .secondary)
                             }
                             .buttonStyle(.borderless)
 
@@ -56,15 +59,15 @@ struct MarkView: View {
                     }
                     .padding(.vertical, 8)
                 }
-                
+
                 // Rating
                 VStack(alignment: .leading, spacing: 12) {
-                    
+
                     RatingView(rating: $viewModel.rating)
                         .frame(maxWidth: .infinity)
                 }
                 .padding(.horizontal)
-                
+
                 // Comment
                 Section {
                     TextEditor(text: $viewModel.comment)
@@ -74,15 +77,18 @@ struct MarkView: View {
                 } footer: {
                     Text("Optional")
                 }
-                
+
                 // Advanced Options
                 Section {
                     DisclosureGroup("Advanced", isExpanded: $showAdvanced) {
                         Toggle("Public", isOn: $viewModel.isPublic)
-                        Toggle("Share to Fediverse", isOn: $viewModel.postToFediverse)
-                        
-                        Toggle("Use Current Time", isOn: $viewModel.useCurrentTime)
-                        
+                        Toggle(
+                            "Share to Fediverse",
+                            isOn: $viewModel.postToFediverse)
+
+                        Toggle(
+                            "Use Current Time", isOn: $viewModel.useCurrentTime)
+
                         if !viewModel.useCurrentTime {
                             DatePicker(
                                 "Created Time",
@@ -92,7 +98,7 @@ struct MarkView: View {
                         }
                     }
                 }
-                
+
                 // Delete Button
                 if viewModel.existingMark != nil {
                     Section {
@@ -109,7 +115,7 @@ struct MarkView: View {
             }
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
-            
+
             // Bottom Save Button
             VStack(spacing: 16) {
                 Button {
@@ -150,7 +156,7 @@ struct MarkView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -158,4 +164,3 @@ struct MarkView: View {
     MarkView(item: ItemSchema.preview)
         .environmentObject(AppAccountsManager())
 }
-

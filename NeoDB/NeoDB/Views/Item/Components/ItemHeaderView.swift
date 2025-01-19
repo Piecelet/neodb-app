@@ -5,8 +5,8 @@
 //  Created by citron on 1/15/25.
 //
 
-import SwiftUI
 import Kingfisher
+import SwiftUI
 
 struct ItemHeaderView: View {
     let title: String
@@ -14,7 +14,7 @@ struct ItemHeaderView: View {
     let rating: String
     let ratingCount: String
     let metadata: [(String, String)]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Cover and Title
@@ -24,13 +24,13 @@ struct ItemHeaderView: View {
                     .placeholder {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(2/3, contentMode: .fit)
+                            .aspectRatio(2 / 3, contentMode: .fit)
                             .frame(width: 120)
                     }
                     .onFailure { _ in
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(2/3, contentMode: .fit)
+                            .aspectRatio(2 / 3, contentMode: .fit)
                             .frame(width: 120)
                             .overlay {
                                 Image(systemName: "photo")
@@ -41,13 +41,13 @@ struct ItemHeaderView: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 120, height: 180)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
-                
+
                 VStack(alignment: .leading, spacing: 8) {
                     Text(title)
                         .font(.title2)
                         .fontWeight(.bold)
                         .lineLimit(3)
-                    
+
                     // Rating
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
@@ -61,7 +61,7 @@ struct ItemHeaderView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-            
+
             // Metadata
             if !metadata.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -84,14 +84,15 @@ struct ItemHeaderView: View {
 
 #Preview {
     ItemHeaderView(
-        title: "Sample Book Title That is Very Long and Might Need Multiple Lines",
+        title:
+            "Sample Book Title That is Very Long and Might Need Multiple Lines",
         coverURL: nil,
         rating: "4.5",
         ratingCount: "123",
         metadata: [
             ("Author", "John Doe"),
             ("Published", "2024"),
-            ("ISBN", "978-3-16-148410-0")
+            ("ISBN", "978-3-16-148410-0"),
         ]
     )
-} 
+}
