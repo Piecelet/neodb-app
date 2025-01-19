@@ -101,7 +101,7 @@ enum SheetDestination: Identifiable {
     case replyToStatus(status: MastodonStatus)
     case addToShelf(item: any ItemProtocol)
     case editShelfItem(mark: MarkSchema)
-    case itemDetails([String])
+    case itemDetails(item: any ItemProtocol)
 //    case editMark(item: any ItemProtocol, mark: MarkSchema? = nil)
     
     var id: String {

@@ -176,13 +176,13 @@ struct ItemView: View {
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
-                
+
                 Button {
-                    router.presentSheet(.itemDetails(viewModel.allMetadata))
+                    router.presentSheet(.itemDetails(item: viewModel.item!))
                 } label: {
                     Text("View Details")
                         .font(.caption)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(.accent)
                 }
             }
         }
@@ -292,7 +292,9 @@ struct ItemView: View {
             }
         } label: {
             HStack {
-                Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                Image(
+                    systemName: viewModel.shelfType == nil
+                        ? "plus" : "checkmark")
                 if let shelfType = viewModel.shelfType {
                     Text(shelfType.displayName)
                 } else {
@@ -339,44 +341,6 @@ struct ItemView: View {
     // MARK: - Helper Properties
     private var itemUUID: String {
         URL(string: id)?.lastPathComponent ?? id
-    }
-
-    // MARK: - Details Sheet
-    struct ItemDetailsSheet: View {
-        @Environment(\.dismiss) private var dismiss
-        let metadata: [String]
-        @State private var selectedText: String?
-        
-        var body: some View {
-            NavigationStack {
-                List(metadata, id: \.self) { item in
-                    if let separatorIndex = item.firstIndex(of: ":") {
-                        HStack(alignment: .top, spacing: 12) {
-                            Text(String(item[..<separatorIndex]))
-                                .foregroundStyle(.secondary)
-                                .frame(width: 120, alignment: .leading)
-                            
-                            Text(String(item[item.index(after: separatorIndex)...]).trimmingCharacters(in: .whitespaces))
-                                .textSelection(.enabled)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    } else {
-                        Text(item)
-                            .textSelection(.enabled)
-                    }
-                }
-                .navigationTitle("Details")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") {
-                            dismiss()
-                        }
-                    }
-                }
-            }
-            .presentationDetents([.medium, .large])
-        }
     }
 
     #if DEBUG

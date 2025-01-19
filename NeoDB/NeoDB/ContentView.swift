@@ -81,8 +81,8 @@ struct ContentView: View {
             case .editShelfItem(let mark):
                 MarkView(item: mark.item, mark: mark)
                     .environmentObject(accountsManager)
-            case .itemDetails(let metadata):
-                ItemView.ItemDetailsSheet(metadata: metadata)
+            case .itemDetails(let item):
+                ItemDetailsSheet(item: item)
             }
         }
     }
