@@ -13,6 +13,8 @@ struct ShelfFilterView: View {
     let onShelfTypeChange: (ShelfType) -> Void
     let onCategoryChange: (ItemCategory?) -> Void
     
+    @State private var activeTab: ItemCategoryModel = .allItems
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Shelf Type Picker
@@ -46,54 +48,12 @@ struct ShelfFilterView: View {
                 }
             }
             
-            // Category Filter
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    Button {
-                        selectedCategory = nil
-                        onCategoryChange(nil)
-                    } label: {
-                        Text("All")
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 6)
-                            .background(
-                                selectedCategory == nil ?
-                                Color.accentColor :
-                                Color.secondary.opacity(0.1)
-                            )
-                            .foregroundStyle(
-                                selectedCategory == nil ?
-                                Color.white :
-                                Color.primary
-                            )
-                            .clipShape(Capsule())
-                    }
-                    .buttonStyle(.plain)
-                    
-                    ForEach([ItemCategory.book, .movie, .tv, .game], id: \.self) { category in
-                        Button {
-                            selectedCategory = category
-                            onCategoryChange(category)
-                        } label: {
-                            Text(category.rawValue.capitalized)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(
-                                    selectedCategory == category ?
-                                    Color.accentColor :
-                                    Color.secondary.opacity(0.1)
-                                )
-                                .foregroundStyle(
-                                    selectedCategory == category ?
-                                    Color.white :
-                                    Color.primary
-                                )
-                                .clipShape(Capsule())
-                        }
-                        .buttonStyle(.plain)
-                    }
+            // Category Filter using ItemCategoryBarView
+            ItemCategoryBarView(activeTab: $activeTab)
+                .onChange(of: activeTab) { newValue in
+                    selectedCategory = newValue.category
+                    onCategoryChange(newValue.category)
                 }
-            }
         }
         .enableInjection()
     }
