@@ -20,7 +20,7 @@ struct AppAccount: Codable, Identifiable {
         key
     }
 
-    var key: String {
+    private var key: String {
         if let oauthToken {
             return "\(instance):\(oauthToken.createdAt)"
         } else {

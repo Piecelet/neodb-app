@@ -72,14 +72,10 @@ class TimelinesViewModel: ObservableObject {
             error = nil
             detailedError = nil
 
-            let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
-            logger.debug("Using cache key: \(cacheKey)")
-
             do {
                 // Only load from cache if not refreshing and statuses is empty
                 if !refresh && statuses.isEmpty,
-                    let cached = try? await cacheService.retrieve(
-                        forKey: cacheKey, type: [MastodonStatus].self)
+                   let cached = try? await cacheService.retrieveTimelines(key: accountsManager.currentAccount.id)
                 {
                     if !Task.isCancelled {
                         statuses = cached
@@ -119,8 +115,7 @@ class TimelinesViewModel: ObservableObject {
                     statuses.append(contentsOf: newStatuses)
                 }
 
-                try? await cacheService.cache(
-                    statuses, forKey: cacheKey, type: [MastodonStatus].self)
+                try? await cacheService.cacheTimelines(statuses, key: accountsManager.currentAccount.id)
 
                 maxId = newStatuses.last?.id
                 hasMore = !newStatuses.isEmpty

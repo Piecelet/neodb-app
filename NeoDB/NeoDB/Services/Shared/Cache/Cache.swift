@@ -34,6 +34,10 @@ extension CacheService {
         static func gallery(instance: String) -> String {
             "gallery_\(instance)"
         }
+
+        static func timelines(key: String) -> String {
+            "timelines_\(key)"
+        }
     }
     
     // MARK: - Item Caching
@@ -148,6 +152,23 @@ extension CacheService {
     func removeGallery(instance: String) async throws {
         let key = Keys.gallery(instance: instance)
         try await remove(forKey: key, type: [GalleryResult].self)
+    }
+
+    // MARK: - Timelines Caching
+
+    func cacheTimelines(_ timelines: [MastodonStatus], key: String) async throws {
+        let key = Keys.timelines(key: key)
+        try await cache(timelines, forKey: key, type: [MastodonStatus].self)
+    }
+
+    func retrieveTimelines(key: String) async throws -> [MastodonStatus]? {
+        let key = Keys.timelines(key: key)
+        return try await retrieve(forKey: key, type: [MastodonStatus].self)
+    }
+
+    func removeTimelines(key: String) async throws {
+        let key = Keys.timelines(key: key)
+        try await remove(forKey: key, type: [MastodonStatus].self)
     }
 }
 
