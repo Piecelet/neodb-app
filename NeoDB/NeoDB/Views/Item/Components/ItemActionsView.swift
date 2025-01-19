@@ -13,14 +13,14 @@ struct ItemActionsView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var itemViewModel: ItemViewModel
-    
+
     let isRefreshing: Bool
-    
+
     init(isRefreshing: Bool = false) {
         self.isRefreshing = isRefreshing
         self._viewModel = StateObject(wrappedValue: ItemActionsViewModel())
     }
-    
+
     var body: some View {
         VStack(spacing: 12) {
             if viewModel.isLoading {
@@ -50,7 +50,7 @@ struct ItemActionsView: View {
                             .foregroundStyle(.secondary)
                     }
                     .font(.subheadline)
-                    
+
                     if let comment = mark.commentText, !comment.isEmpty {
                         Text(comment)
                             .font(.subheadline)
@@ -61,7 +61,7 @@ struct ItemActionsView: View {
                 .background(Color.secondary.opacity(0.1))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            
+
             // Primary Action
             Button {
                 if let item = itemViewModel.item {
@@ -73,7 +73,9 @@ struct ItemActionsView: View {
                 }
             } label: {
                 HStack {
-                    Image(systemName: viewModel.shelfType == nil ? "plus" : "checkmark")
+                    Image(
+                        systemName: viewModel.shelfType == nil
+                            ? "plus" : "checkmark")
                     if let shelfType = viewModel.shelfType {
                         Text(shelfType.displayName)
                     } else {
@@ -85,42 +87,8 @@ struct ItemActionsView: View {
             }
             .buttonStyle(.borderedProminent)
             .disabled(viewModel.isLoading)
-            
-            HStack(spacing: 12) {
-                // Share Button
-                if let url = viewModel.shareURL {
-                    ShareLink(item: url) {
-                        HStack {
-                            Image(systemName: "square.and.arrow.up")
-                            Text("Share")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.bordered)
-                }
-                
-                // External Links
-                if let resources = itemViewModel.item?.externalResources, !resources.isEmpty {
-                    Menu {
-                        ForEach(resources, id: \.url) { resource in
-                            Button {
-                                openURL(resource.url)
-                            } label: {
-                                Label(resource.url.host ?? "External Link", systemImage: "link")
-                            }
-                        }
-                    } label: {
-                        HStack {
-                            Image(systemName: "globe")
-                            Text("Links")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                    }
-                    .buttonStyle(.bordered)
-                }
-            }
+
+            // Share Button and External Links have been moved to ItemView toolbar
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
