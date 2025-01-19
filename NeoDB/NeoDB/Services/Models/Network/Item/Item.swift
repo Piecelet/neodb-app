@@ -17,7 +17,7 @@ protocol ItemProtocol: Codable, Hashable, Identifiable {
     var category: ItemCategory { get }
     var parentUuid: String? { get }
     var displayTitle: String? { get }
-    var externalResources: [ExternalResourceSchema]? { get }
+    var externalResources: [ItemExternalResourceSchema]? { get }
     var title: String? { get }
     var description: String? { get }
     var localizedTitle: [LocalizedTitleSchema]? { get }
@@ -71,7 +71,7 @@ struct ItemSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -121,7 +121,7 @@ struct EditionSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -158,7 +158,7 @@ struct MovieSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -193,7 +193,7 @@ struct TVShowSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -236,7 +236,7 @@ struct TVShowSchema: ItemProtocol {
 //    let category: ItemCategory
 //    let parentUuid: String?
 //    let displayTitle: String?
-//    let externalResources: [ExternalResourceSchema]?
+//    let externalResources: [ItemExternalResourceSchema]?
 //    let title: String?
 //    let description: String?
 //    let localizedTitle: [LocalizedTitleSchema]?
@@ -273,7 +273,7 @@ struct TVShowSchema: ItemProtocol {
 //    let category: ItemCategory
 //    let parentUuid: String?
 //    let displayTitle: String?
-//    let externalResources: [ExternalResourceSchema]?
+//    let externalResources: [ItemExternalResourceSchema]?
 //    let title: String?
 //    let description: String?
 //    let localizedTitle: [LocalizedTitleSchema]?
@@ -297,7 +297,7 @@ struct AlbumSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -328,7 +328,7 @@ struct PodcastSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -358,7 +358,7 @@ struct GameSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -388,7 +388,7 @@ struct PerformanceSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?
@@ -426,7 +426,7 @@ struct PerformanceProductionSchema: ItemProtocol {
     let category: ItemCategory
     let parentUuid: String?
     let displayTitle: String?
-    let externalResources: [ExternalResourceSchema]?
+    let externalResources: [ItemExternalResourceSchema]?
     let title: String?
     let description: String?
     let localizedTitle: [LocalizedTitleSchema]?

@@ -60,8 +60,8 @@ struct ItemView: View {
                                     openURL(resource.url)
                                 } label: {
                                     Label(
-                                        resource.url.host ?? "External Link",
-                                        systemImage: "link")
+                                        resource.name,
+                                        systemImage: resource.icon)
                                 }
                             }
                         } label: {
