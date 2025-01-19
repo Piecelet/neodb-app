@@ -34,17 +34,17 @@ class TimelinesViewModel: ObservableObject {
 
     func loadTimeline(refresh: Bool = false) async {
         loadTask?.cancel()
-        
+
         loadTask = Task {
             guard let accountsManager = accountsManager else {
                 logger.debug("No accountsManager available")
                 return
             }
-            
+
             logger.debug(
                 "Loading timeline for instance: \(accountsManager.currentAccount.instance)"
             )
-            
+
             if refresh {
                 logger.debug("Refreshing timeline, resetting pagination")
                 maxId = nil
@@ -61,20 +61,20 @@ class TimelinesViewModel: ObservableObject {
                     isLoading = true
                 }
             }
-            
+
             defer {
                 if !Task.isCancelled {
                     isLoading = false
                     isRefreshing = false
                 }
             }
-            
+
             error = nil
             detailedError = nil
-            
+
             let cacheKey = "\(accountsManager.currentAccount.instance)_timeline"
             logger.debug("Using cache key: \(cacheKey)")
-            
+
             do {
                 // Only load from cache if not refreshing and statuses is empty
                 if !refresh && statuses.isEmpty,
@@ -87,45 +87,46 @@ class TimelinesViewModel: ObservableObject {
                             "Loaded \(cached.count) statuses from cache")
                     }
                 }
-                
+
                 guard !Task.isCancelled else {
                     logger.debug("Timeline loading cancelled")
                     return
                 }
-                
+
                 guard accountsManager.isAuthenticated else {
                     logger.error("User not authenticated")
                     throw NetworkError.unauthorized
                 }
-                
+
                 let endpoint = TimelinesEndpoint.pub(
-                    sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
+                    sinceId: nil, maxId: maxId, minId: nil, local: true,
+                    limit: nil)
                 logger.debug(
                     "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
                 )
-                
+
                 let newStatuses = try await accountsManager.currentClient.fetch(
                     endpoint, type: [MastodonStatus].self)
-                
+
                 guard !Task.isCancelled else {
                     logger.debug("Timeline loading cancelled after fetch")
                     return
                 }
-                
+
                 if refresh {
                     statuses = newStatuses
                 } else {
                     statuses.append(contentsOf: newStatuses)
                 }
-                
+
                 try? await cacheService.cache(
                     statuses, forKey: cacheKey, type: [MastodonStatus].self)
-                
+
                 maxId = newStatuses.last?.id
                 hasMore = !newStatuses.isEmpty
                 logger.debug(
                     "Successfully loaded \(newStatuses.count) statuses")
-                
+
             } catch {
                 if !Task.isCancelled {
                     logger.error(
@@ -138,7 +139,7 @@ class TimelinesViewModel: ObservableObject {
                 }
             }
         }
-        
+
         await loadTask?.value
     }
 }
@@ -148,6 +149,7 @@ struct TimelinesView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         Group {
@@ -157,17 +159,16 @@ struct TimelinesView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(viewModel.detailedError ?? error)
                 )
-                .refreshable {
-                    await viewModel.loadTimeline(refresh: true)
-                }
-            } else if viewModel.statuses.isEmpty && !viewModel.isLoading && !viewModel.isRefreshing {
-                EmptyStateView(
-                    "No Posts Yet",
-                    systemImage: "text.bubble",
-                    description: Text("Follow some users to see their posts here")
-                )
-                .refreshable {
-                    await viewModel.loadTimeline(refresh: true)
+            } else if viewModel.statuses.isEmpty {
+                if viewModel.isLoading || viewModel.isRefreshing {
+                    timelineSkeletonContent
+                } else {
+                    EmptyStateView(
+                        "No Posts Yet",
+                        systemImage: "text.bubble",
+                        description: Text(
+                            "Follow some users to see their posts here")
+                    )
                 }
             } else {
                 timelineContent
@@ -178,6 +179,16 @@ struct TimelinesView: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadTimeline()
         }
+        .refreshable {
+            await viewModel.loadTimeline(refresh: true)
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .active {
+                Task {
+                    await viewModel.loadTimeline(refresh: true)
+                }
+            }
+        }
     }
 
     private var timelineContent: some View {
@@ -185,8 +196,8 @@ struct TimelinesView: View {
             LazyVStack(spacing: 0) {
                 ForEach(viewModel.statuses) { status in
                     Button {
-                       router.navigate(
-                           to: .statusDetailWithStatus(status: status))
+                        router.navigate(
+                            to: .statusDetailWithStatus(status: status))
                     } label: {
                         StatusView(status: status)
                             .onAppear {
@@ -207,8 +218,53 @@ struct TimelinesView: View {
                 }
             }
         }
-        .refreshable {
-            await viewModel.loadTimeline(refresh: true)
+    }
+
+    private var timelineSkeletonContent: some View {
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(0..<5, id: \.self) { _ in
+                    statusSkeletonView
+                }
+            }
+            .padding()
         }
+    }
+
+    private var statusSkeletonView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Avatar and name
+            HStack(spacing: 8) {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 40, height: 40)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 120, height: 16)
+
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(width: 80, height: 14)
+                }
+            }
+
+            // Content
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(0..<3, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.gray.opacity(0.2))
+                        .frame(height: 16)
+                }
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 200, height: 16)
+            }
+        }
+        .padding()
+        .background(Color(uiColor: .systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
     }
 }
