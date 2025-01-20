@@ -134,11 +134,11 @@ enum ItemCategory: String, Codable, CaseIterable {
         switch self {
         case .book: 
             return Color(red: 236/255, green: 138/255, blue: 37/255)  // 柔和橙色
-        case .movie: 
+        case .movie:
             return Color(red: 226/255, green: 62/255, blue: 87/255)   // 柔和紅色
         case .tv, .tvSeason, .tvEpisode: 
-            return Color(red: 88/255, green: 86/255, blue: 214/255)   // 靛藍紫色
-        case .music: 
+            return Color(red: 77/255, green: 75/255, blue: 186/255)   // 靛藍紫色
+        case .music:
             return Color(red: 211/255, green: 82/255, blue: 73/255)   // 柔和紅色
         case .game: 
             return Color(red: 215/255, green: 153/255, blue: 33/255)  // 深金黃色
