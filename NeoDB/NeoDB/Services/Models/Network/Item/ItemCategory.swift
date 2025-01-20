@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SFSafeSymbols
 
 enum ItemCategory: String, Codable, CaseIterable {
     case book
@@ -67,17 +68,17 @@ enum ItemCategory: String, Codable, CaseIterable {
             }
         }
 
-        var symbolImage: String {
+        var symbolImage: Symbol {
             switch self {
-            case .allItems: return "square.grid.2x2"
-            default: return self.itemCategory?.symbolImage ?? ""
+            case .allItems: return .sfSymbol(.squareGrid2x2)
+            default: return self.itemCategory?.symbolImage ?? .systemSymbol(self.rawValue)
             }
         }
 
-        var symbolImageFill: String {
+        var symbolImageFill: Symbol {
             switch self {
-            case .allItems: return "square.grid.2x2.fill"
-            default: return self.itemCategory?.symbolImageFill ?? ""
+            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
+            default: return self.itemCategory?.symbolImageFill ?? .systemSymbol(self.rawValue)
             }
         }
 
@@ -96,36 +97,36 @@ enum ItemCategory: String, Codable, CaseIterable {
         }
     }
 
-    var symbolImage: String {
+    var symbolImage: Symbol {
         switch self {
-        case .book: return "book"
-        case .movie: return "film"
-        case .tv: return "tv"
-        case .tvSeason: return "tv"
-        case .tvEpisode: return "tv"
-        case .music: return "music.note"
-        case .game: return "gamecontroller"
-        case .podcast: return "mic"
-        case .performance: return "theatermasks"
-        case .performanceProduction: return "theatermasks"
-        case .fanfic: return "book"
-        case .exhibition: return "theatermasks"
-        case .collection: return "square.grid.2x2"
+        case .book: return .sfSymbol(.book)
+        case .movie: return .sfSymbol(.film)
+        case .tv: return .sfSymbol(.tv)
+        case .tvSeason: return .sfSymbol(.tv)
+        case .tvEpisode: return .sfSymbol(.tv)
+        case .music: return .sfSymbol(.musicNote)
+        case .game: return .systemSymbol("gamecontroller")
+        case .podcast: return .custom("custom.podcast")
+        case .performance: return .sfSymbol(.theatermasks)
+        case .performanceProduction: return .sfSymbol(.theatermasks)
+        case .fanfic: return .sfSymbol(.book)
+        case .exhibition: return .sfSymbol(.theatermasks)
+        case .collection: return .sfSymbol(.squareGrid2x2)
         }
     }
 
-    var symbolImageFill: String {
+    var symbolImageFill: Symbol {
         switch self {
-        case .book: return "book.fill"
-        case .movie: return "film.fill"
-        case .tv, .tvSeason, .tvEpisode: return "tv.fill"
-        case .music: return "music.note"
-        case .game: return "gamecontroller.fill"
-        case .podcast: return "mic.fill"
-        case .performance, .performanceProduction: return "theatermasks.fill"
-        case .fanfic: return "book.fill"
-        case .exhibition: return "theatermasks.fill"
-        case .collection: return "square.grid.2x2.fill"
+        case .book: return .sfSymbol(.bookFill)
+        case .movie: return .sfSymbol(.filmFill)
+        case .tv, .tvSeason, .tvEpisode: return .sfSymbol(.tvFill)
+        case .music: return .sfSymbol(.musicNote)
+        case .game: return .systemSymbol("gamecontroller.fill")
+        case .podcast: return .custom("custom.podcast")
+        case .performance, .performanceProduction: return .sfSymbol(.theatermasksFill)
+        case .fanfic: return .sfSymbol(.bookFill)
+        case .exhibition: return .sfSymbol(.theatermasksFill)
+        case .collection: return .sfSymbol(.squareGrid2x2Fill)
         }
     }
 
@@ -136,19 +137,19 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .movie: 
             return Color(red: 226/255, green: 62/255, blue: 87/255)   // 柔和紅色
         case .tv, .tvSeason, .tvEpisode: 
-            return Color(red: 48/255, green: 102/255, blue: 92/255)   // 深青色，接近 accent color
+            return Color(red: 88/255, green: 86/255, blue: 214/255)   // 靛藍紫色
         case .music: 
-            return Color(red: 156/255, green: 85/255, blue: 191/255)  // 柔和紫色
+            return Color(red: 211/255, green: 82/255, blue: 73/255)   // 柔和紅色
         case .game: 
-            return Color(red: 241/255, green: 190/255, blue: 56/255)  // 溫暖金黃色
+            return Color(red: 215/255, green: 153/255, blue: 33/255)  // 深金黃色
         case .podcast: 
-            return Color(red: 156/255, green: 85/255, blue: 191/255) // 淺紫色
+            return Color(red: 156/255, green: 85/255, blue: 191/255)  // 紫色
         case .performance, .performanceProduction: 
-            return Color(red: 211/255, green: 82/255, blue: 73/255)   // 柔和紅褐色
+            return Color(red: 86/255, green: 112/255, blue: 154/255)  // 深藍色
         case .fanfic: 
             return Color(red: 98/255, green: 122/255, blue: 180/255)  // 柔和藍色
         case .exhibition: 
-            return Color(red: 86/255, green: 112/255, blue: 154/255)  // 深藍色
+            return Color(red: 128/255, green: 128/255, blue: 128/255) // 中性灰
         case .collection: 
             return Color(red: 128/255, green: 128/255, blue: 128/255) // 中性灰
         }

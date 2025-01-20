@@ -12,6 +12,7 @@
 		2403F2762D32511E00ED4CB5 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 2403F2752D32511E00ED4CB5 /* Cache */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
 		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
+		243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 243C39242D3E7ABA00EB356A /* SFSafeSymbols */; };
 		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
@@ -82,6 +83,7 @@
 				2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */,
 				2403F2762D32511E00ED4CB5 /* Cache in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
+				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
@@ -165,6 +167,7 @@
 				2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */,
 				2403F2752D32511E00ED4CB5 /* Cache */,
 				243C38EA2D3D999B00EB356A /* ExpandableText */,
+				243C39242D3E7ABA00EB356A /* SFSafeSymbols */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -256,6 +259,7 @@
 				2403E7622D2EF7AE00ED4CB5 /* XCRemoteSwiftPackageReference "HTML2Markdown" */,
 				2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2403F2742D3250FE00ED4CB5 /* XCRemoteSwiftPackageReference "Cache" */,
+				243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -710,6 +714,14 @@
 				minimumVersion = 1.2.6;
 			};
 		};
+		243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SFSafeSymbols/SFSafeSymbols";
+			requirement = {
+				branch = stable;
+				kind = branch;
+			};
+		};
 		245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
@@ -760,6 +772,11 @@
 		243C38EA2D3D999B00EB356A /* ExpandableText */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ExpandableText;
+		};
+		243C39242D3E7ABA00EB356A /* SFSafeSymbols */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */;
+			productName = SFSafeSymbols;
 		};
 		245FD2122D2A817A005B55B3 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;

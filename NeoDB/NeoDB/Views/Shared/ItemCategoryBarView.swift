@@ -52,12 +52,12 @@ struct ItemCategoryBarView: View {
     @ViewBuilder
     func ResizableTabButton(_ tab: ItemCategory.shelfAvailable) -> some View {
         HStack(spacing: 6) {
-            Image(systemName: tab.symbolImage)
+            Image(symbol: tab.symbolImage)
                 .font(.system(size: 16))
                 .frame(width: 20, height: 20)
                 .opacity(activeTab != tab ? 1 : 0)
                 .overlay {
-                    Image(systemName: tab.symbolImageFill)
+                    Image(symbol: tab.symbolImageFill)
                         .font(.system(size: 16))
                         .frame(width: 20, height: 20)
                         .opacity(activeTab == tab ? 1 : 0)
