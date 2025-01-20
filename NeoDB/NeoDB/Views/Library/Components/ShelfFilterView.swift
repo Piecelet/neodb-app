@@ -13,7 +13,7 @@ struct ShelfFilterView: View {
     let onShelfTypeChange: (ShelfType) -> Void
     let onCategoryChange: (ItemCategory?) -> Void
     
-    @State private var activeTab: ItemCategoryModel = .allItems
+    @State private var activeTab: ItemCategory.shelfAvailable = .allItems
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -51,8 +51,8 @@ struct ShelfFilterView: View {
             // Category Filter using ItemCategoryBarView
             ItemCategoryBarView(activeTab: $activeTab)
                 .onChange(of: activeTab) { newValue in
-                    selectedCategory = newValue.category
-                    onCategoryChange(newValue.category)
+                    selectedCategory = newValue.itemCategory
+                    onCategoryChange(newValue.itemCategory)
                 }
         }
         .enableInjection()
