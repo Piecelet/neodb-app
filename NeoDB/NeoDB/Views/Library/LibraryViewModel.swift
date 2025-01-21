@@ -68,7 +68,7 @@ final class LibraryViewModel: ObservableObject {
             
             logger.debug("Loading shelf items for type: \(type), instance: \(accountsManager.currentAccount.instance)")
             
-            await updateLoadingState(type: type, refresh: refresh)
+            updateLoadingState(type: type, refresh: refresh)
             
             defer {
                 if !Task.isCancelled {
@@ -84,27 +84,34 @@ final class LibraryViewModel: ObservableObject {
                 state.detailedError = nil
             }
             
-            do {
-                if !refresh && currentShelfState.items.isEmpty,
-                   let cached = try? await cacheService.retrieveLibrary(
+            // 先尝试加载缓存
+            if !refresh {
+                if let cached = try? await cacheService.retrieveLibrary(
                     key: accountsManager.currentAccount.id,
                     shelfType: type,
-                    category: selectedCategory)
-                {
+                    category: selectedCategory
+                ) {
                     await handleCachedItems(cached, type: type)
-                    return
                 }
-                
-                guard !Task.isCancelled else {
-                    logger.debug("Shelf items loading cancelled for type: \(type)")
-                    return
-                }
-                
+            }
+            
+            // 无论是否有缓存，都进行网络请求
+            guard !Task.isCancelled else {
+                logger.debug("Shelf items loading cancelled for type: \(type)")
+                return
+            }
+            
+            do {
                 let result = try await fetchItems(type: type, using: accountsManager)
                 await handleFetchedItems(result, type: type, accountsManager: accountsManager)
-                
             } catch {
-                await handleError(error, type: type)
+                // 如果网络请求失败，但有缓存数据，保持缓存数据显示
+                let state = shelfStates[type] ?? ShelfItemsState()
+                if state.items.isEmpty {
+                    await handleError(error, type: type)
+                } else {
+                    logger.error("Network request failed, keeping cached data: \(error.localizedDescription)")
+                }
             }
         }
         
@@ -133,10 +140,18 @@ final class LibraryViewModel: ObservableObject {
     
     func changeCategory(_ category: ItemCategory.shelfAvailable) {
         selectedCategory = category
-        // 重新加载所有 shelf
-        for type in ShelfType.allCases {
-            Task {
-                await loadShelfItems(type: type, refresh: true)
+        
+        // 优先加载当前 shelf type
+        Task {
+            await loadShelfItems(type: selectedShelfType)
+            
+            // 然后异步加载其他 shelf types
+            await withTaskGroup(of: Void.self) { group in
+                for type in ShelfType.allCases where type != selectedShelfType {
+                    group.addTask {
+                        await self.loadShelfItems(type: type)
+                    }
+                }
             }
         }
     }
@@ -178,11 +193,6 @@ final class LibraryViewModel: ObservableObject {
                 state.state = .loaded
             }
             logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
-            
-            // Refresh in background
-            Task {
-                await refreshInBackground(type: type)
-            }
         }
     }
     
@@ -240,31 +250,6 @@ final class LibraryViewModel: ObservableObject {
                 }
                 state.state = .error
             }
-        }
-    }
-    
-    private func refreshInBackground(type: ShelfType) async {
-        guard let accountsManager = accountsManager else { return }
-        
-        do {
-            let result = try await fetchItems(type: type, using: accountsManager)
-            try? await cacheService.cacheLibrary(
-                result,
-                key: accountsManager.currentAccount.id,
-                shelfType: type,
-                category: selectedCategory
-            )
-            
-            if !Task.isCancelled {
-                updateShelfState(type: type) { state in
-                    state.items = result.data
-                    state.totalPages = result.pages
-                }
-            }
-            
-            logger.debug("Background refresh completed for type: \(type)")
-        } catch {
-            logger.error("Background refresh failed for type \(type): \(error.localizedDescription)")
         }
     }
 } 

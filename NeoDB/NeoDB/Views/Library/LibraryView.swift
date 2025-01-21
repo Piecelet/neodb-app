@@ -23,20 +23,21 @@ struct LibraryView: View {
     var body: some View {
         VStack(spacing: 0) {
             categoryFilter
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 shelfTypePicker
                     .padding(.horizontal)
                     .padding(.vertical, 8)
             }
-            
+
             TabView(selection: $viewModel.selectedShelfType) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
                     ScrollView {
                         shelfContentView(for: type)
                     }
                     .refreshable {
-                        await viewModel.loadShelfItems(type: type, refresh: true)
+                        await viewModel.loadShelfItems(
+                            type: type, refresh: true)
                     }
                     .tag(type)
                 }
@@ -54,8 +55,18 @@ struct LibraryView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            // 初始加载当前选中的 shelf
+            // 优先加载当前选中的 shelf
             await viewModel.loadShelfItems(type: viewModel.selectedShelfType)
+
+            // 异步加载其他 shelf types
+            await withTaskGroup(of: Void.self) { group in
+                for type in ShelfType.allCases
+                where type != viewModel.selectedShelfType {
+                    group.addTask {
+                        await viewModel.loadShelfItems(type: type)
+                    }
+                }
+            }
         }
         .onDisappear {
             viewModel.cleanup()
@@ -73,7 +84,7 @@ struct LibraryView: View {
     private var headerView: some View {
         VStack(spacing: 0) {
             categoryFilter
-            
+
             ScrollView(.horizontal, showsIndicators: false) {
                 shelfTypePicker
                     .padding(.horizontal)
@@ -88,11 +99,21 @@ struct LibraryView: View {
             ForEach(ShelfType.allCases, id: \.self) { type in
                 VStack(spacing: 8) {
                     Text(type.displayName)
-                        .font(.system(size: 15, weight: viewModel.selectedShelfType == type ? .semibold : .regular))
-                        .foregroundStyle(viewModel.selectedShelfType == type ? .primary : .secondary)
-                    
+                        .font(
+                            .system(
+                                size: 15,
+                                weight: viewModel.selectedShelfType == type
+                                    ? .semibold : .regular)
+                        )
+                        .foregroundStyle(
+                            viewModel.selectedShelfType == type
+                                ? .primary : .secondary)
+
                     Rectangle()
-                        .fill(viewModel.selectedShelfType == type ? Color.accentColor : .clear)
+                        .fill(
+                            viewModel.selectedShelfType == type
+                                ? Color.accentColor : .clear
+                        )
                         .frame(height: 2)
                 }
                 .contentShape(Rectangle())
@@ -107,31 +128,34 @@ struct LibraryView: View {
     }
 
     private var categoryFilter: some View {
-        ItemCategoryBarView(activeTab: $activeTab)
-            .onChange(of: activeTab) { newValue in
-                viewModel.changeCategory(newValue)
-            }
+        ItemCategoryBarView(activeTab: $viewModel.selectedCategory)
     }
 
     // MARK: - Shelf Content View
     @ViewBuilder
     private func shelfContentView(for type: ShelfType) -> some View {
         let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-        
-        if let error = state.error {
-            EmptyStateView(
-                "Couldn't Load Library",
-                systemImage: "exclamationmark.triangle",
-                description: Text(state.detailedError ?? error)
-            )
-        } else if state.items.isEmpty && !state.isLoading && !state.isRefreshing {
-            EmptyStateView(
-                "No Items Found",
-                systemImage: "books.vertical",
-                description: Text(
-                    "Add some items to your \(type.displayName.lowercased()) list"
+
+        if state.items.isEmpty {
+            if let error = state.error {
+                EmptyStateView(
+                    "Couldn't Load Library",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(state.detailedError ?? error)
                 )
-            )
+            } else if !state.isLoading && !state.isRefreshing {
+                EmptyStateView(
+                    "No Items Found",
+                    systemImage: "books.vertical",
+                    description: Text(
+                        "Add some items to your \(type.displayName.lowercased()) list"
+                    )
+                )
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
         } else {
             shelfItemsList(for: type)
         }
@@ -139,7 +163,7 @@ struct LibraryView: View {
 
     private func shelfItemsList(for type: ShelfType) -> some View {
         let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-        
+
         return LazyVStack(spacing: 12) {
             ForEach(state.items) { mark in
                 Button {
