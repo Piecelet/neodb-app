@@ -17,13 +17,11 @@ struct StatusView: View {
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     
-    private var extractedItem: ItemSchema? {
+    private var extractedItem: (any ItemProtocol)? {
         if let urls = status.content.extractURLs() {
             for url in urls {
-//                logger.debug("Attempting to parse URL from status content: \(url.absoluteString)")
-                if case .itemDetailWithItem(let item) = NeoDBURL.parseItemURL(url) {
-//                   logger.debug("Successfully extracted item: \(item.displayTitle)")
-                   return item
+                if let item = NeoDBURL.parseItemURL(url) {
+                    return item
                 }
             }
             logger.debug("Failed to parse item from URL")

@@ -16,8 +16,8 @@ class URLHandler {
     ) {
         logger.debug("Handling URL: \(url.absoluteString)")
         
-        if let destination = NeoDBURL.parseItemURL(url) {
-            completion(destination)
+        if let destinationItem = NeoDBURL.parseItemURL(url) {
+            completion(.itemDetailWithItem(item: destinationItem))
         } else {
             completion(nil)
         }

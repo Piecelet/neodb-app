@@ -95,6 +95,13 @@ enum ItemCategory: String, Codable, CaseIterable {
             default: return self.itemCategory?.color ?? .gray
             }
         }
+
+        var aspectRatio: CGFloat {
+            switch self {
+            case .music: return 1/1
+            default: return 2/3
+            }
+        }
     }
 
     var symbolImage: Symbol {

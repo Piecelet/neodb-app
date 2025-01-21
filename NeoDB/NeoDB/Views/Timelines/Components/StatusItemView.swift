@@ -13,7 +13,7 @@ struct StatusItemView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
-    init(item: ItemSchema) {
+    init(item: any ItemProtocol) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
     }
 
@@ -24,36 +24,11 @@ struct StatusItemView: View {
             LazyVStack {
                 HStack(spacing: 12) {
                     // Cover Image
-                    KFImage(viewModel.item.coverImageUrl)
-                        .placeholder {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(height: 64)
-                        }
-                        .onFailure { _ in
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(height: 64)
-                                .overlay {
-                                    Image(systemName: "photo")
-                                        .foregroundStyle(.secondary)
-                                }
-                        }
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 64)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .overlay {
-                            if viewModel.showSkeleton {
-                                Rectangle()
-                                    .fill(.ultraThinMaterial)
-                                    .overlay {
-                                        ProgressView()
-                                    }
-                            }
-                        }
+                    ItemCoverView(
+                        item: viewModel.item,
+                        size: .small,
+                        showSkeleton: viewModel.showSkeleton
+                    )
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(viewModel.item.displayTitle ?? "")
@@ -78,7 +53,7 @@ struct StatusItemView: View {
 
                         Text(viewModel.item.brief)
                             .font(.caption2)
-                            .foregroundStyle(secondary)
+                            .foregroundStyle(.secondary)
                             .lineLimit(2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

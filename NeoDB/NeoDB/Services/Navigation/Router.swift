@@ -11,7 +11,7 @@ import OSLog
 enum RouterDestination: Hashable {
     // Library
     case itemDetail(id: String)
-    case itemDetailWithItem(item: ItemSchema)
+    case itemDetailWithItem(item: any ItemProtocol)
     case shelfDetail(type: ShelfType)
     case userShelf(userId: String, type: ShelfType)
     

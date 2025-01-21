@@ -50,9 +50,7 @@ class SearchViewModel: ObservableObject {
             isLoadingGallery = true
             defer { isLoadingGallery = false }
             
-            do {
-                let cacheKey = "\(accountsManager.currentAccount.instance)_gallery"
-                
+            do {                
                 // Try to get cached gallery first
                 if let cachedGallery: [GalleryResult] = try? await cacheService.retrieveGallery(instance: accountsManager.currentAccount.instance) {
                     if !Task.isCancelled {

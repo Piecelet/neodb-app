@@ -7,6 +7,7 @@
 
 import Foundation
 import OSLog
+import SwiftSoup
 
 class NeoDBURL {
     private static let logger = Logger.services.url.neodbURL
@@ -18,7 +19,7 @@ class NeoDBURL {
         logger.debug("\(message)")
     }
     
-    static func parseItemURL(_ url: URL) -> RouterDestination? {
+    static func parseItemURL(_ url: URL) -> (any ItemProtocol)? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -45,7 +46,9 @@ class NeoDBURL {
 
         // Handle special cases for tv seasons and episodes
         let category: ItemCategory
-        if type == "tv" && pathComponents.count >= 4 {
+        if type == "podcast" {
+            return parseItemPodcastURL(url)
+        } else if type == "tv" && pathComponents.count >= 4 {
             switch pathComponents[2] {
             case "season":
                 category = .tvSeason
@@ -80,7 +83,7 @@ class NeoDBURL {
             of: "/\(neodbItemIdentifier)", with: "/api")
 
         // Create a temporary ItemSchema
-        let tempItem = ItemSchema(
+        let urlItem = ItemSchema(
             id: id,
             type: type,
             uuid: id,
@@ -101,7 +104,102 @@ class NeoDBURL {
         )
 
         log("Created ItemSchema for \(category.rawValue)")
-        return .itemDetailWithItem(item: tempItem)
+        return urlItem
+    }
+
+    static func parseItemPodcastURL(_ url: URL) -> PodcastSchema? {
+        guard
+            let components = URLComponents(
+                url: url, resolvingAgainstBaseURL: true),
+            components.path.contains(neodbItemIdentifier)
+        else {
+            return nil
+        }
+
+        // Remove leading slash and split path
+        let path = components.path.dropFirst()
+        let pathComponents = path.split(separator: "/").map(String.init)
+
+        // Verify we have ~neodb~/podcast/id format
+        guard pathComponents.count >= 3,
+            pathComponents[0] == neodbItemIdentifier
+        else {
+            return nil
+        }
+
+        var uuid = pathComponents[2]
+
+        if pathComponents.count >= 4 || pathComponents[2] == "episode" {
+            // Parse podcast episode
+            guard let data = try? Data(contentsOf: url),
+                  let html = String(data: data, encoding: .utf8)
+            else {
+                uuid = pathComponents[pathComponents.count - 1]
+                logger.error("Failed to load URL content: \(url)")
+                return nil
+            }
+            
+            do {
+                let doc = try SwiftSoup.parse(html)
+                if let meta = try doc.select("meta[http-equiv=refresh]").first(),
+                   let content = try? meta.attr("content"),
+                   content.contains("url=") {
+                    // Extract the URL path from content
+                    let urlPart = content.split(separator: "url=").last.map(String.init) ?? ""
+                    
+                    // Parse the URL path to get podcast UUID
+                    // 构建完整的URL字符串
+                    let fullURL = "https://\(components.host ?? AppConfig.defaultInstance)\(urlPart)"
+                    if let redirectComponents = URLComponents(string: fullURL) {
+                        let pathParts = redirectComponents.path.split(separator: "/")
+                        if pathParts.count >= 2 && pathParts[0] == "podcast" {
+                            uuid = String(pathParts[1])
+                            logger.debug("Found podcast UUID from meta refresh: \(uuid)")
+                        }
+                    }
+                }
+            } catch {
+                logger.error("Failed to parse HTML: \(error.localizedDescription)")
+            }
+        }
+
+        var itemComponents = components
+        itemComponents.path = itemComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "")
+
+        var apiComponents = components
+        apiComponents.path = apiComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "/api")
+
+        let tempPodcast = PodcastSchema(
+            id: url.absoluteString,
+            type: "Podcast",
+            uuid: uuid,
+            url: itemComponents.path,
+            apiUrl: apiComponents.path,
+            category: .podcast,
+            parentUuid: nil,
+            displayTitle: nil,
+            externalResources: nil,
+            title: nil,
+            description: nil,
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: nil,
+            rating: nil,
+            ratingCount: nil,
+            brief: "",
+            host: [],
+            genre: [],
+            language: [],
+            episodeCount: nil,
+            lastEpisodeDate: nil,
+            rssUrl: nil,
+            websiteUrl: nil
+        )
+
+        return tempPodcast
     }
 }
+
 

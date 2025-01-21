@@ -131,28 +131,10 @@ struct ItemView: View {
     }
 
     private var coverImageView: some View {
-        KFImage(viewModel.coverImageURL)
-            .placeholder {
-                placeholderView
-            }
-            .onFailure { _ in
-                placeholderView
-                    .overlay {
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-            }
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(height: 140)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private var placeholderView: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.2))
-            .aspectRatio(2 / 3, contentMode: .fit)
-            .frame(width: 120)
+        ItemCoverView(
+            item: viewModel.item,
+            size: .medium
+        )
     }
 
     private var itemDetailsView: some View {
