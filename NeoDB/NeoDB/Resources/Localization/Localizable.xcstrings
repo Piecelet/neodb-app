@@ -1,0 +1,217 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "(%lld)" : {
+
+    },
+    "@%@" : {
+
+    },
+    "@username" : {
+
+    },
+    "#%@" : {
+
+    },
+    "%lld" : {
+
+    },
+    "Account Information" : {
+
+    },
+    "Add some items to your %@ list" : {
+
+    },
+    "Add to Shelf" : {
+
+    },
+    "Advanced" : {
+
+    },
+    "Cache" : {
+
+    },
+    "Cancel" : {
+
+    },
+    "Change" : {
+
+    },
+    "Choose an Instance" : {
+
+    },
+    "Clear" : {
+
+    },
+    "Clear All Caches" : {
+
+    },
+    "Clearing caches will free up storage space. The app will need to download data again when needed." : {
+
+    },
+    "Comment" : {
+
+    },
+    "Created Time" : {
+
+    },
+    "Custom Instance" : {
+
+    },
+    "Delete Mark" : {
+
+    },
+    "Description" : {
+
+    },
+    "Edit Mark of %@" : {
+
+    },
+    "Edit Status: %@" : {
+
+    },
+    "Enter your own instance URL if it's not listed above." : {
+
+    },
+    "Error" : {
+
+    },
+    "External Account" : {
+
+    },
+    "Follow some users to see their posts here" : {
+
+    },
+    "Followers" : {
+
+    },
+    "Followers: %@" : {
+
+    },
+    "Following" : {
+
+    },
+    "Following: %@" : {
+
+    },
+    "Home" : {
+
+    },
+    "Instance" : {
+
+    },
+    "instance.social" : {
+
+    },
+    "Joined %@" : {
+
+    },
+    "Library" : {
+
+    },
+    "Loading Name" : {
+
+    },
+    "Loading..." : {
+
+    },
+    "N/A" : {
+
+    },
+    "New Status" : {
+
+    },
+    "No Ratings" : {
+
+    },
+    "OK" : {
+
+    },
+    "Open in %@" : {
+
+    },
+    "Optional" : {
+
+    },
+    "Piecelet is a open sourced third-party client for NeoDB made by citron." : {
+
+    },
+    "Posts" : {
+
+    },
+    "Public" : {
+
+    },
+    "Reply to: %@" : {
+
+    },
+    "Save" : {
+
+    },
+    "Search" : {
+
+    },
+    "Select Instance" : {
+
+    },
+    "Settings" : {
+
+    },
+    "Share to Fediverse" : {
+
+    },
+    "Shelf: %@" : {
+
+    },
+    "Sign in with %@" : {
+
+    },
+    "Sign Out" : {
+
+    },
+    "Status" : {
+
+    },
+    "Tag: #%@" : {
+
+    },
+    "The profile you're looking for doesn't exist or has been deleted." : {
+
+    },
+    "The requested item could not be found or has been removed." : {
+
+    },
+    "The status you're looking for doesn't exist or has been deleted." : {
+
+    },
+    "This will clear all cached data. You'll need to reload data from the network." : {
+
+    },
+    "Track and share your books, movies, music, and more" : {
+
+    },
+    "Use Current Time" : {
+
+    },
+    "User Shelf: %@ - %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "User Shelf: %1$@ - %2$@"
+          }
+        }
+      }
+    },
+    "View Details" : {
+
+    },
+    "View Original" : {
+
+    },
+    "Welcome to Piecelet" : {
+
+    }
+  },
+  "version" : "1.0"
+}
