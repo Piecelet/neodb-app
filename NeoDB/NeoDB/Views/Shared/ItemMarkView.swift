@@ -28,6 +28,15 @@ enum ItemMarkSize {
             return EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16)
         }
     }
+
+    var spacing: CGFloat {
+        switch self {
+        case .medium:
+            return 4
+        case .large:
+            return 8
+        }
+    }
 }
 
 struct ItemMarkView: View {
@@ -37,7 +46,7 @@ struct ItemMarkView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            HStack {
+            HStack(spacing: size.spacing) {
                 if let rating = mark.ratingGrade {
                     markRatingView(rating)
                     Spacer()
@@ -59,10 +68,26 @@ struct ItemMarkView: View {
                     .font(size.font)
                     .lineLimit(brief ? 2 : nil)
             }
+
+            if !mark.tags.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: size.spacing) {
+                        ForEach(mark.tags, id: \.self) { tag in
+                            Text("#\(tag)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color(.systemGray5))
+                                .clipShape(Capsule())
+                        }
+                    }
+                }
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(size.padding)
-        .background(Color.secondary.opacity(0.1))
+        .background(Color(.systemGray5).opacity(0.5))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .enableInjection()
     }
