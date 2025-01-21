@@ -17,7 +17,6 @@
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
-		24F8D25B2D3F6143004B0486 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 24F8D25A2D3F6143004B0486 /* SwiftUIIntrospect */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,7 +83,6 @@
 				2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */,
 				2403F2762D32511E00ED4CB5 /* Cache in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
-				24F8D25B2D3F6143004B0486 /* SwiftUIIntrospect in Frameworks */,
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
@@ -170,7 +168,6 @@
 				2403F2752D32511E00ED4CB5 /* Cache */,
 				243C38EA2D3D999B00EB356A /* ExpandableText */,
 				243C39242D3E7ABA00EB356A /* SFSafeSymbols */,
-				24F8D25A2D3F6143004B0486 /* SwiftUIIntrospect */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -263,7 +260,6 @@
 				2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2403F2742D3250FE00ED4CB5 /* XCRemoteSwiftPackageReference "Cache" */,
 				243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
-				24F8D2592D3F6143004B0486 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -466,7 +462,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NeoDB/NeoDB.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 218;
+				CURRENT_PROJECT_VERSION = 223;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"NeoDB/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
@@ -489,7 +485,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12;
-				MARKETING_VERSION = 0.7.4;
+				MARKETING_VERSION = 0.7.5;
 				OTHER_LDFLAGS = (
 					"-Xlinker",
 					"-interposable",
@@ -514,7 +510,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = NeoDB/NeoDB.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 218;
+				CURRENT_PROJECT_VERSION = 223;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"NeoDB/Preview Content\"";
 				DEVELOPMENT_TEAM = "$(DEVELOPMENT_TEAM)";
@@ -537,7 +533,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12;
-				MARKETING_VERSION = 0.7.4;
+				MARKETING_VERSION = 0.7.5;
 				PRODUCT_BUNDLE_IDENTIFIER = app.neodb;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
@@ -750,14 +746,6 @@
 				minimumVersion = 1.5.2;
 			};
 		};
-		24F8D2592D3F6143004B0486 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/siteline/swiftui-introspect";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.3.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -804,11 +792,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
-		};
-		24F8D25A2D3F6143004B0486 /* SwiftUIIntrospect */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 24F8D2592D3F6143004B0486 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
-			productName = SwiftUIIntrospect;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

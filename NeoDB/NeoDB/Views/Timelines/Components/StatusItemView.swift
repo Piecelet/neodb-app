@@ -78,7 +78,7 @@ struct StatusItemView: View {
 
                         Text(viewModel.item.brief)
                             .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(secondary)
                             .lineLimit(2)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)

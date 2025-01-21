@@ -65,8 +65,7 @@ struct ContentView: View {
             }
             .tag(TabSection.profile)
         }
-        .background(.bar)
-//        .tint(.accentColor)
+        .tint(.accentColor)
         .environmentObject(router)
         .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
