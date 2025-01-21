@@ -4,7 +4,7 @@
 
 <p float="left">
     <img src="Images/LoginView.png" width="300" />
-    <img src="Images/TimelineView.png" width="300" />
+    <img src="Images/TimelinesView.png" width="300" />
 </p>
 <p float="left">
     <img src="Images/LibraryView.png" width="300" />
