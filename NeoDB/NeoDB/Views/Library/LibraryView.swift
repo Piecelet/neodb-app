@@ -181,38 +181,13 @@ struct LibraryView: View {
     // MARK: - Item View Components
     private func shelfItemView(mark: MarkSchema) -> some View {
         HStack(spacing: 12) {
-            coverImage(for: mark)
+            ItemCoverView(item: mark.item, size: .medium)
             itemDetails(for: mark)
             Spacer()
             chevronIcon
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
-    }
-
-    private func coverImage(for mark: MarkSchema) -> some View {
-        KFImage(mark.item.coverImageUrl)
-            .placeholder {
-                placeholderView
-            }
-            .onFailure { _ in
-                placeholderView
-                    .overlay {
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-            }
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 60, height: 90)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-    }
-
-    private var placeholderView: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.2))
-            .aspectRatio(2 / 3, contentMode: .fit)
-            .frame(width: 60)
     }
 
     private func itemDetails(for mark: MarkSchema) -> some View {

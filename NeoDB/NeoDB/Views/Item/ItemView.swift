@@ -133,7 +133,7 @@ struct ItemView: View {
     private var coverImageView: some View {
         ItemCoverView(
             item: viewModel.item,
-            size: .medium
+            size: .large
         )
     }
 

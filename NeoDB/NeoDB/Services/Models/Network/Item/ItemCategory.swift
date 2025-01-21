@@ -95,13 +95,6 @@ enum ItemCategory: String, Codable, CaseIterable {
             default: return self.itemCategory?.color ?? .gray
             }
         }
-
-        var aspectRatio: CGFloat {
-            switch self {
-            case .music: return 1/1
-            default: return 2/3
-            }
-        }
     }
 
     var symbolImage: Symbol {
@@ -177,6 +170,20 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .fanfic: return "Fanfics"
         case .exhibition: return "Exhibitions"
         case .collection: return "Collections"
+        }
+    }
+    
+    var placeholderRatio: CGFloat {
+        switch self {
+        case .music, .podcast: return 1/1
+        default: return 3/4
+        }
+    }
+    
+    var ratio: CGFloat? {
+        switch self {
+        case .book, .tv, .tvSeason, .tvEpisode, .movie: return 3/4
+        default: return nil
         }
     }
 }
