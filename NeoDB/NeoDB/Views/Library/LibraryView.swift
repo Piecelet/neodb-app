@@ -29,7 +29,7 @@ struct LibraryView: View {
 
             TabView(selection: $viewModel.selectedShelfType) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
-                    ScrollView {
+                    Group {
                         shelfContentView(for: type)
                     }
                     .refreshable {
@@ -141,7 +141,9 @@ struct LibraryView: View {
                     .padding()
             }
         } else {
-            shelfItemsList(for: type)
+            ScrollView {
+                shelfItemsList(for: type)
+            }
         }
     }
 
@@ -163,7 +165,6 @@ struct LibraryView: View {
                         }
                 }
                 .buttonStyle(.plain)
-                .id("\(viewModel.selectedCategory.rawValue)_\(type.rawValue)_\(mark.id)")
             }
 
             if state.isLoading && !state.isRefreshing {

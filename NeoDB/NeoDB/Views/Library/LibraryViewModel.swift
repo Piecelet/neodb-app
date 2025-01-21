@@ -64,6 +64,7 @@ final class LibraryViewModel: ObservableObject {
     
     // MARK: - Public Methods
     func loadShelfItems(type: ShelfType, refresh: Bool = false) async {
+        // Cancel existing task for this shelf type
         loadTasks[type]?.cancel()
         
         loadTasks[type] = Task {
@@ -90,8 +91,8 @@ final class LibraryViewModel: ObservableObject {
                 state.detailedError = nil
             }
             
-            // 先尝试加载缓存
-            if !refresh {
+            // 只在非刷新且是第一页时加载缓存
+            if !refresh && currentShelfState.currentPage == 1 {
                 if let cached = try? await cacheService.retrieveLibrary(
                     key: accountsManager.currentAccount.id,
                     shelfType: type,
@@ -101,7 +102,6 @@ final class LibraryViewModel: ObservableObject {
                 }
             }
             
-            // 无论是否有缓存，都进行网络请求
             guard !Task.isCancelled else {
                 logger.debug("Shelf items loading cancelled for type: \(type)")
                 return
@@ -129,7 +129,7 @@ final class LibraryViewModel: ObservableObject {
             loadTasks.values.forEach { $0.cancel() }
             loadTasks.removeAll()
 
-            await loadShelfItems(type: .wishlist, refresh: refresh)
+            await loadShelfItems(type: selectedShelfType, refresh: refresh)
             
             await withTaskGroup(of: Void.self) { group in
                 for type in ShelfType.allCases where type != selectedShelfType {
@@ -143,7 +143,18 @@ final class LibraryViewModel: ObservableObject {
     
     func loadNextPage(type: ShelfType) async {
         let state = shelfStates[type] ?? ShelfItemsState()
-        guard state.currentPage < state.totalPages, !state.isLoading else { return }
+        // 添加更多检查：
+        // 1. 确保当前页小于总页数
+        // 2. 确保没有正在加载
+        // 3. 确保当前数据量等于预期的页面大小（每页20条）
+        // 4. 确保不是刷新状态
+        guard state.currentPage < state.totalPages,
+              !state.isLoading,
+              !state.isRefreshing,
+              state.items.count == state.currentPage * 20 // 假设每页20条数据
+        else { return }
+        
+        logger.debug("Loading next page \(state.currentPage + 1) for type: \(type)")
         
         updateShelfState(type: type) { state in
             state.currentPage += 1
@@ -244,10 +255,14 @@ final class LibraryViewModel: ObservableObject {
         }
         
         updateShelfState(type: type) { state in
-            if state.isRefreshing {
+            if state.currentPage == 1 || state.isRefreshing {
+                // 如果是第一页或刷新，直接替换数据
                 state.items = result.data
             } else {
-                state.items.append(contentsOf: result.data)
+                // 如果是加载更多，检查并去重后添加
+                let existingIds = Set(state.items.map { $0.id })
+                let newItems = result.data.filter { !existingIds.contains($0.id) }
+                state.items.append(contentsOf: newItems)
             }
             state.totalPages = result.pages
             state.state = .loaded
