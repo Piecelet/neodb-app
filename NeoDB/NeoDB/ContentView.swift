@@ -65,7 +65,8 @@ struct ContentView: View {
             }
             .tag(TabSection.profile)
         }
-        .tint(.accentColor)
+        .background(.bar)
+//        .tint(.accentColor)
         .environmentObject(router)
         .sheet(item: $router.presentedSheet) { sheet in
             switch sheet {
@@ -85,7 +86,13 @@ struct ContentView: View {
                 ItemDetailsSheet(item: item)
             }
         }
+        .enableInjection()
     }
+    
+    
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
 
     @ViewBuilder
     private func destinationView(for destination: RouterDestination)

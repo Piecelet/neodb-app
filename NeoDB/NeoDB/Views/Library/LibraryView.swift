@@ -21,20 +21,18 @@ struct LibraryView: View {
 
     // MARK: - Body
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView {
+        ScrollView {
+            VStack(spacing: 0) {
                 categoryFilter
                 contentView
-                    .padding(.bottom, 60) // Add padding for the picker
+                    .padding(.bottom, 80)  // Increased padding for the picker
             }
-            .refreshable {
-                await viewModel.loadShelfItems(refresh: true)
-            }
-            
-            shelfTypePicker
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .padding(.bottom, 8)
+        }
+        .refreshable {
+            await viewModel.loadShelfItems(refresh: true)
+        }
+        .overlay(alignment: .bottom) {
+            shelfTypeControl
         }
         .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.large)
@@ -52,14 +50,29 @@ struct LibraryView: View {
         @ObserveInjection var forceRedraw
     #endif
 
-    private var shelfTypePicker: some View {
-        RoundedSegmentedPickerView(
-            selection: $viewModel.selectedShelfType,
-            options: ShelfType.allCases
-        ) { $0.displayName }
+    private var shelfTypeControl: some View {
+        Picker("Shelf Type", selection: $viewModel.selectedShelfType) {
+            ForEach(ShelfType.allCases, id: \.self) { type in
+                Group {
+//                    if type == .dropped {
+//                        Image(symbol: type.symbolImage)
+//                    } else {
+                        Text(type.displayName)
+                            .tag(type)
+//                    }
+                }
+                .font(.system(size: 15, weight: .semibold))
+            }
+        }
+        .pickerStyle(.segmented)
+        .frame(maxWidth: .infinity)
+        .frame(height: 36)
         .onChange(of: viewModel.selectedShelfType) { newValue in
             viewModel.changeShelfType(newValue)
         }
+        .padding(.horizontal)
+        .padding(.vertical, 8)
+        .background(.ultraThickMaterial)
     }
 
     private var categoryFilter: some View {
@@ -123,6 +136,7 @@ struct LibraryView: View {
             }
             .padding()
         }
+        .padding(.top, -8)
     }
 
     // MARK: - Shelf Item View
