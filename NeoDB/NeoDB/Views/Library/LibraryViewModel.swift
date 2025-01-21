@@ -253,12 +253,17 @@ final class LibraryViewModel: ObservableObject {
             state.state = .loaded
         }
         
-        try? await cacheService.cacheLibrary(
-            result,
-            key: accountsManager.currentAccount.id,
-            shelfType: type,
-            category: selectedCategory
-        )
+        // 只在第一页时缓存数据
+        let state = shelfStates[type] ?? ShelfItemsState()
+        if state.currentPage == 1 {
+            try? await cacheService.cacheLibrary(
+                result,
+                key: accountsManager.currentAccount.id,
+                shelfType: type,
+                category: selectedCategory
+            )
+            logger.debug("Cached first page data for type: \(type)")
+        }
         
         logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
     }

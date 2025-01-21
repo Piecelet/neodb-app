@@ -53,24 +53,11 @@ struct LibraryView: View {
         .task {
             viewModel.accountsManager = accountsManager
             // 优先加载当前选中的 shelf
-            await viewModel.loadShelfItems(type: viewModel.selectedShelfType)
-
-            // 异步加载其他 shelf types
-            await withTaskGroup(of: Void.self) { group in
-                for type in ShelfType.allCases
-                where type != viewModel.selectedShelfType {
-                    group.addTask {
-                        await viewModel.loadShelfItems(type: type)
-                    }
-                }
-            }
+            viewModel.loadAllShelfItems()
         }
         .onDisappear {
             viewModel.cleanup()
         }
-//        .onChange(of: viewModel.selectedShelfType) { newValue in
-//            viewModel.changeShelfType(newValue)
-//        }
         .enableInjection()
     }
 
