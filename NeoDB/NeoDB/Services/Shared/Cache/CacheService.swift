@@ -8,15 +8,15 @@ class CacheService {
     
     // Default configurations
     private let defaultMemoryConfig = MemoryConfig(
-        expiry: .date(Date().addingTimeInterval(30 * 60)), // 30 minutes
+        expiry: .date(Date().addingTimeInterval(12 * 60 * 60)), // 12 hours
         countLimit: 50,
-        totalCostLimit: 10 * 1024 * 1024 // 10 MB
+        totalCostLimit: 50 * 1024 * 1024 // 50 MB
     )
     
     private let defaultDiskConfig = DiskConfig(
         name: "NeoDB",
-        expiry: .date(Date().addingTimeInterval(24 * 60 * 60)), // 24 hours
-        maxSize: 50 * 1024 * 1024 // 50 MB
+        expiry: .date(Date().addingTimeInterval(7 * 24 * 60 * 60)), // 7 days
+        maxSize: 512 * 1024 * 1024 // 512 MB
     )
     
     private let defaultFileManager = FileManager.default
