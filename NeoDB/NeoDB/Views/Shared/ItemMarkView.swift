@@ -10,7 +10,7 @@ import SwiftUI
 enum ItemMarkSize {
     case medium
     case large
-    
+
     var font: Font {
         switch self {
         case .medium:
@@ -19,7 +19,7 @@ enum ItemMarkSize {
             return .subheadline
         }
     }
-    
+
     var padding: EdgeInsets {
         switch self {
         case .medium:
@@ -34,7 +34,7 @@ struct ItemMarkView: View {
     let mark: MarkSchema
     let size: ItemMarkSize
     var brief: Bool = false
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -68,15 +68,10 @@ struct ItemMarkView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-    
+
     private func markRatingView(_ rating: Int) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundStyle(.orange.opacity(0.8))
-            Text(String(rating))
-        }
+        StarView(rating: Double(rating) / 2)
     }
 }
-

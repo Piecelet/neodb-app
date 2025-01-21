@@ -5,6 +5,8 @@ enum AppConfig {
     
     static let defaultInstance = "neodb.social"
     
+    static let defaultItemCoverRatio: CGFloat = 3 / 4
+    
     enum OAuth {
         static let redirectUri = "neodb://oauth/callback"
         static let scopes = "read write"

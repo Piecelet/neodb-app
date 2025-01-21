@@ -151,7 +151,7 @@ struct LibraryView: View {
 
     private func shelfItemsList(for type: ShelfType) -> some View {
         let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-        
+
         return LazyVStack(spacing: 12) {
             ForEach(state.items) { mark in
                 Button {
@@ -183,8 +183,8 @@ struct LibraryView: View {
         HStack(alignment: .top, spacing: 12) {
             ItemCoverView(item: mark.item, size: .medium)
             itemDetails(for: mark)
-//            Spacer()
-//            chevronIcon
+            //            Spacer()
+            //            chevronIcon
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -192,14 +192,14 @@ struct LibraryView: View {
 
     private func itemDetails(for mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-//            HStack(alignment: .bottom, spacing: 4) {
-                Text(mark.item.displayTitle ?? mark.item.title ?? "")
-                    .font(.headline)
-                    .lineLimit(2)
-                
-                ItemRatingView(item: mark.item, size: .medium, hideRatingCount: true)
-//            }
-            
+            //            HStack(alignment: .bottom, spacing: 4) {
+            Text(mark.item.displayTitle ?? mark.item.title ?? "")
+                .font(.headline)
+                .lineLimit(2)
+
+            ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
+            //            }
+
             ItemMarkView(mark: mark, size: .medium, brief: true)
 
             if !mark.tags.isEmpty {

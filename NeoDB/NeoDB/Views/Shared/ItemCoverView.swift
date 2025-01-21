@@ -75,9 +75,11 @@ struct ItemCoverView: View {
                     }
                     .resizable()
                     .aspectRatio(item.category.ratio, contentMode: .fit)
-                    .frame(height: size.height)
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: size.cornerRadius)
+                    .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
+                    .frame(
+                        maxWidth: size.height * AppConfig.defaultItemCoverRatio,
+                        maxHeight: size.height,
+                        alignment: .topLeading
                     )
                     .overlay {
                         if showSkeleton {
@@ -86,6 +88,7 @@ struct ItemCoverView: View {
                                 .overlay {
                                     ProgressView()
                                 }
+                                .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
                         }
                     }
             } else {
@@ -99,8 +102,13 @@ struct ItemCoverView: View {
         Rectangle()
             .fill(Color.gray.opacity(0.2))
             .aspectRatio(item?.category.placeholderRatio, contentMode: .fit)
-            .frame(height: size.height)
             .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
+            .frame(
+                maxWidth: size.height * AppConfig.defaultItemCoverRatio,
+                maxHeight: size.height,
+                alignment: .topLeading
+            )
+            .fixedSize(horizontal: false, vertical: false)
             .overlay {
                 if let item = item {
                     Image(symbol: item.category.symbolImageFill)
