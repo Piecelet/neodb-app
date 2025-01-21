@@ -28,8 +28,14 @@ final class LibraryViewModel: ObservableObject {
     private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
     
     // MARK: - Published Properties
-    @Published var selectedShelfType: ShelfType = .wishlist
-    @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems
+    @Published var selectedShelfType: ShelfType = .wishlist 
+    @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems {
+        didSet {
+            if oldValue != selectedCategory {
+                loadAllShelfItems()
+            }
+        }
+    }
     @Published private(set) var shelfStates: [ShelfType: ShelfItemsState] = [
         .wishlist: ShelfItemsState(),
         .progress: ShelfItemsState(),
@@ -116,6 +122,23 @@ final class LibraryViewModel: ObservableObject {
         }
         
         await loadTasks[type]?.value
+    }
+
+    func loadAllShelfItems(refresh: Bool = false) {
+        Task {
+            loadTasks.values.forEach { $0.cancel() }
+            loadTasks.removeAll()
+
+            await loadShelfItems(type: .wishlist, refresh: refresh)
+            
+            await withTaskGroup(of: Void.self) { group in
+                for type in ShelfType.allCases where type != selectedShelfType {
+                    group.addTask {
+                        await self.loadShelfItems(type: type, refresh: refresh)
+                    }
+                }
+            }
+        }
     }
     
     func loadNextPage(type: ShelfType) async {

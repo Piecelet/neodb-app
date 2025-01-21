@@ -16,9 +16,6 @@ struct LibraryView: View {
     @StateObject private var viewModel = LibraryViewModel()
     @Environment(\.colorScheme) private var colorScheme
 
-    // MARK: - State
-    @State private var activeTab: ItemCategory.shelfAvailable = .allItems
-
     // MARK: - Body
     var body: some View {
         VStack(spacing: 0) {
@@ -71,9 +68,9 @@ struct LibraryView: View {
         .onDisappear {
             viewModel.cleanup()
         }
-        .onChange(of: viewModel.selectedShelfType) { newValue in
-            viewModel.changeShelfType(newValue)
-        }
+//        .onChange(of: viewModel.selectedShelfType) { newValue in
+//            viewModel.changeShelfType(newValue)
+//        }
         .enableInjection()
     }
 
@@ -163,7 +160,7 @@ struct LibraryView: View {
 
     private func shelfItemsList(for type: ShelfType) -> some View {
         let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-
+        
         return LazyVStack(spacing: 12) {
             ForEach(state.items) { mark in
                 Button {
@@ -179,6 +176,7 @@ struct LibraryView: View {
                         }
                 }
                 .buttonStyle(.plain)
+                .id("\(viewModel.selectedCategory.rawValue)_\(type.rawValue)_\(mark.id)")
             }
 
             if state.isLoading && !state.isRefreshing {
