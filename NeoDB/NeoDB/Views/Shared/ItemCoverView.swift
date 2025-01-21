@@ -38,7 +38,7 @@ enum ItemCoverSize {
         case .small, .medium:
             return 4
         case .large:
-            return 8
+            return 4
         }
     }
 
