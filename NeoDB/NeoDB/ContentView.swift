@@ -85,7 +85,13 @@ struct ContentView: View {
                 ItemDetailsSheet(item: item)
             }
         }
+        .enableInjection()
     }
+    
+    
+#if DEBUG
+    @ObserveInjection var forceRedraw
+#endif
 
     @ViewBuilder
     private func destinationView(for destination: RouterDestination)

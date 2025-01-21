@@ -172,4 +172,18 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .collection: return "Collections"
         }
     }
+    
+    var placeholderRatio: CGFloat {
+        switch self {
+        case .music, .podcast: return 1/1
+        default: return 3/4
+        }
+    }
+    
+    var ratio: CGFloat? {
+        switch self {
+        case .book, .tv, .tvSeason, .tvEpisode, .movie: return 3/4
+        default: return nil
+        }
+    }
 }

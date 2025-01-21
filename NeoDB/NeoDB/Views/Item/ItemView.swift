@@ -131,28 +131,10 @@ struct ItemView: View {
     }
 
     private var coverImageView: some View {
-        KFImage(viewModel.coverImageURL)
-            .placeholder {
-                placeholderView
-            }
-            .onFailure { _ in
-                placeholderView
-                    .overlay {
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-            }
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .frame(height: 140)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private var placeholderView: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.2))
-            .aspectRatio(2 / 3, contentMode: .fit)
-            .frame(width: 120)
+        ItemCoverView(
+            item: viewModel.item,
+            size: .large
+        )
     }
 
     private var itemDetailsView: some View {
@@ -169,13 +151,14 @@ struct ItemView: View {
             }
             .lineLimit(3)
 
-            ratingView
+            ItemRatingView(item: viewModel.item, size: .large)
 
             if !viewModel.metadata.isEmpty {
-                Text(viewModel.metadata.joined(separator: " / "))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                ItemDescriptionView(
+                    item: viewModel.item,
+                    mode: .metadata,
+                    size: .large
+                )
 
                 Button {
                     router.presentSheet(.itemDetails(item: viewModel.item!))
@@ -186,24 +169,6 @@ struct ItemView: View {
                 }
             }
         }
-    }
-
-    private var ratingView: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundStyle(
-                    viewModel.rating.isEmpty
-                        ? .gray.opacity(0.5) : .orange.opacity(0.8))
-            if viewModel.rating.isEmpty {
-                Text("No Ratings")
-                    .foregroundStyle(.secondary)
-            } else {
-                Text(viewModel.rating)
-                Text("(\(viewModel.ratingCount))")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .font(.subheadline)
     }
 
     // MARK: - Description View
@@ -228,7 +193,7 @@ struct ItemView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if let mark = viewModel.mark {
-                markInfoView(mark)
+                ItemMarkView(mark: mark, size: .large)
             }
 
             actionButton
@@ -237,47 +202,6 @@ struct ItemView: View {
             if newValue {
                 viewModel.refresh()
             }
-        }
-    }
-
-    private func markInfoView(_ mark: MarkSchema) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                if let rating = mark.ratingGrade {
-                    markRatingView(rating)
-                }
-                if mark.ratingGrade != nil {
-                    Text("・")
-                        .foregroundStyle(.secondary)
-                }
-                Text(mark.shelfType.displayName)
-                    .foregroundStyle(.primary)
-                Text("・")
-                    .foregroundStyle(.secondary)
-                Text(mark.createdTime.formatted)
-                    .foregroundStyle(.secondary)
-            }
-            .font(.subheadline)
-
-            if let comment = mark.commentText, !comment.isEmpty {
-                Text(comment)
-                    .font(.subheadline)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private func markRatingView(_ rating: Int) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundStyle(.yellow)
-            Text("\(rating)")
-                .foregroundStyle(.primary)
-            Text("/10")
-                .foregroundStyle(.secondary)
         }
     }
 

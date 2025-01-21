@@ -13,62 +13,37 @@ struct StatusItemView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
-    init(item: ItemSchema) {
+    init(item: any ItemProtocol) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
     }
 
     var body: some View {
         Button {
-            router.navigate(to: .itemDetailWithItem(item: viewModel.item.toItemSchema))
+            router.navigate(
+                to: .itemDetailWithItem(item: viewModel.item.toItemSchema))
         } label: {
             LazyVStack {
                 HStack(spacing: 12) {
                     // Cover Image
-                    KFImage(viewModel.item.coverImageUrl)
-                        .placeholder {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(height: 64)
-                        }
-                        .onFailure { _ in
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
-                                .aspectRatio(2 / 3, contentMode: .fit)
-                                .frame(height: 64)
-                                .overlay {
-                                    Image(systemName: "photo")
-                                        .foregroundStyle(.secondary)
-                                }
-                        }
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(height: 64)
-                        .clipShape(RoundedRectangle(cornerRadius: 4))
-                        .overlay {
-                            if viewModel.showSkeleton {
-                                Rectangle()
-                                    .fill(.ultraThinMaterial)
-                                    .overlay {
-                                        ProgressView()
-                                    }
-                            }
-                        }
+                    ItemCoverView(
+                        item: viewModel.item,
+                        size: .small,
+                        showSkeleton: viewModel.showSkeleton
+                    )
 
                     VStack(alignment: .leading, spacing: 4) {
                         Text(viewModel.item.displayTitle ?? "")
                             .font(.headline)
                             .lineLimit(2)
-                        
+
                         HStack(spacing: 4) {
-                            if let rating = viewModel.item.rating {
-                                Image(systemName: "star.fill")
-                                    .foregroundStyle(.yellow)
-                                Text(String(format: "%.1f", rating))
-                            }
+                            ItemRatingView(
+                                item: viewModel.item, size: .small,
+                                hideRatingCount: true)
                             Group {
                                 if let movie = viewModel.item as? MovieSchema,
-                                   let year = movie.year {
+                                    let year = movie.year
+                                {
                                     Text(String(year))
                                 }
                             }
@@ -76,10 +51,11 @@ struct StatusItemView: View {
                         }
                         .font(.caption)
 
-                        Text(viewModel.item.brief)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                        ItemDescriptionView(
+                            item: viewModel.item,
+                            mode: .brief,
+                            size: .small
+                        )
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }

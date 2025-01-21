@@ -16,10 +16,12 @@ class URLHandler {
     ) {
         logger.debug("Handling URL: \(url.absoluteString)")
         
-        if let destination = NeoDBURL.parseItemURL(url) {
-            completion(destination)
-        } else {
-            completion(nil)
+        Task {
+            if let item = await NeoDBURL.parseItemURL(url) {
+                completion(.itemDetailWithItem(item: item))
+            } else {
+                completion(nil)
+            }
         }
     }
 }

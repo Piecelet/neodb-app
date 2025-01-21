@@ -8,7 +8,7 @@
 import Foundation
 
 enum ShelfEndpoint {
-    case get(type: ShelfType, category: ItemCategory? = nil, page: Int? = 1)
+    case get(type: ShelfType, category: ItemCategory.shelfAvailable? = nil, page: Int? = 1)
 }
 
 extension ShelfEndpoint: NetworkEndpoint {
@@ -24,7 +24,7 @@ extension ShelfEndpoint: NetworkEndpoint {
         case .get(_, let category, let page):
             var items: [URLQueryItem] = []
             
-            if let category = category {
+            if let category = category, category != .allItems {
                 items.append(.init(name: "category", value: category.rawValue))
             }
             

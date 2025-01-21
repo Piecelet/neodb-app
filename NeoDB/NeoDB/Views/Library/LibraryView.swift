@@ -16,31 +16,46 @@ struct LibraryView: View {
     @StateObject private var viewModel = LibraryViewModel()
     @Environment(\.colorScheme) private var colorScheme
 
-    // MARK: - State
-    @State private var activeTab: ItemCategory.shelfAvailable = .allItems
-
     // MARK: - Body
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollView {
-                categoryFilter
-                contentView
-                    .padding(.bottom, 60) // Add padding for the picker
+        VStack(spacing: 0) {
+            categoryFilter
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                shelfTypePicker
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
             }
-            .refreshable {
-                await viewModel.loadShelfItems(refresh: true)
+
+            TabView(selection: $viewModel.selectedShelfType) {
+                ForEach(ShelfType.allCases, id: \.self) { type in
+                    Group {
+                        shelfContentView(for: type)
+                    }
+                    .refreshable {
+                        await viewModel.loadShelfItems(
+                            type: type, refresh: true)
+                    }
+                    .tag(type)
+                }
             }
-            
-            shelfTypePicker
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .padding(.bottom, 8)
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .navigationTitle("Library")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Library")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+            }
+        }
+        .ignoresSafeArea(edges: .bottom)
         .task {
             viewModel.accountsManager = accountsManager
-            await viewModel.loadShelfItems()
+            // 优先加载当前选中的 shelf
+            viewModel.loadAllShelfItems()
         }
         .onDisappear {
             viewModel.cleanup()
@@ -52,143 +67,149 @@ struct LibraryView: View {
         @ObserveInjection var forceRedraw
     #endif
 
-    private var shelfTypePicker: some View {
-        RoundedSegmentedPickerView(
-            selection: $viewModel.selectedShelfType,
-            options: ShelfType.allCases
-        ) { $0.displayName }
-        .onChange(of: viewModel.selectedShelfType) { newValue in
-            viewModel.changeShelfType(newValue)
+    private var headerView: some View {
+        VStack(spacing: 0) {
+            categoryFilter
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                shelfTypePicker
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+            }
+            .background(Color(.systemBackground))
         }
+    }
+
+    private var shelfTypePicker: some View {
+        HStack(spacing: 20) {
+            ForEach(ShelfType.allCases, id: \.self) { type in
+                VStack(spacing: 8) {
+                    Text(type.displayName)
+                        .font(
+                            .system(
+                                size: 15,
+                                weight: viewModel.selectedShelfType == type
+                                    ? .semibold : .regular)
+                        )
+                        .foregroundStyle(
+                            viewModel.selectedShelfType == type
+                                ? .primary : .secondary)
+
+                    Rectangle()
+                        .fill(
+                            viewModel.selectedShelfType == type
+                                ? Color.accentColor : .clear
+                        )
+                        .frame(height: 2)
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        viewModel.selectedShelfType = type
+                    }
+                }
+            }
+        }
+        .padding(.horizontal, 4)
     }
 
     private var categoryFilter: some View {
-        ItemCategoryBarView(activeTab: $activeTab)
-            .onChange(of: activeTab) { newValue in
-                viewModel.selectedCategory = newValue.itemCategory
-                viewModel.changeCategory(newValue.itemCategory)
-            }
+        ItemCategoryBarView(activeTab: $viewModel.selectedCategory)
     }
 
-    // MARK: - Content View
+    // MARK: - Shelf Content View
     @ViewBuilder
-    private var contentView: some View {
-        if let error = viewModel.error {
-            EmptyStateView(
-                "Couldn't Load Library",
-                systemImage: "exclamationmark.triangle",
-                description: Text(viewModel.detailedError ?? error)
-            )
-        } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading
-            && !viewModel.isRefreshing
-        {
-            EmptyStateView(
-                "No Items Found",
-                systemImage: "books.vertical",
-                description: Text(
-                    "Add some items to your \(viewModel.selectedShelfType.displayName.lowercased()) list"
+    private func shelfContentView(for type: ShelfType) -> some View {
+        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
+
+        if state.items.isEmpty {
+            if let error = state.error {
+                EmptyStateView(
+                    "Couldn't Load Library",
+                    systemImage: "exclamationmark.triangle",
+                    description: Text(state.detailedError ?? error)
                 )
-            )
+            } else if !state.isLoading && !state.isRefreshing {
+                EmptyStateView(
+                    "No Items Found",
+                    systemImage: "books.vertical",
+                    description: Text(
+                        "Add some items to your \(type.displayName.lowercased()) list"
+                    )
+                )
+            } else {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
         } else {
-            libraryContent
+            ScrollView {
+                shelfItemsList(for: type)
+            }
         }
     }
 
-    // MARK: - Library Content
-    private var libraryContent: some View {
-        Group {
-            LazyVStack(spacing: 12) {
-                ForEach(viewModel.shelfItems) { mark in
-                    Button {
-                        router.navigate(
-                            to: .itemDetailWithItem(item: mark.item))
-                    } label: {
-                        shelfItemView(mark: mark)
-                            .onAppear {
-                                if mark.id == viewModel.shelfItems.last?.id {
-                                    Task {
-                                        await viewModel.loadNextPage()
-                                    }
+    private func shelfItemsList(for type: ShelfType) -> some View {
+        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
+
+        return LazyVStack(spacing: 12) {
+            ForEach(state.items) { mark in
+                Button {
+                    router.navigate(to: .itemDetailWithItem(item: mark.item))
+                } label: {
+                    shelfItemView(mark: mark)
+                        .onAppear {
+                            if mark.id == state.items.last?.id {
+                                Task {
+                                    await viewModel.loadNextPage(type: type)
                                 }
                             }
-                    }
-                    .buttonStyle(.plain)
+                        }
                 }
-
-                if viewModel.isLoading && !viewModel.isRefreshing {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
+                .buttonStyle(.plain)
             }
-            .padding()
+
+            if state.isLoading && !state.isRefreshing {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
         }
+        .padding()
     }
 
-    // MARK: - Shelf Item View
+    // MARK: - Item View Components
     private func shelfItemView(mark: MarkSchema) -> some View {
-        HStack(spacing: 12) {
-            coverImage(for: mark)
+        HStack(alignment: .top, spacing: 12) {
+            ItemCoverView(item: mark.item, size: .medium)
             itemDetails(for: mark)
-            Spacer()
+        }
+        .overlay(alignment: .topTrailing) {
             chevronIcon
+                .padding(.top, 4)
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
     }
 
-    private func coverImage(for mark: MarkSchema) -> some View {
-        KFImage(mark.item.coverImageUrl)
-            .placeholder {
-                placeholderView
-            }
-            .onFailure { _ in
-                placeholderView
-                    .overlay {
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-            }
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(width: 60, height: 90)
-            .clipShape(RoundedRectangle(cornerRadius: 4))
-    }
-
-    private var placeholderView: some View {
-        Rectangle()
-            .fill(Color.gray.opacity(0.2))
-            .aspectRatio(2 / 3, contentMode: .fit)
-            .frame(width: 60)
-    }
-
     private func itemDetails(for mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(mark.item.displayTitle ?? "")
+            Text(mark.item.displayTitle ?? mark.item.title ?? "")
                 .font(.headline)
                 .lineLimit(2)
 
-            if let rating = mark.ratingGrade {
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
-                    Text("\(rating)/10")
-                }
-                .font(.subheadline)
-            }
+            ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
+            
+            ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
 
-            if !mark.tags.isEmpty {
-                Text(mark.tags.joined(separator: ", "))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
+            ItemMarkView(mark: mark, size: .medium, brief: true, showEditButton: true)
         }
     }
 
     private var chevronIcon: some View {
-        Image(systemName: "chevron.right")
+        Image(systemSymbol: .chevronRight)
             .foregroundStyle(.secondary)
+            .font(.caption)
     }
 }
 

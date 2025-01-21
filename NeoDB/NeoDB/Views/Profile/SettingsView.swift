@@ -22,6 +22,8 @@ class SettingsViewModel: ObservableObject {
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
+    @Published var isCacheClearing = false
+    @Published var showClearCacheConfirmation = false
 
     private let cacheService = CacheService()
     private let logger = Logger.views.settings
@@ -47,8 +49,6 @@ class SettingsViewModel: ObservableObject {
         guard let accountsManager = accountsManager else {
             throw NetworkError.unauthorized
         }
-        
-        let cacheKey = "\(accountsManager.currentAccount.instance)_user"
 
         if !forceRefresh,
            let cachedUser = try? await cacheService.retrieveUser(key: accountsManager.currentAccount.id)
@@ -83,6 +83,12 @@ class SettingsViewModel: ObservableObject {
             logger.debug("Cleared user cache")
         }
         accountsManager.delete(account: accountsManager.currentAccount)
+    }
+
+    func clearAllCaches() async {
+        isCacheClearing = true
+        await cacheService.removeAll()
+        isCacheClearing = false
     }
 }
 
@@ -131,7 +137,12 @@ struct ProfileHeaderView: View {
             }
             .redacted(reason: user == nil || isLoading ? .placeholder : [])
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct AvatarPlaceholderView: View {
@@ -152,7 +163,12 @@ struct AvatarPlaceholderView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct SettingsView: View {
@@ -212,11 +228,26 @@ struct SettingsView: View {
         List {
             profileHeaderSection
             accountInformationSection
+            cacheManagementSection
             logoutSection
         }
         .listStyle(.insetGrouped)
         .refreshable {
             await viewModel.loadUserProfile(forceRefresh: true)
+        }
+        .confirmationDialog(
+            "Clear All Caches",
+            isPresented: $viewModel.showClearCacheConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Clear", role: .destructive) {
+                Task {
+                    await viewModel.clearAllCaches()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will clear all cached data. You'll need to reload data from the network.")
         }
     }
     
@@ -244,6 +275,28 @@ struct SettingsView: View {
                         .redacted(reason: .placeholder)
                 }
             }
+        }
+    }
+    
+    private var cacheManagementSection: some View {
+        Section {
+            Button(role: .destructive) {
+                viewModel.showClearCacheConfirmation = true
+            } label: {
+                HStack {
+                    if viewModel.isCacheClearing {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                    Text("Clear All Caches")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .disabled(viewModel.isCacheClearing)
+        } header: {
+            Text("Cache")
+        } footer: {
+            Text("Clearing caches will free up storage space. The app will need to download data again when needed.")
         }
     }
     

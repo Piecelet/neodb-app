@@ -7,6 +7,7 @@
 
 import Foundation
 import OSLog
+import SwiftSoup
 
 class NeoDBURL {
     private static let logger = Logger.services.url.neodbURL
@@ -18,7 +19,7 @@ class NeoDBURL {
         logger.debug("\(message)")
     }
     
-    static func parseItemURL(_ url: URL) -> RouterDestination? {
+    static func parseItemURL(_ url: URL) async -> (any ItemProtocol)? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -45,7 +46,9 @@ class NeoDBURL {
 
         // Handle special cases for tv seasons and episodes
         let category: ItemCategory
-        if type == "tv" && pathComponents.count >= 4 {
+        if type == "podcast" {
+            return await parseItemPodcastURL(url)
+        } else if type == "tv" && pathComponents.count >= 4 {
             switch pathComponents[2] {
             case "season":
                 category = .tvSeason
@@ -80,7 +83,7 @@ class NeoDBURL {
             of: "/\(neodbItemIdentifier)", with: "/api")
 
         // Create a temporary ItemSchema
-        let tempItem = ItemSchema(
+        let urlItem = ItemSchema(
             id: id,
             type: type,
             uuid: id,
@@ -101,7 +104,92 @@ class NeoDBURL {
         )
 
         log("Created ItemSchema for \(category.rawValue)")
-        return .itemDetailWithItem(item: tempItem)
+        return urlItem
+    }
+
+    static func parseItemPodcastURL(_ url: URL) async -> PodcastSchema? {
+        guard
+            let components = URLComponents(
+                url: url, resolvingAgainstBaseURL: true),
+            components.path.contains(neodbItemIdentifier)
+        else {
+            return nil
+        }
+
+        let path = components.path.dropFirst()
+        let pathComponents = path.split(separator: "/").map(String.init)
+
+        guard pathComponents.count >= 3,
+            pathComponents[0] == neodbItemIdentifier
+        else {
+            return nil
+        }
+
+        var uuid = pathComponents[2]
+
+        if pathComponents.count >= 4 || pathComponents[2] == "episode" {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                guard let html = String(data: data, encoding: .utf8) else {
+                    logger.error("Failed to decode HTML from URL: \(url)")
+                    return nil
+                }
+                
+                let doc = try SwiftSoup.parse(html)
+                if let meta = try doc.select("meta[http-equiv=refresh]").first(),
+                   let content = try? meta.attr("content"),
+                   content.contains("url=") {
+                    let urlPart = content.split(separator: "url=").last.map(String.init) ?? ""
+                    let fullURL = "https://\(components.host ?? AppConfig.defaultInstance)\(urlPart)"
+                    if let redirectComponents = URLComponents(string: fullURL) {
+                        let pathParts = redirectComponents.path.split(separator: "/")
+                        if pathParts.count >= 2 && pathParts[0] == "podcast" {
+                            uuid = String(pathParts[1])
+                            logger.debug("Found podcast UUID from meta refresh: \(uuid)")
+                        }
+                    }
+                }
+            } catch {
+                logger.error("Failed to load or parse URL: \(error.localizedDescription)")
+                return nil
+            }
+        }
+
+        var itemComponents = components
+        itemComponents.path = itemComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "")
+
+        var apiComponents = components
+        apiComponents.path = apiComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "/api")
+
+        return PodcastSchema(
+            id: url.absoluteString,
+            type: "Podcast",
+            uuid: uuid,
+            url: itemComponents.path,
+            apiUrl: apiComponents.path,
+            category: .podcast,
+            parentUuid: nil,
+            displayTitle: nil,
+            externalResources: nil,
+            title: nil,
+            description: nil,
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: nil,
+            rating: nil,
+            ratingCount: nil,
+            brief: "",
+            host: [],
+            genre: [],
+            language: [],
+            episodeCount: nil,
+            lastEpisodeDate: nil,
+            rssUrl: nil,
+            websiteUrl: nil
+        )
     }
 }
+
 

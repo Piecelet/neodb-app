@@ -1,6 +1,23 @@
 import Foundation
 import OSLog
 
+enum LibraryState {
+    case loading
+    case loaded
+    case error
+}
+
+struct ShelfItemsState {
+    var items: [MarkSchema] = []
+    var state: LibraryState = .loading
+    var currentPage = 1
+    var totalPages = 1
+    var isLoading = false
+    var isRefreshing = false
+    var error: String?
+    var detailedError: String?
+}
+
 @MainActor
 final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
@@ -8,146 +25,229 @@ final class LibraryViewModel: ObservableObject {
     private let cacheService = CacheService()
     
     // MARK: - Task Management
-    private var loadTask: Task<Void, Never>?
+    private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
     
     // MARK: - Published Properties
-    @Published var selectedShelfType: ShelfType = .wishlist
-    @Published var selectedCategory: ItemCategory?
-    @Published var shelfItems: [MarkSchema] = []
-    @Published private(set) var isLoading = false
-    @Published private(set) var isRefreshing = false
-    @Published var error: String?
-    @Published var detailedError: String?
-    
-    // MARK: - Pagination Properties
-    @Published private(set) var currentPage = 1
-    @Published private(set) var totalPages = 1
+    @Published var selectedShelfType: ShelfType = .wishlist 
+    @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems {
+        didSet {
+            if oldValue != selectedCategory {
+                initShelfStates()
+                loadAllShelfItems()
+            }
+        }
+    }
+    @Published private(set) var shelfStates: [ShelfType: ShelfItemsState] = [
+        .wishlist: ShelfItemsState(),
+        .progress: ShelfItemsState(),
+        .complete: ShelfItemsState(),
+        .dropped: ShelfItemsState()
+    ]
     
     // MARK: - Public Properties
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
-                shelfItems = []
+                shelfStates = [
+                    .wishlist: ShelfItemsState(),
+                    .progress: ShelfItemsState(),
+                    .complete: ShelfItemsState(),
+                    .dropped: ShelfItemsState()
+                ]
             }
         }
     }
     
+    // MARK: - Computed Properties
+    var currentShelfState: ShelfItemsState {
+        shelfStates[selectedShelfType] ?? ShelfItemsState()
+    }
+
+    func initShelfStates() {
+        for type in ShelfType.allCases {
+            shelfStates[type] = ShelfItemsState()
+        }
+    }
+    
     // MARK: - Public Methods
-    func loadShelfItems(refresh: Bool = false) async {
-        loadTask?.cancel()
+    func loadShelfItems(type: ShelfType, refresh: Bool = false) async {
+        // Cancel existing task for this shelf type
+        loadTasks[type]?.cancel()
         
-        loadTask = Task {
+        loadTasks[type] = Task {
             guard let accountsManager = accountsManager else {
                 logger.debug("No accountsManager available")
                 return
             }
             
-            logger.debug("Loading shelf items for instance: \(accountsManager.currentAccount.instance)")
+            logger.debug("Loading shelf items for type: \(type), instance: \(accountsManager.currentAccount.instance)")
             
-            await updateLoadingState(refresh: refresh)
+            updateLoadingState(type: type, refresh: refresh)
             
             defer {
                 if !Task.isCancelled {
-                    isLoading = false
-                    isRefreshing = false
+                    updateShelfState(type: type) { state in
+                        state.isLoading = false
+                        state.isRefreshing = false
+                    }
                 }
             }
             
-            error = nil
-            detailedError = nil
+            updateShelfState(type: type) { state in
+                state.error = nil
+                state.detailedError = nil
+            }
             
-            let cacheKey = makeCacheKey(instance: accountsManager.currentAccount.instance)
-            logger.debug("Using cache key: \(cacheKey)")
+            // 只在非刷新且是第一页时加载缓存
+            if !refresh && currentShelfState.currentPage == 1 {
+                if let cached = try? await cacheService.retrieveLibrary(
+                    key: accountsManager.currentAccount.id,
+                    shelfType: type,
+                    category: selectedCategory
+                ) {
+                    await handleCachedItems(cached, type: type)
+                }
+            }
+            
+            guard !Task.isCancelled else {
+                logger.debug("Shelf items loading cancelled for type: \(type)")
+                return
+            }
             
             do {
-                if !refresh && shelfItems.isEmpty,
-                   let cached = try? await loadFromCache(key: cacheKey)
-                {
-                    await handleCachedItems(cached)
-                    return
-                }
-                
-                guard !Task.isCancelled else {
-                    logger.debug("Shelf items loading cancelled")
-                    return
-                }
-                
-                let result = try await fetchItems(using: accountsManager)
-                await handleFetchedItems(result, cacheKey: cacheKey)
-                
+                let result = try await fetchItems(type: type, using: accountsManager)
+                await handleFetchedItems(result, type: type, accountsManager: accountsManager)
             } catch {
-                await handleError(error)
+                // 如果网络请求失败，但有缓存数据，保持缓存数据显示
+                let state = shelfStates[type] ?? ShelfItemsState()
+                if state.items.isEmpty {
+                    await handleError(error, type: type)
+                } else {
+                    logger.error("Network request failed, keeping cached data: \(error.localizedDescription)")
+                }
             }
         }
         
-        await loadTask?.value
+        await loadTasks[type]?.value
+    }
+
+    func loadAllShelfItems(refresh: Bool = false) {
+        Task {
+            loadTasks.values.forEach { $0.cancel() }
+            loadTasks.removeAll()
+
+            await loadShelfItems(type: selectedShelfType, refresh: refresh)
+            
+            await withTaskGroup(of: Void.self) { group in
+                for type in ShelfType.allCases where type != selectedShelfType {
+                    group.addTask {
+                        await self.loadShelfItems(type: type, refresh: refresh)
+                    }
+                }
+            }
+        }
     }
     
-    func loadNextPage() async {
-        guard currentPage < totalPages, !isLoading else { return }
-        currentPage += 1
-        await loadShelfItems()
+    func loadNextPage(type: ShelfType) async {
+        let state = shelfStates[type] ?? ShelfItemsState()
+        // 添加更多检查：
+        // 1. 确保当前页小于总页数
+        // 2. 确保没有正在加载
+        // 3. 确保当前数据量等于预期的页面大小（每页20条）
+        // 4. 确保不是刷新状态
+        guard state.currentPage < state.totalPages,
+              !state.isLoading,
+              !state.isRefreshing,
+              state.items.count == state.currentPage * 20 // 假设每页20条数据
+        else { return }
+        
+        logger.debug("Loading next page \(state.currentPage + 1) for type: \(type)")
+        
+        updateShelfState(type: type) { state in
+            state.currentPage += 1
+        }
+        await loadShelfItems(type: type)
     }
     
     func changeShelfType(_ type: ShelfType) {
         selectedShelfType = type
-        loadTask?.cancel()
-        loadTask = Task {
-            await loadShelfItems(refresh: true)
-        }
-    }
-    
-    func changeCategory(_ category: ItemCategory?) {
-        selectedCategory = category
-        loadTask?.cancel()
-        loadTask = Task {
-            await loadShelfItems(refresh: true)
-        }
-    }
-    
-    func cleanup() {
-        loadTask?.cancel()
-        loadTask = nil
-    }
-    
-    // MARK: - Private Methods
-    private func updateLoadingState(refresh: Bool) {
-        if !Task.isCancelled {
-            if refresh {
-                currentPage = 1
-                isRefreshing = true
-            } else {
-                isLoading = true
+        let state = shelfStates[type] ?? ShelfItemsState()
+        if state.items.isEmpty && state.state != .loading {
+            Task {
+                await loadShelfItems(type: type, refresh: true)
             }
         }
     }
     
-    private func makeCacheKey(instance: String) -> String {
-        "\(instance)_shelf_\(selectedShelfType.rawValue)_\(selectedCategory?.rawValue ?? "all")"
-    }
-    
-    private func loadFromCache(key: String) async throws -> PagedMarkSchema? {
-        try await cacheService.retrieve(forKey: key, type: PagedMarkSchema.self)
-    }
-    
-    private func handleCachedItems(_ cached: PagedMarkSchema) async {
-        if !Task.isCancelled {
-            shelfItems = cached.data
-            totalPages = cached.pages
-            logger.debug("Loaded \(cached.data.count) items from cache")
+    func changeCategory(_ category: ItemCategory.shelfAvailable) {
+        selectedCategory = category
+        
+        // 优先加载当前 shelf type
+        Task {
+            await loadShelfItems(type: selectedShelfType)
+            
+            // 然后异步加载其他 shelf types
+            await withTaskGroup(of: Void.self) { group in
+                for type in ShelfType.allCases where type != selectedShelfType {
+                    group.addTask {
+                        await self.loadShelfItems(type: type)
+                    }
+                }
+            }
         }
     }
     
-    private func fetchItems(using accountsManager: AppAccountsManager) async throws -> PagedMarkSchema {
+    func cleanup() {
+        loadTasks.values.forEach { $0.cancel() }
+        loadTasks.removeAll()
+    }
+    
+    // MARK: - Private Methods
+    private func updateShelfState(type: ShelfType, update: (inout ShelfItemsState) -> Void) {
+        var state = shelfStates[type] ?? ShelfItemsState()
+        update(&state)
+        shelfStates[type] = state
+    }
+    
+    private func updateLoadingState(type: ShelfType, refresh: Bool) {
+        if !Task.isCancelled {
+            updateShelfState(type: type) { state in
+                if refresh {
+                    state.currentPage = 1
+                    state.isRefreshing = true
+                    state.state = .loading
+                } else {
+                    state.isLoading = true
+                    if state.items.isEmpty {
+                        state.state = .loading
+                    }
+                }
+            }
+        }
+    }
+    
+    private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
+        if !Task.isCancelled {
+            updateShelfState(type: type) { state in
+                state.items = cached.data
+                state.totalPages = cached.pages
+                state.state = .loaded
+            }
+            logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
+        }
+    }
+    
+    private func fetchItems(type: ShelfType, using accountsManager: AppAccountsManager) async throws -> PagedMarkSchema {
         guard accountsManager.isAuthenticated else {
             logger.error("User not authenticated")
             throw NetworkError.unauthorized
         }
         
+        let state = shelfStates[type] ?? ShelfItemsState()
         let endpoint = ShelfEndpoint.get(
-            type: selectedShelfType,
-            category: selectedCategory,
-            page: currentPage
+            type: type,
+            category: selectedCategory != .allItems ? selectedCategory : nil,
+            page: state.currentPage
         )
         logger.debug("Fetching shelf items with endpoint: \(String(describing: endpoint))")
         
@@ -155,29 +255,50 @@ final class LibraryViewModel: ObservableObject {
             endpoint, type: PagedMarkSchema.self)
     }
     
-    private func handleFetchedItems(_ result: PagedMarkSchema, cacheKey: String) async {
+    private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
         guard !Task.isCancelled else {
-            logger.debug("Shelf items loading cancelled after fetch")
+            logger.debug("Shelf items loading cancelled after fetch for type: \(type)")
             return
         }
         
-        if isRefreshing {
-            shelfItems = result.data
-        } else {
-            shelfItems.append(contentsOf: result.data)
+        updateShelfState(type: type) { state in
+            if state.currentPage == 1 || state.isRefreshing {
+                // 如果是第一页或刷新，直接替换数据
+                state.items = result.data
+            } else {
+                // 如果是加载更多，检查并去重后添加
+                let existingIds = Set(state.items.map { $0.id })
+                let newItems = result.data.filter { !existingIds.contains($0.id) }
+                state.items.append(contentsOf: newItems)
+            }
+            state.totalPages = result.pages
+            state.state = .loaded
         }
-        totalPages = result.pages
         
-        try? await cacheService.cache(result, forKey: cacheKey, type: PagedMarkSchema.self)
-        logger.debug("Successfully loaded \(result.data.count) items")
+        // 只在第一页时缓存数据
+        let state = shelfStates[type] ?? ShelfItemsState()
+        if state.currentPage == 1 {
+            try? await cacheService.cacheLibrary(
+                result,
+                key: accountsManager.currentAccount.id,
+                shelfType: type,
+                category: selectedCategory
+            )
+            logger.debug("Cached first page data for type: \(type)")
+        }
+        
+        logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
     }
     
-    private func handleError(_ error: Error) async {
+    private func handleError(_ error: Error, type: ShelfType) async {
         if !Task.isCancelled {
-            logger.error("Failed to load shelf items: \(error.localizedDescription)")
-            self.error = "Failed to load library"
-            if let networkError = error as? NetworkError {
-                detailedError = networkError.localizedDescription
+            logger.error("Failed to load shelf items for type \(type): \(error.localizedDescription)")
+            updateShelfState(type: type) { state in
+                state.error = "Failed to load library"
+                if let networkError = error as? NetworkError {
+                    state.detailedError = networkError.localizedDescription
+                }
+                state.state = .error
             }
         }
     }

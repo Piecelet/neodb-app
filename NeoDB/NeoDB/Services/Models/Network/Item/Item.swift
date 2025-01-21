@@ -154,8 +154,8 @@ extension EditionSchema {
     var keyMetadata: [String] {
         var metadata: [String] = []
 
-        if !author.isEmpty {
-            metadata.append(author.joined(separator: metadataArraySeparator))
+        if let author = author.first {
+            metadata.append(author)
         }
         if let pubHouse = pubHouse {
             metadata.append(pubHouse)
