@@ -21,19 +21,20 @@ struct LibraryView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 0) {
-            shelfTypePicker
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(Color(.systemBackground))
-            
+        ZStack(alignment: .bottom) {
             ScrollView {
                 categoryFilter
                 contentView
+                    .padding(.bottom, 60) // Add padding for the picker
             }
             .refreshable {
                 await viewModel.loadShelfItems(refresh: true)
             }
+            
+            shelfTypePicker
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .padding(.bottom, 8)
         }
         .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.large)

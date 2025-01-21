@@ -8,9 +8,41 @@
 import UIKit
 import SwiftUI
 
-class UIRoundedSegmentControl: UISegmentedControl {
+class BackgroundContainerView: UIView {
+    private let blurEffect = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupView()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupView()
+    }
+    
+    private func setupView() {
+        addSubview(blurEffect)
+        backgroundColor = .clear
+        isUserInteractionEnabled = false
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
+        blurEffect.frame = bounds
+        layer.cornerRadius = bounds.height / 2
+        layer.masksToBounds = true
+        blurEffect.layer.cornerRadius = bounds.height / 2
+        blurEffect.layer.masksToBounds = true
+    }
+}
+
+class UIRoundedSegmentControl: UISegmentedControl {
+    private let backgroundContainer = BackgroundContainerView()
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        backgroundContainer.frame = bounds
         layer.cornerRadius = bounds.height / 2
         layer.masksToBounds = true
     }
@@ -31,6 +63,9 @@ class UIRoundedSegmentControl: UISegmentedControl {
     }
     
     private func setupAppearance() {
+        // Add background container behind everything
+        insertSubview(backgroundContainer, at: 0)
+        
         // Style configuration
         let normalTextAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.secondaryLabel,
@@ -45,8 +80,8 @@ class UIRoundedSegmentControl: UISegmentedControl {
         setTitleTextAttributes(selectedTextAttributes, for: .selected)
         
         // Set background appearance
-        backgroundColor = UIColor.systemGray6.withAlphaComponent(0.5)
-        selectedSegmentTintColor = UIColor.systemBackground.withAlphaComponent(0.5)
+        backgroundColor = .clear
+        selectedSegmentTintColor = .white.withAlphaComponent(0.15)
         
         // Remove segment dividers
         setDividerImage(UIImage(), forLeftSegmentState: .normal, rightSegmentState: .normal, barMetrics: .default)
