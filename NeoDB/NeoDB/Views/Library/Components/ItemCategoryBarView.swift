@@ -21,7 +21,7 @@ struct ItemCategoryBarView: View {
                         ResizableTabButton(.allItems)
                             .id(ItemCategory.shelfAvailable.allItems)
 
-                        HStack(spacing: activeTab == .allItems ? -12 : 8) {
+                        HStack(spacing: activeTab == .allItems ? -8 : 8) {
                             ForEach(
                                 ItemCategory.shelfAvailable.allCases.filter({
                                     $0 != .allItems
@@ -32,7 +32,7 @@ struct ItemCategoryBarView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 15)
+                    .padding(.horizontal)
                     .frame(minWidth: geometry.size.width)
                 }
                 .onAppear {

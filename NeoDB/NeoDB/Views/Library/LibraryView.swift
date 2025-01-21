@@ -48,6 +48,7 @@ struct LibraryView: View {
                 Text("Library")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
             }
         }
         .ignoresSafeArea(edges: .bottom)
