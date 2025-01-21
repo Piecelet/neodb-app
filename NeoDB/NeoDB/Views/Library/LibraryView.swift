@@ -33,15 +33,15 @@ struct LibraryView: View {
             TabView(selection: $viewModel.selectedShelfType) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
                     ScrollView {
-                        contentView
+                        shelfContentView(for: type)
+                    }
+                    .refreshable {
+                        await viewModel.loadShelfItems(type: type, refresh: true)
                     }
                     .tag(type)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-        }
-        .refreshable {
-            await viewModel.loadShelfItems(refresh: true)
         }
         .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.inline)
@@ -54,7 +54,8 @@ struct LibraryView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            await viewModel.loadShelfItems()
+            // 初始加载当前选中的 shelf
+            await viewModel.loadShelfItems(type: viewModel.selectedShelfType)
         }
         .onDisappear {
             viewModel.cleanup()
@@ -90,7 +91,6 @@ struct LibraryView: View {
                         .font(.system(size: 15, weight: viewModel.selectedShelfType == type ? .semibold : .regular))
                         .foregroundStyle(viewModel.selectedShelfType == type ? .primary : .secondary)
                     
-                    // Selection Indicator
                     Rectangle()
                         .fill(viewModel.selectedShelfType == type ? Color.accentColor : .clear)
                         .frame(height: 2)
@@ -109,68 +109,64 @@ struct LibraryView: View {
     private var categoryFilter: some View {
         ItemCategoryBarView(activeTab: $activeTab)
             .onChange(of: activeTab) { newValue in
-                viewModel.selectedCategory = newValue
                 viewModel.changeCategory(newValue)
             }
     }
 
-    // MARK: - Content View
+    // MARK: - Shelf Content View
     @ViewBuilder
-    private var contentView: some View {
-        if let error = viewModel.error {
+    private func shelfContentView(for type: ShelfType) -> some View {
+        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
+        
+        if let error = state.error {
             EmptyStateView(
                 "Couldn't Load Library",
                 systemImage: "exclamationmark.triangle",
-                description: Text(viewModel.detailedError ?? error)
+                description: Text(state.detailedError ?? error)
             )
-        } else if viewModel.shelfItems.isEmpty && !viewModel.isLoading
-            && !viewModel.isRefreshing
-        {
+        } else if state.items.isEmpty && !state.isLoading && !state.isRefreshing {
             EmptyStateView(
                 "No Items Found",
                 systemImage: "books.vertical",
                 description: Text(
-                    "Add some items to your \(viewModel.selectedShelfType.displayName.lowercased()) list"
+                    "Add some items to your \(type.displayName.lowercased()) list"
                 )
             )
         } else {
-            libraryContent
+            shelfItemsList(for: type)
         }
     }
 
-    // MARK: - Library Content
-    private var libraryContent: some View {
-        Group {
-            LazyVStack(spacing: 12) {
-                ForEach(viewModel.shelfItems) { mark in
-                    Button {
-                        router.navigate(
-                            to: .itemDetailWithItem(item: mark.item))
-                    } label: {
-                        shelfItemView(mark: mark)
-                            .onAppear {
-                                if mark.id == viewModel.shelfItems.last?.id {
-                                    Task {
-                                        await viewModel.loadNextPage()
-                                    }
+    private func shelfItemsList(for type: ShelfType) -> some View {
+        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
+        
+        return LazyVStack(spacing: 12) {
+            ForEach(state.items) { mark in
+                Button {
+                    router.navigate(to: .itemDetailWithItem(item: mark.item))
+                } label: {
+                    shelfItemView(mark: mark)
+                        .onAppear {
+                            if mark.id == state.items.last?.id {
+                                Task {
+                                    await viewModel.loadNextPage(type: type)
                                 }
                             }
-                    }
-                    .buttonStyle(.plain)
+                        }
                 }
-
-                if viewModel.isLoading && !viewModel.isRefreshing {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
+                .buttonStyle(.plain)
             }
-            .padding()
+
+            if state.isLoading && !state.isRefreshing {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding()
+            }
         }
-        .padding(.top, -8)
+        .padding()
     }
 
-    // MARK: - Shelf Item View
+    // MARK: - Item View Components
     private func shelfItemView(mark: MarkSchema) -> some View {
         HStack(spacing: 12) {
             coverImage(for: mark)
