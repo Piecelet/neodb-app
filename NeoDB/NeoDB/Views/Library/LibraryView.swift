@@ -202,7 +202,7 @@ struct LibraryView: View {
             
             ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
 
-            ItemMarkView(mark: mark, size: .medium, brief: true)
+            ItemMarkView(mark: mark, size: .medium, brief: true, showEditButton: true)
         }
     }
 

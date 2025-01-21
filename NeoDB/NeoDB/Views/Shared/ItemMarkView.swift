@@ -40,55 +40,71 @@ enum ItemMarkSize {
 }
 
 struct ItemMarkView: View {
+    @EnvironmentObject private var router: Router
+    
     let mark: MarkSchema
     let size: ItemMarkSize
     var brief: Bool = false
+    var showEditButton: Bool = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: size.spacing) {
-                if let rating = mark.ratingGrade {
-                    markRatingView(rating)
-                    Spacer()
-                    Text(mark.createdTime.formatted)
-                        .foregroundStyle(.secondary)
-                    Image(symbol: mark.shelfType.symbolImage)
-                        .foregroundStyle(.secondary)
-                } else {
-                    Image(symbol: mark.shelfType.symbolImage)
-                        .foregroundStyle(.secondary)
-                    Text(mark.createdTime.formatted)
-                        .foregroundStyle(.secondary)
+        Group {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: size.spacing) {
+                    if let rating = mark.ratingGrade {
+                        markRatingView(rating)
+                        Spacer()
+                        Text(mark.createdTime.formatted)
+                            .foregroundStyle(.secondary)
+                        Image(symbol: mark.shelfType.symbolImage)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Image(symbol: mark.shelfType.symbolImage)
+                            .foregroundStyle(.secondary)
+                        Text(mark.createdTime.formatted)
+                            .foregroundStyle(.secondary)
+                    }
                 }
-            }
-            .font(size.font)
-
-            if let comment = mark.commentText, !comment.isEmpty {
-                Text(comment)
-                    .font(size.font)
-                    .lineLimit(brief ? 2 : nil)
-            }
-
-            if !mark.tags.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: size.spacing) {
-                        ForEach(mark.tags, id: \.self) { tag in
-                            Text("#\(tag)")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color(.systemGray5))
-                                .clipShape(Capsule())
+                .font(size.font)
+                
+                if let comment = mark.commentText, !comment.isEmpty {
+                    Text(comment)
+                        .font(size.font)
+                        .lineLimit(brief ? 2 : nil)
+                }
+                
+                if !mark.tags.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: size.spacing) {
+                            ForEach(mark.tags, id: \.self) { tag in
+                                Text("#\(tag)")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color(.systemGray5))
+                                    .clipShape(Capsule())
+                            }
                         }
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(size.padding)
+            .background(Color(.systemGray5).opacity(0.5))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(size.padding)
-        .background(Color(.systemGray5).opacity(0.5))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay(alignment: .bottomTrailing) {
+            if showEditButton {
+                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .pencilCircle) {
+                    router.presentSheet(.editShelfItem(mark: mark))
+                }
+                .accentColor(.gray)
+                .labelStyle(.iconOnly)
+                .padding(.bottom, 6)
+                .padding(.trailing, 6)
+            }
+        }
         .enableInjection()
     }
 
