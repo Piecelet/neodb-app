@@ -19,7 +19,7 @@ class NeoDBURL {
         logger.debug("\(message)")
     }
     
-    static func parseItemURL(_ url: URL) -> (any ItemProtocol)? {
+    static func parseItemURL(_ url: URL) async -> (any ItemProtocol)? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -47,7 +47,7 @@ class NeoDBURL {
         // Handle special cases for tv seasons and episodes
         let category: ItemCategory
         if type == "podcast" {
-            return parseItemPodcastURL(url)
+            return await parseItemPodcastURL(url)
         } else if type == "tv" && pathComponents.count >= 4 {
             switch pathComponents[2] {
             case "season":
@@ -107,7 +107,7 @@ class NeoDBURL {
         return urlItem
     }
 
-    static func parseItemPodcastURL(_ url: URL) -> PodcastSchema? {
+    static func parseItemPodcastURL(_ url: URL) async -> PodcastSchema? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -116,11 +116,9 @@ class NeoDBURL {
             return nil
         }
 
-        // Remove leading slash and split path
         let path = components.path.dropFirst()
         let pathComponents = path.split(separator: "/").map(String.init)
 
-        // Verify we have ~neodb~/podcast/id format
         guard pathComponents.count >= 3,
             pathComponents[0] == neodbItemIdentifier
         else {
@@ -130,25 +128,18 @@ class NeoDBURL {
         var uuid = pathComponents[2]
 
         if pathComponents.count >= 4 || pathComponents[2] == "episode" {
-            // Parse podcast episode
-            guard let data = try? Data(contentsOf: url),
-                  let html = String(data: data, encoding: .utf8)
-            else {
-                uuid = pathComponents[pathComponents.count - 1]
-                logger.error("Failed to load URL content: \(url)")
-                return nil
-            }
-            
             do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                guard let html = String(data: data, encoding: .utf8) else {
+                    logger.error("Failed to decode HTML from URL: \(url)")
+                    return nil
+                }
+                
                 let doc = try SwiftSoup.parse(html)
                 if let meta = try doc.select("meta[http-equiv=refresh]").first(),
                    let content = try? meta.attr("content"),
                    content.contains("url=") {
-                    // Extract the URL path from content
                     let urlPart = content.split(separator: "url=").last.map(String.init) ?? ""
-                    
-                    // Parse the URL path to get podcast UUID
-                    // 构建完整的URL字符串
                     let fullURL = "https://\(components.host ?? AppConfig.defaultInstance)\(urlPart)"
                     if let redirectComponents = URLComponents(string: fullURL) {
                         let pathParts = redirectComponents.path.split(separator: "/")
@@ -159,7 +150,8 @@ class NeoDBURL {
                     }
                 }
             } catch {
-                logger.error("Failed to parse HTML: \(error.localizedDescription)")
+                logger.error("Failed to load or parse URL: \(error.localizedDescription)")
+                return nil
             }
         }
 
@@ -171,7 +163,7 @@ class NeoDBURL {
         apiComponents.path = apiComponents.path.replacingOccurrences(
             of: "/\(neodbItemIdentifier)", with: "/api")
 
-        let tempPodcast = PodcastSchema(
+        return PodcastSchema(
             id: url.absoluteString,
             type: "Podcast",
             uuid: uuid,
@@ -197,8 +189,6 @@ class NeoDBURL {
             rssUrl: nil,
             websiteUrl: nil
         )
-
-        return tempPodcast
     }
 }
 

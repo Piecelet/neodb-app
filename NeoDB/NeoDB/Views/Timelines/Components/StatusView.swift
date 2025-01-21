@@ -16,20 +16,7 @@ struct StatusView: View {
     let status: MastodonStatus
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
-    
-    private var extractedItem: (any ItemProtocol)? {
-        if let urls = status.content.extractURLs() {
-            for url in urls {
-                if let item = NeoDBURL.parseItemURL(url) {
-                    return item
-                }
-            }
-            logger.debug("Failed to parse item from URL")
-        } else {
-            logger.debug("Could not extract URL from status content: \(status.content)")
-        }
-        return nil
-    }
+    @State private var item: (any ItemProtocol)?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -78,7 +65,7 @@ struct StatusView: View {
                 .textSelection(.enabled)
             
             // Item Preview if available
-            if let item = extractedItem {
+            if let item = item {
                 StatusItemView(item: item)
             }
             
@@ -115,6 +102,16 @@ struct StatusView: View {
         }
         .padding()
         .background(Color(.systemBackground))
+        .task {
+            if let urls = status.content.extractURLs() {
+                for url in urls {
+                    if let extractedItem = await NeoDBURL.parseItemURL(url) {
+                        item = extractedItem
+                        break
+                    }
+                }
+            }
+        }
     }
     
     @ViewBuilder
