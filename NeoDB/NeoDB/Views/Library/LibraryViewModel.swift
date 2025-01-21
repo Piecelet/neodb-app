@@ -32,6 +32,7 @@ final class LibraryViewModel: ObservableObject {
     @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems {
         didSet {
             if oldValue != selectedCategory {
+                initShelfStates()
                 loadAllShelfItems()
             }
         }
@@ -60,6 +61,12 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Computed Properties
     var currentShelfState: ShelfItemsState {
         shelfStates[selectedShelfType] ?? ShelfItemsState()
+    }
+
+    func initShelfStates() {
+        for type in ShelfType.allCases {
+            shelfStates[type] = ShelfItemsState()
+        }
     }
     
     // MARK: - Public Methods
