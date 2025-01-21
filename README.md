@@ -3,16 +3,12 @@
 [Public TestFlight beta](https://testflight.apple.com/join/apxemRpF) (An proper App Store release will come eventually)
 
 <p float="left">
-    <img src="Images/IMG_3865.png" width="300" />
-    <img src="Images/IMG_3867.png" width="300" />
+    <img src="Images/LoginView.png" width="300" />
+    <img src="Images/TimelinesView.png" width="300" />
 </p>
 <p float="left">
-    <img src="Images/IMG_3280.png" width="300" />
-    <img src="Images/IMG_8182.png" width="300" />
-</p>
-<p float="left">
-    <img src="Images/IMG_8181.png" width="300" />
-    <img src="Images/IMG_8455.png" width="300" />
+    <img src="Images/LibraryView.png" width="300" />
+    <img src="Images/ItemView.png" width="300" />
 </p>
 
 For contributors and myself, here is a todo list of features that could be added (while giving you a good idea of what's already done if not in this list, the app is quite complete already!)
