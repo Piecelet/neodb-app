@@ -151,7 +151,7 @@ struct ItemView: View {
             }
             .lineLimit(3)
 
-            ratingView
+            ItemRatingView(item: viewModel.item, size: .large)
 
             if !viewModel.metadata.isEmpty {
                 Text(viewModel.metadata.joined(separator: " / "))
@@ -168,24 +168,6 @@ struct ItemView: View {
                 }
             }
         }
-    }
-
-    private var ratingView: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundStyle(
-                    viewModel.rating.isEmpty
-                        ? .gray.opacity(0.5) : .orange.opacity(0.8))
-            if viewModel.rating.isEmpty {
-                Text("No Ratings")
-                    .foregroundStyle(.secondary)
-            } else {
-                Text(viewModel.rating)
-                Text("(\(viewModel.ratingCount))")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .font(.subheadline)
     }
 
     // MARK: - Description View

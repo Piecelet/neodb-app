@@ -192,9 +192,11 @@ struct LibraryView: View {
 
     private func itemDetails(for mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(mark.item.displayTitle ?? "")
+            Text(mark.item.displayTitle ?? mark.item.title ?? "")
                 .font(.headline)
                 .lineLimit(2)
+            
+            ItemRatingView(item: mark.item, size: .medium, hideRatingCount: true)
 
             if let rating = mark.ratingGrade {
                 HStack(spacing: 4) {
@@ -202,7 +204,7 @@ struct LibraryView: View {
                         .foregroundStyle(.yellow)
                     Text("\(rating)/10")
                 }
-                .font(.subheadline)
+                .font(.callout)
             }
 
             if !mark.tags.isEmpty {

@@ -36,11 +36,7 @@ struct StatusItemView: View {
                             .lineLimit(2)
                         
                         HStack(spacing: 4) {
-                            if let rating = viewModel.item.rating {
-                                Image(systemName: "star.fill")
-                                    .foregroundStyle(.yellow)
-                                Text(String(format: "%.1f", rating))
-                            }
+                            ItemRatingView(item: viewModel.item, size: .small, hideRatingCount: true)
                             Group {
                                 if let movie = viewModel.item as? MovieSchema,
                                    let year = movie.year {
