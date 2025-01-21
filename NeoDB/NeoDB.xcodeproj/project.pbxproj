@@ -16,6 +16,7 @@
 		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
+		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 /* End PBXBuildFile section */
 
@@ -84,6 +85,7 @@
 				2403F2762D32511E00ED4CB5 /* Cache in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
+				24BABF592D40309800785306 /* WishKit in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
@@ -168,6 +170,7 @@
 				2403F2752D32511E00ED4CB5 /* Cache */,
 				243C38EA2D3D999B00EB356A /* ExpandableText */,
 				243C39242D3E7ABA00EB356A /* SFSafeSymbols */,
+				24BABF582D40309800785306 /* WishKit */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -261,6 +264,7 @@
 				2403E7672D2EFA3200ED4CB5 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				2403F2742D3250FE00ED4CB5 /* XCRemoteSwiftPackageReference "Cache" */,
 				243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
+				24BABF572D40309800785306 /* XCRemoteSwiftPackageReference "wishkit-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -749,6 +753,14 @@
 				minimumVersion = 1.5.2;
 			};
 		};
+		24BABF572D40309800785306 /* XCRemoteSwiftPackageReference "wishkit-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/wishkit/wishkit-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.7.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -790,6 +802,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 249B95192D2EF5B500FE3D95 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
 			productName = MarkdownUI;
+		};
+		24BABF582D40309800785306 /* WishKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24BABF572D40309800785306 /* XCRemoteSwiftPackageReference "wishkit-ios" */;
+			productName = WishKit;
 		};
 		24D1BE402D2A9F340063B530 /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;

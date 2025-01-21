@@ -8,6 +8,7 @@
 import Kingfisher
 import OSLog
 import SwiftUI
+import WishKit
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -179,6 +180,11 @@ struct SettingsView: View {
 
     private let avatarSize: CGFloat = 60
 
+    init() {
+        WishKit.configure(with: AppConfig.wishkitApiKey)
+        WishKit.theme.primaryColor = .accent       
+    }
+
     // MARK: - Body
     var body: some View {
         Group {
@@ -228,6 +234,7 @@ struct SettingsView: View {
         List {
             profileHeaderSection
             accountInformationSection
+            appSection
             cacheManagementSection
             logoutSection
         }
@@ -275,6 +282,23 @@ struct SettingsView: View {
                         .redacted(reason: .placeholder)
                 }
             }
+        }
+    }
+    
+    private var appSection: some View {
+        Section("App") {
+            NavigationLink {
+                WishKit.FeedbackListView()
+                    .padding(.bottom)
+            } label: {
+                Label("Feature Requests", systemSymbol: .lightbulb)
+            }
+            
+//            NavigationLink {
+//                AboutView()
+//            } label: {
+//                Label("About", systemSymbol: .info)
+//            }
         }
     }
     
