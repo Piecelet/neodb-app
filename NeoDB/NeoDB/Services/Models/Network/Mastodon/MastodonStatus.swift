@@ -46,6 +46,10 @@ protocol AnyMastodonStatus {
     var visibility: Visibility { get }
     var poll: MastodonPoll? { get }
     var spoilerText: String { get }
+    
+    // MARK: NeoDB Private
+//    var extNeodb: [NeoDBTag] {get}
+//    var relatedWith:
 }
 
 struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable {
