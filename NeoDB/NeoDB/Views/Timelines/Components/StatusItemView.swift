@@ -19,7 +19,8 @@ struct StatusItemView: View {
 
     var body: some View {
         Button {
-            router.navigate(to: .itemDetailWithItem(item: viewModel.item.toItemSchema))
+            router.navigate(
+                to: .itemDetailWithItem(item: viewModel.item.toItemSchema))
         } label: {
             LazyVStack {
                 HStack(spacing: 12) {
@@ -34,12 +35,15 @@ struct StatusItemView: View {
                         Text(viewModel.item.displayTitle ?? "")
                             .font(.headline)
                             .lineLimit(2)
-                        
+
                         HStack(spacing: 4) {
-                            ItemRatingView(item: viewModel.item, size: .small, hideRatingCount: true)
+                            ItemRatingView(
+                                item: viewModel.item, size: .small,
+                                hideRatingCount: true)
                             Group {
                                 if let movie = viewModel.item as? MovieSchema,
-                                   let year = movie.year {
+                                    let year = movie.year
+                                {
                                     Text(String(year))
                                 }
                             }
@@ -47,10 +51,11 @@ struct StatusItemView: View {
                         }
                         .font(.caption)
 
-                        Text(viewModel.item.brief)
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(2)
+                        ItemDescriptionView(
+                            item: viewModel.item,
+                            mode: .brief,
+                            size: .small
+                        )
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }

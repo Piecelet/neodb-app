@@ -154,10 +154,11 @@ struct ItemView: View {
             ItemRatingView(item: viewModel.item, size: .large)
 
             if !viewModel.metadata.isEmpty {
-                Text(viewModel.metadata.joined(separator: " / "))
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                ItemDescriptionView(
+                    item: viewModel.item,
+                    mode: .metadata,
+                    size: .large
+                )
 
                 Button {
                     router.presentSheet(.itemDetails(item: viewModel.item!))

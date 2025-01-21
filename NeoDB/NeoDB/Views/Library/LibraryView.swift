@@ -199,6 +199,8 @@ struct LibraryView: View {
                 .lineLimit(2)
 
             ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
+            
+            ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
 
             ItemMarkView(mark: mark, size: .medium, brief: true)
         }
