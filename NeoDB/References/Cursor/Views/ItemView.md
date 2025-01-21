@@ -18,13 +18,15 @@ ItemDetailView displays detailed information about various types of items (books
 
 2. `ItemHeaderView`
    - Shows cover image and basic info
-   - Displays rating and metadata
+   - Uses `ItemCoverView` for consistent cover display
+   - Integrates `ItemRatingView` for ratings
+   - Uses `ItemDescriptionView` for metadata
 
 3. `ItemActionsView`
    - Action buttons (add to shelf, share, etc.)
    - Integration with router for navigation
-   - Migrated from `AuthService` to `AppAccountsManager` for instance handling
-   - Uses `currentAccount.instance` for URL construction
+   - Uses `ItemMarkView` for mark display
+   - Migrated from `AuthService` to `AppAccountsManager`
 
 ## Implementation Details
 
@@ -55,6 +57,11 @@ ItemDetailView
 5. Added proper type handling for different items
 6. Migrated from `AuthService` to `AppAccountsManager`
 7. Added UUID extraction from full URLs
+8. Integrated new shared components:
+   - ItemCoverView for cover images
+   - ItemRatingView for ratings
+   - ItemDescriptionView for metadata
+   - ItemMarkView for user marks
 
 ## Known Issues
 - Need to implement proper action handling

@@ -127,7 +127,7 @@ struct ItemView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
         }
-        .padding(.vertical)
+        .padding(.top)
     }
 
     private var coverImageView: some View {
@@ -241,6 +241,14 @@ struct ItemView: View {
                     !resources.isEmpty
                 {
                     Menu {
+                        if let shareURL = viewModel.shareURL {
+                            Button("Open in \(accountsManager.currentAccount.instance)", systemSymbol: .arrowUpRight) {
+                                openURL(shareURL)
+                            }
+
+                            Divider()
+                        }
+
                         ForEach(resources, id: \.url) { resource in
                             Button(role: .none) {
                                 openURL(resource.url)

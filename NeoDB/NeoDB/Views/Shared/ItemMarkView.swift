@@ -96,7 +96,7 @@ struct ItemMarkView: View {
         }
         .overlay(alignment: .bottomTrailing) {
             if showEditButton {
-                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .pencilCircle) {
+                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .pencil) {
                     router.presentSheet(.editShelfItem(mark: mark))
                 }
                 .accentColor(.gray)

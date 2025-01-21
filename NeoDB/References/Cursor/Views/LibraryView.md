@@ -22,23 +22,21 @@ LibraryView is a core view that displays user's library items in different shelf
 
 3. `ItemCategoryBarView`
    - Horizontal scrollable category filter
-   - Uses `ItemCategory.shelfAvailable` for category options
+   - Uses `ItemCategory.shelfAvailable` for options
    - Features:
      - "All" button stays fixed on the left
      - Buttons collapse when "All" is selected
      - Smooth animations for state changes
      - Auto-scrolling to selected category
-   - Design:
-     - Height: 40pt
-     - Corner radius: 14pt
-     - Custom colors for each category
-     - Consistent icon sizes (20x20)
-     - Padding: 14pt (selected), 16pt (All), 20pt (others)
 
 4. `ShelfItemView`
    - Individual item display
-   - Shows cover image, title, rating, and tags
-   - Uses KFImage for image loading
+   - Uses shared components:
+     - `ItemCoverView` for cover images
+     - `ItemRatingView` for ratings
+     - `ItemDescriptionView` for brief info
+     - `ItemMarkView` for user marks
+   - Consistent styling and layout
 
 ## Implementation Details
 
@@ -67,11 +65,12 @@ LibraryView
 4. Improved UI with empty states
 5. Added pull-to-refresh functionality
 6. Replaced category filter with new `ItemCategoryBarView`
-   - Fixed animation timing issues with scrolling
-   - Improved button layout and spacing
-   - Added custom colors for each category
-   - Enhanced accessibility with proper text and icon sizing
+7. Integrated shared components for consistent UI:
+   - ItemCoverView for covers
+   - ItemRatingView for ratings
+   - ItemDescriptionView for descriptions
+   - ItemMarkView for user marks
 
 ## Known Issues
-- ServerDate handling needs improvement for proper date formatting
+- ServerDate handling needs improvement
 - Need to implement proper item detail navigation
