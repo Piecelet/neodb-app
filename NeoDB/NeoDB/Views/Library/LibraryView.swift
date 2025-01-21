@@ -21,27 +21,46 @@ struct LibraryView: View {
 
     // MARK: - Body
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                categoryFilter
-                contentView
-                    .padding(.bottom, 80)  // Increased padding for the picker
+        VStack(spacing: 0) {
+            categoryFilter
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                shelfTypePicker
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
             }
+            
+            TabView(selection: $viewModel.selectedShelfType) {
+                ForEach(ShelfType.allCases, id: \.self) { type in
+                    ScrollView {
+                        contentView
+                    }
+                    .tag(type)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .refreshable {
             await viewModel.loadShelfItems(refresh: true)
         }
-        .overlay(alignment: .bottom) {
-            shelfTypeControl
-        }
         .navigationTitle("Library")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Library")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
         .task {
             viewModel.accountsManager = accountsManager
             await viewModel.loadShelfItems()
         }
         .onDisappear {
             viewModel.cleanup()
+        }
+        .onChange(of: viewModel.selectedShelfType) { newValue in
+            viewModel.changeShelfType(newValue)
         }
         .enableInjection()
     }
@@ -50,29 +69,41 @@ struct LibraryView: View {
         @ObserveInjection var forceRedraw
     #endif
 
-    private var shelfTypeControl: some View {
-        Picker("Shelf Type", selection: $viewModel.selectedShelfType) {
+    private var headerView: some View {
+        VStack(spacing: 0) {
+            categoryFilter
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                shelfTypePicker
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+            }
+            .background(Color(.systemBackground))
+        }
+    }
+
+    private var shelfTypePicker: some View {
+        HStack(spacing: 20) {
             ForEach(ShelfType.allCases, id: \.self) { type in
-                Group {
-//                    if type == .dropped {
-//                        Image(symbol: type.symbolImage)
-//                    } else {
-                        Text(type.displayName)
-                            .tag(type)
-//                    }
+                VStack(spacing: 8) {
+                    Text(type.displayName)
+                        .font(.system(size: 15, weight: viewModel.selectedShelfType == type ? .semibold : .regular))
+                        .foregroundStyle(viewModel.selectedShelfType == type ? .primary : .secondary)
+                    
+                    // Selection Indicator
+                    Rectangle()
+                        .fill(viewModel.selectedShelfType == type ? Color.accentColor : .clear)
+                        .frame(height: 2)
                 }
-                .font(.system(size: 15, weight: .semibold))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    withAnimation {
+                        viewModel.selectedShelfType = type
+                    }
+                }
             }
         }
-        .pickerStyle(.segmented)
-        .frame(maxWidth: .infinity)
-        .frame(height: 36)
-        .onChange(of: viewModel.selectedShelfType) { newValue in
-            viewModel.changeShelfType(newValue)
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .background(.ultraThickMaterial)
+        .padding(.horizontal, 4)
     }
 
     private var categoryFilter: some View {
