@@ -1,6 +1,12 @@
 import Foundation
 import OSLog
 
+enum LibraryState {
+    case loading
+    case loaded
+    case error
+}
+
 @MainActor
 final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
@@ -11,8 +17,9 @@ final class LibraryViewModel: ObservableObject {
     private var loadTask: Task<Void, Never>?
     
     // MARK: - Published Properties
+    @Published private(set) var state: LibraryState = .loading
     @Published var selectedShelfType: ShelfType = .wishlist
-    @Published var selectedCategory: ItemCategory?
+    @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems
     @Published var shelfItems: [MarkSchema] = []
     @Published private(set) var isLoading = false
     @Published private(set) var isRefreshing = false
@@ -56,12 +63,12 @@ final class LibraryViewModel: ObservableObject {
             error = nil
             detailedError = nil
             
-            let cacheKey = makeCacheKey(instance: accountsManager.currentAccount.instance)
-            logger.debug("Using cache key: \(cacheKey)")
-            
             do {
                 if !refresh && shelfItems.isEmpty,
-                   let cached = try? await loadFromCache(key: cacheKey)
+                   let cached = try? await cacheService.retrieveLibrary(
+                    key: accountsManager.currentAccount.id,
+                    shelfType: selectedShelfType,
+                    category: selectedCategory)
                 {
                     await handleCachedItems(cached)
                     return
@@ -73,7 +80,7 @@ final class LibraryViewModel: ObservableObject {
                 }
                 
                 let result = try await fetchItems(using: accountsManager)
-                await handleFetchedItems(result, cacheKey: cacheKey)
+                await handleFetchedItems(result, accountsManager: accountsManager)
                 
             } catch {
                 await handleError(error)
@@ -97,7 +104,7 @@ final class LibraryViewModel: ObservableObject {
         }
     }
     
-    func changeCategory(_ category: ItemCategory?) {
+    func changeCategory(_ category: ItemCategory.shelfAvailable) {
         selectedCategory = category
         loadTask?.cancel()
         loadTask = Task {
@@ -116,25 +123,27 @@ final class LibraryViewModel: ObservableObject {
             if refresh {
                 currentPage = 1
                 isRefreshing = true
+                state = .loading
             } else {
                 isLoading = true
+                if shelfItems.isEmpty {
+                    state = .loading
+                }
             }
         }
-    }
-    
-    private func makeCacheKey(instance: String) -> String {
-        "\(instance)_shelf_\(selectedShelfType.rawValue)_\(selectedCategory?.rawValue ?? "all")"
-    }
-    
-    private func loadFromCache(key: String) async throws -> PagedMarkSchema? {
-        try await cacheService.retrieve(forKey: key, type: PagedMarkSchema.self)
     }
     
     private func handleCachedItems(_ cached: PagedMarkSchema) async {
         if !Task.isCancelled {
             shelfItems = cached.data
             totalPages = cached.pages
+            state = .loaded
             logger.debug("Loaded \(cached.data.count) items from cache")
+            
+            // Refresh in background
+            Task {
+                await refreshInBackground()
+            }
         }
     }
     
@@ -146,7 +155,7 @@ final class LibraryViewModel: ObservableObject {
         
         let endpoint = ShelfEndpoint.get(
             type: selectedShelfType,
-            category: selectedCategory,
+            category: selectedCategory != .allItems ? selectedCategory : nil,
             page: currentPage
         )
         logger.debug("Fetching shelf items with endpoint: \(String(describing: endpoint))")
@@ -155,7 +164,7 @@ final class LibraryViewModel: ObservableObject {
             endpoint, type: PagedMarkSchema.self)
     }
     
-    private func handleFetchedItems(_ result: PagedMarkSchema, cacheKey: String) async {
+    private func handleFetchedItems(_ result: PagedMarkSchema, accountsManager: AppAccountsManager) async {
         guard !Task.isCancelled else {
             logger.debug("Shelf items loading cancelled after fetch")
             return
@@ -167,8 +176,15 @@ final class LibraryViewModel: ObservableObject {
             shelfItems.append(contentsOf: result.data)
         }
         totalPages = result.pages
+        state = .loaded
         
-        try? await cacheService.cacheLibrary(result, key: accountsManager?.currentAccount.id ?? "", shelfType: selectedShelfType, category: selectedCategory)
+        try? await cacheService.cacheLibrary(
+            result,
+            key: accountsManager.currentAccount.id,
+            shelfType: selectedShelfType,
+            category: selectedCategory
+        )
+        
         logger.debug("Successfully loaded \(result.data.count) items")
     }
     
@@ -179,6 +195,30 @@ final class LibraryViewModel: ObservableObject {
             if let networkError = error as? NetworkError {
                 detailedError = networkError.localizedDescription
             }
+            state = .error
+        }
+    }
+    
+    private func refreshInBackground() async {
+        guard let accountsManager = accountsManager else { return }
+        
+        do {
+            let result = try await fetchItems(using: accountsManager)
+            try? await cacheService.cacheLibrary(
+                result,
+                key: accountsManager.currentAccount.id,
+                shelfType: selectedShelfType,
+                category: selectedCategory
+            )
+            
+            if !Task.isCancelled {
+                shelfItems = result.data
+                totalPages = result.pages
+            }
+            
+            logger.debug("Background refresh completed")
+        } catch {
+            logger.error("Background refresh failed: \(error.localizedDescription)")
         }
     }
 } 

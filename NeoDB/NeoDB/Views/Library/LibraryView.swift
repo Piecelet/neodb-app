@@ -109,8 +109,8 @@ struct LibraryView: View {
     private var categoryFilter: some View {
         ItemCategoryBarView(activeTab: $activeTab)
             .onChange(of: activeTab) { newValue in
-                viewModel.selectedCategory = newValue.itemCategory
-                viewModel.changeCategory(newValue.itemCategory)
+                viewModel.selectedCategory = newValue
+                viewModel.changeCategory(newValue)
             }
     }
 
