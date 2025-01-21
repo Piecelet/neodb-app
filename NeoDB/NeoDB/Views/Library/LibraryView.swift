@@ -50,6 +50,7 @@ struct LibraryView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
+        .ignoresSafeArea(edges: .bottom)
         .task {
             viewModel.accountsManager = accountsManager
             // 优先加载当前选中的 shelf
