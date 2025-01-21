@@ -180,11 +180,11 @@ struct LibraryView: View {
 
     // MARK: - Item View Components
     private func shelfItemView(mark: MarkSchema) -> some View {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             ItemCoverView(item: mark.item, size: .medium)
             itemDetails(for: mark)
-            Spacer()
-            chevronIcon
+//            Spacer()
+//            chevronIcon
         }
         .padding(.vertical, 4)
         .contentShape(Rectangle())
@@ -192,20 +192,15 @@ struct LibraryView: View {
 
     private func itemDetails(for mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(mark.item.displayTitle ?? mark.item.title ?? "")
-                .font(.headline)
-                .lineLimit(2)
+//            HStack(alignment: .bottom, spacing: 4) {
+                Text(mark.item.displayTitle ?? mark.item.title ?? "")
+                    .font(.headline)
+                    .lineLimit(2)
+                
+                ItemRatingView(item: mark.item, size: .medium, hideRatingCount: true)
+//            }
             
-            ItemRatingView(item: mark.item, size: .medium, hideRatingCount: true)
-
-            if let rating = mark.ratingGrade {
-                HStack(spacing: 4) {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
-                    Text("\(rating)/10")
-                }
-                .font(.callout)
-            }
+            ItemMarkView(mark: mark, size: .medium, brief: true)
 
             if !mark.tags.isEmpty {
                 Text(mark.tags.joined(separator: ", "))

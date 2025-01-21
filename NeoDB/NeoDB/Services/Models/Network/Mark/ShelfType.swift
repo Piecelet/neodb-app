@@ -41,10 +41,10 @@ enum ShelfType: String, Codable, CaseIterable {
 
     var symbolImage: Symbol {
         switch self {
-        case .wishlist: return .sfSymbol(.heartFill)
-        case .progress: return .sfSymbol(.bookFill)
-        case .complete: return .sfSymbol(.checkmarkCircleFill)
-        case .dropped: return .sfSymbol(.xmarkCircleFill)
+        case .wishlist: return .sfSymbol(.heart)
+        case .progress: return .sfSymbol(.book)
+        case .complete: return .sfSymbol(.checkmarkCircle)
+        case .dropped: return .sfSymbol(.xmarkCircle)
         }
     }
 

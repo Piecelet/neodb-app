@@ -192,7 +192,7 @@ struct ItemView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if let mark = viewModel.mark {
-                markInfoView(mark)
+                ItemMarkView(mark: mark, size: .large)
             }
 
             actionButton
@@ -201,47 +201,6 @@ struct ItemView: View {
             if newValue {
                 viewModel.refresh()
             }
-        }
-    }
-
-    private func markInfoView(_ mark: MarkSchema) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                if let rating = mark.ratingGrade {
-                    markRatingView(rating)
-                }
-                if mark.ratingGrade != nil {
-                    Text("・")
-                        .foregroundStyle(.secondary)
-                }
-                Text(mark.shelfType.displayName)
-                    .foregroundStyle(.primary)
-                Text("・")
-                    .foregroundStyle(.secondary)
-                Text(mark.createdTime.formatted)
-                    .foregroundStyle(.secondary)
-            }
-            .font(.subheadline)
-
-            if let comment = mark.commentText, !comment.isEmpty {
-                Text(comment)
-                    .font(.subheadline)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.secondary.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-    }
-
-    private func markRatingView(_ rating: Int) -> some View {
-        HStack(spacing: 4) {
-            Image(systemName: "star.fill")
-                .foregroundStyle(.yellow)
-            Text("\(rating)")
-                .foregroundStyle(.primary)
-            Text("/10")
-                .foregroundStyle(.secondary)
         }
     }
 
