@@ -168,7 +168,7 @@ final class LibraryViewModel: ObservableObject {
         }
         totalPages = result.pages
         
-        try? await cacheService.cache(result, forKey: cacheKey, type: PagedMarkSchema.self)
+        try? await cacheService.cacheLibrary(result, key: accountsManager?.currentAccount.id ?? "", shelfType: selectedShelfType, category: selectedCategory)
         logger.debug("Successfully loaded \(result.data.count) items")
     }
     

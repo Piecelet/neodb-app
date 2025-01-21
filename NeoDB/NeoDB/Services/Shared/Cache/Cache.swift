@@ -27,6 +27,11 @@ extension CacheService {
             "mark_\(key)_\(itemUUID)"
         }
         
+        // Library related
+        static func library(key: String, shelfType: ShelfType, category: ItemCategory.shelfAvailable) -> String {
+            "library_\(key)_\(shelfType.rawValue)_\(category.rawValue)"
+        }
+        
         // Gallery related
         static func gallery(instance: String? = nil) -> String {
             "gallery_\(instance ?? "default")"
@@ -132,6 +137,23 @@ extension CacheService {
     func removeMark(key: String, itemUUID: String) async throws {
         let key = Keys.mark(key: key, itemUUID: itemUUID)
         try await remove(forKey: key, type: MarkSchema.self)
+    }
+    
+    // MARK: - Library Caching
+    
+    func cacheLibrary(_ library: PagedMarkSchema, key: String, shelfType: ShelfType, category: ItemCategory.shelfAvailable) async throws {
+        let key = Keys.library(key: key, shelfType: shelfType, category: category)
+        try await cache(library, forKey: key, type: PagedMarkSchema.self)
+    }
+
+    func retrieveLibrary(key: String, shelfType: ShelfType, category: ItemCategory.shelfAvailable) async throws -> PagedMarkSchema? {
+        let key = Keys.library(key: key, shelfType: shelfType, category: category)
+        return try await retrieve(forKey: key, type: PagedMarkSchema.self)
+    }
+    
+    func removeLibrary(key: String, shelfType: ShelfType, category: ItemCategory.shelfAvailable) async throws {
+        let key = Keys.library(key: key, shelfType: shelfType, category: category)
+        try await remove(forKey: key, type: PagedMarkSchema.self)
     }
     
     // MARK: - Gallery Caching
