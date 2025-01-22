@@ -118,14 +118,14 @@ struct StatusView: View {
                 Button {
                     viewModel.toggleReblog()
                 } label: {
-                    Label("\(status.reblogsCount)", systemImage: viewModel.isReblogged ? "arrow.2.squarepath.fill" : "arrow.2.squarepath")
+                    Label("\(status.reblogsCount)", systemSymbol: .arrow2Squarepath)
                         .foregroundStyle(viewModel.isReblogged ? .blue : .secondary)
                 }
                 Spacer()
                 Button {
                     viewModel.toggleFavorite()
                 } label: {
-                    Label("\(status.favouritesCount)", systemImage: viewModel.isFavorited ? "heart.fill" : "heart")
+                    Label("\(status.favouritesCount)", systemSymbol: viewModel.isFavorited ? .heartFill : .heart)
                         .foregroundStyle(viewModel.isFavorited ? .red : .secondary)
                 }
                 Spacer()
@@ -133,15 +133,16 @@ struct StatusView: View {
                     Button {
                         viewModel.toggleBookmark()
                     } label: {
-                        Image(systemName: viewModel.isBookmarked ? "bookmark.fill" : "bookmark")
-                            .foregroundStyle(viewModel.isBookmarked ? .yellow : .secondary)
+                        Label("Bookmark", systemSymbol: viewModel.isBookmarked ? .bookmarkFill : .bookmark)
+                            .labelStyle(.iconOnly)
+                            .foregroundStyle(viewModel.isBookmarked ? .orange : .secondary)
                     }
                     if let url = URL(string: status.url ?? "") {
                         ShareLink(item: url) {
                             Label("Share", systemSymbol: .arrowUpRight)
-                                .labelStyle(.iconOnly)
-                                .foregroundStyle(.secondary)
                         }
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.secondary)
                     }
                 }
             }
