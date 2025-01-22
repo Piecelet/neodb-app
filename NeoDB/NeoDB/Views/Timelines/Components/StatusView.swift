@@ -146,9 +146,9 @@ struct StatusView: View {
                     if let url = URL(string: status.url ?? "") {
                         ShareLink(item: url) {
                             Label("Share", systemSymbol: .arrowUpRight)
-                                .labelStyle(.iconOnly)
-                                .foregroundStyle(.secondary)
                         }
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.secondary)
                     }
                 }
             }

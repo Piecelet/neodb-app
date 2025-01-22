@@ -66,13 +66,6 @@ struct ItemCoverView: View {
                     .placeholder {
                         placeholderView
                     }
-                    .onFailure { _ in
-                        placeholderView
-                            .overlay {
-                                Image(systemName: "photo")
-                                    .foregroundStyle(.secondary)
-                            }
-                    }
                     .resizable()
                     .aspectRatio(item.category.ratio, contentMode: .fit)
                     .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))

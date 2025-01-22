@@ -7,10 +7,12 @@
 
 import Foundation
 import OSLog
+import UIKit
 
 @MainActor
 class StatusViewModel: ObservableObject {
     private let logger = Logger.views.status.status
+    private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var accountsManager: AppAccountsManager? {
         didSet {
@@ -55,6 +57,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
+        impactFeedback.impactOccurred()
         
         // Optimistically update UI
         isReblogged.toggle()
@@ -91,6 +94,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
+        impactFeedback.impactOccurred()
         
         // Optimistically update UI
         isFavorited.toggle()
@@ -127,6 +131,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
+        impactFeedback.impactOccurred()
         
         Task {
             do {
