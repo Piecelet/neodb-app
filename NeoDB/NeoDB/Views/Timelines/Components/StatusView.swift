@@ -7,8 +7,6 @@
 
 import SwiftUI
 import Kingfisher
-import HTML2Markdown
-import MarkdownUI
 import OSLog
 
 struct StatusView: View {
