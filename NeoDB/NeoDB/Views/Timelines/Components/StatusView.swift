@@ -96,12 +96,20 @@ struct StatusView: View {
             }
             
             // Stats
-            HStack(spacing: 16) {
+            HStack {
                 Label("\(status.repliesCount)", systemImage: "bubble.right")
+                Spacer()
                 Label("\(status.reblogsCount)", systemImage: "arrow.2.squarepath")
-                Label("\(status.favouritesCount)", systemImage: "star")
+                Spacer()
+                Label("\(status.favouritesCount)", systemImage: "heart")
+                Spacer()
+                HStack(spacing: 16) {
+                    Image(systemName: "bookmark")
+                    Image(systemName: "arrow.up.right")
+                }
             }
-            .font(.caption)
+            .padding(.horizontal)
+            .font(.subheadline)
             .foregroundStyle(.secondary)
         }
         .padding()

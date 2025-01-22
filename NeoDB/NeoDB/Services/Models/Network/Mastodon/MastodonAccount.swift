@@ -42,7 +42,7 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
     }
 
     struct Source: Codable, Equatable, Sendable {
-        let privacy: Visibility
+        let privacy: MastodonVisibility
         let sensitive: Bool
         let language: String?
         let note: String

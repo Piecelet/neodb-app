@@ -18,7 +18,7 @@ struct Application: Codable, Identifiable {
     let website: URL?
 }
 
-enum Visibility: String, Codable, CaseIterable, Hashable, Equatable, Sendable {
+enum MastodonVisibility: String, Codable, CaseIterable, Hashable, Equatable, Sendable {
     case pub = "public"
     case unlisted
     case priv = "private"
@@ -47,7 +47,7 @@ protocol AnyMastodonStatus {
     var application: Application? { get }
     var inReplyToId: String? { get }
     var inReplyToAccountId: String? { get }
-    var visibility: Visibility { get }
+    var visibility: MastodonVisibility { get }
     var poll: MastodonPoll? { get }
     var spoilerText: HTMLString { get }
     var filtered: [MastodonFiltered]? { get }
@@ -93,7 +93,7 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
     let application: Application?
     let inReplyToId: String?
     let inReplyToAccountId: String?
-    let visibility: Visibility
+    let visibility: MastodonVisibility
     let poll: MastodonPoll?
     let spoilerText: HTMLString
     let filtered: [MastodonFiltered]?
@@ -119,7 +119,7 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
         emojis: [MastodonEmoji], url: String?,
         application: Application?, inReplyToId: String?,
         inReplyToAccountId: String?,
-        visibility: Visibility, poll: MastodonPoll?, spoilerText: HTMLString,
+        visibility: MastodonVisibility, poll: MastodonPoll?, spoilerText: HTMLString,
         filtered: [MastodonFiltered]?,
         sensitive: Bool, language: String?
     ) {
@@ -270,7 +270,7 @@ struct MastodonReblogStatus: AnyMastodonStatus, Codable, Identifiable,
     let application: Application?
     let inReplyToId: String?
     let inReplyToAccountId: String?
-    let visibility: Visibility
+    let visibility: MastodonVisibility
     let poll: MastodonPoll?
     let spoilerText: HTMLString
     let filtered: [MastodonFiltered]?
@@ -291,7 +291,7 @@ struct MastodonReblogStatus: AnyMastodonStatus, Codable, Identifiable,
         bookmarked: Bool?, emojis: [MastodonEmoji], url: String?,
         application: Application? = nil,
         inReplyToId: String?, inReplyToAccountId: String?,
-        visibility: Visibility, poll: MastodonPoll?,
+        visibility: MastodonVisibility, poll: MastodonPoll?,
         spoilerText: HTMLString, filtered: [MastodonFiltered]?, sensitive: Bool,
         language: String?
     ) {
