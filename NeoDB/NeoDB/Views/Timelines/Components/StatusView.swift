@@ -19,9 +19,17 @@ struct StatusView: View {
     let status: MastodonStatus
     let mode: StatusViewMode
 
+    @StateObject private var viewModel: StatusViewModel
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @State private var item: (any ItemProtocol)?
+
+    init(status: MastodonStatus, mode: StatusViewMode = .timeline) {
+        self.status = status
+        self.mode = mode
+        _viewModel = StateObject(wrappedValue: StatusViewModel(status: status))
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -107,23 +115,44 @@ struct StatusView: View {
             HStack {
                 Label("\(status.repliesCount)", systemImage: "bubble.right")
                 Spacer()
-                Label(
-                    "\(status.reblogsCount)", systemImage: "arrow.2.squarepath")
+                Button {
+                    viewModel.toggleReblog()
+                } label: {
+                    Label("\(status.reblogsCount)", systemImage: viewModel.isReblogged ? "arrow.2.squarepath.fill" : "arrow.2.squarepath")
+                        .foregroundStyle(viewModel.isReblogged ? .blue : .secondary)
+                }
                 Spacer()
-                Label("\(status.favouritesCount)", systemImage: "heart")
+                Button {
+                    viewModel.toggleFavorite()
+                } label: {
+                    Label("\(status.favouritesCount)", systemImage: viewModel.isFavorited ? "heart.fill" : "heart")
+                        .foregroundStyle(viewModel.isFavorited ? .red : .secondary)
+                }
                 Spacer()
                 HStack(spacing: 16) {
-                    Image(systemName: "bookmark")
-                    Image(systemName: "arrow.up.right")
+                    Button {
+                        viewModel.toggleBookmark()
+                    } label: {
+                        Image(systemName: viewModel.isBookmarked ? "bookmark.fill" : "bookmark")
+                            .foregroundStyle(viewModel.isBookmarked ? .yellow : .secondary)
+                    }
+                    if let url = URL(string: status.url ?? "") {
+                        ShareLink(item: url) {
+                            Label("Share", systemSymbol: .arrowUpRight)
+                                .labelStyle(.iconOnly)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
             .padding(.horizontal)
             .font(.subheadline)
-            .foregroundStyle(.secondary)
+            .disabled(viewModel.isLoading)
         }
         .padding()
         .background(Color(.systemBackground))
         .task {
+            viewModel.accountsManager = accountsManager
             if !status.content.links.isEmpty {
                 for link in status.content.links {
                     if let extractedItem = await NeoDBURL.parseItemURL(
@@ -134,6 +163,11 @@ struct StatusView: View {
                     }
                 }
             }
+        }
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK") {}
+        } message: {
+            Text(viewModel.error?.localizedDescription ?? "Unknown error")
         }
         .enableInjection()
     }

@@ -66,6 +66,33 @@ extension StatusesEndpoints: NetworkEndpoint {
             "/v1/reports"
         }
     }
+    
+    var method: HTTPMethod {
+        switch self {
+        case .postStatus:
+            return .post
+        case .favorite:
+            return .post
+        case .unfavorite:
+            return .post
+        case .reblog:
+            return .post
+        case .unreblog:
+            return .post
+        case .bookmark:
+            return .post
+        case .unbookmark:
+            return .post
+        case .pin:
+            return .post
+        case .unpin:
+            return .post
+        case .translate:
+            return .post
+        default:
+            return .get
+        }
+    }
 
     var queryItems: [URLQueryItem]? {
         switch self {
