@@ -50,7 +50,6 @@ struct ItemDescriptionView: View {
         guard let item else { return [] }
 
         var metadata: [String] = []
-        
 
         switch item {
         case let book as EditionSchema:
@@ -74,44 +73,32 @@ struct ItemDescriptionView: View {
         return metadata
     }
 
+    private var metadataText: String {
+        metadata.joined(separator: " / ")
+    }
+
     var body: some View {
         Group {
-            switch mode {
-            case .metadata:
-                metadataView
-            case .brief:
-                briefView
-            case .metadataAndBrief:
-                VStack(alignment: .leading, spacing: 4) {
-                    metadataView
-                    briefView
+            if let item = item {
+                switch mode {
+                case .metadata:
+                    Text(metadataText)
+                case .brief:
+                    Text(item.brief)
+                case .metadataAndBrief:
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(metadataText)
+                        Text(item.brief)
+                    }
                 }
             }
         }
+        .font(size.font)
+        .foregroundStyle(.secondary)
+        .lineLimit(size.lineLimit)
         .enableInjection()
     }
 
-    var metadataView: some View {
-        Group {
-            if !metadata.isEmpty {
-                Text(metadata.joined(separator: " / "))
-                    .font(size.font)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(size.lineLimit)
-            }
-        }
-    }
-
-    var briefView: some View {
-        Group {
-            if let item = item {
-                Text(item.brief)
-                    .font(size.font)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(size.lineLimit)
-            }
-        }
-    }
 
     #if DEBUG
         @ObserveInjection var forceRedraw

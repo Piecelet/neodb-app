@@ -35,6 +35,16 @@ class StatusItemViewModel: ObservableObject {
     @Published var showSkeleton = false
     @Published var error: Error?
     @Published var showError = false
+
+    var displayTitle: AttributedString {
+        var title = AttributedString(item.displayTitle ?? "")
+        if let movie = item as? MovieSchema, let year = movie.year {
+            var yearString = AttributedString(" (\(year))")
+            yearString.foregroundColor = .secondary
+            title += yearString
+        }
+        return title
+    }
     
     init(item: any ItemProtocol) {
         self.item = item

@@ -14,7 +14,6 @@ struct LibraryView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LibraryViewModel()
-    @Environment(\.colorScheme) private var colorScheme
 
     // MARK: - Body
     var body: some View {

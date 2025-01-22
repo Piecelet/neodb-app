@@ -32,7 +32,7 @@ struct StatusItemView: View {
                     )
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(viewModel.item.displayTitle ?? "")
+                        Text(viewModel.displayTitle)
                             .font(.headline)
                             .lineLimit(2)
 
@@ -40,14 +40,10 @@ struct StatusItemView: View {
                             ItemRatingView(
                                 item: viewModel.item, size: .small,
                                 hideRatingCount: true)
-                            Group {
-                                if let movie = viewModel.item as? MovieSchema,
-                                    let year = movie.year
-                                {
-                                    Text(String(year))
-                                }
-                            }
-                            .foregroundStyle(.secondary)
+                            Text("/")
+                                .foregroundStyle(.secondary)
+                            Text(viewModel.item.category.displayName)
+                                .foregroundStyle(.secondary)
                         }
                         .font(.caption)
 
