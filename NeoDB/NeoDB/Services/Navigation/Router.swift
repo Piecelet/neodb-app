@@ -158,7 +158,7 @@ class Router: ObservableObject {
             itemToLoad = item
         }
         
-        logger.debug("Navigated to: \(String(describing: destination)) in tab: \(self.selectedTab.rawValue)")
+        // logger.debug("Navigated to: \(String(describing: destination)) in tab: \(self.selectedTab.rawValue)")
     }
     
     func dismissSheet() {

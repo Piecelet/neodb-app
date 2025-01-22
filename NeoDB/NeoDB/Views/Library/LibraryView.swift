@@ -18,43 +18,38 @@ struct LibraryView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 0) {
-            categoryFilter
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                TopTabBarView(
-                    items: ShelfType.allCases,
-                    selection: $viewModel.selectedShelfType
-                ) { $0.displayName }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-            }
-
-            TabView(selection: $viewModel.selectedShelfType) {
-                ForEach(ShelfType.allCases, id: \.self) { type in
-                    Group {
-                        shelfContentView(for: type)
-                    }
-                    .refreshable {
-                        await viewModel.loadShelfItems(
-                            type: type, refresh: true)
-                    }
-                    .tag(type)
+        TabView(selection: $viewModel.selectedShelfType) {
+            ForEach(ShelfType.allCases, id: \.self) { type in
+                Group {
+                    shelfContentView(for: type)
                 }
+                .refreshable {
+                    await viewModel.loadShelfItems(
+                        type: type, refresh: true)
+                }
+                .tag(type)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .safeAreaInset(edge: .top) {
+            headerView
         }
         .navigationTitle("Library")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
+            ToolbarItem(placement: .topBarLeading) {
                 Text("Library")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
             }
+            ToolbarItem(placement: .principal) {
+                Text("Library")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
+            }
         }
-        .ignoresSafeArea(edges: .bottom)
         .task {
             viewModel.accountsManager = accountsManager
             // 优先加载当前选中的 shelf
@@ -79,7 +74,7 @@ struct LibraryView: View {
                 selection: $viewModel.selectedShelfType
             ) { $0.displayName }
             .padding(.horizontal)
-            .padding(.vertical, 8)
+            .padding(.top, 8)
         }
     }
 
@@ -115,6 +110,7 @@ struct LibraryView: View {
         } else {
             ScrollView {
                 shelfItemsList(for: type)
+                //                    .padding(.top, 170)
             }
         }
     }

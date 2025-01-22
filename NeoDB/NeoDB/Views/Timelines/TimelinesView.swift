@@ -245,12 +245,6 @@ struct TimelinesView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            TopTabBarView(
-                items: TimelineType.allCases,
-                selection: $selectedTimelineType
-            ) { $0.rawValue }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
 
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
@@ -266,12 +260,24 @@ struct TimelinesView: View {
         }
         .navigationTitle("Timeline")
         .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .top) {
+            TopTabBarView(
+                items: TimelineType.allCases,
+                selection: $selectedTimelineType
+            ) { $0.rawValue }
+        }
         .toolbar {
-            ToolbarItem(placement: .principal) {
+            ToolbarItem(placement: .topBarLeading) {
                 Text("Timeline")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 2)
+                    .padding(.leading, 3)
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Timeline")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 3)
+                    .hidden()
             }
         }
         .task {
@@ -282,7 +288,12 @@ struct TimelinesView: View {
         .onDisappear {
             viewModel.cleanup()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     @ViewBuilder
     private func timelineContent(for type: TimelineType) -> some View {

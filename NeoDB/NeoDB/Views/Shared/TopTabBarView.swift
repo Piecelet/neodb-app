@@ -55,6 +55,8 @@ struct TopTabBarView<T: Hashable>: View {
             }
             .padding(.horizontal, 4)
         }
+        .padding(.horizontal)
+        .padding(.top, 8)
         .enableInjection()
     }
 
