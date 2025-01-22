@@ -68,6 +68,7 @@ struct StatusView: View {
                     handleURL(url)
                     return .handled
                 })
+                .textSelection(.enabled)
             
             // Item Preview if available
             if let item = item {

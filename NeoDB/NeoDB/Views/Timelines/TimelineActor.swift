@@ -148,9 +148,15 @@ final class TimelineActor: ObservableObject {
                 
             } catch {
                 updateState(for: type) { state in
-                    // Only show error if we don't have any existing data
-                    if !refresh || state.statuses.isEmpty {
+                    // Only show error if:
+                    // 1. It's a refresh and we have no data
+                    // 2. It's an initial load (no existing data)
+                    if (refresh && state.statuses.isEmpty) || (!refresh && state.statuses.isEmpty) {
                         state.error = error.localizedDescription
+                        logger.error("Timeline load error: \(error.localizedDescription)")
+                    } else {
+                        // Log but don't display pagination errors
+                        logger.debug("Pagination error suppressed: \(error.localizedDescription)")
                     }
                 }
             }
