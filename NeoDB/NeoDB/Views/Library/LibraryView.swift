@@ -18,19 +18,24 @@ struct LibraryView: View {
 
     // MARK: - Body
     var body: some View {
-        TabView(selection: $viewModel.selectedShelfType) {
-            ForEach(ShelfType.allCases, id: \.self) { type in
-                Group {
-                    shelfContentView(for: type)
+        VStack {
+            // Without this, the tab bar will be transparent without any blur
+            Text(" ").frame(width: 0.01, height: 0.01)
+            TabView(selection: $viewModel.selectedShelfType) {
+                ForEach(ShelfType.allCases, id: \.self) { type in
+                    Group {
+                        shelfContentView(for: type)
+                    }
+                    .refreshable {
+                        await viewModel.loadShelfItems(
+                            type: type, refresh: true)
+                    }
+                    .tag(type)
                 }
-                .refreshable {
-                    await viewModel.loadShelfItems(
-                        type: type, refresh: true)
-                }
-                .tag(type)
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea(edges: .bottom)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
         .safeAreaInset(edge: .top) {
             headerView
         }
@@ -66,15 +71,13 @@ struct LibraryView: View {
     #endif
 
     private var headerView: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: 0) {
             categoryFilter
 
             TopTabBarView(
                 items: ShelfType.allCases,
                 selection: $viewModel.selectedShelfType
             ) { $0.displayName }
-            .padding(.horizontal)
-            .padding(.top, 8)
         }
     }
 

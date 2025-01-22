@@ -245,7 +245,8 @@ struct TimelinesView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-
+            // Without this, the tab bar will be transparent without any blur
+            Text(" ").frame(width: 0.01, height: 0.01)
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
                     timelineContent(for: type)
@@ -257,6 +258,7 @@ struct TimelinesView: View {
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea(edges: .bottom)
         }
         .navigationTitle("Timeline")
         .navigationBarTitleDisplayMode(.inline)
@@ -292,7 +294,7 @@ struct TimelinesView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 
     @ViewBuilder
