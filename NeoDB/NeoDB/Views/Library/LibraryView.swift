@@ -22,9 +22,12 @@ struct LibraryView: View {
             categoryFilter
 
             ScrollView(.horizontal, showsIndicators: false) {
-                shelfTypePicker
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
+                TopTabBarView(
+                    items: ShelfType.allCases,
+                    selection: $viewModel.selectedShelfType
+                ) { $0.displayName }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
             }
 
             TabView(selection: $viewModel.selectedShelfType) {
@@ -71,46 +74,13 @@ struct LibraryView: View {
         VStack(spacing: 0) {
             categoryFilter
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                shelfTypePicker
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-            }
-            .background(Color(.systemBackground))
+            TopTabBarView(
+                items: ShelfType.allCases,
+                selection: $viewModel.selectedShelfType
+            ) { $0.displayName }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
         }
-    }
-
-    private var shelfTypePicker: some View {
-        HStack(spacing: 20) {
-            ForEach(ShelfType.allCases, id: \.self) { type in
-                VStack(spacing: 8) {
-                    Text(type.displayName)
-                        .font(
-                            .system(
-                                size: 15,
-                                weight: viewModel.selectedShelfType == type
-                                    ? .semibold : .regular)
-                        )
-                        .foregroundStyle(
-                            viewModel.selectedShelfType == type
-                                ? .primary : .secondary)
-
-                    Rectangle()
-                        .fill(
-                            viewModel.selectedShelfType == type
-                                ? Color.accentColor : .clear
-                        )
-                        .frame(height: 2)
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        viewModel.selectedShelfType = type
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, 4)
     }
 
     private var categoryFilter: some View {
@@ -199,10 +169,11 @@ struct LibraryView: View {
                 .lineLimit(2)
 
             ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
-            
+
             ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
 
-            ItemMarkView(mark: mark, size: .medium, brief: true, showEditButton: true)
+            ItemMarkView(
+                mark: mark, size: .medium, brief: true, showEditButton: true)
         }
     }
 
