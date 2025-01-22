@@ -120,8 +120,8 @@ struct StatusView: View {
                         viewModel.toggleReblog()
                     }
                 } label: {
-                    Label("\(viewModel.reblogsCount)", systemSymbol: .arrow2Squarepath)
-                        .foregroundStyle(viewModel.isReblogged ? .blue : .secondary)
+                    Label("\(viewModel.status.reblogsCount)", systemSymbol: .arrow2Squarepath)
+                        .foregroundStyle(viewModel.status.reblogged ?? false ? .blue : .secondary)
                         .contentTransition(.numericText())
                 }
                 Spacer()
@@ -130,8 +130,8 @@ struct StatusView: View {
                         viewModel.toggleFavorite()
                     }
                 } label: {
-                    Label("\(viewModel.favouritesCount)", systemSymbol: viewModel.isFavorited ? .heartFill : .heart)
-                        .foregroundStyle(viewModel.isFavorited ? .red : .secondary)
+                    Label("\(viewModel.status.favouritesCount)", systemSymbol: viewModel.status.favourited ?? false ? .heartFill : .heart)
+                        .foregroundStyle(viewModel.status.favourited ?? false ? .red : .secondary)
                         .contentTransition(.numericText())
                 }
                 Spacer()
@@ -139,9 +139,9 @@ struct StatusView: View {
                     Button {
                         viewModel.toggleBookmark()
                     } label: {
-                        Label("Bookmark", systemSymbol: viewModel.isBookmarked ? .bookmarkFill : .bookmark)
+                        Label("Bookmark", systemSymbol: viewModel.status.bookmarked ?? false ? .bookmarkFill : .bookmark)
                             .labelStyle(.iconOnly)
-                            .foregroundStyle(viewModel.isBookmarked ? .orange : .secondary)
+                            .foregroundStyle(viewModel.status.bookmarked ?? false ? .orange : .secondary)
                     }
                     if let url = URL(string: status.url ?? "") {
                         ShareLink(item: url) {

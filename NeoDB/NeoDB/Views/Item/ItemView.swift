@@ -213,6 +213,7 @@ struct ItemView: View {
                 } else {
                     router.presentSheet(.addToShelf(item: item))
                 }
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             }
         } label: {
             HStack {

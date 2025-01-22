@@ -17,37 +17,22 @@ class StatusViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
-                updateInteractionStates()
+                objectWillChange.send()
             }
         }
     }
     
-    let status: MastodonStatus
-    
-    @Published var isReblogged: Bool
-    @Published var isFavorited: Bool
-    @Published var isBookmarked: Bool
-    @Published var reblogsCount: Int
-    @Published var favouritesCount: Int
+    @Published var status: MastodonStatus {
+        willSet {
+            objectWillChange.send()
+        }
+    }
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
     
     init(status: MastodonStatus) {
         self.status = status
-        self.isReblogged = status.reblogged ?? false
-        self.isFavorited = status.favourited ?? false
-        self.isBookmarked = status.bookmarked ?? false
-        self.reblogsCount = status.reblogsCount
-        self.favouritesCount = status.favouritesCount
-    }
-    
-    private func updateInteractionStates() {
-        isReblogged = status.reblogged ?? false
-        isFavorited = status.favourited ?? false
-        isBookmarked = status.bookmarked ?? false
-        reblogsCount = status.reblogsCount
-        favouritesCount = status.favouritesCount
     }
     
     func toggleReblog() {
@@ -59,24 +44,24 @@ class StatusViewModel: ObservableObject {
         isLoading = true
         impactFeedback.impactOccurred()
         
-        // Optimistically update UI
-        isReblogged.toggle()
-        reblogsCount += isReblogged ? 1 : -1
+        // Create new status with updated values
+        let newReblogged = !(status.reblogged ?? false)
+        status.reblogged = newReblogged
+        status.reblogsCount += newReblogged ? 1 : -1
         
         Task {
             do {
-                let endpoint = isReblogged ? 
+                let endpoint = newReblogged ? 
                     StatusesEndpoints.reblog(id: status.id) :
                     StatusesEndpoints.unreblog(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-                isReblogged = updatedStatus.reblogged ?? false
-                reblogsCount = updatedStatus.reblogsCount
+                status = updatedStatus
                 
             } catch {
-                // Revert optimistic updates on error
-                isReblogged.toggle()
-                reblogsCount += isReblogged ? 1 : -1
+                // Revert optimistic updates
+                status.reblogged = !newReblogged
+                status.reblogsCount += newReblogged ? -1 : 1
                 
                 self.error = error
                 self.showError = true
@@ -96,24 +81,24 @@ class StatusViewModel: ObservableObject {
         isLoading = true
         impactFeedback.impactOccurred()
         
-        // Optimistically update UI
-        isFavorited.toggle()
-        favouritesCount += isFavorited ? 1 : -1
+        // Create new status with updated values
+        let newFavorited = !(status.favourited ?? false)
+        status.favourited = newFavorited
+        status.favouritesCount += newFavorited ? 1 : -1
         
         Task {
             do {
-                let endpoint = isFavorited ? 
+                let endpoint = newFavorited ? 
                     StatusesEndpoints.favorite(id: status.id) :
                     StatusesEndpoints.unfavorite(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-                isFavorited = updatedStatus.favourited ?? false
-                favouritesCount = updatedStatus.favouritesCount
+                status = updatedStatus
                 
             } catch {
-                // Revert optimistic updates on error
-                isFavorited.toggle()
-                favouritesCount += isFavorited ? 1 : -1
+                // Revert optimistic updates
+                status.favourited = !newFavorited
+                status.favouritesCount += newFavorited ? -1 : 1
                 
                 self.error = error
                 self.showError = true
@@ -133,16 +118,23 @@ class StatusViewModel: ObservableObject {
         isLoading = true
         impactFeedback.impactOccurred()
         
+        // Create new status with updated values
+        let newBookmarked = !(status.bookmarked ?? false)
+        status.bookmarked = newBookmarked
+        
         Task {
             do {
-                let endpoint = isBookmarked ? 
-                    StatusesEndpoints.unbookmark(id: status.id) :
-                    StatusesEndpoints.bookmark(id: status.id)
+                let endpoint = newBookmarked ? 
+                    StatusesEndpoints.bookmark(id: status.id) :
+                    StatusesEndpoints.unbookmark(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-                isBookmarked = updatedStatus.bookmarked ?? false
+                status = updatedStatus
                 
             } catch {
+                // Revert optimistic updates
+                status.bookmarked = !newBookmarked
+                
                 self.error = error
                 self.showError = true
                 logger.error("Failed to toggle bookmark: \(error.localizedDescription)")

@@ -80,14 +80,14 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
     let mediaAttachments: [MastodonMediaAttachment]
     let mentions: [MastodonMention]
     let repliesCount: Int
-    let reblogsCount: Int
-    let favouritesCount: Int
+    var reblogsCount: Int
+    var favouritesCount: Int
     let tags: [MastodonTag]
     let card: MastodonCard?
-    let favourited: Bool?
-    let reblogged: Bool?
+    var favourited: Bool?
+    var reblogged: Bool?
     let pinned: Bool?
-    let bookmarked: Bool?
+    var bookmarked: Bool?
     let emojis: [MastodonEmoji]
     let url: String?
     let application: Application?
