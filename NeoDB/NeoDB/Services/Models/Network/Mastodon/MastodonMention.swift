@@ -7,9 +7,11 @@
 
 import Foundation
 
-struct MastodonMention: Codable {
+struct MastodonMention: Codable, Equatable, Hashable {
   let id: String
   let username: String
   let url: URL
   let acct: String
 }
+
+extension MastodonMention: Sendable {}

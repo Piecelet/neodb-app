@@ -99,7 +99,7 @@ struct MastodonStatusView: View {
                     infoRow(title: "Visibility", content: status.visibility.rawValue.capitalized)
                     
                     if let url = status.url {
-                        Link(destination: url) {
+                        Link(destination: URL(string:url)!) {
                             HStack {
                                 Text("View Original")
                                 Image(systemName: "arrow.up.right")

@@ -83,12 +83,13 @@ final class TimelineActor: ObservableObject {
                 return
             }
             
+            // Set timeline as active when loading
             updateState(for: type) { state in
+                state.isActive = true
                 state.isLoading = true
                 if refresh {
                     state.maxId = nil
                     state.isRefreshing = true
-                    // Don't show errors immediately during refresh
                     state.error = nil
                 }
             }
@@ -195,12 +196,26 @@ final class TimelineActor: ObservableObject {
     }
     
     private func handleStatusUpdate(_ status: MastodonStatus) async {
-        // Determine which timeline type this status belongs to
+        // Determine which timeline type this status belongs to based on visibility and source
         for type in TimelineType.allCases {
-            updateState(for: type) { state in
-                // Insert new status at the top if it's not already present
-                if !state.statuses.contains(where: { $0.id == status.id }) {
-                    state.statuses.insert(status, at: 0)
+            let shouldAdd: Bool
+            switch type {
+            case .friends:
+                shouldAdd = status.visibility == .priv || status.visibility == .direct
+            case .home:
+                shouldAdd = status.account.acct.contains("@") == false // Local user
+            case .popular:
+                shouldAdd = false // Popular timeline doesn't get real-time updates
+            case .fediverse:
+                shouldAdd = status.account.acct.contains("@") // Remote user
+            }
+            
+            if shouldAdd {
+                updateState(for: type) { state in
+                    // Insert new status at the top if it's not already present
+                    if !state.statuses.contains(where: { $0.id == status.id }) {
+                        state.statuses.insert(status, at: 0)
+                    }
                 }
             }
         }
@@ -219,6 +234,14 @@ final class TimelineActor: ObservableObject {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
         streamWatcher?.stopWatching()
+        
+        // Mark all timelines as inactive
+        for type in TimelineType.allCases {
+            updateState(for: type) { state in
+                state.isActive = false
+                state.isStreamSubscribed = false
+            }
+        }
     }
 }
 

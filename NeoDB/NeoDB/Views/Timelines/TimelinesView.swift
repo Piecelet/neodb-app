@@ -243,7 +243,9 @@ struct TimelinesView: View {
             
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
-                    timelineContent(for: type)
+                    Group {
+                        timelineContent(for: type)
+                    }
                         .refreshable {
                             await actor.loadTimeline(type: type, refresh: true)
                         }

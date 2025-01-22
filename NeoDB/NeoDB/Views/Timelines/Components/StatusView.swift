@@ -43,7 +43,7 @@ struct StatusView: View {
                         .clipShape(Circle())
                     
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(status.account.displayName)
+                        Text(status.account.displayName ?? "")
                             .font(.headline)
                             .foregroundStyle(.primary)
                         Text("@\(status.account.username)")
@@ -61,8 +61,9 @@ struct StatusView: View {
             }
             
             // Content
-            HTMLContentView(htmlContent: status.content)
-                .textSelection(.enabled)
+//            HTMLContentView(htmlContent: status.content.asRawText)
+//                .textSelection(.enabled)
+            Text(status.content.asSafeMarkdownAttributedString)
             
             // Item Preview if available
             if let item = item {
@@ -103,7 +104,7 @@ struct StatusView: View {
         .padding()
         .background(Color(.systemBackground))
         .task {
-            if let urls = status.content.extractURLs() {
+            if let urls = status.content.asRawText.extractURLs() {
                 for url in urls {
                     if let extractedItem = await NeoDBURL.parseItemURL(url) {
                         item = extractedItem

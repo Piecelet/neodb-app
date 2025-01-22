@@ -11,17 +11,17 @@ struct ProfileView: View {
     let id: String
     let account: MastodonAccount?
     var user: User?
-    
+
     @StateObject private var viewModel = ProfileViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
-    
+
     init(id: String, account: MastodonAccount? = nil, user: User? = nil) {
         self.id = id
         self.account = account
         self.user = user
     }
-    
+
     var body: some View {
         Group {
             if let error = viewModel.error {
@@ -46,7 +46,7 @@ struct ProfileView: View {
                         }
                         .frame(height: 200)
                         .clipped()
-                        
+
                         // Avatar and Stats
                         HStack(alignment: .bottom) {
                             AsyncImage(url: account.avatar) { image in
@@ -61,9 +61,9 @@ struct ProfileView: View {
                             .overlay(Circle().stroke(.quaternary, lineWidth: 1))
                             .padding(.leading)
                             .offset(y: -40)
-                            
+
                             Spacer()
-                            
+
                             // Stats
                             HStack(spacing: 20) {
                                 VStack {
@@ -73,9 +73,10 @@ struct ProfileView: View {
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
-                                
+
                                 Button {
-                                    router.navigate(to: .following(id: account.id))
+                                    router.navigate(
+                                        to: .following(id: account.id))
                                 } label: {
                                     VStack {
                                         Text("\(account.followingCount)")
@@ -85,9 +86,10 @@ struct ProfileView: View {
                                             .foregroundStyle(.secondary)
                                     }
                                 }
-                                
+
                                 Button {
-                                    router.navigate(to: .followers(id: account.id))
+                                    router.navigate(
+                                        to: .followers(id: account.id))
                                 } label: {
                                     VStack {
                                         Text("\(account.followersCount)")
@@ -101,22 +103,22 @@ struct ProfileView: View {
                             .padding(.horizontal)
                         }
                         .padding(.bottom, -40)
-                        
+
                         // Profile Info
                         VStack(alignment: .leading, spacing: 8) {
-                            Text(account.displayName)
+                            Text(account.displayName ?? "")
                                 .font(.title2)
                                 .bold()
                             Text("@\(account.username)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            
-                            if !account.note.isEmpty {
-                                Text(account.note)
+
+                            if !account.note.asRawText.isEmpty {
+                                Text(account.note.asRawText)
                                     .font(.body)
                                     .padding(.top, 4)
                             }
-                            
+
                             if !account.fields.isEmpty {
                                 VStack(alignment: .leading, spacing: 8) {
                                     ForEach(account.fields) { field in
@@ -124,14 +126,14 @@ struct ProfileView: View {
                                             Text(field.name)
                                                 .font(.caption)
                                                 .foregroundStyle(.secondary)
-                                            Text(field.value)
+                                            Text(field.value.asRawText)
                                                 .font(.callout)
                                         }
                                     }
                                 }
                                 .padding(.top, 8)
                             }
-                            
+
                             Text("Joined \(account.createdAt)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -159,11 +161,11 @@ struct ProfileView: View {
                             .clipShape(Circle())
                             .overlay(Circle().stroke(.quaternary, lineWidth: 1))
                             .padding(.leading)
-                            
+
                             Spacer()
                         }
                         .padding(.vertical)
-                        
+
                         // Profile Info
                         VStack(alignment: .leading, spacing: 8) {
                             Text(user.displayName)
@@ -172,7 +174,7 @@ struct ProfileView: View {
                             Text("@\(user.username)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
-                            
+
                             if let externalAcct = user.externalAcct {
                                 Text(externalAcct)
                                     .font(.caption)
@@ -190,7 +192,9 @@ struct ProfileView: View {
                 EmptyStateView(
                     "Profile Not Found",
                     systemImage: "person.slash",
-                    description: Text("The profile you're looking for doesn't exist or has been deleted.")
+                    description: Text(
+                        "The profile you're looking for doesn't exist or has been deleted."
+                    )
                 )
                 .refreshable {
                     await viewModel.loadAccount(id: id, refresh: true)
@@ -217,4 +221,3 @@ struct ProfileView: View {
             .environmentObject(Router())
     }
 }
-
