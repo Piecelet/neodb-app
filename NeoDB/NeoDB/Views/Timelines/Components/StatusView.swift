@@ -21,7 +21,7 @@ struct StatusView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
-            HStack(spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
                 Button {
                    router.navigate(to: .userProfile(id: status.account.id))
                 } label: {
@@ -112,7 +112,12 @@ struct StatusView: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     private var mediaGrid: some View {

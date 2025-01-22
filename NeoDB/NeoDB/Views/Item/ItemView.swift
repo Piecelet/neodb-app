@@ -179,7 +179,7 @@ struct ItemView: View {
 
             ExpandableText(viewModel.description)
                 .font(.callout)
-                .foregroundStyle(.black.opacity(0.8))
+                .foregroundStyle(.secondary)
                 .lineLimit(4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

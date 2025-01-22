@@ -7,7 +7,7 @@
 
 import Foundation
 
-private let metadataArraySeparator = ", "
+private let metadataArraySeparator = " "
 private let metadataArraySeparatorHidden = " "
 
 // MARK: - Base Item Protocol
