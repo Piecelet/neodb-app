@@ -7,11 +7,24 @@
 
 import SwiftUI
 
-enum StringTable {
-    static let navigation = "Navigation"
-    static let mainScreen = "MainScreen"
-    static let settings = "Settings"
-    static let library = "Library"
-    static let search = "Search"
-    static let item = "Item"
+enum StringTable: String {
+    case navigation = "Navigation"
+    case mainScreen = "MainScreen"
+    case settings = "Settings"
+    case library = "Library"
+    case search = "Search"
+    case item = "Item"
 }
+
+extension Text {
+    init(_ key: String, table: StringTable) {
+        self.init(LocalizedStringKey(key), tableName: table.rawValue)
+    }
+}
+
+extension String {
+    init(_ key: String, stringTable: StringTable) {
+        self.init(localized: LocalizationValue(key), table: stringTable.rawValue)
+    }
+}
+

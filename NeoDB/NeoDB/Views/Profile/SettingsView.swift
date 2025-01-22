@@ -194,7 +194,7 @@ struct SettingsView: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadUserProfile()
         }
-        .navigationTitle("Settings")
+        .navigationTitle(String(localized: "settings_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.large)
         #if DEBUG
         .enableInjection()
@@ -243,7 +243,7 @@ struct SettingsView: View {
             await viewModel.loadUserProfile(forceRefresh: true)
         }
         .confirmationDialog(
-            "Clear All Caches",
+            Text("cache_clear_button", tableName: "Settings"),
             isPresented: $viewModel.showClearCacheConfirmation,
             titleVisibility: .visible
         ) {
@@ -254,7 +254,7 @@ struct SettingsView: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("This will clear all cached data. You'll need to reload data from the network.")
+            Text("cache_clear_confirmation", tableName: "Settings")
         }
     }
     
@@ -272,33 +272,45 @@ struct SettingsView: View {
     private var accountInformationSection: some View {
         Group {
             if let user = viewModel.user, let externalAcct = user.externalAcct {
-                Section("Account Information") {
-                    LabeledContent("External Account", value: externalAcct)
-                        .redacted(reason: viewModel.isLoading ? .placeholder : [])
+                Section {
+                    LabeledContent {
+                        Text(externalAcct)
+                    } label: {
+                        Text("account_external", tableName: "Settings")
+                    }
+                    .redacted(reason: viewModel.isLoading ? .placeholder : [])
+                } header: {
+                    Text("account_title", tableName: "Settings")
                 }
             } else if viewModel.user == nil {
-                Section("Account Information") {
-                    LabeledContent("External Account", value: "loading...")
-                        .redacted(reason: .placeholder)
+                Section {
+                    LabeledContent {
+                        Text("loading...")
+                    } label: {
+                        Text("account_external", tableName: "Settings")
+                    }
+                    .redacted(reason: .placeholder)
+                } header: {
+                    Text("account_title", tableName: "Settings")
                 }
             }
         }
     }
     
     private var appSection: some View {
-        Section("App") {
+        Section {
             NavigationLink {
                 WishKit.FeedbackListView()
                     .padding(.bottom)
             } label: {
-                Label("Feature Requests", systemSymbol: .lightbulb)
+                Label {
+                    Text("app_feature_requests", tableName: "Settings")
+                } icon: {
+                    Image(systemName: "lightbulb")
+                }
             }
-            
-//            NavigationLink {
-//                AboutView()
-//            } label: {
-//                Label("About", systemSymbol: .info)
-//            }
+        } header: {
+            Text("app_title", tableName: "Settings")
         }
     }
     
@@ -312,15 +324,15 @@ struct SettingsView: View {
                         ProgressView()
                             .controlSize(.small)
                     }
-                    Text("Clear All Caches")
+                    Text("cache_clear_button", tableName: "Settings")
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
             .disabled(viewModel.isCacheClearing)
         } header: {
-            Text("Cache")
+            Text("cache_title", tableName: "Settings")
         } footer: {
-            Text("Clearing caches will free up storage space. The app will need to download data again when needed.")
+            Text("cache_clear_footer", tableName: "Settings")
         }
     }
     
@@ -332,7 +344,7 @@ struct SettingsView: View {
                     dismiss()
                 }
             } label: {
-                Text("Sign Out")
+                Text("signout_button", tableName: "Settings")
                     .frame(maxWidth: .infinity)
             }
             .disabled(viewModel.user == nil)
