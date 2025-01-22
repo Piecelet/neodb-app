@@ -5,23 +5,30 @@
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
-import SwiftUI
 import Kingfisher
 import OSLog
+import SwiftUI
+
+enum StatusViewMode {
+    case timeline
+    case detail
+}
 
 struct StatusView: View {
     private let logger = Logger.views.status.status
     let status: MastodonStatus
+    let mode: StatusViewMode
+
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     @State private var item: (any ItemProtocol)?
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack(alignment: .top, spacing: 8) {
                 Button {
-                   router.navigate(to: .userProfile(id: status.account.id))
+                    router.navigate(to: .userProfile(id: status.account.id))
                 } label: {
                     KFImage(status.account.avatar)
                         .placeholder {
@@ -39,7 +46,7 @@ struct StatusView: View {
                         .aspectRatio(contentMode: .fill)
                         .frame(width: 44, height: 44)
                         .clipShape(Circle())
-                    
+
                     VStack(alignment: .leading, spacing: 2) {
                         Text(status.account.displayName ?? "")
                             .font(.headline)
@@ -50,34 +57,35 @@ struct StatusView: View {
                     }
                 }
                 .buttonStyle(.plain)
-                
+
                 Spacer()
-                
+
                 Text(status.createdAt.formatted)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-            
-            // Content
-//            HTMLContentView(htmlContent: status.content.asRawText)
-//                .textSelection(.enabled)
+
             Text(status.content.asSafeMarkdownAttributedString)
-                .environment(\.openURL, OpenURLAction { url in
-                    handleURL(url)
-                    return .handled
-                })
+                .environment(
+                    \.openURL,
+                    OpenURLAction { url in
+                        handleURL(url)
+                        return .handled
+                    }
+                )
                 .textSelection(.enabled)
-            
+                .lineLimit(mode == .timeline ? 5 : nil)
+
             // Item Preview if available
             if let item = item {
                 StatusItemView(item: item)
             }
-            
+
             // Media
             if !status.mediaAttachments.isEmpty {
                 mediaGrid
             }
-            
+
             // Footer
             if !status.tags.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
@@ -94,12 +102,13 @@ struct StatusView: View {
                     }
                 }
             }
-            
+
             // Stats
             HStack {
                 Label("\(status.repliesCount)", systemImage: "bubble.right")
                 Spacer()
-                Label("\(status.reblogsCount)", systemImage: "arrow.2.squarepath")
+                Label(
+                    "\(status.reblogsCount)", systemImage: "arrow.2.squarepath")
                 Spacer()
                 Label("\(status.favouritesCount)", systemImage: "heart")
                 Spacer()
@@ -117,7 +126,9 @@ struct StatusView: View {
         .task {
             if !status.content.links.isEmpty {
                 for link in status.content.links {
-                    if let extractedItem = await NeoDBURL.parseItemURL(link.url, title: link.displayString) {
+                    if let extractedItem = await NeoDBURL.parseItemURL(
+                        link.url, title: link.displayString)
+                    {
                         item = extractedItem
                         break
                     }
@@ -128,9 +139,9 @@ struct StatusView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-    
+
     private func handleURL(_ url: URL) {
         URLHandler.handleItemURL(url) { destination in
             if let destination = destination {
@@ -140,11 +151,13 @@ struct StatusView: View {
             }
         }
     }
-    
+
     @ViewBuilder
     private var mediaGrid: some View {
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 4), count: min(status.mediaAttachments.count, 2))
-        
+        let columns = Array(
+            repeating: GridItem(.flexible(), spacing: 4),
+            count: min(status.mediaAttachments.count, 2))
+
         LazyVGrid(columns: columns, spacing: 4) {
             ForEach(status.mediaAttachments) { attachment in
                 KFImage(attachment.url)
@@ -170,4 +183,4 @@ struct StatusView: View {
             }
         }
     }
-} 
+}

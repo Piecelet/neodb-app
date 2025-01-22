@@ -64,7 +64,7 @@ struct MastodonStatusView: View {
         ScrollView {
             VStack(spacing: 0) {
                 // Status Content
-                StatusView(status: status)
+                StatusView(status: status, mode: .detail)
                 
                 Divider()
                 

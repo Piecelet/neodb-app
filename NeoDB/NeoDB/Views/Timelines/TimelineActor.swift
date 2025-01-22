@@ -256,7 +256,7 @@ private extension TimelineType {
     func endpoint(maxId: String?) -> TimelinesEndpoint {
         switch self {
         case .friends:
-            return .home(sinceId: nil, maxId: maxId, minId: nil)
+            return .home(sinceId: nil, maxId: maxId, minId: nil, limit: nil)
         case .home:
             return .pub(sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
         case .popular:

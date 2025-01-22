@@ -115,7 +115,7 @@ class TimelinesViewModel: ObservableObject {
                 switch type {
                 case .friends:
                     endpoint = .home(
-                        sinceId: nil, maxId: state.maxId, minId: nil)
+                        sinceId: nil, maxId: state.maxId, minId: nil, limit: nil)
                 case .home:
                     endpoint = .pub(
                         sinceId: nil, maxId: state.maxId, minId: nil,
@@ -319,7 +319,7 @@ struct TimelinesView: View {
                                 router.navigate(
                                     to: .statusDetailWithStatus(status: status))
                             } label: {
-                                StatusView(status: status)
+                                StatusView(status: status, mode: .timeline)
                                     .id(index)
                                     .task {
                                         if index >= state.statuses.count - 3 && state.hasMore {
