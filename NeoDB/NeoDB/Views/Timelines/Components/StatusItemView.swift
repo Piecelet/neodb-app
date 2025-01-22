@@ -49,19 +49,28 @@ struct StatusItemView: View {
 
                         ItemDescriptionView(
                             item: viewModel.item,
-                            mode: .brief,
+                            mode: .metadata,
                             size: .small
                         )
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    Button {
+                        router.presentSheet(.addToShelf(item: viewModel.item.toItemSchema))
+                    } label: {
+                        Image(systemSymbol: .plusSquareDashed)
+                            .font(.system(size: 20, weight: .regular))
+                            .foregroundStyle(Color.accentColor)
+                            .frame(width: 32, height: 32)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, 12)
             .padding(.vertical, 12)
             .background(Color(.gray).opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 8))
-            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
         .buttonStyle(.plain)
         .alert("Error", isPresented: $viewModel.showError) {

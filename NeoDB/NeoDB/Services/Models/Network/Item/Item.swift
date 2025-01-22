@@ -8,6 +8,7 @@
 import Foundation
 
 private let metadataArraySeparator = ", "
+private let metadataArraySeparatorHidden = " "
 
 // MARK: - Base Item Protocol
 protocol ItemProtocol: Codable, Hashable, Identifiable {
@@ -253,7 +254,7 @@ extension MovieSchema {
         var metadata: [String] = []
 
         if !area.isEmpty {
-            metadata.append(area.joined(separator: metadataArraySeparator))
+            metadata.append(area.joined(separator: metadataArraySeparatorHidden))
         }
         if !genre.isEmpty {
             metadata.append(genre.joined(separator: metadataArraySeparator))
@@ -286,7 +287,7 @@ extension MovieSchema {
             metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
         }
         if !area.isEmpty {
-            metadata.append(("Area", area.joined(separator: metadataArraySeparator)))
+            metadata.append(("Area", area.joined(separator: metadataArraySeparatorHidden)))
         }
         if let year = year {
             metadata.append(("Year", String(year)))
@@ -349,7 +350,7 @@ extension TVShowSchema {
         var metadata: [String] = []
 
         if let area = area, !area.isEmpty {
-            metadata.append(area.joined(separator: metadataArraySeparator))
+            metadata.append(area.joined(separator: metadataArraySeparatorHidden))
         }
         if let genre = genre, !genre.isEmpty {
             metadata.append(genre.joined(separator: metadataArraySeparator))
@@ -385,7 +386,7 @@ extension TVShowSchema {
             metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
         }
         if let area = area, !area.isEmpty {
-            metadata.append(("Area", area.joined(separator: metadataArraySeparator)))
+            metadata.append(("Area", area.joined(separator: metadataArraySeparatorHidden)))
         }
         if let year = year {
             metadata.append(("Year", String(year)))
