@@ -83,6 +83,10 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                     _ = text.removeLast()
                     _ = text.removeLast()
                 }
+                
+                // Remove all whitespaces and newlines
+                text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                
                 asRawText = (try? Entities.unescape(text)) ?? text
 
                 if asMarkdown.hasPrefix("\n") {
@@ -99,7 +103,7 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                 allowsExtendedAttributes: true,
                 interpretedSyntax: .inlineOnlyPreservingWhitespace)
             asSafeMarkdownAttributedString = try AttributedString(
-                markdown: asMarkdown, options: options)
+                markdown: asMarkdown.trimmingCharacters(in: .whitespacesAndNewlines), options: options)
         } catch {
             asSafeMarkdownAttributedString = AttributedString(
                 stringLiteral: htmlValue)

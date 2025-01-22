@@ -63,7 +63,7 @@ struct StatusView: View {
             // Content
 //            HTMLContentView(htmlContent: status.content.asRawText)
 //                .textSelection(.enabled)
-            Text(status.content.asMarkdown)
+            Text(status.content.asSafeMarkdownAttributedString)
             
             // Item Preview if available
             if let item = item {
