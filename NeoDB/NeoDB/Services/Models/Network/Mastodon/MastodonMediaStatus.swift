@@ -4,6 +4,9 @@
 //
 //  Created by citron on 1/23/25.
 //
+//  From https://github.com/Dimillian/IceCubesApp
+//  Witch is licensed under the AGPL-3.0 License
+//
 
 import Foundation
 
