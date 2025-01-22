@@ -43,12 +43,11 @@ struct StatusView: View {
                             Circle()
                                 .fill(Color.gray.opacity(0.2))
                                 .frame(width: 44, height: 44)
-                        }
-                        .onFailure { _ in
-                            Image(systemName: "person.circle.fill")
-                                .symbolRenderingMode(.hierarchical)
-                                .foregroundStyle(.secondary)
-                                .font(.system(size: 44))
+                                .overlay {
+                                    Image(systemName: "person.circle.fill")
+                                        .symbolRenderingMode(.hierarchical)
+                                        .foregroundStyle(.secondary)
+                                }
                         }
                         .resizable()
                         .aspectRatio(contentMode: .fill)
@@ -114,19 +113,26 @@ struct StatusView: View {
             // Stats
             HStack {
                 Label("\(status.repliesCount)", systemImage: "bubble.right")
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button {
-                    viewModel.toggleReblog()
+                    withAnimation {
+                        viewModel.toggleReblog()
+                    }
                 } label: {
-                    Label("\(status.reblogsCount)", systemSymbol: .arrow2Squarepath)
+                    Label("\(viewModel.reblogsCount)", systemSymbol: .arrow2Squarepath)
                         .foregroundStyle(viewModel.isReblogged ? .blue : .secondary)
+                        .contentTransition(.numericText())
                 }
                 Spacer()
                 Button {
-                    viewModel.toggleFavorite()
+                    withAnimation {
+                        viewModel.toggleFavorite()
+                    }
                 } label: {
-                    Label("\(status.favouritesCount)", systemSymbol: viewModel.isFavorited ? .heartFill : .heart)
+                    Label("\(viewModel.favouritesCount)", systemSymbol: viewModel.isFavorited ? .heartFill : .heart)
                         .foregroundStyle(viewModel.isFavorited ? .red : .secondary)
+                        .contentTransition(.numericText())
                 }
                 Spacer()
                 HStack(spacing: 16) {
@@ -140,9 +146,9 @@ struct StatusView: View {
                     if let url = URL(string: status.url ?? "") {
                         ShareLink(item: url) {
                             Label("Share", systemSymbol: .arrowUpRight)
+                                .labelStyle(.iconOnly)
+                                .foregroundStyle(.secondary)
                         }
-                        .labelStyle(.iconOnly)
-                        .foregroundStyle(.secondary)
                     }
                 }
             }
