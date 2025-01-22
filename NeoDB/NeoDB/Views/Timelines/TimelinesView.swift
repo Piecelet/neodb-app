@@ -8,6 +8,12 @@
 import OSLog
 import SwiftUI
 
+enum TimelineType: String, CaseIterable {
+    case home = "Home"
+    case local = "Local"
+    case federated = "Federated"
+}
+
 @MainActor
 class TimelinesViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
@@ -27,6 +33,7 @@ class TimelinesViewModel: ObservableObject {
     @Published var error: String?
     @Published var detailedError: String?
     @Published var isRefreshing = false
+    @Published var selectedTimelineType: TimelineType = .home
 
     // Pagination
     private var maxId: String?
@@ -75,7 +82,7 @@ class TimelinesViewModel: ObservableObject {
             do {
                 // Only load from cache if not refreshing and statuses is empty
                 if !refresh && statuses.isEmpty,
-                   let cached = try? await cacheService.retrieveTimelines(key: accountsManager.currentAccount.id)
+                   let cached = try? await cacheService.retrieveTimelines(key: "\(accountsManager.currentAccount.id)_\(selectedTimelineType.rawValue)")
                 {
                     if !Task.isCancelled {
                         statuses = cached
@@ -94,9 +101,16 @@ class TimelinesViewModel: ObservableObject {
                     throw NetworkError.unauthorized
                 }
 
-                let endpoint = TimelinesEndpoint.pub(
-                    sinceId: nil, maxId: maxId, minId: nil, local: true,
-                    limit: nil)
+                let endpoint: TimelinesEndpoint
+                switch selectedTimelineType {
+                case .home:
+                    endpoint = .home(sinceId: nil, maxId: maxId, minId: nil)
+                case .local:
+                    endpoint = .pub(sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
+                case .federated:
+                    endpoint = .pub(sinceId: nil, maxId: maxId, minId: nil, local: false, limit: nil)
+                }
+                
                 logger.debug(
                     "Fetching timeline with endpoint: \(String(describing: endpoint)), maxId: \(maxId ?? "nil")"
                 )
@@ -115,7 +129,7 @@ class TimelinesViewModel: ObservableObject {
                     statuses.append(contentsOf: newStatuses)
                 }
 
-                try? await cacheService.cacheTimelines(statuses, key: accountsManager.currentAccount.id)
+                try? await cacheService.cacheTimelines(statuses, key: "\(accountsManager.currentAccount.id)_\(selectedTimelineType.rawValue)")
 
                 maxId = newStatuses.last?.id
                 hasMore = !newStatuses.isEmpty
@@ -146,6 +160,11 @@ struct TimelinesView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(\.timelinesPosition) private var scrollPosition: Int
+    @AppStorage("selectedTimelineType") private var selectedTimelineType: TimelineType = .home {
+        didSet {
+            viewModel.selectedTimelineType = selectedTimelineType
+        }
+    }
 
     var body: some View {
         Group {
@@ -155,25 +174,38 @@ struct TimelinesView: View {
                     systemImage: "exclamationmark.triangle",
                     description: Text(viewModel.detailedError ?? error)
                 )
-            } else if viewModel.statuses.isEmpty {
-                if viewModel.isLoading || viewModel.isRefreshing {
-                    timelineSkeletonContent
-                } else {
-                    EmptyStateView(
-                        "No Posts Yet",
-                        systemImage: "text.bubble",
-                        description: Text(
-                            "Follow some users to see their posts here")
-                    )
-                }
             } else {
-                timelineContent
+                VStack(spacing: 0) {
+                    Picker("Timeline", selection: $selectedTimelineType) {
+                        ForEach(TimelineType.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding()
+                    
+                    if viewModel.statuses.isEmpty {
+                        if viewModel.isLoading || viewModel.isRefreshing {
+                            timelineSkeletonContent
+                        } else {
+                            EmptyStateView(
+                                "No Posts Yet",
+                                systemImage: "text.bubble",
+                                description: Text(
+                                    "Follow some users to see their posts here")
+                            )
+                        }
+                    } else {
+                        timelineContent
+                    }
+                }
             }
         }
-        .navigationTitle("Home")
+        .navigationTitle(selectedTimelineType.rawValue)
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
+            viewModel.selectedTimelineType = selectedTimelineType
             await viewModel.loadTimeline()
         }
         .refreshable {
@@ -184,6 +216,11 @@ struct TimelinesView: View {
                 Task {
                     await viewModel.loadTimeline(refresh: true)
                 }
+            }
+        }
+        .onChange(of: selectedTimelineType) { _ in
+            Task {
+                await viewModel.loadTimeline(refresh: true)
             }
         }
     }

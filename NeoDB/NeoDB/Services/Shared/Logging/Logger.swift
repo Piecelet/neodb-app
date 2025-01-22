@@ -13,6 +13,7 @@ extension Logger {
     // MARK: - Networking
     /// Logs related to network requests and responses
     static let network = Logger(subsystem: subsystem, category: "network")
+    static let networkStream = Logger(subsystem: subsystem, category: "network.stream")
     static let networkRequest = Logger(
         subsystem: subsystem, category: "network.request")
     static let networkResponse = Logger(
