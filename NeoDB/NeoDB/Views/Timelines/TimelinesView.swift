@@ -9,9 +9,10 @@ import OSLog
 import SwiftUI
 
 enum TimelineType: String, CaseIterable {
+    case friends = "Friends"
     case home = "Home"
-    case local = "Local"
-    case federated = "Federated"
+    case popular = "Popular"
+    case fediverse = "Fediverse"
 }
 
 @MainActor
@@ -25,9 +26,10 @@ class TimelinesViewModel: ObservableObject {
     @Published var selectedTimelineType: TimelineType = .home
     @Published private(set) var timelineStates: [TimelineType: TimelineState] =
         [
+            .friends: TimelineState(),
             .home: TimelineState(),
-            .local: TimelineState(),
-            .federated: TimelineState(),
+            .popular: TimelineState(),
+            .fediverse: TimelineState(),
         ]
 
     // MARK: - Public Properties
@@ -46,9 +48,10 @@ class TimelinesViewModel: ObservableObject {
 
     func initTimelineStates() {
         timelineStates = [
+            .friends: TimelineState(),
             .home: TimelineState(),
-            .local: TimelineState(),
-            .federated: TimelineState(),
+            .popular: TimelineState(),
+            .fediverse: TimelineState(),
         ]
     }
 
@@ -108,14 +111,16 @@ class TimelinesViewModel: ObservableObject {
                 let state = timelineStates[type] ?? TimelineState()
 
                 switch type {
-                case .home:
+                case .friends:
                     endpoint = .home(
                         sinceId: nil, maxId: state.maxId, minId: nil)
-                case .local:
+                case .home:
                     endpoint = .pub(
                         sinceId: nil, maxId: state.maxId, minId: nil,
                         local: true, limit: nil)
-                case .federated:
+                case .popular:
+                    endpoint = .trending(maxId: state.maxId)
+                case .fediverse:
                     endpoint = .pub(
                         sinceId: nil, maxId: state.maxId, minId: nil,
                         local: false, limit: nil)

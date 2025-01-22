@@ -10,6 +10,7 @@ import Foundation
 enum TimelinesEndpoint {
     case pub(sinceId: String?, maxId: String?, minId: String?, local: Bool, limit: Int?)
     case home(sinceId: String?, maxId: String?, minId: String?)
+    case trending(maxId: String?)
 }
 
 extension TimelinesEndpoint: NetworkEndpoint {
@@ -19,8 +20,11 @@ extension TimelinesEndpoint: NetworkEndpoint {
             return "/v1/timelines/public"
         case .home:
             return "/v1/timelines/home"
+        case .trending:
+            return "/v1/trends/statuses"
         }
     }
+    
     var queryItems: [URLQueryItem]? {
         switch self {
         case .pub(let sinceId, let maxId, let minId, let local, let limit):
@@ -33,6 +37,11 @@ extension TimelinesEndpoint: NetworkEndpoint {
         case .home(let sinceId, let maxId, let mindId):
             return makePaginationParam(
                 sinceId: sinceId, maxId: maxId, mindId: mindId)
+        case .trending(let maxId):
+            if let maxId {
+                return [.init(name: "max_id", value: maxId)]
+            }
+            return nil
         }
     }
 }

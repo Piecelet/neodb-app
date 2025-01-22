@@ -12,9 +12,10 @@ final class TimelineActor: ObservableObject {
     
     // MARK: - Published Properties
     @Published private(set) var timelineStates: [TimelineType: TimelineState] = [
+        .friends: TimelineState(),
         .home: TimelineState(),
-        .local: TimelineState(),
-        .federated: TimelineState()
+        .popular: TimelineState(),
+        .fediverse: TimelineState()
     ]
     
     // MARK: - Properties
@@ -50,9 +51,10 @@ final class TimelineActor: ObservableObject {
     // MARK: - State Management
     private func initTimelineStates() {
         timelineStates = [
+            .friends: TimelineState(),
             .home: TimelineState(),
-            .local: TimelineState(),
-            .federated: TimelineState()
+            .popular: TimelineState(),
+            .fediverse: TimelineState()
         ]
     }
     
@@ -157,11 +159,13 @@ final class TimelineActor: ObservableObject {
         
         let stream: StreamWatcher.Stream
         switch type {
-        case .home:
+        case .friends:
             stream = .home
-        case .local:
+        case .home:
             stream = .local
-        case .federated:
+        case .popular:
+            stream = .trending
+        case .fediverse:
             stream = .federated
         }
         
@@ -217,11 +221,13 @@ final class TimelineActor: ObservableObject {
 private extension TimelineType {
     func endpoint(maxId: String?) -> TimelinesEndpoint {
         switch self {
-        case .home:
+        case .friends:
             return .home(sinceId: nil, maxId: maxId, minId: nil)
-        case .local:
+        case .home:
             return .pub(sinceId: nil, maxId: maxId, minId: nil, local: true, limit: nil)
-        case .federated:
+        case .popular:
+            return .trending(maxId: maxId)
+        case .fediverse:
             return .pub(sinceId: nil, maxId: maxId, minId: nil, local: false, limit: nil)
         }
     }
