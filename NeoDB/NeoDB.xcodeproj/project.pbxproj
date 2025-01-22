@@ -18,6 +18,7 @@
 		249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 249B951C2D2EF5C800FE3D95 /* MarkdownUI */; };
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
+		24BABF6C2D40C6E600785306 /* StringCatalog in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF6B2D40C6E600785306 /* StringCatalog */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 /* End PBXBuildFile section */
 
@@ -89,6 +90,7 @@
 				24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */,
 				24BABF592D40309800785306 /* WishKit in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
+				24BABF6C2D40C6E600785306 /* StringCatalog in Frameworks */,
 				2403E7662D2EF7CC00ED4CB5 /* HTML2Markdown in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 				249B951D2D2EF5C800FE3D95 /* MarkdownUI in Frameworks */,
@@ -174,6 +176,7 @@
 				243C39242D3E7ABA00EB356A /* SFSafeSymbols */,
 				24BABF582D40309800785306 /* WishKit */,
 				24BABF5E2D40B0E900785306 /* WhatsNewKit */,
+				24BABF6B2D40C6E600785306 /* StringCatalog */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -269,6 +272,7 @@
 				243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */,
 				24BABF572D40309800785306 /* XCRemoteSwiftPackageReference "wishkit-ios" */,
 				24BABF5D2D40B0E900785306 /* XCRemoteSwiftPackageReference "WhatsNewKit" */,
+				24BABF6A2D40C6E600785306 /* XCRemoteSwiftPackageReference "xcstrings-tool" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -773,6 +777,14 @@
 				minimumVersion = 2.2.1;
 			};
 		};
+		24BABF6A2D40C6E600785306 /* XCRemoteSwiftPackageReference "xcstrings-tool" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/liamnichols/xcstrings-tool";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -824,6 +836,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24BABF5D2D40B0E900785306 /* XCRemoteSwiftPackageReference "WhatsNewKit" */;
 			productName = WhatsNewKit;
+		};
+		24BABF6B2D40C6E600785306 /* StringCatalog */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24BABF6A2D40C6E600785306 /* XCRemoteSwiftPackageReference "xcstrings-tool" */;
+			productName = StringCatalog;
 		};
 		24D1BE402D2A9F340063B530 /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;

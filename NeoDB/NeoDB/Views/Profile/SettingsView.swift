@@ -129,9 +129,9 @@ struct ProfileHeaderView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 } else {
-                    Text("Loading Name")
+                    Text(User.placeholder().displayName)
                         .font(.headline)
-                    Text("@username")
+                    Text(User.placeholder().username)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
