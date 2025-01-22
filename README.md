@@ -2,6 +2,8 @@
 
 [Public TestFlight beta](https://testflight.apple.com/join/apxemRpF) (An proper App Store release will come eventually)
 
+<a rel="me" href="https://mastodon.social/@piecelet">Mastodon</a> | <a rel="me" href="https://m.cmx.im/@piecelet">Mastodon（中文）</a> | [Bluesky](https://bsky.app/profile/neodb.app)
+
 <p float="left">
     <img src="Images/LoginView.png" width="300" />
     <img src="Images/TimelinesView.png" width="300" />
