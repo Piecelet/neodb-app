@@ -26,7 +26,7 @@ protocol NetworkEndpoint {
     var method: HTTPMethod { get }
     var queryItems: [URLQueryItem]? { get }
     var bodyContentType: ContentType? { get }
-    var body: Data? { get }
+    var body: Encodable? { get }
     var headers: [String: String]? { get }
 }
 
@@ -43,7 +43,7 @@ extension NetworkEndpoint {
         return .json
     }
 
-    var body: Data? {
+    var body: Encodable? {
         return nil
     }
 

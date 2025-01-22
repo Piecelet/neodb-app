@@ -29,19 +29,23 @@ class NetworkClient {
     private let instance: String
     private var oauthToken: OauthToken?
     private let decoder: JSONDecoder = JSONDecoder()
+    private let encoder: JSONEncoder = JSONEncoder()
+    private let webSocketTask: URLSessionWebSocketTask?
 
     init(instance: String, oauthToken: OauthToken? = nil) {
         self.instance = instance
         self.oauthToken = oauthToken
         self.urlSession = URLSession.shared
+        self.webSocketTask = nil
         
         // Configure decoder
         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.encoder.keyEncodingStrategy = .convertToSnakeCase
     }
 
-    private func makeURL(endpoint: NetworkEndpoint) throws -> URL {
+    private func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws -> URL {
         var components = URLComponents()
-        components.scheme = "https"
+        components.scheme = scheme
         components.host = instance
 
         // Handle path construction
@@ -73,11 +77,11 @@ class NetworkClient {
         request.httpMethod = endpoint.method.rawValue
 
         // Handle request body and content type
-        if let body = endpoint.body {
+        if let body = endpoint.body, let bodyContentType = endpoint.bodyContentType, bodyContentType == .json {
             request.setValue(
-                endpoint.bodyContentType?.headerValue,
+                bodyContentType.headerValue,
                 forHTTPHeaderField: "Content-Type")
-            request.httpBody = body
+            request.httpBody = try encoder.encode(body)
         }
 
         endpoint.headers?.forEach { key, value in
@@ -163,6 +167,24 @@ class NetworkClient {
             logger.error("HTTP error: \(httpResponse.statusCode)")
             throw NetworkError.httpError(httpResponse.statusCode)
         }
+    }
+
+    func makeWebSocketTask(endpoint: NetworkEndpoint) throws -> URLSessionWebSocketTask {
+        let url = try makeURL(scheme: "wss", endpoint: endpoint)
+        var request = URLRequest(url: url)
+        
+        // Add authorization if available
+        if let token = oauthToken?.accessToken {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        
+        // Add any additional headers from the endpoint
+        endpoint.headers?.forEach { key, value in
+            request.setValue(value, forHTTPHeaderField: key)
+        }
+        
+        logger.debug("Creating WebSocket connection to: \(url.absoluteString)")
+        return urlSession.webSocketTask(with: request)
     }
 
     // MARK: - Debug Logging

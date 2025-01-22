@@ -36,12 +36,10 @@ extension MarkEndpoint: NetworkEndpoint {
         }
     }
 
-    var body: Data? {
+    var body: Encodable? {
         switch self {
         case .mark(_, let mark):
-            let encoder = JSONEncoder()
-            encoder.keyEncodingStrategy = .convertToSnakeCase
-            return try? encoder.encode(mark)
+            return mark
         default:
             return nil
         }
