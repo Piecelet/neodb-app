@@ -19,7 +19,7 @@ class NeoDBURL {
         logger.debug("\(message)")
     }
     
-    static func parseItemURL(_ url: URL) async -> (any ItemProtocol)? {
+    static func parseItemURL(_ url: URL, title: String? = nil) async -> (any ItemProtocol)? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -47,7 +47,7 @@ class NeoDBURL {
         // Handle special cases for tv seasons and episodes
         let category: ItemCategory
         if type == "podcast" {
-            return await parseItemPodcastURL(url)
+            return await parseItemPodcastURL(url, title: title)
         } else if type == "tv" && pathComponents.count >= 4 {
             switch pathComponents[2] {
             case "season":
@@ -91,9 +91,9 @@ class NeoDBURL {
             apiUrl: apiComponents.url?.absoluteString ?? url.absoluteString,
             category: category,
             parentUuid: nil,
-            displayTitle: nil,
+            displayTitle: title,
             externalResources: nil,
-            title: nil,
+            title: title,
             description: nil,
             localizedTitle: nil,
             localizedDescription: nil,
@@ -107,7 +107,7 @@ class NeoDBURL {
         return urlItem
     }
 
-    static func parseItemPodcastURL(_ url: URL) async -> PodcastSchema? {
+    static func parseItemPodcastURL(_ url: URL, title: String? = nil) async -> PodcastSchema? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),

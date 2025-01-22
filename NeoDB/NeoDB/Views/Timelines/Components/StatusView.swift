@@ -64,6 +64,10 @@ struct StatusView: View {
 //            HTMLContentView(htmlContent: status.content.asRawText)
 //                .textSelection(.enabled)
             Text(status.content.asSafeMarkdownAttributedString)
+                .environment(\.openURL, OpenURLAction { url in
+                    handleURL(url)
+                    return .handled
+                })
             
             // Item Preview if available
             if let item = item {
@@ -104,9 +108,9 @@ struct StatusView: View {
         .padding()
         .background(Color(.systemBackground))
         .task {
-            if let urls = status.content.asRawText.extractURLs() {
-                for url in urls {
-                    if let extractedItem = await NeoDBURL.parseItemURL(url) {
+            if !status.content.links.isEmpty {
+                for link in status.content.links {
+                    if let extractedItem = await NeoDBURL.parseItemURL(link.url, title: link.displayString) {
                         item = extractedItem
                         break
                     }
@@ -119,6 +123,16 @@ struct StatusView: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
+    
+    private func handleURL(_ url: URL) {
+        URLHandler.handleItemURL(url) { destination in
+            if let destination = destination {
+                router.navigate(to: destination)
+            } else {
+                openURL(url)
+            }
+        }
+    }
     
     @ViewBuilder
     private var mediaGrid: some View {
