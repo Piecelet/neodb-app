@@ -13,6 +13,8 @@ enum TimelineType: String, CaseIterable {
     case home = "Home"
     case popular = "Popular"
     case fediverse = "Fediverse"
+    
+    var displayName: String { rawValue }
 }
 
 @MainActor
@@ -234,9 +236,10 @@ struct TimelinesView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            timelineTypePicker
-                .padding(.horizontal)
-                .padding(.vertical, 8)
+            TopTabBarView(
+                items: TimelineType.allCases,
+                selection: $selectedTimelineType
+            ) { $0.displayName }
             
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
@@ -252,11 +255,17 @@ struct TimelinesView: View {
         .navigationTitle("Timeline")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("Timeline")
+            ToolbarItem(placement: .topBarLeading) {
+                Text("Piecelet")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
+            }
+            ToolbarItem(placement: .principal) {
+                Text("Piecelet")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
             }
         }
         .task {
@@ -271,40 +280,12 @@ struct TimelinesView: View {
         .onDisappear {
             actor.cleanup()
         }
+        .enableInjection()
     }
-    
-    private var timelineTypePicker: some View {
-        HStack(spacing: 20) {
-            ForEach(TimelineType.allCases, id: \.self) { type in
-                VStack(spacing: 8) {
-                    Text(type.rawValue)
-                        .font(
-                            .system(
-                                size: 15,
-                                weight: selectedTimelineType == type
-                                    ? .semibold : .regular)
-                        )
-                        .foregroundStyle(
-                            selectedTimelineType == type
-                                ? .primary : .secondary)
-                    
-                    Rectangle()
-                        .fill(
-                            selectedTimelineType == type
-                                ? Color.accentColor : .clear
-                        )
-                        .frame(height: 2)
-                }
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    withAnimation {
-                        selectedTimelineType = type
-                    }
-                }
-            }
-        }
-        .padding(.horizontal, 4)
-    }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     @ViewBuilder
     private func timelineContent(for type: TimelineType) -> some View {

@@ -88,6 +88,8 @@ final class TimelineActor: ObservableObject {
                 if refresh {
                     state.maxId = nil
                     state.isRefreshing = true
+                    // Don't show errors immediately during refresh
+                    state.error = nil
                 }
             }
             
@@ -145,7 +147,10 @@ final class TimelineActor: ObservableObject {
                 
             } catch {
                 updateState(for: type) { state in
-                    state.error = error.localizedDescription
+                    // Only show error if we don't have any existing data
+                    if !refresh || state.statuses.isEmpty {
+                        state.error = error.localizedDescription
+                    }
                 }
             }
         }
