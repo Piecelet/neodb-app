@@ -339,7 +339,7 @@ final class ItemViewModel: ObservableObject {
                 return
             }
             
-            await updateLoadingState(refresh: refresh)
+            updateLoadingState(refresh: refresh)
             
             defer {
                 if !Task.isCancelled {

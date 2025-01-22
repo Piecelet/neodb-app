@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WhatsNewKit
 
 @main
 struct NeoDBApp: App {
@@ -18,6 +19,13 @@ struct NeoDBApp: App {
                 if accountsManager.isAuthenticated {
                     ContentView()
                         .environmentObject(router)
+                        .environment(
+                            \.whatsNew,
+                            WhatsNewEnvironment(
+                                versionStore: UserDefaultsWhatsNewVersionStore(),
+                                whatsNewCollection: self
+                            )
+                        )
                 } else {
                     LoginView()
                 }

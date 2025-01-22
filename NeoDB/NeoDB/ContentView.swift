@@ -85,6 +85,7 @@ struct ContentView: View {
                 ItemDetailsSheet(item: item)
             }
         }
+        .whatsNewSheet()
         .enableInjection()
     }
     
