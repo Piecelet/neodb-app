@@ -24,7 +24,7 @@ extension User: Equatable {
         return User(
             url: URL(string: "https://placehold.co/100x100")!,
             externalAcct: nil,
-            displayName: "Name",
+            displayName: String(localized: "account_displayname", table: "Settings", comment: "A placeholder of the display name of an account."),
             avatar: URL(string: "https://placehold.co/100x100")!,
             username: "@username")
     }

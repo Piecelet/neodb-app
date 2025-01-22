@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "account_displayname" : {
+      "comment" : "A placeholder of the display name of an account.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户名"
+          }
+        }
+      }
+    },
     "account_external" : {
       "localizations" : {
         "en" : {
