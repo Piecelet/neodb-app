@@ -8,51 +8,61 @@
 import SwiftUI
 import WhatsNewKit
 
+private let whatsNewTitle: WhatsNew.Title = .init(
+    text: .init("What's New\nin " + AttributedString(
+        "Piecelet",
+        attributes: AttributeContainer([
+            .foregroundColor: UIColor(.accentColor)
+        ])
+    ))
+)
+private let whatsNewPrimaryAction: WhatsNew.PrimaryAction = .init(
+    title: "Continue",
+    backgroundColor: .accentColor,
+    foregroundColor: .white,
+    hapticFeedback: .notification(.success)
+)
+
 extension NeoDBApp: WhatsNewCollectionProvider {
     var whatsNewCollection: WhatsNewCollection {
         WhatsNew(
-            version: "1.0.0",
-            title: "What's New in NeoDB",
+            version: "0.8",
+            title: whatsNewTitle,
             features: [
                 .init(
                     image: .init(
-                        systemName: "books.vertical.fill",
-                        foregroundColor: .orange
-                    ),
-                    title: "Library Management",
-                    subtitle: "Track your books, movies, music, and more in one place"
-                ),
-                .init(
-                    image: .init(
-                        systemName: "star.bubble.fill",
-                        foregroundColor: .yellow
-                    ),
-                    title: "Reviews & Ratings",
-                    subtitle: "Share your thoughts and discover what others are saying"
-                ),
-                .init(
-                    image: .init(
-                        systemName: "person.2.fill",
+                        systemName: "books.vertical",
                         foregroundColor: .blue
                     ),
-                    title: "Social Features",
-                    subtitle: "Connect with other users and share your collections"
+                    title: "Beautiful New Library",
+                    subtitle: "Find and organize your collections with an all-new design"
                 ),
                 .init(
                     image: .init(
-                        systemName: "icloud.fill",
-                        foregroundColor: .cyan
+                        systemName: "line.3.horizontal.decrease",
+                        foregroundColor: .orange
                     ),
-                    title: "Cloud Sync",
-                    subtitle: "Your library syncs across all your devices"
+                    title: "Quick Filters",
+                    subtitle: "Switch between books, movies, and more with a simple tap"
+                ),
+                .init(
+                    image: .init(
+                        systemName: "bolt.square",
+                        foregroundColor: .green
+                    ),
+                    title: "Lightning Fast",
+                    subtitle: "Experience faster loading and smoother browsing"
+                ),
+                .init(
+                    image: .init(
+                        systemName: "sparkles.rectangle.stack",
+                        foregroundColor: .purple
+                    ),
+                    title: "Delightful Details",
+                    subtitle: "Enjoy smooth animations and beautiful item cards"
                 )
             ],
-            primaryAction: .init(
-                title: "Continue",
-                backgroundColor: .accentColor,
-                foregroundColor: .white,
-                hapticFeedback: .notification(.success)
-            )
+            primaryAction: whatsNewPrimaryAction
         )
     }
 }
