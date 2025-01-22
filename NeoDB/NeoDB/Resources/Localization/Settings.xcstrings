@@ -25,6 +25,12 @@
             "value" : "Account"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "placeholder(delete this)"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
