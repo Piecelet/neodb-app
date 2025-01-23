@@ -23,7 +23,7 @@ struct MastodonLoginView: View {
     var body: some View {
         VStack(spacing: 0) {
             stepperView
-                .padding(.top)
+            //                .ignoresSafeArea(edges: .top)
 
             Form {
                 if viewModel.currentStep == 1 {
@@ -76,30 +76,31 @@ struct MastodonLoginView: View {
 
     // MARK: - Subviews
     private var stepperView: some View {
-        VStack(spacing: 12) {
-            HStack(spacing: 0) {
-                StepIndicator(
-                    step: 1,
-                    title: "Mastodon",
-                    description: "Choose your Mastodon instance",
-                    isActive: viewModel.currentStep == 1,
-                    isCompleted: viewModel.currentStep > 1
-                )
+        VStack(spacing: 16) {
+            StepIndicator(
+                step: 1,
+                title: viewModel.currentStep == 1
+                    ? "Step 1: Mastodon" : viewModel.mastodonInstance,
+                description: "Choose your Mastodon instance",
+                isActive: viewModel.currentStep == 1,
+                isCompleted: viewModel.currentStep > 1
+            )
 
-                Rectangle()
-                    .frame(height: 1)
-                    .foregroundStyle(.secondary.opacity(0.3))
+            // Vertical connector line
+            //            Rectangle()
+            //                .frame(width: 1, height: 24)
+            //                .foregroundStyle(.secondary.opacity(0.3))
 
-                StepIndicator(
-                    step: 2,
-                    title: "NeoDB",
-                    description: "Select your NeoDB instance",
-                    isActive: viewModel.currentStep == 2,
-                    isCompleted: viewModel.currentStep > 2
-                )
-            }
+            StepIndicator(
+                step: 2,
+                title: "Step 2: NeoDB",
+                description: "Select your NeoDB instance",
+                isActive: viewModel.currentStep == 2,
+                isCompleted: viewModel.currentStep > 2
+            )
         }
-        .padding(.horizontal)
+        //        .padding(.bottom, 8)
+        .padding(.leading, 36)
     }
 
     private var mastodonInstanceStep: some View {
@@ -116,7 +117,6 @@ struct MastodonLoginView: View {
             }
 
             Section {
-
                 actionButton
                     .listRowInsets(EdgeInsets())
                     .listRowBackground(Color.clear)
@@ -126,40 +126,61 @@ struct MastodonLoginView: View {
             if let instance = viewModel.selectedMastodonInstance {
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(instance.title)
-                            .font(.headline)
+                        HStack(alignment: .bottom,spacing: 4) {
+                            Text(instance.title)
+                                .font(.headline)
+                            Text(viewModel.mastodonInstance)
+                                .foregroundStyle(.secondary)
+                        }
                         Text(instance.shortDescription)
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
-
-                        Divider()
-
-                        HStack(spacing: 16) {
-                            StatView(
-                                title: "Users", value: instance.stats.userCount)
-                            StatView(
-                                title: "Posts",
-                                value: instance.stats.statusCount)
-                        }
-
-                        if let languages = instance.languages,
-                            !languages.isEmpty
-                        {
-                            Text(languages.joined(separator: ", "))
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
                     }
-
-                    if let rules = instance.rules, !rules.isEmpty {
-                        ForEach(rules) { rule in
-                            Text("• \(rule.text)")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
+                    
+                    HStack {
+                        Text("Users")
+                        Spacer()
+                        Text("\(instance.stats.userCount) users")
                     }
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+                    
+                    HStack {
+                        Text("Posts")
+                        Spacer()
+                        Text("\(instance.stats.statusCount) posts")
+                    }
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+                    
+                    HStack {
+                        Text("Links")
+                        Spacer()
+                        Text("\(instance.stats.domainCount) links")
+                    }
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
                 } header: {
                     Text("Instance Details")
+                }
+
+                Section {
+                    if let rules = instance.rules, !rules.isEmpty {
+                        ForEach(Array(rules.enumerated()), id: \.element.id) { index, rule in
+                            HStack(alignment: .top, spacing: 6) {
+                                Image(systemName: index <= 50 ? "\(index + 1).circle" : "info.circle")
+                                    .padding(.top, 4)
+                                    .foregroundStyle(.accent)
+                                Text(rule.text)
+                                    .font(.subheadline)
+                                    .padding(.vertical, 4)
+                            }
+                        }
+                        .listRowInsets(EdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 20))
+                        }
+                    
+                } header: {
+                    Text("Instance Rules")
                 }
             }
 
@@ -300,10 +321,10 @@ struct StepIndicator: View {
     let isCompleted: Bool
 
     var body: some View {
-        VStack(spacing: 4) {
+        HStack(spacing: 12) {
             Circle()
                 .fill(backgroundColor)
-                .frame(width: isActive ? 32 : 28, height: isActive ? 32 : 28)
+                .frame(width: 28, height: 28)
                 .overlay {
                     if isCompleted {
                         Image(systemName: "checkmark")
@@ -318,20 +339,22 @@ struct StepIndicator: View {
                 .scaleEffect(isActive ? 1.1 : 1.0)
                 .animation(.spring(response: 0.3), value: isActive)
 
-            Text(title)
-                .font(.caption)
-                .foregroundStyle(isActive ? .primary : .secondary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.subheadline.bold())
+                    .foregroundStyle(isActive ? .primary : .secondary)
 
-            if isActive {
-                Text(description)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .transition(.opacity)
+                if isActive {
+                    Text(description)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .transition(.opacity)
+                }
             }
+
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
         .enableInjection()
     }
 
@@ -341,7 +364,7 @@ struct StepIndicator: View {
 
     private var backgroundColor: Color {
         if isCompleted {
-            return .green
+            return .accentColor.opacity(0.6)
         } else if isActive {
             return .accentColor
         } else {
