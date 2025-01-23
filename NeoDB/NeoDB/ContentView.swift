@@ -74,7 +74,7 @@ struct ContentView: View {
             case .editStatus(let status):
                 Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
             case .replyToStatus(let status):
-                Text("Reply to: \(status.id)")  // TODO: Implement StatusEditorView
+                StatusReplyView(status: status)
             case .addToShelf(let item):
                 MarkView(item: item)
                     .environmentObject(accountsManager)

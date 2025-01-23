@@ -112,8 +112,12 @@ struct StatusView: View {
 
             // Stats
             HStack {
-                Label("\(status.repliesCount)", systemImage: "bubble.right")
-                    .foregroundStyle(.secondary)
+                Button {
+                    router.presentSheet(.replyToStatus(status: status))
+                } label: {
+                    Label("\(status.repliesCount)", systemImage: "bubble.right")
+                }
+                        .foregroundStyle(.secondary)
                 Spacer()
                 Button {
                     withAnimation {

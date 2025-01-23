@@ -102,7 +102,6 @@ enum SheetDestination: Identifiable {
     case addToShelf(item: any ItemProtocol)
     case editShelfItem(mark: MarkSchema)
     case itemDetails(item: any ItemProtocol)
-//    case editMark(item: any ItemProtocol, mark: MarkSchema? = nil)
     
     var id: String {
         switch self {
@@ -114,8 +113,6 @@ enum SheetDestination: Identifiable {
             return "shelfItemEditor"
         case .itemDetails:
             return "itemDetails"
-//        case .editMark:
-//            return "markEditor"
         }
     }
 }
