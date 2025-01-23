@@ -32,9 +32,20 @@ struct MastodonLoginView: View {
                     neodbInstanceStep
                 }
             }
+            .scrollContentBackground(.hidden)
         }
+        .background(Color(.systemGroupedBackground))
         .navigationTitle("Sign In with Mastodon")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Button("Back", systemSymbol: .chevronLeft) {
+                    dismiss()
+                }
+                .labelStyle(.iconOnly)
+            }
+        }
         .sheet(isPresented: $viewModel.showInstanceInput) {
             InstanceInputView(
                 selectedInstance: accountsManager.currentAccount.instance
@@ -97,6 +108,7 @@ struct MastodonLoginView: View {
                 TextField("mastodon.social", text: $viewModel.mastodonInstance)
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
+                    .textContentType(.URL)
                     .autocorrectionDisabled()
                     .onChange(of: viewModel.mastodonInstance) { _ in
                         viewModel.searchInstances()
