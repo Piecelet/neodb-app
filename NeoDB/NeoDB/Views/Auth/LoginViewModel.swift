@@ -15,7 +15,13 @@ class LoginViewModel: ObservableObject {
 
     @Published var errorMessage: String?
     @Published var showError = false
-    @Published var isAuthenticating = false
+    @Published var isAuthenticating = false {
+        didSet {
+            if oldValue != isAuthenticating {
+                accountsManager.isAuthenticating = isAuthenticating
+            }
+        }
+    }
     @Published var showInstanceInput = false
     @Published var authUrl: URL?
 
@@ -23,30 +29,26 @@ class LoginViewModel: ObservableObject {
 
     func authenticate() async {
         do {
+            authUrl = try await accountsManager.authenticate(
+                instance: accountsManager.currentAccount.instance)
             isAuthenticating = true
-            accountsManager.isAuthenticating = true
-            
-            let url = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
-            self.authUrl = url
-            
+        } catch AccountError.invalidURL {
+            errorMessage = "Invalid instance URL"
+            showError = true
+            isAuthenticating = false
+        } catch AccountError.registrationFailed(let message) {
+            errorMessage = "Registration failed: \(message)"
+            showError = true
+            isAuthenticating = false
         } catch {
             errorMessage = error.localizedDescription
             showError = true
             isAuthenticating = false
-            accountsManager.isAuthenticating = false
         }
     }
 
     func handleCallback(url: URL) async throws {
-        do {
-            try await accountsManager.handleCallback(url: url)
-            isAuthenticating = false
-            accountsManager.isAuthenticating = false
-        } catch {
-            isAuthenticating = false
-            accountsManager.isAuthenticating = false
-            throw error
-        }
+        try await accountsManager.handleCallback(url: url)
     }
 
     func updateInstance(_ newInstance: String) {

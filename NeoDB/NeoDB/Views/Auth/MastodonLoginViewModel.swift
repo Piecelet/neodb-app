@@ -33,7 +33,13 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
     @Published var filteredInstances: [JoinMastodonServers] = []
     @Published var selectedMastodonInstance: MastodonInstance?
     @Published var isInstanceUnavailable = false
-    @Published var isAuthenticating = false
+    @Published var isAuthenticating = false {
+        didSet {
+            if oldValue != isAuthenticating {
+                accountsManager?.isAuthenticating = isAuthenticating
+            }
+        }
+    }
     @Published var isWebViewPresented = false
     @Published var webViewRequest: URLRequest?
 
@@ -168,7 +174,6 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
             if let accountsManager = accountsManager {
                 isMastodonAuthorized = false
                 isAuthenticating = true
-                accountsManager.isAuthenticating = true
                 
                 // 1. Get login page and extract CSRF token
                 let client = NetworkClient(
@@ -256,7 +261,6 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
             if let accountsManager = accountsManager {
                 try await accountsManager.handleCallback(url: url)
                 isAuthenticating = false
-                accountsManager.isAuthenticating = false
             }
         } catch {
             isAuthenticating = false
