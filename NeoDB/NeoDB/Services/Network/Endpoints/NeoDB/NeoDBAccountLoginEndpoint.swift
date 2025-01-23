@@ -25,24 +25,15 @@ extension NeoDBAccountLoginEndpoint: NetworkEndpoint {
             return "/account/mastodon/login"
         }
     }
-
-    var method: HTTPMethod {
-        switch self {
-        case .mastodon:
-            return .post
-        default:
-            return .get
-        }
-    }
-
+    
     var headers: [String: String]? {
         switch self {
         case .mastodon(let referer, let cookie, _, _):
             return [
                 "Origin": referer.host ?? "",
                 "Referer": referer.absoluteString,
-                "Cookie": cookie,
-                "User-Agent": AppConfig.OAuth.userAgent,
+//                "Cookie": cookie,
+//                "User-Agent": AppConfig.OAuth.userAgent,
             ]
         default:
             return nil

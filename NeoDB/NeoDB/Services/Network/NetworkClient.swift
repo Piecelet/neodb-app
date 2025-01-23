@@ -44,7 +44,7 @@ class NetworkClient {
         self.encoder.keyEncodingStrategy = .convertToSnakeCase
     }
 
-    private func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws -> URL {
+    func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws -> URL {
         var components = URLComponents()
         components.scheme = scheme
         components.host = instance

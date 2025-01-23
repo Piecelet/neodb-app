@@ -87,19 +87,31 @@ struct MastodonLoginView: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadInitialInstances()
         }
-        .sheet(isPresented: $viewModel.isAuthenticating) {
+        .sheet(isPresented: $viewModel.isWebViewPresented) {
             NavigationView {
-                WebView(webView: webViewStore.webView)
-                    .navigationBarTitle("Sign In", displayMode: .inline)
-                    .navigationBarItems(leading: Button("Cancel") {
-                        viewModel.isAuthenticating = false
-                    })
+                ZStack(alignment: .top) {
+                    WebView(webView: webViewStore.webView)
+                    
+                    if webViewStore.isLoading {
+                        ProgressView()
+                            .progressViewStyle(.linear)
+                            .tint(.accentColor)
+                    }
+                }
+                .navigationBarTitle("Sign In", displayMode: .inline)
+                .navigationBarItems(leading: Button("Cancel") {
+                    viewModel.isWebViewPresented = false
+                    viewModel.isAuthenticating = false
+                    webViewStore.webView.stopLoading()
+                })
             }
             .onAppear {
-                if let url = viewModel.authUrl {
-                    webViewStore.webView.load(URLRequest(url: url))
+                webViewStore.webView.navigationDelegate = viewModel
+                if let request = viewModel.webViewRequest {
+                    webViewStore.webView.load(request)
                 }
             }
+            .interactiveDismissDisabled()
         }
         .enableInjection()
     }
@@ -302,12 +314,11 @@ struct MastodonLoginView: View {
             } else {
                 Task {
                     await viewModel.authenticate()
-                    viewModel.isAuthenticating = true
                 }
             }
         }) {
             HStack {
-                if viewModel.isLoading {
+                if viewModel.isLoading || viewModel.isAuthenticating {
                     ProgressView()
                         .tint(.white)
                 } else if viewModel.isInstanceUnavailable {
@@ -334,6 +345,7 @@ struct MastodonLoginView: View {
         }
         .disabled(
             viewModel.isLoading
+                || viewModel.isAuthenticating
                 || viewModel.isInstanceUnavailable
                 || (viewModel.currentStep == 1
                     && (viewModel.mastodonInstance.isEmpty
