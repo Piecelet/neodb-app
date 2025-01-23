@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */; };
 		2403F2762D32511E00ED4CB5 /* Cache in Frameworks */ = {isa = PBXBuildFile; productRef = 2403F2752D32511E00ED4CB5 /* Cache */; };
+		2405C5DD2D42717400457DF5 /* BetterSafariView in Frameworks */ = {isa = PBXBuildFile; productRef = 2405C5DC2D42717400457DF5 /* BetterSafariView */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
 		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
 		243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 243C39242D3E7ABA00EB356A /* SFSafeSymbols */; };
@@ -84,6 +85,7 @@
 				2403E8D02D2EFAEE00ED4CB5 /* Kingfisher in Frameworks */,
 				2403F2762D32511E00ED4CB5 /* Cache in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
+				2405C5DD2D42717400457DF5 /* BetterSafariView in Frameworks */,
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
 				24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */,
 				24BABF592D40309800785306 /* WishKit in Frameworks */,
@@ -171,6 +173,7 @@
 				24BABF582D40309800785306 /* WishKit */,
 				24BABF5E2D40B0E900785306 /* WhatsNewKit */,
 				2446C0C82D41712F00504129 /* SwiftSoup */,
+				2405C5DC2D42717400457DF5 /* BetterSafariView */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -265,6 +268,7 @@
 				24BABF572D40309800785306 /* XCRemoteSwiftPackageReference "wishkit-ios" */,
 				24BABF5D2D40B0E900785306 /* XCRemoteSwiftPackageReference "WhatsNewKit" */,
 				2446C0C72D41712F00504129 /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				2405C5DB2D42717400457DF5 /* XCRemoteSwiftPackageReference "BetterSafariView" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -705,6 +709,14 @@
 				minimumVersion = 7.4.0;
 			};
 		};
+		2405C5DB2D42717400457DF5 /* XCRemoteSwiftPackageReference "BetterSafariView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/qizh/BetterSafariView";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/johnno1962/InjectionNext";
@@ -773,6 +785,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2403F2742D3250FE00ED4CB5 /* XCRemoteSwiftPackageReference "Cache" */;
 			productName = Cache;
+		};
+		2405C5DC2D42717400457DF5 /* BetterSafariView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2405C5DB2D42717400457DF5 /* XCRemoteSwiftPackageReference "BetterSafariView" */;
+			productName = BetterSafariView;
 		};
 		2426883F2D2A9E0D00DFAAC1 /* InjectionNext */ = {
 			isa = XCSwiftPackageProductDependency;

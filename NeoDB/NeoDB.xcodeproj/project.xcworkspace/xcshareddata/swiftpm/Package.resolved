@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "bettersafariview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/qizh/BetterSafariView",
+      "state" : {
+        "branch" : "main",
+        "revision" : "9f9698b72a3e179465397570346efeac8659d95e"
+      }
+    },
+    {
       "identity" : "cache",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hyperoslo/Cache",

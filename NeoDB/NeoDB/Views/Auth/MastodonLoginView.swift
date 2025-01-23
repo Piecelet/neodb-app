@@ -23,20 +23,22 @@ struct MastodonLoginView: View {
     var body: some View {
         VStack(spacing: 0) {
             Form {
+                logoView
+
                 // Top Section
                 if viewModel.currentStep == 1 {
                     mastodonInstanceInput
                 } else {
                     neodbInstanceInput
                 }
-                
+
                 // Middle Section (Action Button)
                 Section {
                     actionButton
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
                 }
-                
+
                 // Bottom Section
                 if viewModel.currentStep == 1 {
                     mastodonInstanceDetail
@@ -47,7 +49,10 @@ struct MastodonLoginView: View {
             .scrollContentBackground(.hidden)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Sign In with Mastodon")
+        .navigationTitle(
+            viewModel.currentStep == 2
+                ? "Choose NeoDB Instance" : "Sign In with Mastodon"
+        )
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -56,6 +61,13 @@ struct MastodonLoginView: View {
                     dismiss()
                 }
                 .labelStyle(.iconOnly)
+            }
+            ToolbarItem(placement: .principal) {
+                Text(
+                    viewModel.currentStep == 2
+                        ? "Choose NeoDB Instance" : "Sign In with Mastodon"
+                )
+                .font(.headline)
             }
         }
         .sheet(isPresented: $viewModel.showInstanceInput) {
@@ -77,7 +89,29 @@ struct MastodonLoginView: View {
         }
         .enableInjection()
     }
-    
+
+    // MARK: - Logo
+    private var logoView: some View {
+        Section {
+            Group {
+                if viewModel.currentStep == 1 {
+                    Image("mastodon-logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 80)
+                } else {
+                    Image("neodb-logo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 80)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
+        }
+    }
+
     // MARK: - Top Section Views
     private var mastodonInstanceInput: some View {
         Section {
@@ -93,15 +127,15 @@ struct MastodonLoginView: View {
             Text("Mastodon Instance")
         }
     }
-    
+
     private var neodbInstanceInput: some View {
         Section {
             HStack {
                 Text(accountsManager.currentAccount.instance)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Button("Change") {
                     withAnimation {
                         viewModel.showInstanceInput = true
@@ -112,7 +146,7 @@ struct MastodonLoginView: View {
             Text("NeoDB Instance")
         }
     }
-    
+
     // MARK: - Bottom Section Views
     private var mastodonInstanceDetail: some View {
         Group {
@@ -124,7 +158,7 @@ struct MastodonLoginView: View {
             }
         }
     }
-    
+
     private var neodbInstanceActions: some View {
         Section {
             Button(role: .cancel) {
@@ -132,14 +166,20 @@ struct MastodonLoginView: View {
                     viewModel.currentStep = 1
                 }
             } label: {
-                Text("Back to Mastodon Instance")
-                    .foregroundStyle(.secondary)
+                Label(
+                    "Change Mastodon Instance", systemSymbol: .chevronLeft
+                )
+                .labelStyle(.titleAndIcon)
+                .padding(.vertical, 4)
+                .foregroundColor(.secondary)
             }
         }
     }
-    
+
     // MARK: - Instance Detail Components
-    private func instanceDetailSection(_ instance: MastodonInstance) -> some View {
+    private func instanceDetailSection(_ instance: MastodonInstance)
+        -> some View
+    {
         Section {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .bottom, spacing: 4) {
@@ -152,7 +192,7 @@ struct MastodonLoginView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            
+
             HStack {
                 Text("Users")
                 Spacer()
@@ -160,7 +200,7 @@ struct MastodonLoginView: View {
             }
             .foregroundStyle(.secondary)
             .font(.subheadline)
-            
+
             HStack {
                 Text("Posts")
                 Spacer()
@@ -168,7 +208,7 @@ struct MastodonLoginView: View {
             }
             .foregroundStyle(.secondary)
             .font(.subheadline)
-            
+
             HStack {
                 Text("Links")
                 Spacer()
@@ -180,29 +220,36 @@ struct MastodonLoginView: View {
             Text("Instance Details")
         }
     }
-    
-    private func instanceRulesSection(_ instance: MastodonInstance) -> some View {
+
+    private func instanceRulesSection(_ instance: MastodonInstance) -> some View
+    {
         Group {
             if let rules = instance.rules, !rules.isEmpty {
                 Section {
-                    ForEach(Array(rules.enumerated()), id: \.element.id) { index, rule in
+                    ForEach(Array(rules.enumerated()), id: \.element.id) {
+                        index, rule in
                         HStack(alignment: .top, spacing: 6) {
-                            Image(systemName: index <= 50 ? "\(index + 1).circle" : "info.circle")
-                                .padding(.top, 4)
-                                .foregroundStyle(.accent)
+                            Image(
+                                systemName: index <= 50
+                                    ? "\(index + 1).circle" : "info.circle"
+                            )
+                            .padding(.top, 4)
+                            .foregroundStyle(.accent)
                             Text(rule.text)
                                 .font(.subheadline)
                                 .padding(.vertical, 4)
                         }
                     }
-                    .listRowInsets(EdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 20))
+                    .listRowInsets(
+                        EdgeInsets(
+                            top: 11, leading: 11, bottom: 11, trailing: 20))
                 } header: {
                     Text("Instance Rules")
                 }
             }
         }
     }
-    
+
     private var popularInstancesSection: some View {
         Section {
             ForEach(viewModel.filteredInstances) { instance in
@@ -251,10 +298,18 @@ struct MastodonLoginView: View {
                         .tint(.white)
                 } else if viewModel.isInstanceUnavailable {
                     Text("Unavailable")
-                        .fontWeight(.semibold)
                 } else {
-                    Text(viewModel.currentStep == 1 ? "Continue" : "Sign In")
-                        .fontWeight(.semibold)
+                    if #available(iOS 17.0, *), viewModel.currentStep == 2 {
+                        Image(systemSymbol: .personBubble)
+                    }
+                    Text(
+                        viewModel.currentStep == 1
+                            ? "Continue"
+                            : "Sign In with \(viewModel.mastodonInstance)"
+                    )
+                    if viewModel.currentStep == 1 {
+                        Image(systemSymbol: .arrowRight)
+                    }
                 }
             }
             .frame(maxWidth: .infinity)
