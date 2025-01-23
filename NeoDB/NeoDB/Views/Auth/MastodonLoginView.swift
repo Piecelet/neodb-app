@@ -216,35 +216,36 @@ struct MastodonLoginView: View {
     }
 
     private var neodbInstanceStep: some View {
-        Section {
-            HStack {
-                Text(accountsManager.currentAccount.instance)
-                    .foregroundColor(.secondary)
+        Group {
+            Section {
+                HStack {
+                    Text(accountsManager.currentAccount.instance)
+                        .foregroundColor(.secondary)
 
-                Spacer()
+                    Spacer()
 
-                Button("Change") {
-                    withAnimation {
-                        viewModel.showInstanceInput = true
+                    Button("Change") {
+                        withAnimation {
+                            viewModel.showInstanceInput = true
+                        }
                     }
                 }
             }
-
-            actionButton
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
-                .padding(.vertical, 8)
-
-            Button(role: .cancel) {
-                withAnimation {
-                    viewModel.currentStep = 1
-                }
-            } label: {
-                Text("Back to Mastodon Instance")
-                    .foregroundStyle(.secondary)
+            Section {
+                actionButton
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
-        } header: {
-            Text("Choose your NeoDB instance to continue")
+            Section {
+                Button(role: .cancel) {
+                    withAnimation {
+                        viewModel.currentStep = 1
+                    }
+                } label: {
+                    Text("Back to Mastodon Instance")
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
     }
 
