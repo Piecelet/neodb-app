@@ -25,6 +25,7 @@ enum EndpointType {
     case oauth
     case api
     case apiV1
+    case apiV2
     case raw
 }
 

@@ -22,6 +22,10 @@ class MastodonLoginViewModel: ObservableObject {
     @Published var currentStep = 1
     @Published var neodbInstance = ""
     @Published var mastodonInstance = ""
+    @Published var instances: [InstanceSocial] = []
+    
+    private let instanceSocialClient = InstanceSocialClient()
+    private var searchingTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager!
     
@@ -32,6 +36,29 @@ class MastodonLoginViewModel: ObservableObject {
         // Move to next step after instance is selected
         withAnimation {
             currentStep = 2
+        }
+    }
+    
+    func searchInstances() {
+        searchingTask?.cancel()
+        let instanceName = mastodonInstance
+        
+        searchingTask = Task {
+            try? await Task.sleep(for: .seconds(0.1))
+            guard !Task.isCancelled else { return }
+            
+            let instances = await instanceSocialClient.fetchInstances(keyword: instanceName)
+            await MainActor.run {
+                withAnimation {
+                    self.instances = instances
+                }
+            }
+        }
+    }
+    
+    func selectInstance(_ instance: InstanceSocial) {
+        withAnimation {
+            mastodonInstance = instance.name
         }
     }
     

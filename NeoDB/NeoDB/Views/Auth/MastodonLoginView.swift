@@ -104,8 +104,46 @@ struct MastodonLoginView: View {
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
                     .autocorrectionDisabled()
+                    .onChange(of: viewModel.mastodonInstance) { _ in
+                        viewModel.searchInstances()
+                    }
             }
             .padding(.top)
+            
+            // Instance List
+            if !viewModel.instances.isEmpty {
+                ScrollView {
+                    LazyVStack(spacing: 10) {
+                        ForEach(viewModel.instances) { instance in
+                            Button {
+                                viewModel.selectInstance(instance)
+                            } label: {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack {
+                                        Text(instance.name)
+                                            .font(.headline)
+                                            .foregroundColor(.primary)
+                                        Spacer()
+                                        Text("\(instance.users) users")
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if let description = instance.info?.shortDescription {
+                                        Text(description)
+                                            .font(.subheadline)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(2)
+                                    }
+                                }
+                                .padding()
+                                .background(Color(.systemGray6))
+                                .cornerRadius(10)
+                            }
+                        }
+                    }
+                    .padding(.top)
+                }
+                .frame(maxHeight: 300)
+            }
         }
         .padding(.horizontal)
     }
