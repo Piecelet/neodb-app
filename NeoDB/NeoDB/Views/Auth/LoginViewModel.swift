@@ -15,6 +15,7 @@ class LoginViewModel: ObservableObject {
 
     @Published var errorMessage: String?
     @Published var showError = false
+    @Published var isAuthenticating = false
     @Published var showInstanceInput = false
     @Published var authUrl: URL?
 
@@ -22,25 +23,30 @@ class LoginViewModel: ObservableObject {
 
     func authenticate() async {
         do {
-            authUrl = try await accountsManager.authenticate(
-                instance: accountsManager.currentAccount.instance)
-        } catch AccountError.invalidURL {
-            errorMessage = "Invalid instance URL"
-            showError = true
-            accountsManager.isAuthenticating = false
-        } catch AccountError.registrationFailed(let message) {
-            errorMessage = "Registration failed: \(message)"
-            showError = true
-            accountsManager.isAuthenticating = false
+            isAuthenticating = true
+            accountsManager.isAuthenticating = true
+            
+            let url = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
+            self.authUrl = url
+            
         } catch {
             errorMessage = error.localizedDescription
             showError = true
+            isAuthenticating = false
             accountsManager.isAuthenticating = false
         }
     }
 
     func handleCallback(url: URL) async throws {
-        try await accountsManager.handleCallback(url: url)
+        do {
+            try await accountsManager.handleCallback(url: url)
+            isAuthenticating = false
+            accountsManager.isAuthenticating = false
+        } catch {
+            isAuthenticating = false
+            accountsManager.isAuthenticating = false
+            throw error
+        }
     }
 
     func updateInstance(_ newInstance: String) {

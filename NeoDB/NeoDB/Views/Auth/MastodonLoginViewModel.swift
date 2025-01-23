@@ -168,6 +168,8 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
             if let accountsManager = accountsManager {
                 isMastodonAuthorized = false
                 isAuthenticating = true
+                accountsManager.isAuthenticating = true
+                
                 // 1. Get login page and extract CSRF token
                 let client = NetworkClient(
                     instance: accountsManager.currentAccount.instance)
@@ -244,13 +246,22 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
             errorMessage = error.localizedDescription
             showError = true
             isAuthenticating = false
+            accountsManager?.isAuthenticating = false
             isWebViewPresented = false
         }
     }
 
     func handleCallback(url: URL) async throws {
-        if let accountsManager = accountsManager {
-            try await accountsManager.handleCallback(url: url)
+        do {
+            if let accountsManager = accountsManager {
+                try await accountsManager.handleCallback(url: url)
+                isAuthenticating = false
+                accountsManager.isAuthenticating = false
+            }
+        } catch {
+            isAuthenticating = false
+            accountsManager?.isAuthenticating = false
+            throw error
         }
     }
 

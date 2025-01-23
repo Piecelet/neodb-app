@@ -8,10 +8,12 @@
 import AuthenticationServices
 import BetterSafariView
 import SwiftUI
+import WebView
 
 struct LoginView: View {
-    @EnvironmentObject var accountsManager: AppAccountsManager
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
+    @StateObject private var webViewStore = WebViewStore()
     
     // Animation states
     @State private var logoScale = 0.5
@@ -145,6 +147,24 @@ struct LoginView: View {
                 }
                 .presentationDetents([.medium, .large])
             }
+            .sheet(isPresented: $viewModel.isAuthenticating) {
+                NavigationView {
+                    WebView(webView: webViewStore.webView)
+                        .navigationBarTitle("Sign In", displayMode: .inline)
+                        .navigationBarItems(leading: Button("Cancel") {
+                            viewModel.isAuthenticating = false
+                            viewModel.accountsManager.isAuthenticating = false
+                            webViewStore.webView.stopLoading()
+                        })
+                }
+                .onAppear {
+                    webViewStore.webView.navigationDelegate = viewModel
+                    if let url = viewModel.authUrl {
+                        webViewStore.webView.load(URLRequest(url: url))
+                    }
+                }
+                .interactiveDismissDisabled()
+            }
             .task {
                 viewModel.accountsManager = accountsManager
                 
@@ -156,21 +176,6 @@ struct LoginView: View {
                 withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
                     contentOpacity = 1.0
                     titleOffset = 0
-                }
-            }
-            .webAuthenticationSession(isPresented: $accountsManager.isAuthenticating) {
-                WebAuthenticationSession(
-                    url: viewModel.authUrl!,
-                    callbackURLScheme: AppConfig.OAuth.redirectUri
-                        .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
-                        ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: "")
-                ) { callbackURL, error in
-                    if let url = callbackURL {
-                        Task {
-                            try? await viewModel.handleCallback(url: url)
-                        }
-                    }
-                    accountsManager.isAuthenticating = false
                 }
             }
         }
