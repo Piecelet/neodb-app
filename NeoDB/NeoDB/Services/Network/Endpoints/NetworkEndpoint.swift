@@ -21,7 +21,15 @@ enum ContentType {
     }
 }
 
+enum EndpointType {
+    case oauth
+    case api
+    case apiV1
+    case raw
+}
+
 protocol NetworkEndpoint {
+    var type: EndpointType { get }
     var path: String { get }
     var method: HTTPMethod { get }
     var queryItems: [URLQueryItem]? { get }
@@ -31,6 +39,10 @@ protocol NetworkEndpoint {
 }
 
 extension NetworkEndpoint {
+    var type: EndpointType {
+        return .api
+    }
+
     var method: HTTPMethod {
         return .get
     }

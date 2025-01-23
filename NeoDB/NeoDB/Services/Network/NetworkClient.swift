@@ -50,8 +50,14 @@ class NetworkClient {
 
         // Handle path construction
         var path = endpoint.path
-        if !path.hasPrefix("/oauth") && !path.hasPrefix("/api") {
+        if endpoint.type == .apiV1 {
+            path = "/api/v1" + path
+        }
+        if endpoint.type == .api {
             path = "/api" + path
+        }
+        if endpoint.type == .oauth {
+            path = "/oauth" + path
         }
         components.path = path
         
