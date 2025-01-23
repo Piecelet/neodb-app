@@ -48,6 +48,13 @@ class NetworkClient {
         components.scheme = scheme
         components.host = instance
 
+        switch endpoint.host {
+        case .currentInstance:
+            components.host = instance
+        case .custom(let host):
+            components.host = host
+        }
+
         // Handle path construction
         var path = endpoint.path
         switch endpoint.type {

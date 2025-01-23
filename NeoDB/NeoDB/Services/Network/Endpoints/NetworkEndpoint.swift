@@ -21,6 +21,11 @@ enum ContentType {
     }
 }
 
+enum HostType {
+    case currentInstance
+    case custom(String)
+}
+
 enum EndpointType {
     case oauth
     case api
@@ -40,6 +45,10 @@ protocol NetworkEndpoint {
 }
 
 extension NetworkEndpoint {
+    var host: HostType {
+        return .currentInstance
+    }
+
     var type: EndpointType {
         return .api
     }

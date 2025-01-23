@@ -8,13 +8,26 @@
 import Foundation
 
 enum InstanceEndpoint {
-    case instance
+    case instance(instance: String? = nil)
     case peers
 }
 
 extension InstanceEndpoint: NetworkEndpoint {
+    var host: HostType {
+        switch self {
+        case .instance(let instance):
+            if let instance = instance {
+                return .custom(instance)
+            } else {
+                return .currentInstance
+            }
+        case .peers:
+            return .currentInstance
+        }
+    }
+
     var type: EndpointType {
-        .apiV2
+        .apiV1
     }
     
     var path: String {

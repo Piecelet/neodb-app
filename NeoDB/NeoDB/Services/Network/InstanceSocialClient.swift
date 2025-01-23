@@ -10,7 +10,7 @@ import OSLog
 
 @MainActor
 class InstanceSocialClient {
-    private let logger = Logger.network
+    private let logger = Logger.client.instanceSocial
     private let authorization = "Bearer \(AppConfig.InstanceSocial.token)"
     private let listEndpoint =
         "https://instances.social/api/1.0/instances/list?count=1000&include_closed=false&include_dead=false&min_active_users=500"

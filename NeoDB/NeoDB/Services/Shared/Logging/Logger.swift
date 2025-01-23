@@ -13,12 +13,13 @@ extension Logger {
     // MARK: - Networking
     /// Logs related to network requests and responses
     static let network = Logger(subsystem: subsystem, category: "network")
-    static let networkStream = Logger(subsystem: subsystem, category: "network.stream")
+    static let networkStream = Logger(
+        subsystem: subsystem, category: "network.stream")
     static let networkRequest = Logger(
         subsystem: subsystem, category: "network.request")
     static let networkResponse = Logger(
         subsystem: subsystem, category: "network.response")
-        
+
     static let networkAuth = Logger(
         subsystem: subsystem, category: "network.auth")
     static let networkTimeline = Logger(
@@ -30,10 +31,17 @@ extension Logger {
     static let networkUser = Logger(
         subsystem: subsystem, category: "network.user")
 
+    enum client {
+        static let joinMastodon = Logger(
+            subsystem: subsystem, category: "network.joinMastodon")
+        static let instanceSocial = Logger(
+            subsystem: subsystem, category: "network.instanceSocial")
+    }
+
     // MARK: - Data
     /// Logs related to data persistence and caching
     static let data = Logger(subsystem: subsystem, category: "data")
-    
+
     // MARK: - Cache
     static let cache = Logger(subsystem: subsystem, category: "cache")
 
@@ -48,14 +56,17 @@ extension Logger {
     // MARK: - Navigation
     /// Logs related to navigation and routing
     static let router = Logger(subsystem: subsystem, category: "router")
-    
+
     // MARK: - Shared Services
-    
+
     enum services {
         enum url {
-            static let urlHandler = Logger(subsystem: subsystem, category: "services.url.urlHandler")
-            static let neodbURL = Logger(subsystem: subsystem, category: "services.url.neodbURL")
-            static let urlUtilities = Logger(subsystem: subsystem, category: "services.url.urlUtilities")
+            static let urlHandler = Logger(
+                subsystem: subsystem, category: "services.url.urlHandler")
+            static let neodbURL = Logger(
+                subsystem: subsystem, category: "services.url.neodbURL")
+            static let urlUtilities = Logger(
+                subsystem: subsystem, category: "services.url.urlUtilities")
         }
     }
 
@@ -66,17 +77,25 @@ extension Logger {
 
     enum views {
         static let login = Logger(subsystem: subsystem, category: "view.login")
-        static let profile = Logger(subsystem: subsystem, category: "view.profile")
-        static let settings = Logger(subsystem: subsystem, category: "view.settings")
-        static let library = Logger(subsystem: subsystem, category: "view.library")
+        static let profile = Logger(
+            subsystem: subsystem, category: "view.profile")
+        static let settings = Logger(
+            subsystem: subsystem, category: "view.settings")
+        static let library = Logger(
+            subsystem: subsystem, category: "view.library")
         static let item = Logger(subsystem: subsystem, category: "view.item")
-        static let itemActions = Logger(subsystem: subsystem, category: "view.itemActions")
+        static let itemActions = Logger(
+            subsystem: subsystem, category: "view.itemActions")
         static let mark = Logger(subsystem: subsystem, category: "view.mark")
-        static let search = Logger(subsystem: subsystem, category: "view.search")
-        static let timelines = Logger(subsystem: subsystem, category: "view.timelines")
+        static let search = Logger(
+            subsystem: subsystem, category: "view.search")
+        static let timelines = Logger(
+            subsystem: subsystem, category: "view.timelines")
         enum status {
-            static let status = Logger(subsystem: subsystem, category: "view.status")
-            static let item = Logger(subsystem: subsystem, category: "view.status.item")
+            static let status = Logger(
+                subsystem: subsystem, category: "view.status")
+            static let item = Logger(
+                subsystem: subsystem, category: "view.status.item")
         }
     }
 

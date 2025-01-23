@@ -55,6 +55,9 @@ struct MastodonLoginView: View {
                 inputScale = 1.0
                 contentOpacity = 1.0
             }
+            
+            // Load initial instances
+            await viewModel.loadInitialInstances()
         }
         .enableInjection()
     }
@@ -110,29 +113,71 @@ struct MastodonLoginView: View {
             }
             .padding(.top)
             
+            // Instance Detail
+            if let instance = viewModel.selectedMastodonInstance {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Title and Description
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(instance.title)
+                                .font(.headline)
+                            Text(instance.shortDescription)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        // Stats
+                        HStack(spacing: 16) {
+                            StatView(title: "Users", value: instance.stats.userCount)
+                            StatView(title: "Posts", value: instance.stats.statusCount)
+                            if let languages = instance.languages, !languages.isEmpty {
+                                Text(languages.joined(separator: ", "))
+                                    .font(.footnote)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        
+                        // Rules if available
+                        if let rules = instance.rules, !rules.isEmpty {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Server Rules")
+                                    .font(.headline)
+                                ForEach(rules) { rule in
+                                    Text("• \(rule.text)")
+                                        .font(.footnote)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                }
+                .frame(maxHeight: 300)
+            }
+            
             // Instance List
-            if !viewModel.instances.isEmpty {
+            if !viewModel.filteredInstances.isEmpty && viewModel.selectedMastodonInstance == nil {
                 ScrollView {
                     LazyVStack(spacing: 10) {
-                        ForEach(viewModel.instances) { instance in
+                        ForEach(viewModel.filteredInstances) { instance in
                             Button {
                                 viewModel.selectInstance(instance)
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
-                                        Text(instance.name)
+                                        Text(instance.domain)
                                             .font(.headline)
                                             .foregroundColor(.primary)
                                         Spacer()
-                                        Text("\(instance.users) users")
+                                        Text("\(instance.totalUsers) users")
                                             .foregroundStyle(.secondary)
                                     }
-                                    if let description = instance.info?.shortDescription {
-                                        Text(description)
-                                            .font(.subheadline)
-                                            .foregroundStyle(.secondary)
-                                            .lineLimit(2)
-                                    }
+                                    Text(instance.description)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.secondary)
+                                        .lineLimit(2)
                                 }
                                 .padding()
                                 .background(Color(.systemGray6))
@@ -146,6 +191,21 @@ struct MastodonLoginView: View {
             }
         }
         .padding(.horizontal)
+    }
+    
+    private struct StatView: View {
+        let title: String
+        let value: Int
+        
+        var body: some View {
+            VStack(spacing: 2) {
+                Text(title)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(value.formatted())
+                    .font(.subheadline.bold())
+            }
+        }
     }
     
     private var neodbInstanceStep: some View {
@@ -194,8 +254,10 @@ struct MastodonLoginView: View {
     private var actionButton: some View {
         Button(action: {
             if viewModel.currentStep == 1 {
-                withAnimation {
-                    viewModel.currentStep = 2
+                if viewModel.validateAndContinue() {
+                    withAnimation {
+                        viewModel.currentStep = 2
+                    }
                 }
             } else {
                 Task {
