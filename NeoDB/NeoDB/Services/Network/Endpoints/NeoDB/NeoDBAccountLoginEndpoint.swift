@@ -32,7 +32,7 @@ extension NeoDBAccountLoginEndpoint: NetworkEndpoint {
             return [
                 "Origin": referer.host ?? "",
                 "Referer": referer.absoluteString,
-//                "Cookie": cookie,
+                "Cookie": cookie,
 //                "User-Agent": AppConfig.OAuth.userAgent,
             ]
         default:

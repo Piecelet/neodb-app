@@ -166,6 +166,7 @@ struct LoginView: View {
                 ) { callbackURL, error in
                     if let url = callbackURL {
                         Task {
+                            viewModel.isAuthenticating = true
                             try? await viewModel.handleCallback(url: url)
                         }
                     }

@@ -132,14 +132,6 @@ struct ItemCoverImage: View {
                 Rectangle()
                     .fill(Color.gray.opacity(0.2))
             }
-            .onFailure { _ in
-                Rectangle()
-                    .fill(Color.gray.opacity(0.2))
-                    .overlay {
-                        Image(systemName: "photo")
-                            .foregroundStyle(.secondary)
-                    }
-            }
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(height: 128)

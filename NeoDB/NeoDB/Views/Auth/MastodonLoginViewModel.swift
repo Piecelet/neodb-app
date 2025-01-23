@@ -20,8 +20,6 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
     @Published var isLoading = false
 
     // Two-step states
-    @Published var currentStep = 1
-    @Published var neodbInstance = ""
     @Published var mastodonInstance = "" {
         didSet {
             if oldValue != mastodonInstance {
@@ -75,9 +73,6 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
         let account = AppAccount(instance: newInstance, oauthToken: nil)
         accountsManager.add(account: account)
         showInstanceInput = false
-        withAnimation {
-            currentStep = 2
-        }
     }
 
     // Load initial instances list
@@ -123,9 +118,6 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
                         withAnimation {
                             self.selectedMastodonInstance = instance
                             self.isInstanceUnavailable = false
-                            if isInstanceChoosenBySelect {
-                                self.currentStep = 2
-                            }
                         }
                     }
                 } catch {
@@ -271,14 +263,14 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
 
     func validateAndContinue() -> Bool {
         guard !mastodonInstance.isEmpty else { return false }
-
+        
         // Only validate instance support when trying to continue
         if selectedMastodonInstance == nil {
             errorMessage = "This instance is not supported"
             showError = true
             return false
         }
-
+        
         return true
     }
 }

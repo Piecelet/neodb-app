@@ -9,172 +9,112 @@ import SwiftUI
 import WebView
 
 struct MastodonLoginView: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var accountsManager: AppAccountsManager
-
     @StateObject private var viewModel = MastodonLoginViewModel()
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var webViewStore = WebViewStore()
-
-    // Animation states
-    @State private var inputScale = 0.9
-    @State private var contentOpacity = 0.0
-
+    
     var body: some View {
-        VStack(spacing: 0) {
-            Form {
-                logoView
-
-                // Top Section
-                if viewModel.currentStep == 1 {
-                    mastodonInstanceInput
-                } else {
-                    neodbInstanceInput
-                }
-
-                // Middle Section (Action Button)
-                Section {
-                    actionButton
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                }
-
-                // Bottom Section
-                if viewModel.currentStep == 1 {
-                    mastodonInstanceDetail
-                } else {
-                    neodbInstanceActions
-                }
-            }
-            .scrollContentBackground(.hidden)
-        }
-        .background(Color(.systemGroupedBackground))
-        .navigationTitle(
-            viewModel.currentStep == 2
-                ? "Choose NeoDB Instance" : "Sign In with Mastodon"
-        )
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button("Back", systemSymbol: .chevronLeft) {
-                    dismiss()
-                }
-                .labelStyle(.iconOnly)
-            }
-            ToolbarItem(placement: .principal) {
-                Text(
-                    viewModel.currentStep == 2
-                        ? "Choose NeoDB Instance" : "Sign In with Mastodon"
-                )
-                .font(.headline)
-            }
-        }
-        .sheet(isPresented: $viewModel.showInstanceInput) {
-            InstanceInputView(
-                selectedInstance: accountsManager.currentAccount.instance
-            ) { newInstance in
-                viewModel.updateNeoDBInstance(newInstance)
-            }
-            .presentationDetents([.medium, .large])
-        }
-        .alert("Error", isPresented: $viewModel.showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(viewModel.errorMessage ?? "An unknown error occurred")
-        }
-        .task {
-            viewModel.accountsManager = accountsManager
-            await viewModel.loadInitialInstances()
-        }
-        .sheet(isPresented: $viewModel.isWebViewPresented) {
-            NavigationView {
-                ZStack(alignment: .top) {
-                    WebView(webView: webViewStore.webView)
-                    
-                    if webViewStore.isLoading {
-                        ProgressView()
-                            .progressViewStyle(.linear)
-                            .tint(.accentColor)
+        NavigationStack {
+            // Step 1: Choose Mastodon Instance
+            MastodonInstanceView(viewModel: viewModel)
+                .navigationTitle("Sign In with Mastodon")
+                .navigationBarTitleDisplayMode(.inline)
+                .sheet(isPresented: $viewModel.isWebViewPresented) {
+                    NavigationView {
+                        ZStack(alignment: .top) {
+                            WebView(webView: webViewStore.webView)
+                            
+                            if webViewStore.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(.linear)
+                                    .tint(.accentColor)
+                            }
+                        }
+                        .navigationBarTitle("Sign In", displayMode: .inline)
+                        .navigationBarItems(leading: Button("Cancel") {
+                            viewModel.isWebViewPresented = false
+                            viewModel.isAuthenticating = false
+                            webViewStore.webView.stopLoading()
+                        })
                     }
+                    .onAppear {
+                        webViewStore.webView.navigationDelegate = viewModel
+                        if let request = viewModel.webViewRequest {
+                            webViewStore.webView.load(request)
+                        }
+                    }
+                    .interactiveDismissDisabled()
                 }
-                .navigationBarTitle("Sign In", displayMode: .inline)
-                .navigationBarItems(leading: Button("Cancel") {
-                    viewModel.isWebViewPresented = false
-                    viewModel.isAuthenticating = false
-                    webViewStore.webView.stopLoading()
-                })
-            }
-            .onAppear {
-                webViewStore.webView.navigationDelegate = viewModel
-                if let request = viewModel.webViewRequest {
-                    webViewStore.webView.load(request)
+                .task {
+                    viewModel.accountsManager = accountsManager
+                    await viewModel.loadInitialInstances()
                 }
-            }
-            .interactiveDismissDisabled()
         }
         .enableInjection()
     }
+}
 
-    // MARK: - Logo
-    private var logoView: some View {
-        Section {
-            Group {
-                if viewModel.currentStep == 1 {
-                    Image("mastodon-logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 80)
-                } else {
-                    Image("neodb-logo")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 80)
-                }
+// MARK: - Mastodon Instance View
+struct MastodonInstanceView: View {
+    @ObservedObject var viewModel: MastodonLoginViewModel
+    
+    var body: some View {
+        Form {
+            Section {
+                Image("mastodon-logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 80)
+                    .frame(maxWidth: .infinity)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
-            .frame(maxWidth: .infinity)
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-        }
-    }
-
-    // MARK: - Top Section Views
-    private var mastodonInstanceInput: some View {
-        Section {
-            TextField("mastodon.social", text: $viewModel.mastodonInstance)
-                .textInputAutocapitalization(.never)
-                .keyboardType(.URL)
-                .textContentType(.URL)
-                .autocorrectionDisabled()
-                .onChange(of: viewModel.mastodonInstance) { _ in
-                    viewModel.searchInstances()
-                }
-        } header: {
-            Text("Mastodon Instance")
-        }
-    }
-
-    private var neodbInstanceInput: some View {
-        Section {
-            HStack {
-                Text(accountsManager.currentAccount.instance)
-                    .foregroundColor(.secondary)
-
-                Spacer()
-
-                Button("Change") {
-                    withAnimation {
-                        viewModel.showInstanceInput = true
+            
+            Section {
+                TextField("mastodon.social", text: $viewModel.mastodonInstance)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.URL)
+                    .textContentType(.URL)
+                    .autocorrectionDisabled()
+                    .onChange(of: viewModel.mastodonInstance) { _ in
+                        viewModel.searchInstances()
                     }
-                }
+            } header: {
+                Text("Mastodon Instance")
             }
-        } header: {
-            Text("NeoDB Instance")
-        }
-    }
-
-    // MARK: - Bottom Section Views
-    private var mastodonInstanceDetail: some View {
-        Group {
+            
+            Section {
+                NavigationLink {
+                    NeoDBInstanceView(viewModel: viewModel)
+                } label: {
+                    HStack {
+                        if viewModel.isLoading || viewModel.isAuthenticating {
+                            ProgressView()
+                                .tint(.white)
+                        } else if viewModel.isInstanceUnavailable {
+                            Text("Unavailable")
+                        } else {
+                            Text("Continue")
+                            Image(systemSymbol: .arrowRight)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                .disabled(
+                    viewModel.isLoading
+                        || viewModel.isAuthenticating
+                        || viewModel.isInstanceUnavailable
+                        || viewModel.mastodonInstance.isEmpty
+                        || viewModel.selectedMastodonInstance == nil
+                )
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
+            
             if let instance = viewModel.selectedMastodonInstance {
                 instanceDetailSection(instance)
                 instanceRulesSection(instance)
@@ -182,25 +122,20 @@ struct MastodonLoginView: View {
                 popularInstancesSection
             }
         }
-    }
-
-    private var neodbInstanceActions: some View {
-        Section {
-            Button(role: .cancel) {
-                withAnimation {
-                    viewModel.currentStep = 1
-                }
-            } label: {
-                Label(
-                    "Change Mastodon Instance", systemSymbol: .chevronLeft
-                )
-                .labelStyle(.titleAndIcon)
-                .padding(.vertical, 4)
-                .foregroundColor(.secondary)
-            }
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
+        .alert("Error", isPresented: $viewModel.showError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(viewModel.errorMessage ?? "An unknown error occurred")
         }
+        .enableInjection()
     }
 
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
+    
     // MARK: - Instance Detail Components
     private func instanceDetailSection(_ instance: MastodonInstance)
         -> some View
@@ -301,58 +236,86 @@ struct MastodonLoginView: View {
             Text("Popular Instances")
         }
     }
+}
 
-    private var actionButton: some View {
-        Button(action: {
-            if viewModel.currentStep == 1 {
-                if viewModel.validateAndContinue() {
-                    withAnimation {
-                        viewModel.currentStep = 2
-                    }
-                }
-            } else {
-                Task {
-                    await viewModel.authenticate()
-                }
+// MARK: - NeoDB Instance View
+struct NeoDBInstanceView: View {
+    @ObservedObject var viewModel: MastodonLoginViewModel
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    
+    var body: some View {
+        Form {
+            Section {
+                Image("neodb-logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 80)
+                    .frame(maxWidth: .infinity)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
-        }) {
-            HStack {
-                if viewModel.isLoading || viewModel.isAuthenticating {
-                    ProgressView()
-                        .tint(.white)
-                } else if viewModel.isInstanceUnavailable {
-                    Text("Unavailable")
-                } else {
-                    if #available(iOS 17.0, *), viewModel.currentStep == 2 {
-                        Image(systemSymbol: .personBubble)
-                    }
-                    Text(
-                        viewModel.currentStep == 1
-                            ? "Continue"
-                            : "Sign In with \(viewModel.mastodonInstance)"
-                    )
-                    if viewModel.currentStep == 1 {
-                        Image(systemSymbol: .arrowRight)
+            
+            Section {
+                HStack {
+                    Text(accountsManager.currentAccount.instance)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Button("Change") {
+                        withAnimation {
+                            viewModel.showInstanceInput = true
+                        }
                     }
                 }
+            } header: {
+                Text("NeoDB Instance")
             }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.accentColor)
-            .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            
+            Section {
+                Button(action: {
+                    Task {
+                        await viewModel.authenticate()
+                    }
+                }) {
+                    HStack {
+                        if viewModel.isLoading || viewModel.isAuthenticating {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            if #available(iOS 17.0, *) {
+                                Image(systemSymbol: .personCircle)
+                            }
+                            Text("Sign In with \(viewModel.mastodonInstance)")
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.accentColor)
+                    .foregroundColor(.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                .disabled(viewModel.isLoading || viewModel.isAuthenticating)
+                .listRowInsets(EdgeInsets())
+                .listRowBackground(Color.clear)
+            }
         }
-        .disabled(
-            viewModel.isLoading
-                || viewModel.isAuthenticating
-                || viewModel.isInstanceUnavailable
-                || (viewModel.currentStep == 1
-                    && (viewModel.mastodonInstance.isEmpty
-                        || viewModel.selectedMastodonInstance == nil))
-        )
+        .scrollContentBackground(.hidden)
+        .background(Color(.systemGroupedBackground))
+        .navigationTitle("Choose NeoDB Instance")
+        .navigationBarTitleDisplayMode(.inline)
+        .sheet(isPresented: $viewModel.showInstanceInput) {
+            InstanceInputView(
+                selectedInstance: accountsManager.currentAccount.instance
+            ) { newInstance in
+                viewModel.updateNeoDBInstance(newInstance)
+            }
+            .presentationDetents([.medium, .large])
+        }
+        .enableInjection()
     }
 
     #if DEBUG
-        @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
     #endif
 }
