@@ -8,9 +8,10 @@
 import SwiftUI
 import OSLog
 import AuthenticationServices
+import WebKit
 
 @MainActor
-class MastodonLoginViewModel: ObservableObject {
+class MastodonLoginViewModel: NSObject, ObservableObject {
     private let logger = Logger.views.login
     
     @Published var errorMessage: String?
@@ -140,8 +141,16 @@ class MastodonLoginViewModel: ObservableObject {
     
     func authenticate() async {
         do {
-            authUrl = try await accountsManager.authenticate(
+            let url = try await accountsManager.authenticate(
                 instance: accountsManager.currentAccount.instance)
+            
+            // Configure WebView for OAuth callback
+            let webView = WKWebView()
+            webView.navigationDelegate = self
+            
+            // Store the auth URL
+            authUrl = url
+            
         } catch AccountError.invalidURL {
             errorMessage = "Invalid instance URL"
             showError = true
@@ -172,5 +181,28 @@ class MastodonLoginViewModel: ObservableObject {
         }
         
         return true
+    }
+}
+
+// MARK: - WKNavigationDelegate
+extension MastodonLoginViewModel: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction) async -> WKNavigationActionPolicy {
+        guard let url = navigationAction.request.url,
+              url.absoluteString.starts(with: AppConfig.OAuth.redirectUri) else {
+            return .allow
+        }
+        
+        // Handle OAuth callback
+        Task { @MainActor in
+            do {
+                try await handleCallback(url: url)
+                isAuthenticating = false
+            } catch {
+                errorMessage = error.localizedDescription
+                showError = true
+            }
+        }
+        
+        return .cancel
     }
 }

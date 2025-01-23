@@ -73,6 +73,15 @@
       }
     },
     {
+      "identity" : "swiftui-webview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kylehickinson/SwiftUI-WebView",
+      "state" : {
+        "revision" : "8abc88c7c5c98da391a60a401110ddf59a7b961a",
+        "version" : "0.3.1"
+      }
+    },
+    {
       "identity" : "whatsnewkit",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/SvenTiigi/WhatsNewKit",

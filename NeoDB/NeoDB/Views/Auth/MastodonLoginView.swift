@@ -6,14 +6,15 @@
 //
 
 import AuthenticationServices
-import BetterSafariView
 import SwiftUI
+import WebView
 
 struct MastodonLoginView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
     @StateObject private var viewModel = MastodonLoginViewModel()
+    @StateObject private var webViewStore = WebViewStore()
 
     // Animation states
     @State private var inputScale = 0.9
@@ -86,19 +87,18 @@ struct MastodonLoginView: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadInitialInstances()
         }
-        .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
-            WebAuthenticationSession(
-                url: viewModel.authUrl!,
-                callbackURLScheme: AppConfig.OAuth.redirectUri
-                    .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
-                    ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: "")
-            ) { callbackURL, error in
-                if let url = callbackURL {
-                    Task {
-                        try? await viewModel.handleCallback(url: url)
-                    }
+        .sheet(isPresented: $viewModel.isAuthenticating) {
+            NavigationView {
+                WebView(webView: webViewStore.webView)
+                    .navigationBarTitle("Sign In", displayMode: .inline)
+                    .navigationBarItems(leading: Button("Cancel") {
+                        viewModel.isAuthenticating = false
+                    })
+            }
+            .onAppear {
+                if let url = viewModel.authUrl {
+                    webViewStore.webView.load(URLRequest(url: url))
                 }
-                viewModel.isAuthenticating = false
             }
         }
         .enableInjection()
