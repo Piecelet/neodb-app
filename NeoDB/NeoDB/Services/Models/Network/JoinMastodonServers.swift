@@ -12,7 +12,7 @@ struct JoinMastodonServers: Decodable, Hashable, Identifiable, Sendable {
     let languages: [String]
     let region: Region
     let categories: [Category]
-    let proxiedThumbnail: String
+    let proxiedThumbnail: URL
     let blurhash: String?
     let totalUsers, lastWeekUsers: Int
     let approvalRequired: Bool
