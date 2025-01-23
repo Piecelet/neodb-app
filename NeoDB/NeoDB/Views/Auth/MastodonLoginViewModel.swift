@@ -22,7 +22,13 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
     // Two-step states
     @Published var currentStep = 1
     @Published var neodbInstance = ""
-    @Published var mastodonInstance = ""
+    @Published var mastodonInstance = "" {
+        didSet {
+            if oldValue != mastodonInstance {
+                isInstanceChoosenBySelect = false
+            }
+        }
+    }
     @Published var instances: [JoinMastodonServers] = []
     @Published var filteredInstances: [JoinMastodonServers] = []
     @Published var selectedMastodonInstance: MastodonInstance?
@@ -37,6 +43,7 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
 
     var accountsManager: AppAccountsManager?
 
+    private var isInstanceChoosenBySelect = false
     private var cookie: String?
     private var csrfToken: String?
     private var refererUrl: URL?
@@ -110,6 +117,9 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
                         withAnimation {
                             self.selectedMastodonInstance = instance
                             self.isInstanceUnavailable = false
+                            if isInstanceChoosenBySelect {
+                                self.currentStep = 2
+                            }
                         }
                     }
                 } catch {
@@ -149,6 +159,7 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
         withAnimation {
             mastodonInstance = instance.domain
             searchInstances()
+            isInstanceChoosenBySelect = true
         }
     }
 
