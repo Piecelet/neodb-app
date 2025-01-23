@@ -22,7 +22,7 @@ struct LoginView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Image("neodb-logo")
+                Image("piecelet-symbol")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 120, height: 120)
