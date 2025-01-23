@@ -15,51 +15,40 @@ class LoginViewModel: ObservableObject {
 
     @Published var errorMessage: String?
     @Published var showError = false
+    @Published var isAuthenticating = false {
+        didSet {
+            if oldValue != isAuthenticating {
+                accountsManager.isAuthenticating = isAuthenticating
+            }
+        }
+    }
     @Published var showInstanceInput = false
+    @Published var authUrl: URL?
 
     var accountsManager: AppAccountsManager!
 
-    func authenticate(using session: WebAuthenticationSession) async {
+    func authenticate() async {
         do {
-            let authUrl = try await accountsManager.authenticate(
+            authUrl = try await accountsManager.authenticate(
                 instance: accountsManager.currentAccount.instance)
-
-            do {
-                let url = try await session.authenticate(
-                    using: authUrl,
-                    callbackURLScheme: AppConfig.OAuth.redirectUri
-                        .addingPercentEncoding(
-                            withAllowedCharacters: .urlHostAllowed)
-                        ?? AppConfig.OAuth.redirectUri.replacingOccurrences(
-                            of: "://", with: ""),
-                    preferredBrowserSession: WebAuthenticationSession
-                        .BrowserSession.shared
-                )
-                logger.debug("Received callback URL: \(url.absoluteString)")
-                try await accountsManager.handleCallback(url: url)
-            } catch {
-                // Silently handle cancellation
-                accountsManager.isAuthenticating = false
-                return
-            }
-
+            isAuthenticating = true
         } catch AccountError.invalidURL {
             errorMessage = "Invalid instance URL"
             showError = true
-            accountsManager.isAuthenticating = false
+            isAuthenticating = false
         } catch AccountError.registrationFailed(let message) {
             errorMessage = "Registration failed: \(message)"
             showError = true
-            accountsManager.isAuthenticating = false
-        } catch AccountError.authenticationFailed(let message) {
-            errorMessage = "Authentication failed: \(message)"
-            showError = true
-            accountsManager.isAuthenticating = false
+            isAuthenticating = false
         } catch {
             errorMessage = error.localizedDescription
             showError = true
-            accountsManager.isAuthenticating = false
+            isAuthenticating = false
         }
+    }
+
+    func handleCallback(url: URL) async throws {
+        try await accountsManager.handleCallback(url: url)
     }
 
     func updateInstance(_ newInstance: String) {

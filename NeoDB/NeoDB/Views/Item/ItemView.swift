@@ -179,7 +179,7 @@ struct ItemView: View {
 
             ExpandableText(viewModel.description)
                 .font(.callout)
-                .foregroundStyle(.black.opacity(0.8))
+                .foregroundStyle(.secondary)
                 .lineLimit(4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -213,6 +213,7 @@ struct ItemView: View {
                 } else {
                     router.presentSheet(.addToShelf(item: item))
                 }
+                HapticFeedback.impact(.medium)
             }
         } label: {
             HStack {

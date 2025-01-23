@@ -12,10 +12,14 @@ enum AppsEndpoint {
 }
 
 extension AppsEndpoint: NetworkEndpoint {
+  var type: EndpointType {
+    return .apiV1
+  }
+
   var path: String {
     switch self {
     case .create:
-      return "/v1/apps"
+      return "/apps"
     }
   }
 
@@ -30,9 +34,10 @@ extension AppsEndpoint: NetworkEndpoint {
     switch self {
     case .create:
       return [
-        .init(name: "client_name", value: "NeoDB iOS App"),
-        .init(name: "redirect_uris", value: "neodb://oauth/callback"),
-        .init(name: "website", value: "https://github.com/lcandy2/neodb-app"),
+        .init(name: "client_name", value: AppConfig.PublicInfo.name),
+        .init(name: "redirect_uris", value: AppConfig.OAuth.redirectUri),
+        .init(name: "scopes", value: AppConfig.OAuth.scopes),
+        .init(name: "website", value: AppConfig.PublicInfo.website),
       ]
     }
   }

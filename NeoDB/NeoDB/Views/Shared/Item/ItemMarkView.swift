@@ -98,6 +98,7 @@ struct ItemMarkView: View {
             if showEditButton {
                 Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .pencil) {
                     router.presentSheet(.editShelfItem(mark: mark))
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
                 .accentColor(.gray)
                 .labelStyle(.iconOnly)

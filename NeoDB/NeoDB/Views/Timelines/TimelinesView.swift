@@ -9,19 +9,12 @@ import OSLog
 import SwiftUI
 
 enum TimelineType: String, CaseIterable {
+    case friends = "Friends"
     case home = "Home"
-    case local = "Local"
-    case federated = "Federated"
-}
-
-struct TimelineState {
-    var statuses: [MastodonStatus] = []
-    var isLoading = false
-    var isRefreshing = false
-    var error: String?
-    var detailedError: String?
-    var maxId: String?
-    var hasMore = true
+    case popular = "Popular"
+    case fediverse = "Fediverse"
+    
+    var displayName: String { rawValue }
 }
 
 @MainActor
@@ -35,9 +28,10 @@ class TimelinesViewModel: ObservableObject {
     @Published var selectedTimelineType: TimelineType = .home
     @Published private(set) var timelineStates: [TimelineType: TimelineState] =
         [
+            .friends: TimelineState(),
             .home: TimelineState(),
-            .local: TimelineState(),
-            .federated: TimelineState(),
+            .popular: TimelineState(),
+            .fediverse: TimelineState(),
         ]
 
     // MARK: - Public Properties
@@ -56,9 +50,10 @@ class TimelinesViewModel: ObservableObject {
 
     func initTimelineStates() {
         timelineStates = [
+            .friends: TimelineState(),
             .home: TimelineState(),
-            .local: TimelineState(),
-            .federated: TimelineState(),
+            .popular: TimelineState(),
+            .fediverse: TimelineState(),
         ]
     }
 
@@ -118,14 +113,16 @@ class TimelinesViewModel: ObservableObject {
                 let state = timelineStates[type] ?? TimelineState()
 
                 switch type {
-                case .home:
+                case .friends:
                     endpoint = .home(
-                        sinceId: nil, maxId: state.maxId, minId: nil)
-                case .local:
+                        sinceId: nil, maxId: state.maxId, minId: nil, limit: nil)
+                case .home:
                     endpoint = .pub(
                         sinceId: nil, maxId: state.maxId, minId: nil,
                         local: true, limit: nil)
-                case .federated:
+                case .popular:
+                    endpoint = .trending(maxId: state.maxId)
+                case .fediverse:
                     endpoint = .pub(
                         sinceId: nil, maxId: state.maxId, minId: nil,
                         local: false, limit: nil)
@@ -230,82 +227,77 @@ class TimelinesViewModel: ObservableObject {
 }
 
 struct TimelinesView: View {
-    @StateObject private var viewModel = TimelinesViewModel()
+    @StateObject private var actor = TimelineActor()
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @Environment(\.scenePhase) private var scenePhase
-    @AppStorage("selectedTimelineType") private var selectedTimelineType:
-        TimelineType = .home
-    {
-        didSet {
-            viewModel.selectedTimelineType = selectedTimelineType
-        }
-    }
-
+    @AppStorage("selectedTimelineType") private var selectedTimelineType: TimelineType = .home
+    
     var body: some View {
         VStack(spacing: 0) {
-            // Without this, the tab bar will be transparent without any blur
-            Text(" ").frame(width: 0.01, height: 0.01)
+            TopTabBarView(
+                items: TimelineType.allCases,
+                selection: $selectedTimelineType
+            ) { $0.displayName }
+            
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
-                    timelineContent(for: type)
+                    Group {
+                        timelineContent(for: type)
+                    }
                         .refreshable {
-                            await viewModel.loadTimeline(
-                                type: type, refresh: true)
+                            await actor.loadTimeline(type: type, refresh: true)
                         }
                         .tag(type)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
-            .ignoresSafeArea(edges: .bottom)
         }
         .navigationTitle("Timeline")
         .navigationBarTitleDisplayMode(.inline)
-        .safeAreaInset(edge: .top) {
-            TopTabBarView(
-                items: TimelineType.allCases,
-                selection: $selectedTimelineType
-            ) { $0.rawValue }
-        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Text("Timeline")
+                Text("Piecelet")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 3)
+                    .padding(.leading, 2)
             }
             ToolbarItem(placement: .principal) {
-                Text("Timeline")
+                Text("Piecelet")
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 3)
+                    .padding(.leading, 2)
                     .hidden()
             }
         }
         .task {
-            viewModel.accountsManager = accountsManager
-            viewModel.selectedTimelineType = selectedTimelineType
-            viewModel.loadAllTimelines()
+            actor.accountsManager = accountsManager
+            await actor.loadTimeline(type: selectedTimelineType)
+        }
+        .onChange(of: selectedTimelineType) { type in
+            Task {
+                await actor.loadTimeline(type: type)
+            }
         }
         .onDisappear {
-            viewModel.cleanup()
+            actor.cleanup()
         }
         .enableInjection()
     }
 
     #if DEBUG
-        @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
     #endif
-
+    
     @ViewBuilder
     private func timelineContent(for type: TimelineType) -> some View {
-        let state = viewModel.timelineStates[type] ?? TimelineState()
-
+        let state = actor.state(for: type)
+        
         if let error = state.error {
             EmptyStateView(
                 "Couldn't Load Timeline",
                 systemImage: "exclamationmark.triangle",
-                description: Text(state.detailedError ?? error)
+                description: Text(error)
             )
         } else if state.statuses.isEmpty {
             if state.isLoading || state.isRefreshing {
@@ -321,34 +313,29 @@ struct TimelinesView: View {
         } else {
             ScrollView {
                 LazyVStack(spacing: 0) {
-                    ForEach(
-                        Array(state.statuses.enumerated()), id: \.element.id
-                    ) { index, status in
+                    ForEach(Array(state.statuses.enumerated()), id: \.element.id) { index, status in
                         VStack(spacing: 0) {
                             Button {
                                 router.navigate(
                                     to: .statusDetailWithStatus(status: status))
                             } label: {
-                                StatusView(status: status)
+                                StatusView(status: status, mode: .timeline)
                                     .id(index)
                                     .task {
-                                        if index >= state.statuses.count - 3
-                                            && state.hasMore
-                                        {
-                                            await viewModel.loadTimeline(
-                                                type: type)
+                                        if index >= state.statuses.count - 3 && state.hasMore {
+                                            await actor.loadTimeline(type: type)
                                         }
                                     }
                             }
                             .buttonStyle(.plain)
-
+                            
                             if status.id != state.statuses.last?.id {
                                 Divider()
                                     .padding(.horizontal)
                             }
                         }
                     }
-
+                    
                     if state.isLoading && !state.isRefreshing {
                         ProgressView()
                             .frame(maxWidth: .infinity)
@@ -358,9 +345,9 @@ struct TimelinesView: View {
             }
         }
     }
-
+    
     private let skeletonCount = 5
-
+    
     private var timelineSkeletonContent: some View {
         ScrollView {
             LazyVStack(spacing: 12) {
@@ -371,7 +358,7 @@ struct TimelinesView: View {
             .padding()
         }
     }
-
+    
     private var statusSkeletonView: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Avatar and name
@@ -379,18 +366,18 @@ struct TimelinesView: View {
                 RoundedRectangle(cornerRadius: 20)
                     .fill(Color.gray.opacity(0.2))
                     .frame(width: 40, height: 40)
-
+                
                 VStack(alignment: .leading, spacing: 4) {
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.gray.opacity(0.2))
                         .frame(width: 120, height: 16)
-
+                    
                     RoundedRectangle(cornerRadius: 4)
                         .fill(Color.gray.opacity(0.2))
                         .frame(width: 80, height: 12)
                 }
             }
-
+            
             // Content placeholder
             VStack(alignment: .leading, spacing: 4) {
                 ForEach(0..<3, id: \.self) { _ in

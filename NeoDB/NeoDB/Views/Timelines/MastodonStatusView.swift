@@ -47,7 +47,7 @@ struct MastodonStatusView: View {
                 }
             }
         }
-        .navigationTitle("Status")
+        .navigationTitle("Post")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
@@ -55,64 +55,64 @@ struct MastodonStatusView: View {
                 await viewModel.loadStatus(id: id)
             }
         }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if let url = status?.url {
+                    ShareLink(item: URL(string: url)!)
+                        .foregroundStyle(.primary)
+                }
+            }
+        }
         .onDisappear {
             viewModel.cleanup()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func statusContent(_ status: MastodonStatus) -> some View {
         ScrollView {
             VStack(spacing: 0) {
                 // Status Content
-                StatusView(status: status)
-                
-                Divider()
-                
-                // Stats
-                HStack(spacing: 16) {
-                    statsButton(
-                        count: status.repliesCount,
-                        icon: "bubble.right",
-                        label: "Replies"
-                    )
-                    statsButton(
-                        count: status.reblogsCount,
-                        icon: "arrow.2.squarepath",
-                        label: "Reblogs"
-                    )
-                    statsButton(
-                        count: status.favouritesCount,
-                        icon: "star",
-                        label: "Favorites"
-                    )
-                }
-                .padding()
+                StatusView(status: status, mode: .detail)
                 
                 Divider()
                 
                 // Additional Info
-                VStack(alignment: .leading, spacing: 12) {
+                HStack(alignment: .bottom, spacing: 12) {
                     if let application = status.application {
                         infoRow(title: "Posted via", content: application.name)
+                        Spacer()
                     }
                     
                     infoRow(title: "Visibility", content: status.visibility.rawValue.capitalized)
                     
                     if let url = status.url {
-                        Link(destination: url) {
+                        Spacer()
+                        Link(destination: URL(string:url)!) {
                             HStack {
-                                Text("View Original")
+                                VStack(alignment: .trailing) {
+                                    Text("Open In Browser")
+                                        .font(.caption)
+                                    Text("View Comments")
+                                        .font(.subheadline)
+                                }
                                 Image(systemName: "arrow.up.right")
                             }
                         }
                     }
                 }
                 .padding()
+                .padding(.horizontal)
             }
         }
         .refreshable {
             await viewModel.loadStatus(id: id, refresh: true)
         }
+        .enableInjection()
     }
     
     private func statsButton(count: Int, icon: String, label: String) -> some View {

@@ -7,11 +7,11 @@
 
 import Foundation
 
-private let metadataArraySeparator = ", "
+private let metadataArraySeparator = " "
 private let metadataArraySeparatorHidden = " "
 
 // MARK: - Base Item Protocol
-protocol ItemProtocol: Codable, Hashable, Identifiable {
+protocol ItemProtocol: Codable, Equatable, Hashable, Identifiable {
     var id: String { get }
     var type: String { get }
     var uuid: String { get }

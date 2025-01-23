@@ -7,9 +7,18 @@
 
 import Foundation
 
-struct OauthToken: Codable {
+struct OauthToken: Codable, Hashable, Sendable {
     let accessToken: String
     let tokenType: String
     let scope: String
-    let createdAt: TimeInterval
+    let createdAt: Double
+
+    init(
+        accessToken: String, tokenType: String, scope: String, createdAt: Double
+    ) {
+        self.accessToken = accessToken
+        self.tokenType = tokenType
+        self.scope = scope
+        self.createdAt = createdAt
+    }
 }

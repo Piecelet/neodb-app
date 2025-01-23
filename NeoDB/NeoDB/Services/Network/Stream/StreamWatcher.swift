@@ -22,6 +22,7 @@ class StreamWatcher: ObservableObject {
         case local = "public:local"
         case home = "user"
         case federated = "public"
+        case trending = "trending"
     }
     
     @Published public var events: [any StreamEvent] = []

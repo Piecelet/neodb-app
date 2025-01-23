@@ -21,7 +21,26 @@ enum ContentType {
     }
 }
 
+enum HostType {
+    case currentInstance
+    case custom(String)
+}
+
+enum EndpointType {
+    case oauth
+    case api
+    case apiV1
+    case apiV2
+    case raw
+}
+
+enum ResponseType {
+    case json
+    case html
+}
+
 protocol NetworkEndpoint {
+    var type: EndpointType { get }
     var path: String { get }
     var method: HTTPMethod { get }
     var queryItems: [URLQueryItem]? { get }
@@ -31,6 +50,14 @@ protocol NetworkEndpoint {
 }
 
 extension NetworkEndpoint {
+    var host: HostType {
+        return .currentInstance
+    }
+
+    var type: EndpointType {
+        return .api
+    }
+
     var method: HTTPMethod {
         return .get
     }
@@ -62,5 +89,9 @@ extension NetworkEndpoint {
             return [.init(name: "min_id", value: mindId)]
         }
         return nil
+    }
+
+    var responseType: ResponseType {
+        return .json
     }
 }

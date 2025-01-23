@@ -57,6 +57,7 @@ struct StatusItemView: View {
                     
                     Button {
                         router.presentSheet(.addToShelf(item: viewModel.item.toItemSchema))
+                        HapticFeedback.impact(.medium)
                     } label: {
                         Image(systemSymbol: .plusSquareDashed)
                             .font(.system(size: 20, weight: .regular))

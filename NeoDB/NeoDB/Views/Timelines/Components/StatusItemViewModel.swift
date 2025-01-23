@@ -88,7 +88,8 @@ class StatusItemViewModel: ObservableObject {
                     if !Task.isCancelled {
                         logger.debug("Using cached item: \(item.uuid)")
                         item = cached
-                        // Don't return here, continue with network request
+                        isLoading = false
+                        return
                     }
                 }
             }
