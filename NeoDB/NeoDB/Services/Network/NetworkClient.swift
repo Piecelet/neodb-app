@@ -31,6 +31,7 @@ class NetworkClient {
     private let decoder: JSONDecoder = JSONDecoder()
     private let encoder: JSONEncoder = JSONEncoder()
     private let webSocketTask: URLSessionWebSocketTask?
+    private(set) var lastResponse: HTTPURLResponse?
 
     init(instance: String, oauthToken: OauthToken? = nil) {
         self.instance = instance
@@ -131,6 +132,8 @@ class NetworkClient {
                 throw NetworkError.invalidResponse
             }
 
+            lastResponse = httpResponse  // Store the response
+
             if httpResponse.statusCode == 401 {
                 logger.error("Unauthorized request")
                 throw NetworkError.unauthorized
@@ -142,6 +145,18 @@ class NetworkClient {
             }
 
             logger.debug("Attempting to decode response data")
+            if  T.self == HTMLPage.self {
+                logger.debug("Processing HTML response")
+                guard let htmlString = String(data: data, encoding: .utf8) else {
+                    logger.error("Failed to decode HTML string from data")
+                    throw NetworkError.decodingError(NSError(domain: "", code: -1))
+                }
+                logger.debug("Successfully decoded HTML string, length: \(htmlString.count)")
+                logger.debug("Creating HTMLPage instance")
+                return HTMLPage(stringValue: htmlString) as! T
+            }
+
+            logger.debug("Attempting to decode JSON response for type: \(String(describing: T.self))")
             do {
                 let result = try decoder.decode(type, from: data)
                 return result

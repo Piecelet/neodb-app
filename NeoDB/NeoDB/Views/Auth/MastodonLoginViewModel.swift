@@ -36,6 +36,10 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
     
     var accountsManager: AppAccountsManager!
     
+    private var cookie: String?
+    private var csrfToken: String?
+    private var refererUrl: URL?
+    
     var sanitizedInstanceName: String {
         var name = mastodonInstance
             .replacingOccurrences(of: "http://", with: "")
@@ -141,24 +145,47 @@ class MastodonLoginViewModel: NSObject, ObservableObject {
     
     func authenticate() async {
         do {
-            let url = try await accountsManager.authenticate(
-                instance: accountsManager.currentAccount.instance)
+            // 1. Get login page and extract CSRF token
+            let client = NetworkClient(instance: accountsManager.currentAccount.instance)
+            let loginPage = try await client.fetch(NeoDBAccountLoginEndpoint.login, type: HTMLPage.self)
             
-            // Configure WebView for OAuth callback
-            let webView = WKWebView()
-            webView.navigationDelegate = self
+            // 2-3. Store cookie and CSRF token
+            if let setCookie = client.lastResponse?.value(forHTTPHeaderField: "Set-Cookie") {
+                cookie = setCookie
+            }
+            csrfToken = loginPage.csrfmiddlewaretoken
             
-            // Store the auth URL
-            authUrl = url
+            // 4-5. Get authenticate URL and path
+            var authUrl = try await accountsManager.authenticate(instance: accountsManager.currentAccount.instance)
+            guard let components = URLComponents(url: authUrl, resolvingAgainstBaseURL: true),
+                  let authenticatePath = components.path.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
+                throw AccountError.invalidURL
+            }
             
-        } catch AccountError.invalidURL {
-            errorMessage = "Invalid instance URL"
-            showError = true
-            isAuthenticating = false
-        } catch AccountError.registrationFailed(let message) {
-            errorMessage = "Registration failed: \(message)"
-            showError = true
-            isAuthenticating = false
+            // 6. Compose referer URL
+            let refererUrlString = "https://\(accountsManager.currentAccount.instance)/account/login?next=\(authenticatePath)"
+            guard let refererUrl = URL(string: refererUrlString) else {
+                throw AccountError.invalidURL
+            }
+            self.refererUrl = refererUrl
+            
+            // 7. Request mastodon login
+            let mastodonLoginResponse = try await client.fetch(
+                NeoDBAccountLoginEndpoint.mastodon(
+                    referer: refererUrl,
+                    cookie: cookie ?? "",
+                    csrfmiddlewaretoken: csrfToken ?? "",
+                    instance: mastodonInstance
+                ),
+                type: HTMLPage.self
+            )
+            
+            // 8. Get redirect location and open in WebView
+            if let location = client.lastResponse?.value(forHTTPHeaderField: "Location") {
+                authUrl = URL(string: location)!
+                isAuthenticating = true
+            }
+            
         } catch {
             errorMessage = error.localizedDescription
             showError = true

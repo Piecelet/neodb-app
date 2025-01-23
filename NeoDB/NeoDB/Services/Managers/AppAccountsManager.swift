@@ -79,39 +79,35 @@ class AppAccountsManager: ObservableObject {
     
     // MARK: - Authentication
     
-    func authenticate(instance: String) async throws -> URL {
-        isAuthenticating = true
+    var authenticationUrl: URL? {
+        guard let client = oauthClient else { return nil }
         
-        do {
-            // Get app client (will register if needed)
-            let client = try await AppClient.get(for: instance)
-            oauthClient = client
-            
-            // Construct OAuth URL
-            var components = URLComponents()
-            components.scheme = "https"
-            components.host = instance
-            components.path = "/oauth/authorize"
-            components.queryItems = [
-                URLQueryItem(name: "client_id", value: client.clientId),
-                URLQueryItem(name: "redirect_uri", value: redirectUri),
-                URLQueryItem(name: "response_type", value: "code"),
-                URLQueryItem(name: "scope", value: "read write"),
-                URLQueryItem(name: "state", value: instance)
-            ]
-            
-            guard let url = components.url else {
-                throw AccountError.invalidURL
-            }
-            
-            logger.debug("Generated OAuth URL")
-            return url
-            
-        } catch {
-            isAuthenticating = false
-            logger.error("Authentication failed")
-            throw error
+        var components = URLComponents()
+        components.scheme = "https"
+        components.host = currentAccount.instance
+        components.path = "/oauth/authorize"
+        components.queryItems = [
+            URLQueryItem(name: "client_id", value: client.clientId),
+            URLQueryItem(name: "redirect_uri", value: redirectUri),
+            URLQueryItem(name: "response_type", value: "code"),
+            URLQueryItem(name: "scope", value: "read write"),
+            URLQueryItem(name: "state", value: currentAccount.instance)
+        ]
+        
+        return components.url
+    }
+    
+    func authenticate(instance: String) async throws -> URL {
+        // Get app client (will register if needed)
+        let client = try await AppClient.get(for: instance)
+        oauthClient = client
+        
+        guard let url = authenticationUrl else {
+            throw AccountError.invalidURL
         }
+        
+        logger.debug("Generated OAuth URL")
+        return url
     }
     
     func handleCallback(url: URL, ignoreAuthenticationDuration: Bool = false) async throws {

@@ -61,5 +61,10 @@ extension NeoDBAccountLoginEndpoint: NetworkEndpoint {
             return nil
         }
     }
+
+    var responseType: ResponseType {
+        return .html
+    }
 }
+
 

@@ -34,6 +34,11 @@ enum EndpointType {
     case raw
 }
 
+enum ResponseType {
+    case json
+    case html
+}
+
 protocol NetworkEndpoint {
     var type: EndpointType { get }
     var path: String { get }
@@ -84,5 +89,9 @@ extension NetworkEndpoint {
             return [.init(name: "min_id", value: mindId)]
         }
         return nil
+    }
+
+    var responseType: ResponseType {
+        return .json
     }
 }
