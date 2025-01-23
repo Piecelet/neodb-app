@@ -7,7 +7,6 @@
 
 import Kingfisher
 import SwiftUI
-import UIKit
 
 struct StatusItemView: View {
     @StateObject private var viewModel: StatusItemViewModel
@@ -58,7 +57,7 @@ struct StatusItemView: View {
                     
                     Button {
                         router.presentSheet(.addToShelf(item: viewModel.item.toItemSchema))
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                        HapticFeedback.impact(.medium)
                     } label: {
                         Image(systemSymbol: .plusSquareDashed)
                             .font(.system(size: 20, weight: .regular))

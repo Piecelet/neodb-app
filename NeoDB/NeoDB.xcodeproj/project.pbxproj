@@ -499,7 +499,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 12;
+				MACOSX_DEPLOYMENT_TARGET = 13;
 				MARKETING_VERSION = 0.10;
 				OTHER_LDFLAGS = (
 					"-Xlinker",
@@ -547,7 +547,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 16;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 12;
+				MACOSX_DEPLOYMENT_TARGET = 13;
 				MARKETING_VERSION = 0.10;
 				PRODUCT_BUNDLE_IDENTIFIER = app.neodb;
 				PRODUCT_NAME = "$(TARGET_NAME)";

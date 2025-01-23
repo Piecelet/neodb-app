@@ -213,7 +213,7 @@ struct ItemView: View {
                 } else {
                     router.presentSheet(.addToShelf(item: item))
                 }
-                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                HapticFeedback.impact(.medium)
             }
         } label: {
             HStack {

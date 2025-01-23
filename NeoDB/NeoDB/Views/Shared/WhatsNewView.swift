@@ -12,14 +12,15 @@ private let whatsNewTitle: WhatsNew.Title = .init(
     text: .init("What's New\nin " + AttributedString(
         "Piecelet",
         attributes: AttributeContainer([
-            .foregroundColor: UIColor(.accentColor)
+            .foregroundColor: Color.accentColor
         ])
     ))
 )
+
 private let whatsNewPrimaryAction: WhatsNew.PrimaryAction = .init(
     title: "Continue",
-    backgroundColor: .accentColor,
-    foregroundColor: .white,
+    backgroundColor: Color.accentColor,
+    foregroundColor: Color.white,
     hapticFeedback: .notification(.success)
 )
 

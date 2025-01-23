@@ -7,12 +7,10 @@
 
 import Foundation
 import OSLog
-import UIKit
 
 @MainActor
 class StatusViewModel: ObservableObject {
     private let logger = Logger.views.status.status
-    private let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
     
     var accountsManager: AppAccountsManager? {
         didSet {
@@ -42,7 +40,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
-        impactFeedback.impactOccurred()
+        HapticFeedback.impact(.medium)
         
         // Create new status with updated values
         let newReblogged = !(status.reblogged ?? false)
@@ -79,7 +77,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
-        impactFeedback.impactOccurred()
+        HapticFeedback.impact(.medium)
         
         // Create new status with updated values
         let newFavorited = !(status.favourited ?? false)
@@ -116,7 +114,7 @@ class StatusViewModel: ObservableObject {
         }
         
         isLoading = true
-        impactFeedback.impactOccurred()
+        HapticFeedback.impact(.medium)
         
         // Create new status with updated values
         let newBookmarked = !(status.bookmarked ?? false)
