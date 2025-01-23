@@ -126,7 +126,7 @@ struct MastodonLoginView: View {
             if let instance = viewModel.selectedMastodonInstance {
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
-                        HStack(alignment: .bottom,spacing: 4) {
+                        HStack(alignment: .bottom, spacing: 4) {
                             Text(instance.title)
                                 .font(.headline)
                             Text(viewModel.mastodonInstance)
@@ -136,7 +136,7 @@ struct MastodonLoginView: View {
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     HStack {
                         Text("Users")
                         Spacer()
@@ -144,7 +144,7 @@ struct MastodonLoginView: View {
                     }
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
-                    
+
                     HStack {
                         Text("Posts")
                         Spacer()
@@ -152,7 +152,7 @@ struct MastodonLoginView: View {
                     }
                     .foregroundStyle(.secondary)
                     .font(.subheadline)
-                    
+
                     HStack {
                         Text("Links")
                         Spacer()
@@ -164,24 +164,30 @@ struct MastodonLoginView: View {
                     Text("Instance Details")
                 }
 
-                Section {
-                    if let rules = instance.rules, !rules.isEmpty {
-                        ForEach(Array(rules.enumerated()), id: \.element.id) { index, rule in
+                if let rules = instance.rules, !rules.isEmpty {
+                    Section {
+                        ForEach(Array(rules.enumerated()), id: \.element.id) {
+                            index, rule in
                             HStack(alignment: .top, spacing: 6) {
-                                Image(systemName: index <= 50 ? "\(index + 1).circle" : "info.circle")
-                                    .padding(.top, 4)
-                                    .foregroundStyle(.accent)
+                                Image(
+                                    systemName: index <= 50
+                                        ? "\(index + 1).circle" : "info.circle"
+                                )
+                                .padding(.top, 4)
+                                .foregroundStyle(.accent)
                                 Text(rule.text)
                                     .font(.subheadline)
                                     .padding(.vertical, 4)
                             }
                         }
-                        .listRowInsets(EdgeInsets(top: 11, leading: 11, bottom: 11, trailing: 20))
-                        }
-                    
-                } header: {
-                    Text("Instance Rules")
+                        .listRowInsets(
+                            EdgeInsets(
+                                top: 11, leading: 11, bottom: 11, trailing: 20))
+                    } header: {
+                        Text("Instance Rules")
+                    }
                 }
+
             }
 
             // Instance List
@@ -289,6 +295,9 @@ struct MastodonLoginView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .tint(.white)
+                } else if viewModel.isInstanceUnavailable {
+                    Text("Unavailable")
+                        .fontWeight(.semibold)
                 } else {
                     Text(viewModel.currentStep == 1 ? "Continue" : "Sign In")
                         .fontWeight(.semibold)
@@ -302,8 +311,10 @@ struct MastodonLoginView: View {
         }
         .disabled(
             viewModel.isLoading
+                || viewModel.isInstanceUnavailable
                 || (viewModel.currentStep == 1
-                    && viewModel.mastodonInstance.isEmpty)
+                    && (viewModel.mastodonInstance.isEmpty
+                        || viewModel.selectedMastodonInstance == nil))
         )
     }
 

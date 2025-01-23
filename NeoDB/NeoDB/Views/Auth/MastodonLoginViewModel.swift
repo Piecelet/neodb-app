@@ -25,9 +25,11 @@ class MastodonLoginViewModel: ObservableObject {
     @Published var instances: [JoinMastodonServers] = []
     @Published var filteredInstances: [JoinMastodonServers] = []
     @Published var selectedMastodonInstance: MastodonInstance?
+    @Published var isInstanceUnavailable = false
     
     private let joinMastodonClient = JoinMastodonClient()
     private var instanceDetailTask: Task<Void, Never>?
+    private var instanceCheckTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager? {
         didSet {
@@ -78,18 +80,52 @@ class MastodonLoginViewModel: ObservableObject {
     }
     
     func searchInstances() {
-        instanceDetailTask?.cancel()
+        // Cancel any existing check
+        instanceCheckTask?.cancel()
         selectedMastodonInstance = nil
+        isInstanceUnavailable = false
         
         let keyword = mastodonInstance.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         
         // Check if it's a valid domain
         if sanitizedInstanceName.contains("."), !sanitizedInstanceName.hasSuffix(".") {
-            instanceDetailTask = Task {
-                try? await Task.sleep(for: .seconds(0.3))
-                guard !Task.isCancelled else { return }
-                await fetchInstanceDetail()
+            isLoading = true
+            
+            instanceCheckTask = Task { @MainActor in
+                do {
+                    // Wait briefly before checking
+                    try await Task.sleep(for: .seconds(0.3))
+                    guard !Task.isCancelled else { return }
+                    
+                    let client = NetworkClient(instance: sanitizedInstanceName)
+                    let instance = try await client.fetch(
+                        InstanceEndpoint.instance(instance: sanitizedInstanceName),
+                        type: MastodonInstance.self)
+                    
+                    if !Task.isCancelled {
+                        withAnimation {
+                            self.selectedMastodonInstance = instance
+                            self.isInstanceUnavailable = false
+                        }
+                    }
+                } catch {
+                    if !Task.isCancelled {
+                        // Wait before showing unavailable
+                        try? await Task.sleep(for: .seconds(3))
+                        if !Task.isCancelled {
+                            withAnimation {
+                                self.isInstanceUnavailable = true
+                            }
+                        }
+                    }
+                }
+                
+                if !Task.isCancelled {
+                    isLoading = false
+                }
             }
+        } else {
+            isLoading = false
         }
         
         // Local search
@@ -102,25 +138,6 @@ class MastodonLoginViewModel: ObservableObject {
                     server.description.lowercased().contains(keyword)
                 }
             }
-        }
-    }
-    
-    private func fetchInstanceDetail() async {
-        do {
-            let client = NetworkClient(instance: sanitizedInstanceName)
-            let instance = try await client.fetch(
-                InstanceEndpoint.instance(instance: sanitizedInstanceName),
-                type: MastodonInstance.self)
-            
-            await MainActor.run {
-                withAnimation {
-                    self.selectedMastodonInstance = instance
-                }
-                self.errorMessage = nil
-            }
-        } catch {
-            logger.error("Failed to fetch instance detail: \(error.localizedDescription)")
-            selectedMastodonInstance = nil
         }
     }
     
