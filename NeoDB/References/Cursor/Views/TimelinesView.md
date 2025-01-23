@@ -1,144 +1,63 @@
-# TimelinesView Design Documentation
+# TimelinesView Design
 
-## Overview
-TimelinesView is a core component that manages and displays different types of timelines (Friends, Home, Popular, Fediverse) in the NeoDB app. It uses modern Swift concurrency and the actor pattern for efficient state management.
+## Recent Updates (February 2024)
 
-## Architecture
+### Architecture Improvements
+- Introduced `TimelineActor` for centralized state management
+- Converted to async/await for better concurrency handling
+- Implemented real-time updates via WebSocket
+- Enhanced caching strategy for better performance
 
-### Core Components
-1. **TimelineActor**
-   - Centralized state management using `@MainActor`
-   - Handles timeline data loading, caching, and real-time updates
-   - Manages WebSocket connections for live updates
-
-2. **TimelineState**
-   - Stores timeline-specific data and states
-   - Tracks loading, refresh, and error states
-   - Maintains pagination information
-
-3. **StatusView**
-   - Displays individual status posts
-   - Handles media attachments and item previews
-   - Supports user interactions and navigation
-
-## Recent Improvements
+### Timeline Types
+- Renamed and reorganized timeline types:
+  - "Home" → "Friends" (following feed)
+  - "Local" → "Home" (instance feed)
+  - "Federated" → "Fediverse" (federated feed)
+  - Added "Popular" timeline
 
 ### State Management
-1. **Actor Pattern Implementation**
-   - Introduced `TimelineActor` for thread-safe state management
-   - Improved state isolation and concurrency handling
-   - Better coordination between UI and data updates
+- Improved state isolation using Actor pattern
+- Better handling of cached data and network requests
+- Optimized real-time update distribution
+- Enhanced error handling and loading states
 
-2. **Error Handling**
-   - Enhanced error suppression during pagination
-   - Smarter error display logic based on context
-   - Improved error logging for debugging
+## Current Design
 
-3. **Cache Integration**
-   - Implemented smart caching strategy
-   - Faster initial load times
-   - Reduced network requests
+### Core Components
+1. `TimelinesView`: Main view container
+2. `TimelineActor`: State management and data coordination
+3. `StatusView`: Reusable status component
+4. `StatusReplyView`: Status reply interface
 
-### Real-time Updates
-1. **WebSocket Integration**
-   - Efficient stream subscription management
-   - Smart distribution of updates to appropriate timelines
-   - Proper cleanup on deactivation
+### Data Flow
+1. Initial load from cache
+2. Network request for fresh data
+3. WebSocket connection for real-time updates
+4. State updates through actor methods
 
-2. **Timeline-specific Rules**
-   - Friends: Private and direct messages
-   - Home: Local instance posts
-   - Popular: No real-time updates
-   - Fediverse: Remote instance posts
+## Future Roadmap
 
-## Recent Changes
+### Short-term Goals
+- [ ] Optimize timeline scrolling performance
+- [ ] Implement pull-to-refresh with smooth animations
+- [ ] Add support for media-only timeline filter
+- [ ] Enhance error recovery mechanisms
 
-### Version 0.8
-1. **Timeline Types Reorganization**
-   - Renamed "Home" to "Friends"
-   - Added "Popular" timeline
-   - Renamed "Federated" to "Fediverse"
-   - Enhanced filtering capabilities
-
-2. **Performance Optimizations**
-   - Improved pagination handling
-   - Reduced unnecessary state updates
-   - Better memory management
-
-3. **UI Improvements**
-   - Enhanced loading states
-   - Smoother transitions
-   - Better error message handling
-
-## Known Issues & Solutions
-
-1. **Pagination Error Flashes**
-   - Issue: Brief error messages during pagination
-   - Solution: Implemented smarter error suppression
-   - Status: Fixed in latest version
-
-2. **WebSocket Reconnection**
-   - Issue: Inconsistent stream updates after app background
-   - Solution: Improved cleanup and reactivation logic
-   - Status: Fixed
-
-## Future Plans
-
-### Short-term
-1. **Performance**
-   - [ ] Implement virtualized list for better memory usage
-   - [ ] Add prefetching for smoother infinite scroll
-   - [ ] Optimize image loading and caching
-
-2. **Features**
-   - [ ] Add timeline filters (by type, visibility)
-   - [ ] Implement timeline search
-   - [ ] Add bookmark functionality
-
-### Long-term
-1. **Architecture**
-   - [ ] Consider moving to Swift Data for persistence
-   - [ ] Implement timeline composition API
-   - [ ] Add support for custom timeline types
-
-2. **User Experience**
-   - [ ] Add timeline customization options
-   - [ ] Implement advanced filtering
-   - [ ] Add timeline analytics
-
-## Best Practices
-
-1. **State Management**
-   - Use `TimelineActor` for all state modifications
-   - Maintain single source of truth
-   - Handle cleanup properly
-
-2. **Performance**
-   - Implement proper pagination
-   - Use efficient caching strategies
-   - Minimize unnecessary updates
-
-3. **Error Handling**
-   - Show errors only when necessary
-   - Maintain existing content during errors
-   - Log errors appropriately
-
-## Testing Guidelines
-
-1. **Unit Tests**
-   - Test timeline state transitions
-   - Verify error handling logic
-   - Test caching mechanisms
-
-2. **Integration Tests**
-   - Test WebSocket integration
-   - Verify timeline type interactions
-   - Test pagination behavior
+### Long-term Goals
+- [ ] Support for timeline filters and preferences
+- [ ] Advanced caching strategies
+- [ ] Improved media handling
+- [ ] Enhanced interaction animations
 
 ## Migration Notes
 
-When updating from previous versions:
-1. Update timeline type usage
-2. Review WebSocket implementation
-3. Update caching implementation if needed
-4. Verify error handling behavior
+### From Previous Version
+- State management moved from view to actor
+- Timeline types restructured
+- WebSocket handling improved
+- Cache implementation optimized
+
+### Known Issues
+- Need to handle network transitions gracefully
+- Optimize memory usage for long timelines
+- Handle rate limiting more elegantly
