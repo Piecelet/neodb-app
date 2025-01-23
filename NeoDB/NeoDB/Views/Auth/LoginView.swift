@@ -6,12 +6,12 @@
 //
 
 import AuthenticationServices
+import BetterSafariView
 import SwiftUI
 
 struct LoginView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
-    @Environment(\.webAuthenticationSession) private var webAuthenticationSession
     
     // Animation states
     @State private var logoScale = 0.5
@@ -79,7 +79,8 @@ struct LoginView: View {
                         }
                         
                         Task {
-                            await viewModel.authenticate(using: webAuthenticationSession)
+                            await viewModel.authenticate()
+                            accountsManager.isAuthenticating = true
                         }
                     }) {
                         HStack {
@@ -155,6 +156,21 @@ struct LoginView: View {
                 withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
                     contentOpacity = 1.0
                     titleOffset = 0
+                }
+            }
+            .webAuthenticationSession(isPresented: $accountsManager.isAuthenticating) {
+                WebAuthenticationSession(
+                    url: viewModel.authUrl!,
+                    callbackURLScheme: AppConfig.OAuth.redirectUri
+                        .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+                        ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: "")
+                ) { callbackURL, error in
+                    if let url = callbackURL {
+                        Task {
+                            try? await viewModel.handleCallback(url: url)
+                        }
+                    }
+                    accountsManager.isAuthenticating = false
                 }
             }
         }

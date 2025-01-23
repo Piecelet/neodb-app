@@ -26,24 +26,14 @@ class MastodonLoginViewModel: ObservableObject {
     @Published var filteredInstances: [JoinMastodonServers] = []
     @Published var selectedMastodonInstance: MastodonInstance?
     @Published var isInstanceUnavailable = false
+    @Published var isAuthenticating = false
+    @Published var authUrl: URL?
     
     private let joinMastodonClient = JoinMastodonClient()
     private var instanceDetailTask: Task<Void, Never>?
     private var instanceCheckTask: Task<Void, Never>?
     
-    var accountsManager: AppAccountsManager? {
-        didSet {
-            if oldValue !== accountsManager {
-                selectedMastodonInstance = nil
-                instances = []
-                filteredInstances = []
-                // Load initial instances list
-                Task {
-                    await loadInitialInstances()
-                }
-            }
-        }
-    }
+    var accountsManager: AppAccountsManager!
     
     var sanitizedInstanceName: String {
         var name = mastodonInstance
@@ -148,18 +138,27 @@ class MastodonLoginViewModel: ObservableObject {
         }
     }
     
-    func authenticate(using session: WebAuthenticationSession) async {
-        guard !mastodonInstance.isEmpty else { return }
-        isLoading = true
-        defer { isLoading = false }
-        
+    func authenticate() async {
         do {
-            logger.debug("Authenticating with Mastodon instance: \(mastodonInstance)")
-            // TODO: Implement authentication
+            authUrl = try await accountsManager.authenticate(
+                instance: accountsManager.currentAccount.instance)
+        } catch AccountError.invalidURL {
+            errorMessage = "Invalid instance URL"
+            showError = true
+            isAuthenticating = false
+        } catch AccountError.registrationFailed(let message) {
+            errorMessage = "Registration failed: \(message)"
+            showError = true
+            isAuthenticating = false
         } catch {
             errorMessage = error.localizedDescription
             showError = true
+            isAuthenticating = false
         }
+    }
+    
+    func handleCallback(url: URL) async throws {
+        try await accountsManager.handleCallback(url: url)
     }
     
     func validateAndContinue() -> Bool {

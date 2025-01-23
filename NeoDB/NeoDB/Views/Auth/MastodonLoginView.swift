@@ -6,12 +6,11 @@
 //
 
 import AuthenticationServices
+import BetterSafariView
 import SwiftUI
 
 struct MastodonLoginView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.webAuthenticationSession) private
-        var webAuthenticationSession
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
     @StateObject private var viewModel = MastodonLoginViewModel()
@@ -86,6 +85,21 @@ struct MastodonLoginView: View {
         .task {
             viewModel.accountsManager = accountsManager
             await viewModel.loadInitialInstances()
+        }
+        .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
+            WebAuthenticationSession(
+                url: viewModel.authUrl!,
+                callbackURLScheme: AppConfig.OAuth.redirectUri
+                    .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
+                    ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: "")
+            ) { callbackURL, error in
+                if let url = callbackURL {
+                    Task {
+                        try? await viewModel.handleCallback(url: url)
+                    }
+                }
+                viewModel.isAuthenticating = false
+            }
         }
         .enableInjection()
     }
@@ -287,8 +301,8 @@ struct MastodonLoginView: View {
                 }
             } else {
                 Task {
-                    await viewModel.authenticate(
-                        using: webAuthenticationSession)
+                    await viewModel.authenticate()
+                    viewModel.isAuthenticating = true
                 }
             }
         }) {
