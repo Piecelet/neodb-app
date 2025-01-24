@@ -140,14 +140,11 @@ struct ItemView: View {
     private var itemDetailsView: some View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(viewModel.displayTitle)
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                if !viewModel.originalTitle.isEmpty {
-                    Text(viewModel.originalTitle)
-                        .font(.headline)
-                }
+                ItemTitleView(
+                    item: viewModel.item,
+                    mode: .titleAndSubtitle,
+                    size: .large
+                )
             }
             .lineLimit(3)
 

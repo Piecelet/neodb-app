@@ -158,9 +158,11 @@ struct LibraryView: View {
 
     private func itemDetails(for mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(mark.item.displayTitle ?? mark.item.title ?? "")
-                .font(.headline)
-                .lineLimit(2)
+            ItemTitleView(
+                item: mark.item,
+                mode: .title,
+                size: .medium
+            )
 
             ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
 

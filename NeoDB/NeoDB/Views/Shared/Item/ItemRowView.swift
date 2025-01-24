@@ -14,27 +14,7 @@ struct ItemRowView: View {
     var body: some View {
         HStack(spacing: 12) {
             // Cover Image
-            KFImage(item.coverImageUrl)
-                .placeholder {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .aspectRatio(2/3, contentMode: .fit)
-                        .frame(width: 60)
-                }
-                .onFailure { _ in
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .aspectRatio(2/3, contentMode: .fit)
-                        .frame(width: 60)
-                        .overlay {
-                            Image(systemName: "photo")
-                                .foregroundStyle(.secondary)
-                        }
-                }
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: 60, height: 90)
-                .clipShape(RoundedRectangle(cornerRadius: 4))
+            ItemCoverView(item: item, size: .medium)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.displayTitle ?? "")
@@ -62,5 +42,10 @@ struct ItemRowView: View {
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 } 

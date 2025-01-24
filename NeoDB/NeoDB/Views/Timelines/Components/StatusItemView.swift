@@ -32,9 +32,11 @@ struct StatusItemView: View {
                     )
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(viewModel.displayTitle)
-                            .font(.headline)
-                            .lineLimit(2)
+                        ItemTitleView(
+                            item: viewModel.item,
+                            mode: .title,
+                            size: .medium
+                        )
 
                         HStack(spacing: 4) {
                             ItemRatingView(
