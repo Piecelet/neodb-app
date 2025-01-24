@@ -99,7 +99,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "清楚全部缓存"
+            "value" : "清除全部缓存"
           }
         }
       }

@@ -16,13 +16,26 @@ enum ShelfType: String, Codable, CaseIterable {
     var displayName: String {
         switch self {
         case .wishlist:
-            return "Wishlist"
+            return String(localized: "shelf_type_wishlist", table: "Item")
         case .progress:
-            return "Progress"
+            return String(localized: "shelf_type_progress", table: "Item")
         case .complete:
-            return "Complete"
+            return String(localized: "shelf_type_complete", table: "Item")
         case .dropped:
-            return "Dropped"
+            return String(localized: "shelf_type_dropped", table: "Item")
+        }
+    }
+
+    var displayActionState: String {
+        switch self {
+        case .wishlist:
+            return String(localized: "shelf_type_action_wishlist", table: "Item")
+        case .progress:
+            return String(localized: "shelf_type_action_progress", table: "Item")
+        case .complete:
+            return String(localized: "shelf_type_action_complete", table: "Item")
+        case .dropped:
+            return String(localized: "shelf_type_action_dropped", table: "Item")
         }
     }
 

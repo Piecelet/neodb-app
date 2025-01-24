@@ -109,10 +109,10 @@ struct ItemView: View {
     // MARK: - Error View
     private var errorView: some View {
         EmptyStateView(
-            "Item Not Found",
+            String(localized: "item_error_title", table: "Item"),
             systemImage: "exclamationmark.triangle",
             description: Text(
-                "The requested item could not be found or has been removed."
+                String(localized: "item_error_description", table: "Item")
             )
         )
     }
@@ -163,7 +163,7 @@ struct ItemView: View {
                 Button {
                     router.presentSheet(.itemDetails(item: viewModel.item!))
                 } label: {
-                    Text("View Details")
+                    Text("item_view_details", tableName: "Item")
                         .font(.caption)
                         .foregroundStyle(.accent)
                 }
@@ -174,7 +174,7 @@ struct ItemView: View {
     // MARK: - Description View
     private var descriptionView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Description")
+            Text("item_description", tableName: "Item")
                 .font(.headline)
 
             ExpandableText(viewModel.description)

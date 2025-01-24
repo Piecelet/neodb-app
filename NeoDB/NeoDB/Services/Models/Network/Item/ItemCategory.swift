@@ -120,12 +120,9 @@ enum ItemCategory: String, Codable, CaseIterable {
         var displayName: String {
             switch self {
             case .allItems: return "All"
-            case .book: return "Books"
+
             case .movieAndTv: return "Movies & TV"
-            case .music: return "Music"
-            case .game: return "Games"
-            case .podcast: return "Podcasts"
-            case .performance: return "Performances"
+            default: return itemCategory?.displayName ?? self.rawValue
             }
         }
 
