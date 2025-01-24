@@ -294,7 +294,7 @@ final class LibraryViewModel: ObservableObject {
         if !Task.isCancelled {
             logger.error("Failed to load shelf items for type \(type): \(error.localizedDescription)")
             updateShelfState(type: type) { state in
-                state.error = "Failed to load library"
+                state.error = String(localized: "library_error_title", table: "Library")
                 if let networkError = error as? NetworkError {
                     state.detailedError = networkError.localizedDescription
                 }

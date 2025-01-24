@@ -38,17 +38,17 @@ struct LibraryView: View {
         .safeAreaInset(edge: .top) {
             headerView
         }
-        .navigationTitle("Library")
+        .navigationTitle(String(localized: "library_title", table: "Library"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Text("Library")
+                Text("library_title", tableName: "Library")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
             }
             ToolbarItem(placement: .principal) {
-                Text("Library")
+                Text("library_title", tableName: "Library")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
                     .hidden()
@@ -56,7 +56,6 @@ struct LibraryView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            // 优先加载当前选中的 shelf
             viewModel.loadAllShelfItems()
         }
         .onDisappear {
@@ -66,7 +65,7 @@ struct LibraryView: View {
     }
 
     #if DEBUG
-        @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
     #endif
 
     private var headerView: some View {
@@ -92,17 +91,15 @@ struct LibraryView: View {
         if state.items.isEmpty {
             if let error = state.error {
                 EmptyStateView(
-                    "Couldn't Load Library",
+                    String(localized: "library_error_title", table: "Library"),
                     systemImage: "exclamationmark.triangle",
                     description: Text(state.detailedError ?? error)
                 )
             } else if !state.isLoading && !state.isRefreshing {
                 EmptyStateView(
-                    "No Items Found",
+                    String(localized: "library_empty_title", table: "Library"),
                     systemImage: "books.vertical",
-                    description: Text(
-                        "Add some items to your \(type.displayName.lowercased()) list"
-                    )
+                    description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName.lowercased()))
                 )
             } else {
                 ProgressView()
@@ -112,7 +109,6 @@ struct LibraryView: View {
         } else {
             ScrollView {
                 shelfItemsList(for: type)
-                //                    .padding(.top, 170)
             }
         }
     }

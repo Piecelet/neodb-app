@@ -67,7 +67,7 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label("Settings", systemImage: "gear")
+                Label(String(localized: "settings_title", table: "Settings"), systemImage: "gear")
             }
             .tag(TabSection.profile)
         }
