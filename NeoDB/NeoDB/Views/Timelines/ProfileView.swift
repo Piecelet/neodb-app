@@ -26,7 +26,9 @@ struct ProfileView: View {
         Group {
             if let error = viewModel.error {
                 EmptyStateView(
-                    String(localized: "timelines_profile_error_title", table: "Timelines"),
+                    String(
+                        localized: "timelines_profile_error_title",
+                        table: "Timelines"),
                     systemImage: "exclamationmark.triangle",
                     description: Text(error.localizedDescription)
                 )
@@ -66,37 +68,52 @@ struct ProfileView: View {
 
                             // Stats
                             HStack(spacing: 24) {
-                                VStack {
-                                    Text("\(account.statusesCount)")
-                                        .font(.headline)
-                                    Text("timelines_profile_posts", tableName: "Timelines")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-
-                                Button {
-                                    router.navigate(
-                                        to: .following(id: account.id))
-                                } label: {
+                                if let statusesCount = account.statusesCount {
                                     VStack {
-                                        Text("\(account.followingCount)")
+                                        Text("\(statusesCount)")
                                             .font(.headline)
-                                    Text("timelines_profile_following", tableName: "Timelines")
+                                        Text(
+                                            "timelines_profile_posts",
+                                            tableName: "Timelines"
+                                        )
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     }
                                 }
 
-                                Button {
-                                    router.navigate(
-                                        to: .followers(id: account.id))
-                                } label: {
-                                    VStack {
-                                        Text("\(account.followersCount)")
-                                            .font(.headline)
-                                    Text("timelines_profile_followers", tableName: "Timelines")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                if let followingCount = account.followingCount {
+
+                                    Button {
+                                        router.navigate(
+                                            to: .following(id: account.id))
+                                    } label: {
+                                        VStack {
+                                            Text("\(followingCount)")
+                                                .font(.headline)
+                                            Text(
+                                                "timelines_profile_following",
+                                                tableName: "Timelines"
+                                            )
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
+                                if let followersCount = account.followersCount {
+                                    Button {
+                                        router.navigate(
+                                            to: .followers(id: account.id))
+                                    } label: {
+                                        VStack {
+                                            Text("\(account.followersCount)")
+                                                .font(.headline)
+                                            Text(
+                                                "timelines_profile_followers",
+                                                tableName: "Timelines"
+                                            )
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        }
                                     }
                                 }
                             }
@@ -134,10 +151,15 @@ struct ProfileView: View {
                                 .padding(.top, 8)
                             }
 
-                            Text(String(format: String(localized: "timelines_profile_joined", table: "Timelines"), account.createdAt))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(.top, 8)
+                            Text(
+                                String(
+                                    format: String(
+                                        localized: "timelines_profile_joined",
+                                        table: "Timelines"), account.createdAt)
+                            )
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 8)
                         }
                         .padding(.horizontal)
                     }
@@ -190,10 +212,15 @@ struct ProfileView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 EmptyStateView(
-                    String(localized: "timelines_profile_not_found_title", table: "Timelines"),
+                    String(
+                        localized: "timelines_profile_not_found_title",
+                        table: "Timelines"),
                     systemImage: "person.slash",
                     description: Text(
-                        String(localized: "timelines_profile_not_found_description", table: "Timelines")
+                        String(
+                            localized:
+                                "timelines_profile_not_found_description",
+                            table: "Timelines")
                     )
                 )
                 .refreshable {
