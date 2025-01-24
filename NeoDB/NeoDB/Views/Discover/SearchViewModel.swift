@@ -16,14 +16,15 @@ class SearchViewModel: ObservableObject {
     private var galleryTask: Task<Void, Never>?
     private var searchDebounceTask: Task<Void, Never>?
     private let debounceInterval: TimeInterval = 0.5
-    let minSearchLength = 2
+     let minSearchLength = 2
     private let maxRecentSearches = 10
     
     enum SearchState: Equatable {
         case idle
         case searching
         case noResults
-        case results([ItemSchema])
+        case suggestions([ItemSchema])  // For hover/suggestion state
+        case results([ItemSchema])      // For confirmed search state
         case error(Error)
         
         static func == (lhs: SearchState, rhs: SearchState) -> Bool {
@@ -34,10 +35,11 @@ class SearchViewModel: ObservableObject {
                 return true
             case (.noResults, .noResults):
                 return true
+            case (.suggestions(let lhsItems), .suggestions(let rhsItems)):
+                return lhsItems.map { $0.uuid } == rhsItems.map { $0.uuid }
             case (.results(let lhsItems), .results(let rhsItems)):
                 return lhsItems.map { $0.uuid } == rhsItems.map { $0.uuid }
             case (.error, .error):
-                // 由于 Error 不遵循 Equatable，我们只比较是否都是错误状态
                 return true
             default:
                 return false
@@ -47,7 +49,14 @@ class SearchViewModel: ObservableObject {
     
     @Published var searchText = "" {
         didSet {
-            debouncedSearch()
+            if oldValue != searchText {
+                if forceSearch {
+                    forceSearch = false
+                } else {
+                    isConfirmedSearch = false
+                debouncedSearch()
+                }
+            }
         }
     }
     @Published private(set) var searchState: SearchState = .idle
@@ -59,8 +68,11 @@ class SearchViewModel: ObservableObject {
     @Published var selectedCategory: ItemCategory.searchable = .allItems
     @Published var loadingStartTime: Date?
     @Published var showLoading = false
+    @Published var isConfirmedSearch = false
     
     var accountsManager: AppAccountsManager?
+
+    private var forceSearch : Bool = false
     
     init() {
         loadRecentSearches()
@@ -84,12 +96,23 @@ class SearchViewModel: ObservableObject {
             try? await Task.sleep(nanoseconds: UInt64(debounceInterval * 1_000_000_000))
             if !Task.isCancelled {
                 currentPage = 1
-                await search()
+                await search(confirmed: false)
             }
         }
     }
     
-    func search() async {
+    func confirmSearch(searchText: String? = nil) async {
+        if let searchText = searchText {
+        forceSearch = true
+            self.searchText = searchText
+        }
+        forceSearch = false
+        isConfirmedSearch = true
+        currentPage = 1
+        await search(confirmed: true)
+    }
+    
+    func search(confirmed: Bool = false) async {
         searchTask?.cancel()
         
         guard !searchText.isEmpty else {
@@ -101,11 +124,13 @@ class SearchViewModel: ObservableObject {
             return
         }
         
-        // Add to recent searches when actually performing the search
-        addToRecentSearches(searchText)
+        // Add to recent searches only for confirmed searches
+        if confirmed {
+            addToRecentSearches(searchText)
+        }
         
         searchTask = Task {
-            await performSearch()
+            await performSearch(confirmed: confirmed)
         }
     }
     
@@ -202,7 +227,7 @@ class SearchViewModel: ObservableObject {
         }
     }
     
-    private func performSearch(append: Bool = false) async {
+    private func performSearch(append: Bool = false, confirmed: Bool = false) async {
         guard let accountsManager = accountsManager else { return }
         
         if !append {
@@ -227,7 +252,7 @@ class SearchViewModel: ObservableObject {
                     instance: accountsManager.currentAccount.instance
                 ) {
                     if !Task.isCancelled {
-                        updateSearchResults(cachedResult, append: append)
+                        updateSearchResults(cachedResult, append: append, confirmed: confirmed)
                     }
                 }
             }
@@ -244,7 +269,7 @@ class SearchViewModel: ObservableObject {
                 endpoint, type: SearchResult.self)
             
             if !Task.isCancelled {
-                updateSearchResults(result, append: append)
+                updateSearchResults(result, append: append, confirmed: confirmed)
                 showLoading = false
                 
                 // Cache only if it's not appending
@@ -267,14 +292,26 @@ class SearchViewModel: ObservableObject {
         }
     }
     
-    private func updateSearchResults(_ result: SearchResult, append: Bool) {
+    private func updateSearchResults(_ result: SearchResult, append: Bool, confirmed: Bool) {
         if append {
             if case .results(let existingItems) = searchState {
                 let updatedItems = existingItems + result.data
                 searchState = updatedItems.isEmpty ? .noResults : .results(updatedItems)
             }
         } else {
-            searchState = result.data.isEmpty ? .noResults : .results(result.data)
+            if result.data.isEmpty {
+                searchState = .noResults
+            } else if confirmed {
+                searchState = .results(result.data)
+            } else {
+                // Filter out duplicates based on title for suggestions
+                var uniqueTitles = Set<String>()
+                let uniqueItems = result.data.filter { item in
+                    let title = (item.displayTitle ?? item.title ?? "").lowercased()
+                    return uniqueTitles.insert(title).inserted
+                }
+                searchState = .suggestions(uniqueItems)
+            }
         }
         hasMorePages = currentPage < result.pages
     }

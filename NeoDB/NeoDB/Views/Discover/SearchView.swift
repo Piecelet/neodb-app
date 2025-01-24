@@ -54,6 +54,8 @@ struct SearchView: View {
                         }
                     case .noResults:
                         searchEmptyStateView
+                    case .suggestions(let items):
+                        suggestionsView(items)
                     case .results(let items):
                         searchResultsView(items)
                     case .error(let error):
@@ -65,6 +67,11 @@ struct SearchView: View {
         }
         .listStyle(.plain)
         .searchable(text: $viewModel.searchText, prompt: "Search books, movies, music...")
+        .onSubmit(of: .search) {
+            Task {
+                await viewModel.confirmSearch()
+            }
+        }
     }
     
     private var categoryFilterSection: some View {
@@ -73,9 +80,6 @@ struct SearchView: View {
                 ForEach(ItemCategory.searchable.allCases, id: \.self) { category in
                     Button {
                         viewModel.selectedCategory = category
-                        Task {
-                            await viewModel.search()
-                        }
                     } label: {
                         HStack {
                             Image(symbol: category.symbolImage)
@@ -203,7 +207,7 @@ struct SearchView: View {
         .listRowSeparator(.hidden)
     }
     
-    private func searchResultsView(_ items: [ItemSchema]) -> some View {
+    private func suggestionsView(_ items: [ItemSchema]) -> some View {
         ForEach(Array(items.enumerated()), id: \.element.uuid) { index, item in
             if index == 0 {
                 // First item shows full details
@@ -213,11 +217,14 @@ struct SearchView: View {
                 } label: {
                     ItemRowView(item: item)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .buttonStyle(.plain)
             } else {
                 // Other items show only title as suggestions
                 Button {
-                    viewModel.searchText = item.displayTitle ?? item.title ?? ""
+                    Task {
+                        await viewModel.confirmSearch(searchText: item.displayTitle ?? item.title ?? "")
+                    }
                 } label: {
                     HStack {
                         Image(systemName: "magnifyingglass")
@@ -228,15 +235,23 @@ struct SearchView: View {
                     .padding(.vertical, 4)
                 }
                 .buttonStyle(.plain)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            
-            if item.uuid == items.last?.uuid {
-                if viewModel.hasMorePages {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .onAppear {
-                            viewModel.loadMore()
-                        }
+        }
+    }
+    
+    private func searchResultsView(_ items: [ItemSchema]) -> some View {
+        ForEach(items, id: \.uuid) { item in
+            Button {
+                HapticFeedback.selection()
+                router.navigate(to: .itemDetailWithItem(item: item))
+            } label: {
+                ItemRowView(item: item)
+            }
+            .buttonStyle(.plain)
+            .onAppear {
+                if item == items.last && viewModel.hasMorePages {
+                    viewModel.loadMore()
                 }
             }
         }
