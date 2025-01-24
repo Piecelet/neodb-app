@@ -16,7 +16,7 @@ class MarkViewModel: ObservableObject {
     let item: (any ItemProtocol)
     let existingMark: MarkSchema?
 
-    @Published var shelfType: ShelfType = .wishlist
+    @Published var shelfType: ShelfType
     @Published var rating: Int?
     @Published var comment: String = ""
     @AppStorage(\.mark.isPublic) public var isPublic: Bool = true
@@ -30,9 +30,10 @@ class MarkViewModel: ObservableObject {
 
     var accountsManager: AppAccountsManager?
 
-    init(item: any ItemProtocol, mark: MarkSchema? = nil) {
+    init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
         self.item = item
         self.existingMark = mark
+        self.shelfType = shelfType ?? .wishlist
 
         if let mark = mark {
             self.shelfType = mark.shelfType

@@ -14,9 +14,9 @@ struct MarkView: View {
     @State private var showAdvanced = false
     @State private var detent: PresentationDetent = .medium
 
-    init(item: any ItemProtocol, mark: MarkSchema? = nil) {
+    init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
         _viewModel = StateObject(
-            wrappedValue: MarkViewModel(item: item, mark: mark))
+            wrappedValue: MarkViewModel(item: item, mark: mark, shelfType: shelfType))
     }
 
     var body: some View {
