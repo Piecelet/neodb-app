@@ -81,7 +81,7 @@ struct ItemRatingView: View {
                     } else {
                         Image(systemName: "star.fill")
                             .foregroundStyle(.gray.opacity(0.5))
-                        Text(size == .large ? "No Ratings" : "N/A")
+                        Text(size == .large ? String(localized: "item_rating_none", table: "Item") : String(localized: "item_rating_na", table: "Item"))
                             .foregroundStyle(.secondary)
                     }
                 }

@@ -223,7 +223,7 @@ struct ItemView: View {
                 if let shelfType = viewModel.shelfType {
                     Text(shelfType.displayActionState)
                 } else {
-                    Text("Add to Shelf")
+                    Text("item_add_to_shelf", tableName: "Item")
                 }
             }
             .frame(maxWidth: .infinity)
