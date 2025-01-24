@@ -34,7 +34,7 @@ struct MarkView: View {
             }
             .padding()
 
-            ScrollView {
+            Form {
                 // Shelf Type
                 Section {
                     HStack(spacing: 16) {
@@ -126,7 +126,7 @@ struct MarkView: View {
                 } label: {
                     Text("mark_save_button", tableName: "Item")
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
+                        .padding(.vertical, 8)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.isLoading)
