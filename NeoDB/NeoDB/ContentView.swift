@@ -13,7 +13,12 @@ struct ContentView: View {
     @State private var isSearchActive = false
 
     var body: some View {
-        TabView(selection: $router.selectedTab) {
+        TabView(selection: $router.selectedTab.onUpdate { oldTab, newTab in
+            // Only activate search when clicking search tab while already on search tab
+            if oldTab == .search && newTab == .search {
+                isSearchActive.toggle()
+            }
+        }) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
                 TimelinesView()
@@ -39,13 +44,6 @@ struct ContentView: View {
                 Label("Search", systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
-            .onChangeWithPrevious(of: router.selectedTab) { oldValue, newValue in
-                if newValue == .search {
-                    if oldValue == .search {
-                        isSearchActive = true
-                    }
-                }
-            }
 
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
