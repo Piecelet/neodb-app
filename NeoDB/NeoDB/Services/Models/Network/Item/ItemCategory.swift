@@ -97,6 +97,62 @@ enum ItemCategory: String, Codable, CaseIterable {
         }
     }
 
+    enum searchable: String, CaseIterable, Codable {
+        case allItems
+        case book
+        case movieAndTv = "movie,tv"
+        case music
+        case game
+        case podcast
+        case performance
+        
+        var itemCategory: ItemCategory? {
+            switch self {
+            case .book: return .book
+            case .music: return .music
+            case .game: return .game
+            case .podcast: return .podcast
+            case .performance: return .performance
+            default: return nil
+            }
+        }
+
+        var displayName: String {
+            switch self {
+            case .allItems: return "All"
+            case .book: return "Books"
+            case .movieAndTv: return "Movies & TV"
+            case .music: return "Music"
+            case .game: return "Games"
+            case .podcast: return "Podcasts"
+            case .performance: return "Performances"
+            }
+        }
+
+        var symbolImage: Symbol {
+            switch self {
+            case .movieAndTv: return .sfSymbol(.film)
+            case .allItems: return .sfSymbol(.squareGrid2x2)
+            default: return self.itemCategory?.symbolImage ?? .sfSymbol(.squareGrid2x2)
+            }
+        }
+
+        var symbolImageFill: Symbol {
+            switch self {
+            case .movieAndTv: return .sfSymbol(.filmFill)
+            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
+            default: return self.itemCategory?.symbolImageFill ?? .sfSymbol(.squareGrid2x2Fill)
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .allItems: return Color.accentColor
+            default: return self.itemCategory?.color ?? .gray
+            }
+        }
+    }
+
     var symbolImage: Symbol {
         switch self {
         case .book: return .sfSymbol(.book)
