@@ -22,6 +22,13 @@ enum ItemRatingSize {
             return .subheadline
         }
     }
+    
+    var weight: Font.Weight? {
+        switch self {
+        default:
+            return nil
+        }
+    }
 }
 
 struct StarView: View {
@@ -59,6 +66,7 @@ struct ItemRatingView: View {
     let size: ItemRatingSize
     var hideRatingCount: Bool = false
     var showFullStar: Bool = false
+    var showCategory: Bool = false
 
     var body: some View {
         Group {
@@ -84,8 +92,15 @@ struct ItemRatingView: View {
                         Text(size == .large ? String(localized: "item_rating_none", table: "Item") : String(localized: "item_rating_na", table: "Item"))
                             .foregroundStyle(.secondary)
                     }
+                    if showCategory {
+                        Text("/")
+                            .foregroundStyle(.secondary)
+                        Text(item.category.displayName)
+                            .foregroundStyle(.secondary)
+                    }
                 }
                 .font(size.font)
+                .fontWeight(size.weight)
             }
         }
         .enableInjection()

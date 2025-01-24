@@ -41,11 +41,8 @@ struct StatusItemView: View {
                         HStack(spacing: 4) {
                             ItemRatingView(
                                 item: viewModel.item, size: .small,
-                                hideRatingCount: true)
-                            Text("/")
-                                .foregroundStyle(.secondary)
-                            Text(viewModel.item.category.displayName)
-                                .foregroundStyle(.secondary)
+                                hideRatingCount: true,
+                                showCategory: true)
                         }
                         .font(.caption)
 

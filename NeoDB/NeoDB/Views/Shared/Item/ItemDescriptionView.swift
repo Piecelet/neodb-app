@@ -87,8 +87,12 @@ struct ItemDescriptionView: View {
                     Text(item.brief)
                 case .metadataAndBrief:
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(metadataText)
-                        Text(item.brief)
+                        if (!metadata.isEmpty) {
+                            Text(metadataText)
+                        }
+                        if (!item.brief.isEmpty) {
+                            Text(item.brief)
+                        }
                     }
                 }
             }

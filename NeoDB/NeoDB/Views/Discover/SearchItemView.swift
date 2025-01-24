@@ -8,7 +8,7 @@
 import SwiftUI
 import Kingfisher
 
-struct ItemRowView: View {
+struct SearchItemView: View {
     let item: any ItemProtocol
     
     var body: some View {
@@ -17,23 +17,11 @@ struct ItemRowView: View {
             ItemCoverView(item: item, size: .medium)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.displayTitle ?? "")
-                    .font(.headline)
-                    .lineLimit(2)
+                ItemTitleView(item: item, mode: .title, size: .medium)
+
+                ItemRatingView(item: item, size: .medium, showCategory: true)
                 
-                if let rating = item.rating {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(.yellow)
-                        Text(String(format: "%.1f", rating))
-                    }
-                    .font(.subheadline)
-                }
-                
-                Text(item.brief)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                ItemDescriptionView(item: item, mode:.brief , size: .medium)
             }
             
             Spacer()

@@ -219,7 +219,7 @@ struct SearchView: View {
                     HapticFeedback.selection()
                     router.navigate(to: .itemDetailWithItem(item: item))
                 } label: {
-                    ItemRowView(item: item)
+                    SearchItemView(item: item)
                 }
                 .buttonStyle(.plain)
             } else {
@@ -249,7 +249,7 @@ struct SearchView: View {
                 HapticFeedback.selection()
                 router.navigate(to: .itemDetailWithItem(item: item))
             } label: {
-                ItemRowView(item: item)
+                SearchItemView(item: item)
             }
             .buttonStyle(.plain)
             .onAppear {
