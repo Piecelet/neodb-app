@@ -68,52 +68,46 @@ struct ProfileView: View {
 
                             // Stats
                             HStack(spacing: 24) {
-                                if let statusesCount = account.statusesCount {
+                                VStack {
+                                    Text("\(account.statusesCount ?? 0)")
+                                        .font(.headline)
+                                    Text(
+                                        "timelines_profile_posts",
+                                        tableName: "Timelines"
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                }
+
+                                Button {
+                                    router.navigate(
+                                        to: .following(id: account.id))
+                                } label: {
                                     VStack {
-                                        Text("\(statusesCount)")
+                                        Text("\(account.followingCount ?? 0)")
                                             .font(.headline)
                                         Text(
-                                            "timelines_profile_posts",
+                                            "timelines_profile_following",
                                             tableName: "Timelines"
                                         )
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     }
                                 }
-
-                                if let followingCount = account.followingCount {
-
-                                    Button {
-                                        router.navigate(
-                                            to: .following(id: account.id))
-                                    } label: {
-                                        VStack {
-                                            Text("\(followingCount)")
-                                                .font(.headline)
-                                            Text(
-                                                "timelines_profile_following",
-                                                tableName: "Timelines"
-                                            )
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        }
-                                    }
-                                }
-                                if let followersCount = account.followersCount {
-                                    Button {
-                                        router.navigate(
-                                            to: .followers(id: account.id))
-                                    } label: {
-                                        VStack {
-                                            Text("\(account.followersCount)")
-                                                .font(.headline)
-                                            Text(
-                                                "timelines_profile_followers",
-                                                tableName: "Timelines"
-                                            )
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
-                                        }
+                                
+                                Button {
+                                    router.navigate(
+                                        to: .followers(id: account.id))
+                                } label: {
+                                    VStack {
+                                        Text("\(account.followersCount ?? 0)")
+                                            .font(.headline)
+                                        Text(
+                                            "timelines_profile_followers",
+                                            tableName: "Timelines"
+                                        )
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
                                     }
                                 }
                             }
@@ -155,7 +149,7 @@ struct ProfileView: View {
                                 String(
                                     format: String(
                                         localized: "timelines_profile_joined",
-                                        table: "Timelines"), account.createdAt)
+                                        table: "Timelines"), account.createdAt.formatted())
                             )
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -238,7 +232,12 @@ struct ProfileView: View {
         .onDisappear {
             viewModel.cleanup()
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {

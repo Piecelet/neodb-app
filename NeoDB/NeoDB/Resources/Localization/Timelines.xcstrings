@@ -1,57 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "timelines_empty_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "There are no posts to display at this time."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂时没有可显示的帖子。"
-          }
-        }
-      }
-    },
-    "timelines_empty_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Posts Found"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "没有找到帖子"
-          }
-        }
-      }
-    },
-    "timelines_error_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Please check your network connection and try again."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请检查网络连接并重试。"
-          }
-        }
-      }
-    },
     "timelines_error_title" : {
       "localizations" : {
         "en" : {
@@ -158,8 +107,8 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "加入时间"
+            "state" : "translated",
+            "value" : "%@ 加入"
           }
         }
       }
@@ -208,23 +157,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "帖子"
-          }
-        }
-      }
-    },
-    "timelines_profile_title" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profile"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "个人资料"
           }
         }
       }
