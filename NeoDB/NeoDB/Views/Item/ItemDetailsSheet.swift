@@ -37,7 +37,7 @@ struct ItemDetailsSheet: View {
         VStack(spacing: 0) {
             // Custom title bar
             HStack {
-                Text(item.displayTitle ?? "Detail")
+                Text(item.displayTitle ?? String(localized: "item_details_title", table: "Item"))
                     .font(.headline)
                 Spacer()
                 Button(action: { dismiss() }) {
@@ -60,7 +60,7 @@ struct ItemDetailsSheet: View {
                 }
                 .listRowBackground(Color.clear)
             }
-            .navigationTitle(item.displayTitle ?? "Detail")
+            .navigationTitle(item.displayTitle ?? String(localized: "item_details_title", table: "Item"))
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.plain)
             .scrollContentBackground(.hidden)

@@ -478,7 +478,7 @@ final class ItemViewModel: ObservableObject {
             self.error = error
             self.showError = true
             state = .error
-            logger.error("Failed to load item: \(error.localizedDescription)")
+            logger.error(String(localized: "item_error_title", table: "Item") + ": \(error.localizedDescription)")
         }
     }
 
@@ -497,7 +497,7 @@ final class ItemViewModel: ObservableObject {
                     self.error = error
                     self.showError = true
                     logger.error(
-                        "Failed to load mark: \(error.localizedDescription)")
+                        String(localized: "item_error_title", table: "Item") + ": \(error.localizedDescription)")
                 }
             }
         }

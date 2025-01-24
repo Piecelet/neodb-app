@@ -47,7 +47,9 @@ class MarkViewModel: ObservableObject {
     }
 
     var title: String {
-        item.displayTitle ?? item.title ?? (existingMark == nil ? "Mark" : "Edit")
+        item.displayTitle ?? item.title ?? (existingMark == nil ? 
+            String(localized: "mark_title", table: "Item") : 
+            String(localized: "mark_edit_title", table: "Item"))
     }
 
     func saveMark() async {

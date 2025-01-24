@@ -73,25 +73,26 @@ struct MarkView: View {
                     TextEditor(text: $viewModel.comment)
                         .frame(minHeight: 100)
                 } header: {
-                    Text("Comment")
+                    Text("mark_comment_label", tableName: "Item")
                 } footer: {
-                    Text("Optional")
+                    Text("mark_comment_optional", tableName: "Item")
                 }
 
                 // Advanced Options
                 Section {
-                    DisclosureGroup("Advanced", isExpanded: $showAdvanced) {
-                        Toggle("Public", isOn: $viewModel.isPublic)
+                    DisclosureGroup(String(localized: "mark_advanced_section", table: "Item"), isExpanded: $showAdvanced) {
+                        Toggle(String(localized: "mark_public_toggle", table: "Item"), isOn: $viewModel.isPublic)
                         Toggle(
-                            "Share to Fediverse",
+                            String(localized: "mark_share_fediverse_toggle", table: "Item"),
                             isOn: $viewModel.postToFediverse)
 
                         Toggle(
-                            "Use Current Time", isOn: $viewModel.useCurrentTime)
+                            String(localized: "mark_use_current_time_toggle", table: "Item"),
+                            isOn: $viewModel.useCurrentTime)
 
                         if !viewModel.useCurrentTime {
                             DatePicker(
-                                "Created Time",
+                                String(localized: "mark_created_time_label", table: "Item"),
                                 selection: $viewModel.createdTime,
                                 displayedComponents: [.date, .hourAndMinute]
                             )
@@ -107,7 +108,7 @@ struct MarkView: View {
                                 await viewModel.deleteMark()
                             }
                         } label: {
-                            Text("Delete Mark")
+                            Text("mark_delete_button", tableName: "Item")
                                 .frame(maxWidth: .infinity)
                         }
                     }
@@ -123,7 +124,7 @@ struct MarkView: View {
                         await viewModel.saveMark()
                     }
                 } label: {
-                    Text("Save")
+                    Text("mark_save_button", tableName: "Item")
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
                 }
@@ -142,7 +143,7 @@ struct MarkView: View {
                 dismiss()
             }
         }
-        .alert("Error", isPresented: $viewModel.showError) {
+        .alert(String(localized: "mark_error_title", table: "Item"), isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
             if let error = viewModel.error {

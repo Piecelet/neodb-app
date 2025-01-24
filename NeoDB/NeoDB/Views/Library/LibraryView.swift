@@ -19,7 +19,7 @@ struct LibraryView: View {
     var body: some View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
-            Text(" ").frame(width: 0.01, height: 0.01)
+            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
             TabView(selection: $viewModel.selectedShelfType) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
                     Group {

@@ -213,19 +213,19 @@ enum ItemCategory: String, Codable, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .book: return "Books"
-        case .movie: return "Movies"
-        case .tv: return "TV Shows"
-        case .tvSeason: return "TV Seasons"
-        case .tvEpisode: return "TV Episodes"
-        case .music: return "Music"
-        case .game: return "Games"
-        case .podcast: return "Podcasts"
-        case .performance: return "Performances"
-        case .performanceProduction: return "Performance Productions"
-        case .fanfic: return "Fanfics"
-        case .exhibition: return "Exhibitions"
-        case .collection: return "Collections"
+        case .book: return String(localized: "category_books", table: "Item")
+        case .movie: return String(localized: "category_movies", table: "Item")
+        case .tv: return String(localized: "category_tv", table: "Item")
+        case .tvSeason: return String(localized: "category_tv", table: "Item")
+        case .tvEpisode: return String(localized: "category_tv", table: "Item")
+        case .music: return String(localized: "category_music", table: "Item")
+        case .game: return String(localized: "category_games", table: "Item")
+        case .podcast: return String(localized: "category_podcasts", table: "Item")
+        case .performance: return String(localized: "category_performances", table: "Item")
+        case .performanceProduction: return String(localized: "category_performances", table: "Item")
+        case .fanfic: return String(localized: "category_books", table: "Item")
+        case .exhibition: return String(localized: "category_performances", table: "Item")
+        case .collection: return String(localized: "category_performances", table: "Item")
         }
     }
     

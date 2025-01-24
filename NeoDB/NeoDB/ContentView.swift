@@ -54,7 +54,7 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label("Library", systemImage: "books.vertical.fill")
+                Label(String(localized: "library_title", table: "Library"), systemImage: "books.vertical.fill")
             }
             .tag(TabSection.library)
 
