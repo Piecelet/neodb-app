@@ -26,7 +26,7 @@ struct ProfileView: View {
         Group {
             if let error = viewModel.error {
                 EmptyStateView(
-                    "Couldn't Load Profile",
+                    String(localized: "timelines_profile_error_title", table: "Timelines"),
                     systemImage: "exclamationmark.triangle",
                     description: Text(error.localizedDescription)
                 )
@@ -65,11 +65,11 @@ struct ProfileView: View {
                             Spacer()
 
                             // Stats
-                            HStack(spacing: 20) {
+                            HStack(spacing: 24) {
                                 VStack {
                                     Text("\(account.statusesCount)")
                                         .font(.headline)
-                                    Text("Posts")
+                                    Text("timelines_profile_posts", tableName: "Timelines")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
@@ -81,9 +81,9 @@ struct ProfileView: View {
                                     VStack {
                                         Text("\(account.followingCount)")
                                             .font(.headline)
-                                        Text("Following")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                    Text("timelines_profile_following", tableName: "Timelines")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
                                     }
                                 }
 
@@ -94,9 +94,9 @@ struct ProfileView: View {
                                     VStack {
                                         Text("\(account.followersCount)")
                                             .font(.headline)
-                                        Text("Followers")
-                                            .font(.caption)
-                                            .foregroundStyle(.secondary)
+                                    Text("timelines_profile_followers", tableName: "Timelines")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
                                     }
                                 }
                             }
@@ -134,7 +134,7 @@ struct ProfileView: View {
                                 .padding(.top, 8)
                             }
 
-                            Text("Joined \(account.createdAt)")
+                            Text(String(format: String(localized: "timelines_profile_joined", table: "Timelines"), account.createdAt))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                                 .padding(.top, 8)
@@ -190,10 +190,10 @@ struct ProfileView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 EmptyStateView(
-                    "Profile Not Found",
+                    String(localized: "timelines_profile_not_found_title", table: "Timelines"),
                     systemImage: "person.slash",
                     description: Text(
-                        "The profile you're looking for doesn't exist or has been deleted."
+                        String(localized: "timelines_profile_not_found_description", table: "Timelines")
                     )
                 )
                 .refreshable {

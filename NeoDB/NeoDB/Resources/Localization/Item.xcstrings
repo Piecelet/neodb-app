@@ -1132,7 +1132,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已放弃"
+            "value" : "已弃看"
           }
         }
       }
@@ -1196,7 +1196,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "放弃"
+            "value" : "弃看"
           }
         }
       }

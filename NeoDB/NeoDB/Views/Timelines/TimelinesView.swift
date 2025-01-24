@@ -9,12 +9,19 @@ import OSLog
 import SwiftUI
 
 enum TimelineType: String, CaseIterable {
-    case friends = "Friends"
-    case home = "Home"
-    case popular = "Popular"
-    case fediverse = "Fediverse"
+    case friends
+    case home
+    case popular
+    case fediverse
     
-    var displayName: String { rawValue }
+    var displayName: String { 
+        switch self {
+        case .friends: return String(localized: "timelines_type_friends", table: "Timelines")
+        case .home: return String(localized: "timelines_type_home", table: "Timelines")
+        case .popular: return String(localized: "timelines_type_popular", table: "Timelines")
+        case .fediverse: return String(localized: "timelines_type_fediverse", table: "Timelines")
+        }
+     }
 }
 
 @MainActor
@@ -254,17 +261,17 @@ struct TimelinesView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
         }
-        .navigationTitle("Timeline")
+        .navigationTitle(String(localized: "timelines_title", table: "Timelines"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Text("Piecelet")
+                Text("timelines_title", tableName: "Timelines")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
             }
             ToolbarItem(placement: .principal) {
-                Text("Piecelet")
+                Text("timelines_title", tableName: "Timelines")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
                     .hidden()
@@ -295,7 +302,7 @@ struct TimelinesView: View {
         
         if let error = state.error {
             EmptyStateView(
-                "Couldn't Load Timeline",
+                String(localized: "timelines_error_title", table: "Timelines"),
                 systemImage: "exclamationmark.triangle",
                 description: Text(error)
             )
@@ -304,10 +311,11 @@ struct TimelinesView: View {
                 timelineSkeletonContent
             } else {
                 EmptyStateView(
-                    "No Posts Yet",
+                    String(localized: "timelines_no_posts_title", table: "Timelines"),
                     systemImage: "text.bubble",
                     description: Text(
-                        "Follow some users to see their posts here")
+                        String(localized: "timelines_no_posts_description", table: "Timelines")
+                    )
                 )
             }
         } else {
