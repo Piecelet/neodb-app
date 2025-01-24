@@ -14,9 +14,13 @@ struct MarkView: View {
     @State private var showAdvanced = false
     @State private var detent: PresentationDetent = .medium
 
-    init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
+    init(
+        item: any ItemProtocol, mark: MarkSchema? = nil,
+        shelfType: ShelfType? = nil
+    ) {
         _viewModel = StateObject(
-            wrappedValue: MarkViewModel(item: item, mark: mark, shelfType: shelfType))
+            wrappedValue: MarkViewModel(
+                item: item, mark: mark, shelfType: shelfType))
     }
 
     var body: some View {
@@ -37,28 +41,7 @@ struct MarkView: View {
             List {
                 // Shelf Type
                 Section {
-                    HStack(spacing: 16) {
-                        ForEach(ShelfType.allCases, id: \.self) { type in
-                            Button {
-                                viewModel.shelfType = type
-                            } label: {
-                                VStack(spacing: 4) {
-                                    Image(systemName: type.iconName)
-                                        .font(.title2)
-                                    Text(type.displayName)
-                                        .font(.caption)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .foregroundStyle(
-                                    viewModel.shelfType == type
-                                        ? .primary : .secondary)
-                            }
-                            .buttonStyle(.borderless)
-
-                        }
-                    }
-                    .padding(.vertical, 8)
-                    .listRowBackground(Color.clear)
+                    shelfTypeButtons
                 }
 
                 // Rating
@@ -82,19 +65,32 @@ struct MarkView: View {
 
                 // Advanced Options
                 Section {
-                    DisclosureGroup(String(localized: "mark_advanced_section", table: "Item"), isExpanded: $showAdvanced) {
-                        Toggle(String(localized: "mark_public_toggle", table: "Item"), isOn: $viewModel.isPublic)
+                    DisclosureGroup(
+                        String(
+                            localized: "mark_advanced_section", table: "Item"),
+                        isExpanded: $showAdvanced
+                    ) {
                         Toggle(
-                            String(localized: "mark_share_fediverse_toggle", table: "Item"),
+                            String(
+                                localized: "mark_public_toggle", table: "Item"),
+                            isOn: $viewModel.isPublic)
+                        Toggle(
+                            String(
+                                localized: "mark_share_fediverse_toggle",
+                                table: "Item"),
                             isOn: $viewModel.postToFediverse)
 
                         Toggle(
-                            String(localized: "mark_use_current_time_toggle", table: "Item"),
+                            String(
+                                localized: "mark_use_current_time_toggle",
+                                table: "Item"),
                             isOn: $viewModel.useCurrentTime)
 
                         if !viewModel.useCurrentTime {
                             DatePicker(
-                                String(localized: "mark_created_time_label", table: "Item"),
+                                String(
+                                    localized: "mark_created_time_label",
+                                    table: "Item"),
                                 selection: $viewModel.createdTime,
                                 displayedComponents: [.date, .hourAndMinute]
                             )
@@ -117,7 +113,9 @@ struct MarkView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .safeContentMargins(.top, EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+            .safeContentMargins(
+                .top, EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
+            )
             .scrollContentBackground(.hidden)
 
             // Bottom Save Button
@@ -146,7 +144,10 @@ struct MarkView: View {
                 dismiss()
             }
         }
-        .alert(String(localized: "mark_error_title", table: "Item"), isPresented: $viewModel.showError) {
+        .alert(
+            String(localized: "mark_error_title", table: "Item"),
+            isPresented: $viewModel.showError
+        ) {
             Button("OK", role: .cancel) {}
         } message: {
             if let error = viewModel.error {
@@ -157,6 +158,50 @@ struct MarkView: View {
             viewModel.accountsManager = accountsManager
         }
         .enableInjection()
+    }
+
+    private var shelfTypeButtons: some View {
+        HStack(spacing: 12) {
+            ForEach(ShelfType.allCases, id: \.self) { type in
+                shelfTypeButton(for: type)
+            }
+        }
+        .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
+        .listRowBackground(Color.clear)
+    }
+
+    private func shelfTypeButton(for type: ShelfType) -> some View {
+        Button {
+            if viewModel.shelfType != type {
+                viewModel.shelfType = type
+                HapticFeedback.impact(.light)
+            }
+        } label: {
+            VStack(spacing: 4) {
+                Image(
+                    symbol: (viewModel.shelfType == type)
+                        ? type.symbolImageFill : type.symbolImage
+                )
+                .font(.system(size: 22))
+                Text(type.displayName)
+                    .font(.caption2)
+            }
+            .frame(width: 64)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 8)
+            .foregroundStyle(
+                viewModel.shelfType == type
+                    ? Color.accentColor : .secondary
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(.primary, lineWidth: 1.5)
+                    .background(.secondary.opacity(0.2))
+                    .opacity(viewModel.shelfType == type ? 1 : 0)
+            )
+            .foregroundStyle(.accent)
+        }
+        .buttonStyle(.plain)
     }
 
     #if DEBUG
