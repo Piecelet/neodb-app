@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension View {
-    public func searchable_iOS16(text: Binding<String>, isPresented: Binding<Bool>, placement: SearchFieldPlacement = .automatic, prompt: LocalizedStringKey? = nil) -> some View {
+    public func searchable_iOS16(text: Binding<String>, isPresented: Binding<Bool>, placement: SearchFieldPlacement = .automatic, prompt: String? = nil) -> some View {
         modifier(Searchable_iOS16(text: text, isPresented: isPresented, placement: placement, prompt: prompt))
     }
 }
@@ -18,7 +18,7 @@ public struct Searchable_iOS16: ViewModifier {
     @Binding var isPresented: Bool
     @State var legacyIsSearching = false
     var placement: SearchFieldPlacement = .automatic
-    var prompt: LocalizedStringKey? = nil
+    var prompt: String? = nil
 
     public func body(content: Content) -> some View {
         #if os(watchOS) || os(tvOS)

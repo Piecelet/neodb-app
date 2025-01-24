@@ -41,7 +41,7 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label("Search", systemImage: "magnifyingglass")
+                Label(String(localized: "discover_search_title", table: "Discover"), systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
 

@@ -16,7 +16,7 @@ struct SearchView: View {
     
     var body: some View {
         searchContent
-            .navigationTitle("Search")
+            .navigationTitle(String(localized: "discover_search_title", table: "Discover"))
             .onAppear {
                 viewModel.accountsManager = accountsManager
                 Task {
@@ -67,7 +67,7 @@ struct SearchView: View {
             }
         }
         .listStyle(.plain)
-        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, prompt: "Search books, movies, music...")
+        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, prompt: String(localized: "discover_search_prompt", table: "Discover"))
         .onSubmit(of: .search) {
             Task {
                 await viewModel.confirmSearch()
@@ -145,12 +145,12 @@ struct SearchView: View {
                         viewModel.clearRecentSearches()
                     }
                 } label: {
-                    Text("Clear All")
+                    Text("discover_search_clear_all", tableName: "Discover")
                         .font(.subheadline)
                 }
             }
         } header: {
-            Text("Recent Searches")
+            Text("discover_search_recent", tableName: "Discover")
         }
     }
     
@@ -200,9 +200,9 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 36))
                 .foregroundStyle(.secondary)
-            Text("No Results Found")
+            Text("discover_search_no_results_title", tableName: "Discover")
                 .font(.headline)
-            Text("Try different keywords or check your spelling")
+            Text("discover_search_no_results_description", tableName: "Discover")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
@@ -265,13 +265,13 @@ struct SearchView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 36))
                 .foregroundStyle(.secondary)
-            Text("Something Went Wrong")
+            Text("discover_search_error_title", tableName: "Discover")
                 .font(.headline)
             Text(error.localizedDescription)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            Button("Try Again") {
+            Button(String(localized: "discover_search_try_again", table: "Discover")) {
                 Task {
                     await viewModel.search()
                 }
