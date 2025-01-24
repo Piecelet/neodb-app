@@ -34,7 +34,7 @@ struct MarkView: View {
             }
             .padding()
 
-            Form {
+            ScrollView {
                 // Shelf Type
                 Section {
                     HStack(spacing: 16) {
