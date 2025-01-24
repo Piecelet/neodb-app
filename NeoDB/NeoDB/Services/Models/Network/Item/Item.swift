@@ -175,40 +175,40 @@ extension EditionSchema {
         var metadata: [(String, String)] = []
 
         if !author.isEmpty {
-            metadata.append(("Author", author.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_author", table: "Item"), author.joined(separator: metadataArraySeparator)))
         }
         if !translator.isEmpty {
-            metadata.append(("Translator", translator.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_translator", table: "Item"), translator.joined(separator: metadataArraySeparator)))
         }
         if !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if let pubHouse = pubHouse {
-            metadata.append(("Publisher", pubHouse))
+            metadata.append((String(localized: "metadata_publisher", table: "Item"), pubHouse))
         }
         if let pubYear = pubYear {
-            metadata.append(("Year", String(pubYear)))
+            metadata.append((String(localized: "metadata_year", table: "Item"), String(pubYear)))
         }
         if let pubMonth = pubMonth {
-            metadata.append(("Month", String(pubMonth)))
+            metadata.append((String(localized: "metadata_month", table: "Item"), String(pubMonth)))
         }
         if let binding = binding {
-            metadata.append(("Binding", binding))
+            metadata.append((String(localized: "metadata_binding", table: "Item"), binding))
         }
         if let price = price {
-            metadata.append(("Price", price))
+            metadata.append((String(localized: "metadata_price", table: "Item"), price))
         }
         if let pages = pages {
-            metadata.append(("Pages", String(pages)))
+            metadata.append((String(localized: "metadata_pages", table: "Item"), String(pages)))
         }
         if let series = series {
-            metadata.append(("Series", series))
+            metadata.append((String(localized: "metadata_series", table: "Item"), series))
         }
         if let imprint = imprint {
-            metadata.append(("Imprint", imprint))
+            metadata.append((String(localized: "metadata_imprint", table: "Item"), imprint))
         }
         if let isbn = isbn {
-            metadata.append(("ISBN", isbn))
+            metadata.append((String(localized: "metadata_isbn", table: "Item"), isbn))
         }
         return metadata
     }
@@ -272,31 +272,31 @@ extension MovieSchema {
         var metadata: [(String, String)] = []
 
         if !director.isEmpty {
-            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_director", table: "Item"), director.joined(separator: metadataArraySeparator)))
         }
         if !playwright.isEmpty {
-            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_playwright", table: "Item"), playwright.joined(separator: metadataArraySeparator)))
         }
         if !actor.isEmpty {
-            metadata.append(("Actor", actor.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_actor", table: "Item"), actor.joined(separator: metadataArraySeparator)))
         }
         if !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if !area.isEmpty {
-            metadata.append(("Area", area.joined(separator: metadataArraySeparatorHidden)))
+            metadata.append((String(localized: "metadata_area", table: "Item"), area.joined(separator: metadataArraySeparatorHidden)))
         }
         if let year = year {
-            metadata.append(("Year", String(year)))
+            metadata.append((String(localized: "metadata_year", table: "Item"), String(year)))
         }
         if let duration = duration {
-            metadata.append(("Duration", duration))
+            metadata.append((String(localized: "metadata_duration", table: "Item"), duration))
         }
         if let imdb = imdb {
-            metadata.append(("IMDB", imdb))
+            metadata.append((String(localized: "metadata_imdb", table: "Item"), imdb))
         }
         return metadata
     }
@@ -371,37 +371,37 @@ extension TVShowSchema {
         var metadata: [(String, String)] = []
 
         if let director = director, !director.isEmpty {
-            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_director", table: "Item"), director.joined(separator: metadataArraySeparator)))
         }
         if let playwright = playwright, !playwright.isEmpty {
-            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_playwright", table: "Item"), playwright.joined(separator: metadataArraySeparator)))
         }
         if let actor = actor, !actor.isEmpty {
-            metadata.append(("Actor", actor.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_actor", table: "Item"), actor.joined(separator: metadataArraySeparator)))
         }
         if let genre = genre, !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if let language = language, !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if let area = area, !area.isEmpty {
-            metadata.append(("Area", area.joined(separator: metadataArraySeparatorHidden)))
+            metadata.append((String(localized: "metadata_area", table: "Item"), area.joined(separator: metadataArraySeparatorHidden)))
         }
         if let year = year {
-            metadata.append(("Year", String(year)))
+            metadata.append((String(localized: "metadata_year", table: "Item"), String(year)))
         }
         if let imdb = imdb {
-            metadata.append(("IMDB", imdb))
+            metadata.append((String(localized: "metadata_imdb", table: "Item"), imdb))
         }
         if let episodeCount = episodeCount {
-            metadata.append(("Episode Count", String(episodeCount)))
+            metadata.append((String(localized: "metadata_episode_count", table: "Item"), String(episodeCount)))
         }
         if let episodeNumber = episodeNumber {
-            metadata.append(("Episode Number", String(episodeNumber)))
+            metadata.append((String(localized: "metadata_episode_number", table: "Item"), String(episodeNumber)))
         }
         if let seasonNumber = seasonNumber {
-            metadata.append(("Season Number", String(seasonNumber)))
+            metadata.append((String(localized: "metadata_season_number", table: "Item"), String(seasonNumber)))
         }
         return metadata
     }
@@ -522,25 +522,25 @@ extension AlbumSchema {
         var metadata: [(String, String)] = []
 
         if !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if !artist.isEmpty {
-            metadata.append(("Artist", artist.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_artist", table: "Item"), artist.joined(separator: metadataArraySeparator)))
         }
         if !company.isEmpty {
-            metadata.append(("Company", company.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_company", table: "Item"), company.joined(separator: metadataArraySeparator)))
         }
         if let duration = duration {
-            metadata.append(("Duration", "\(duration) minutes"))
+            metadata.append((String(localized: "metadata_duration", table: "Item"), "\(duration) minutes"))
         }
         if let releaseDate = releaseDate {
-            metadata.append(("Release Date", releaseDate))
+            metadata.append((String(localized: "metadata_release_date", table: "Item"), releaseDate))
         }
         if let trackList = trackList {
-            metadata.append(("Track List", trackList))
+            metadata.append((String(localized: "metadata_track_list", table: "Item"), trackList))
         }
         if let barcode = barcode {
-            metadata.append(("Barcode", barcode))
+            metadata.append((String(localized: "metadata_barcode", table: "Item"), barcode))
         }
         return metadata
     }
@@ -602,25 +602,25 @@ extension PodcastSchema {
         var metadata: [(String, String)] = []
 
         if !host.isEmpty {
-            metadata.append(("Host", host.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_host", table: "Item"), host.joined(separator: metadataArraySeparator)))
         }
         if !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if let episodeCount = episodeCount {
-            metadata.append(("Episode Count", String(episodeCount)))
+            metadata.append((String(localized: "metadata_episode_count", table: "Item"), String(episodeCount)))
         }
         if let lastEpisodeDate = lastEpisodeDate {
-            metadata.append(("Last Episode Date", lastEpisodeDate))
+            metadata.append((String(localized: "metadata_last_episode_date", table: "Item"), lastEpisodeDate))
         }
         if let rssUrl = rssUrl {
-            metadata.append(("RSS URL", rssUrl))
+            metadata.append((String(localized: "metadata_rss_url", table: "Item"), rssUrl))
         }
         if let websiteUrl = websiteUrl {
-            metadata.append(("Website URL", websiteUrl))
+            metadata.append((String(localized: "metadata_website_url", table: "Item"), websiteUrl))
         }
         return metadata
     }
@@ -682,25 +682,25 @@ extension GameSchema {
         var metadata: [(String, String)] = []
 
         if !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if !developer.isEmpty {
-            metadata.append(("Developer", developer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_developer", table: "Item"), developer.joined(separator: metadataArraySeparator)))
         }
         if !publisher.isEmpty {
-            metadata.append(("Publisher", publisher.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_publisher", table: "Item"), publisher.joined(separator: metadataArraySeparator)))
         }
         if !platform.isEmpty {
-            metadata.append(("Platform", platform.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_platform", table: "Item"), platform.joined(separator: metadataArraySeparator)))
         }
         if let releaseType = releaseType {
-            metadata.append(("Release Type", releaseType))
+            metadata.append((String(localized: "metadata_release_type", table: "Item"), releaseType))
         }
         if let releaseDate = releaseDate {
-            metadata.append(("Release Date", releaseDate))
+            metadata.append((String(localized: "metadata_release_date", table: "Item"), releaseDate))
         }
         if let officialSite = officialSite {
-            metadata.append(("Official Site", officialSite))
+            metadata.append((String(localized: "metadata_official_site", table: "Item"), officialSite))
         }
         return metadata
     }
@@ -758,43 +758,43 @@ extension PerformanceSchema {
         var metadata: [(String, String)] = []
 
         if !genre.isEmpty {
-            metadata.append(("Genre", genre.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_genre", table: "Item"), genre.joined(separator: metadataArraySeparator)))
         }
         if !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if let openingDate = openingDate {
-            metadata.append(("Opening Date", openingDate))
+            metadata.append((String(localized: "metadata_opening_date", table: "Item"), openingDate))
         }
         if let closingDate = closingDate {
-            metadata.append(("Closing Date", closingDate))
+            metadata.append((String(localized: "metadata_closing_date", table: "Item"), closingDate))
         }
         if !director.isEmpty {
-            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_director", table: "Item"), director.joined(separator: metadataArraySeparator)))
         }
         if !playwright.isEmpty {
-            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_playwright", table: "Item"), playwright.joined(separator: metadataArraySeparator)))
         }
         if !origCreator.isEmpty {
-            metadata.append(("Orig Creator", origCreator.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_orig_creator", table: "Item"), origCreator.joined(separator: metadataArraySeparator)))
         }
         if !composer.isEmpty {
-            metadata.append(("Composer", composer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_composer", table: "Item"), composer.joined(separator: metadataArraySeparator)))
         }
         if !choreographer.isEmpty {
-            metadata.append(("Choreographer", choreographer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_choreographer", table: "Item"), choreographer.joined(separator: metadataArraySeparator)))
         }
         if !performer.isEmpty {
-            metadata.append(("Performer", performer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_performer", table: "Item"), performer.joined(separator: metadataArraySeparator)))
         }
         if !actor.isEmpty {
-            metadata.append(("Actor", actor.map { $0.name }.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_actor", table: "Item"), actor.map { $0.name }.joined(separator: metadataArraySeparator)))
         }
         if !crew.isEmpty {
-            metadata.append(("Crew", crew.map { $0.name }.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_crew", table: "Item"), crew.map { $0.name }.joined(separator: metadataArraySeparator)))
         }
         if let officialSite = officialSite {
-            metadata.append(("Official Site", officialSite))
+            metadata.append((String(localized: "metadata_official_site", table: "Item"), officialSite))
         }
         return metadata
     }
@@ -851,40 +851,40 @@ extension PerformanceProductionSchema {
         var metadata: [(String, String)] = []
 
         if !language.isEmpty {
-            metadata.append(("Language", language.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_language", table: "Item"), language.joined(separator: metadataArraySeparator)))
         }
         if let openingDate = openingDate {
-            metadata.append(("Opening Date", openingDate))
+            metadata.append((String(localized: "metadata_opening_date", table: "Item"), openingDate))
         }
         if let closingDate = closingDate {
-            metadata.append(("Closing Date", closingDate))
+            metadata.append((String(localized: "metadata_closing_date", table: "Item"), closingDate))
         }
         if !director.isEmpty {
-            metadata.append(("Director", director.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_director", table: "Item"), director.joined(separator: metadataArraySeparator)))
         }
         if !playwright.isEmpty {
-            metadata.append(("Playwright", playwright.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_playwright", table: "Item"), playwright.joined(separator: metadataArraySeparator)))
         }
         if !origCreator.isEmpty {
-            metadata.append(("Orig Creator", origCreator.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_orig_creator", table: "Item"), origCreator.joined(separator: metadataArraySeparator)))
         }
         if !composer.isEmpty {
-            metadata.append(("Composer", composer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_composer", table: "Item"), composer.joined(separator: metadataArraySeparator)))
         }
         if !choreographer.isEmpty {
-            metadata.append(("Choreographer", choreographer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_choreographer", table: "Item"), choreographer.joined(separator: metadataArraySeparator)))
         }
         if !performer.isEmpty {
-            metadata.append(("Performer", performer.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_performer", table: "Item"), performer.joined(separator: metadataArraySeparator)))
         }
         if !actor.isEmpty {
-            metadata.append(("Actor", actor.map { $0.name }.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_actor", table: "Item"), actor.map { $0.name }.joined(separator: metadataArraySeparator)))
         }
         if !crew.isEmpty {
-            metadata.append(("Crew", crew.map { $0.name }.joined(separator: metadataArraySeparator)))
+            metadata.append((String(localized: "metadata_crew", table: "Item"), crew.map { $0.name }.joined(separator: metadataArraySeparator)))
         }
         if let officialSite = officialSite {
-            metadata.append(("Official Site", officialSite))
+            metadata.append((String(localized: "metadata_official_site", table: "Item"), officialSite))
         }
         return metadata
     }

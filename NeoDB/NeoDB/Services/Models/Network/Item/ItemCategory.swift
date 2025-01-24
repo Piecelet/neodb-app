@@ -84,7 +84,7 @@ enum ItemCategory: String, Codable, CaseIterable {
 
         var displayName: String {
             switch self {
-            case .allItems: return "All"
+            case .allItems: return String(localized: "category_all", table: "Item")
             default: return self.itemCategory?.displayName ?? self.rawValue
             }
         }
@@ -119,9 +119,8 @@ enum ItemCategory: String, Codable, CaseIterable {
 
         var displayName: String {
             switch self {
-            case .allItems: return "All"
-
-            case .movieAndTv: return "Movies & TV"
+            case .allItems: return String(localized: "category_all", table: "Item")
+            case .movieAndTv: return String(localized: "category_movie_and_tv", table: "Item")
             default: return itemCategory?.displayName ?? self.rawValue
             }
         }
