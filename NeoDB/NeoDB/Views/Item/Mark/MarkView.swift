@@ -45,13 +45,12 @@ struct MarkView: View {
                 }
 
                 // Rating
-                VStack(alignment: .leading, spacing: 12) {
-
+                Section {
                     RatingView(rating: $viewModel.rating)
+                        .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
                         .frame(maxWidth: .infinity)
                 }
                 .listRowBackground(Color.clear)
-                .padding(.horizontal)
 
                 // Comment
                 Section {

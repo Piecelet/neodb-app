@@ -52,7 +52,7 @@ private struct StarRatingView: View {
     private let color: Color
     private let maxRating: Float
     
-    init(rating: Binding<Float>, color: Color = .yellow, maxRating: Float = 5) {
+    init(rating: Binding<Float>, color: Color = .orange.opacity(0.8), maxRating: Float = 5) {
         self._rating = rating
         self.color = color
         self.maxRating = maxRating
