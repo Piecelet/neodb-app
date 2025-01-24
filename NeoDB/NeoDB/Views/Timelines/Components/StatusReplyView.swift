@@ -30,7 +30,7 @@ struct StatusReplyView: View {
                 }
             }
             .padding()
-            Text("Reply is under development")
+            Text("timelines_status_reply_development", tableName: "Timelines")
             Spacer()
         }
         .background(.ultraThinMaterial)

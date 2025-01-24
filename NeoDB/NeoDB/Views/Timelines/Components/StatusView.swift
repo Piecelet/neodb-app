@@ -147,7 +147,8 @@ struct StatusView: View {
                             .labelStyle(.iconOnly)
                             .foregroundStyle(viewModel.status.bookmarked ?? false ? .orange : .secondary)
                     }
-                    if let url = URL(string: status.url ?? "") {
+                    .padding(.trailing, mode == .detail ? 8 : nil)
+                    if let url = URL(string: status.url ?? ""), mode == .timeline {
                         ShareLink(item: url) {
                             Label("Share", systemSymbol: .arrowUpRight)
                         }

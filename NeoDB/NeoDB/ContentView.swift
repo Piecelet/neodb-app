@@ -28,7 +28,7 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label("Home", systemImage: "house.fill")
+                Label(String(localized: "timelines_title_home", table: "Timelines"), systemImage: "house.fill")
             }
             .tag(TabSection.home)
 

@@ -265,13 +265,13 @@ struct TimelinesView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Text("timelines_title", tableName: "Timelines")
+                Text(verbatim: "Piecelet")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
             }
             ToolbarItem(placement: .principal) {
-                Text("timelines_title", tableName: "Timelines")
+                Text(verbatim: "Piecelet")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
                     .hidden()

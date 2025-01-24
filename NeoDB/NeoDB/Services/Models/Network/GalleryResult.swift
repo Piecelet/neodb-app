@@ -15,24 +15,28 @@ struct GalleryResult: Codable, Identifiable {
         name
     }
 
-    var displayTitle: String {
+    var itemCategory: ItemCategory? {
         switch name {
         case "trending_book":
-            return "Books"
+            return .book
         case "trending_movie":
-            return "Movies"
+            return .movie
         case "trending_tv":
-            return "TV Shows"
+            return .tv
         case "trending_game":
-            return "Games"
+            return .game
         case "trending_music":
-            return "Music"
+            return .music
         case "trending_podcast":
-            return "Podcasts"
+            return .podcast
         case "trending_performance":
-            return "Performances"
+            return .performance
         default:
-            return name
+            return nil
         }
+    }
+
+    var displayTitle: String {
+        return itemCategory?.displayName ?? name
     }
 }

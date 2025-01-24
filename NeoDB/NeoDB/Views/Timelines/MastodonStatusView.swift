@@ -24,7 +24,7 @@ struct MastodonStatusView: View {
         Group {
             if let error = viewModel.error {
                 EmptyStateView(
-                    "Couldn't Load Status",
+                    String(localized: "timelines_status_error_title", table: "Timelines"),
                     systemImage: "exclamationmark.triangle",
                     description: Text(error.localizedDescription)
                 )
@@ -38,16 +38,16 @@ struct MastodonStatusView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 EmptyStateView(
-                    "Status Not Found",
+                    String(localized: "timelines_status_not_found_title", table: "Timelines"),
                     systemImage: "text.bubble",
-                    description: Text("The status you're looking for doesn't exist or has been deleted.")
+                    description: Text("timelines_status_not_found_description", tableName: "Timelines")
                 )
                 .refreshable {
                     await viewModel.loadStatus(id: id, refresh: true)
                 }
             }
         }
-        .navigationTitle("Post")
+        .navigationTitle(String(localized: "timelines_status_title", table: "Timelines"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
@@ -84,20 +84,26 @@ struct MastodonStatusView: View {
                 // Additional Info
                 HStack(alignment: .bottom, spacing: 12) {
                     if let application = status.application {
-                        infoRow(title: "Posted via", content: application.name)
+                        infoRow(
+                            title: String(localized: "timelines_status_posted_via", table: "Timelines"),
+                            content: application.name
+                        )
                         Spacer()
                     }
                     
-                    infoRow(title: "Visibility", content: status.visibility.rawValue.capitalized)
+                    infoRow(
+                        title: String(localized: "timelines_status_visibility", table: "Timelines"),
+                        content: status.visibility.displayName
+                    )
                     
                     if let url = status.url {
                         Spacer()
                         Link(destination: URL(string:url)!) {
                             HStack {
                                 VStack(alignment: .trailing) {
-                                    Text("Open In Browser")
+                                    Text("timelines_status_browser_button", tableName: "Timelines")
                                         .font(.caption)
-                                    Text("View Comments")
+                                    Text("timelines_status_comments_button", tableName: "Timelines")
                                         .font(.subheadline)
                                 }
                                 Image(systemName: "arrow.up.right")
