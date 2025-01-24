@@ -9,13 +9,13 @@ import Foundation
 
 enum ContentType {
     case json
-    case urlencoded
+    case urlEncoded
 
     var headerValue: String {
         switch self {
         case .json:
             return "application/json"
-        case .urlencoded:
+        case .urlEncoded:
             return "application/x-www-form-urlencoded"
         }
     }
@@ -44,8 +44,8 @@ protocol NetworkEndpoint {
     var path: String { get }
     var method: HTTPMethod { get }
     var queryItems: [URLQueryItem]? { get }
-    var bodyContentType: ContentType? { get }
-    var body: Encodable? { get }
+    var bodyJson: Encodable? { get }
+    var bodyUrlEncoded: [URLQueryItem]? { get }
     var headers: [String: String]? { get }
 }
 
@@ -66,11 +66,11 @@ extension NetworkEndpoint {
         return nil
     }
 
-    var bodyContentType: ContentType? {
-        return .json
+    var bodyJson: Encodable? {
+        return nil
     }
 
-    var body: Encodable? {
+    var bodyUrlEncoded: [URLQueryItem]? {
         return nil
     }
 
@@ -89,9 +89,5 @@ extension NetworkEndpoint {
             return [.init(name: "min_id", value: mindId)]
         }
         return nil
-    }
-
-    var responseType: ResponseType {
-        return .json
     }
 }

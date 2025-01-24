@@ -19,7 +19,7 @@ struct AppClient: Codable, Identifiable {
     let redirectUri: String
     let clientId: String
     let clientSecret: String
-    let vapidKey: String
+    let vapidKey: String?
     let instance: String
     
     private static func cleanInstanceHost(from instance: String) -> String {

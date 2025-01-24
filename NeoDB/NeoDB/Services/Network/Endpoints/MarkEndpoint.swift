@@ -36,7 +36,7 @@ extension MarkEndpoint: NetworkEndpoint {
         }
     }
 
-    var body: Encodable? {
+    var bodyJson: Encodable? {
         switch self {
         case .mark(_, let mark):
             return mark

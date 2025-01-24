@@ -14,5 +14,5 @@ struct AppsResponse: Codable, Identifiable {
   let redirectUri: String
   let clientId: String
   let clientSecret: String
-  let vapidKey: String
+  let vapidKey: String?
 }

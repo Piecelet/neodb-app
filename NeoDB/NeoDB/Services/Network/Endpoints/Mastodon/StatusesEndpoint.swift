@@ -116,7 +116,7 @@ extension StatusesEndpoints: NetworkEndpoint {
         }
     }
 
-    var body: Encodable? {
+    var bodyJson: Encodable? {
         switch self {
         case let .postStatus(json):
             return json

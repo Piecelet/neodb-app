@@ -23,7 +23,7 @@ class NetworkClient {
     /// Debug flag to control logging of network requests and responses
     private static let isDebugRequestEnabled: Bool = true
     private static let isDebugResponseEnabled: Bool = false
-    
+
     private let logger = Logger.network
     private let urlSession: URLSession
     private let instance: String
@@ -38,13 +38,15 @@ class NetworkClient {
         self.oauthToken = oauthToken
         self.urlSession = URLSession.shared
         self.webSocketTask = nil
-        
+
         // Configure decoder
         self.decoder.keyDecodingStrategy = .convertFromSnakeCase
         self.encoder.keyEncodingStrategy = .convertToSnakeCase
     }
 
-    func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws -> URL {
+    func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws
+        -> URL
+    {
         var components = URLComponents()
         components.scheme = scheme
         components.host = instance
@@ -71,7 +73,7 @@ class NetworkClient {
             break
         }
         components.path = path
-        
+
         // Filter out nil query items and only set if there are valid items
         if let queryItems = endpoint.queryItems?.compactMap({ item in
             item.value.map { URLQueryItem(name: item.name, value: $0) }
@@ -80,7 +82,8 @@ class NetworkClient {
         }
 
         guard let url = components.url else {
-            logger.error("Failed to construct URL for endpoint: \(endpoint.path)")
+            logger.error(
+                "Failed to construct URL for endpoint: \(endpoint.path)")
             throw NetworkError.invalidURL
         }
 
@@ -94,11 +97,23 @@ class NetworkClient {
         request.httpMethod = endpoint.method.rawValue
 
         // Handle request body and content type
-        if let body = endpoint.body, let bodyContentType = endpoint.bodyContentType, bodyContentType == .json {
+        if let bodyJson = endpoint.bodyJson {
             request.setValue(
-                bodyContentType.headerValue,
+                ContentType.json.headerValue,
                 forHTTPHeaderField: "Content-Type")
-            request.httpBody = try encoder.encode(body)
+            request.httpBody = try encoder.encode(bodyJson)
+        } else if let bodyUrlEncoded = endpoint.bodyUrlEncoded {
+            request.setValue(
+                ContentType.urlEncoded.headerValue,
+                forHTTPHeaderField: "Content-Type")
+            let body = bodyUrlEncoded.compactMap { item in
+                item.value.map { URLQueryItem(name: item.name, value: $0) }
+            }
+            if !body.isEmpty {
+                request.httpBody = body.map { "\($0.name)=\($0.value ?? "")" }
+                    .joined(separator: "&")
+                    .data(using: .utf8)
+            }
         }
 
         endpoint.headers?.forEach { key, value in
@@ -145,18 +160,24 @@ class NetworkClient {
             }
 
             logger.debug("Attempting to decode response data")
-            if  T.self == HTMLPage.self {
+            if T.self == HTMLPage.self {
                 logger.debug("Processing HTML response")
-                guard let htmlString = String(data: data, encoding: .utf8) else {
+                guard let htmlString = String(data: data, encoding: .utf8)
+                else {
                     logger.error("Failed to decode HTML string from data")
-                    throw NetworkError.decodingError(NSError(domain: "", code: -1))
+                    throw NetworkError.decodingError(
+                        NSError(domain: "", code: -1))
                 }
-                logger.debug("Successfully decoded HTML string, length: \(htmlString.count)")
+                logger.debug(
+                    "Successfully decoded HTML string, length: \(htmlString.count)"
+                )
                 logger.debug("Creating HTMLPage instance")
                 return HTMLPage(stringValue: htmlString) as! T
             }
 
-            logger.debug("Attempting to decode JSON response for type: \(String(describing: T.self))")
+            logger.debug(
+                "Attempting to decode JSON response for type: \(String(describing: T.self))"
+            )
             do {
                 let result = try decoder.decode(type, from: data)
                 return result
@@ -200,54 +221,62 @@ class NetworkClient {
         }
     }
 
-    func makeWebSocketTask(endpoint: NetworkEndpoint) throws -> URLSessionWebSocketTask {
+    func makeWebSocketTask(endpoint: NetworkEndpoint) throws
+        -> URLSessionWebSocketTask
+    {
         let url = try makeURL(scheme: "wss", endpoint: endpoint)
         var request = URLRequest(url: url)
-        
+
         // Add authorization if available
         if let token = oauthToken?.accessToken {
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue(
+                "Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-        
+
         // Add any additional headers from the endpoint
         endpoint.headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
-        
+
         logger.debug("Creating WebSocket connection to: \(url.absoluteString)")
         return urlSession.webSocketTask(with: request)
     }
 
     // MARK: - Debug Logging
-    
+
     private func logRequest(_ request: URLRequest) {
         if !Self.isDebugRequestEnabled { return }
         let loggerRequest = Logger.networkRequest
-        
-        loggerRequest.debug("🌐 REQUEST [\(request.httpMethod ?? "Unknown")] \(request.url?.absoluteString ?? "")")
-        
+
+        loggerRequest.debug(
+            "🌐 REQUEST [\(request.httpMethod ?? "Unknown")] \(request.url?.absoluteString ?? "")"
+        )
+
         if let headers = request.allHTTPHeaderFields {
             loggerRequest.debug("Headers: \(headers)")
         }
-        
+
         if let body = request.httpBody,
-           let bodyString = String(data: body, encoding: .utf8) {
+            let bodyString = String(data: body, encoding: .utf8)
+        {
             loggerRequest.debug("Body: \(bodyString)")
         }
     }
-    
+
     private func logResponse(_ response: URLResponse, data: Data) {
         if !Self.isDebugResponseEnabled { return }
         let loggerResponse = Logger.networkResponse
-        
+
         guard let httpResponse = response as? HTTPURLResponse else { return }
-        
-        loggerResponse.debug("📥 RESPONSE [\(httpResponse.statusCode)] \(httpResponse.url?.absoluteString ?? "")")
-        
+
+        loggerResponse.debug(
+            "📥 RESPONSE [\(httpResponse.statusCode)] \(httpResponse.url?.absoluteString ?? "")"
+        )
+
         if let headers = httpResponse.allHeaderFields as? [String: String] {
             loggerResponse.debug("Headers: \(headers)")
         }
-        
+
         if let bodyString = String(data: data, encoding: .utf8) {
             loggerResponse.debug("Body: \(bodyString)")
         }
@@ -259,16 +288,20 @@ class NetworkClient {
             case .dataCorrupted(let context):
                 logger.error("Data corrupted: \(context.debugDescription)")
             case .keyNotFound(let key, let context):
-                logger.error("Key not found: \(key.stringValue) - \(context.debugDescription)")
+                logger.error(
+                    "Key not found: \(key.stringValue) - \(context.debugDescription)"
+                )
             case .typeMismatch(let type, let context):
-                logger.error("Type mismatch: \(type) - \(context.debugDescription)")
+                logger.error(
+                    "Type mismatch: \(type) - \(context.debugDescription)")
             case .valueNotFound(let type, let context):
-                logger.error("Value not found: \(type) - \(context.debugDescription)")
+                logger.error(
+                    "Value not found: \(type) - \(context.debugDescription)")
             @unknown default:
                 logger.error("Unknown decoding error: \(decodingError)")
             }
         }
-        
+
         if let rawResponse = String(data: data, encoding: .utf8) {
             logger.error("Raw response: \(rawResponse)")
         }
@@ -276,9 +309,10 @@ class NetworkClient {
 }
 
 // MARK: - URLRequest Extension
-private extension URLRequest {
-    var allHTTPHeaders: [String: String]? {
-        allHTTPHeaderFields?.reduce(into: [String: String]()) { result, header in
+extension URLRequest {
+    fileprivate var allHTTPHeaders: [String: String]? {
+        allHTTPHeaderFields?.reduce(into: [String: String]()) {
+            result, header in
             // 敏感信息处理
             if header.key.lowercased() == "authorization" {
                 result[header.key] = "Bearer [REDACTED]"
