@@ -209,19 +209,18 @@
         }
       }
     },
-    "item_open_in" : {
-      "extractionState" : "stale",
+    "item_open_in_website" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open in..."
+            "value" : "Open in %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开..."
+            "value" : "在 %@ 中打开"
           }
         }
       }
@@ -761,9 +760,14 @@
             "state" : "translated",
             "value" : "ISBN"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ISBN"
+          }
         }
-      },
-      "shouldTranslate" : false
+      }
     },
     "metadata_language" : {
       "localizations" : {
@@ -1112,7 +1116,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "完"
+            "value" : "已看过"
           }
         }
       }
@@ -1128,7 +1132,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "弃"
+            "value" : "已放弃"
           }
         }
       }
@@ -1144,7 +1148,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "在"
+            "value" : "正在看"
           }
         }
       }
@@ -1160,7 +1164,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "想"
+            "value" : "已想看"
           }
         }
       }

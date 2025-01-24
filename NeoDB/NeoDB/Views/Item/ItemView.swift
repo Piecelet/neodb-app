@@ -221,7 +221,7 @@ struct ItemView: View {
                     systemName: viewModel.shelfType == nil
                         ? "plus" : "checkmark")
                 if let shelfType = viewModel.shelfType {
-                    Text(shelfType.displayName)
+                    Text(shelfType.displayActionState)
                 } else {
                     Text("Add to Shelf")
                 }
@@ -243,7 +243,14 @@ struct ItemView: View {
                 {
                     Menu {
                         if let shareURL = viewModel.shareURL {
-                            Button("Open in \(accountsManager.currentAccount.instance)", systemSymbol: .arrowUpRight) {
+                            Button(
+                                String(
+                                    format: String(
+                                        localized: "item_open_in_website",
+                                        table: "Item"),
+                                    accountsManager.currentAccount.instance),
+                                systemSymbol: .arrowUpRight
+                            ) {
                                 openURL(shareURL)
                             }
 

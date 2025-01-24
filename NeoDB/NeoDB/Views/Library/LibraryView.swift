@@ -99,7 +99,7 @@ struct LibraryView: View {
                 EmptyStateView(
                     String(localized: "library_empty_title", table: "Library"),
                     systemImage: "books.vertical",
-                    description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName.lowercased()))
+                    description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
                 )
             } else {
                 ProgressView()
