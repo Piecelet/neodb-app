@@ -149,7 +149,7 @@ struct ProfileView: View {
                                 String(
                                     format: String(
                                         localized: "timelines_profile_joined",
-                                        table: "Timelines"), account.createdAt.formatted())
+                                        table: "Timelines"), account.createdAt.formatted)
                             )
                             .font(.caption)
                             .foregroundStyle(.secondary)
