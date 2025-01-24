@@ -34,7 +34,7 @@ struct MarkView: View {
             }
             .padding()
 
-            Form {
+            List {
                 // Shelf Type
                 Section {
                     HStack(spacing: 16) {
@@ -58,6 +58,7 @@ struct MarkView: View {
                         }
                     }
                     .padding(.vertical, 8)
+                    .listRowBackground(Color.clear)
                 }
 
                 // Rating
@@ -115,6 +116,7 @@ struct MarkView: View {
                 }
             }
             .listStyle(.insetGrouped)
+            .safeContentMargins(.top, EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
             .scrollContentBackground(.hidden)
 
             // Bottom Save Button
