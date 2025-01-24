@@ -67,6 +67,7 @@ struct MarkView: View {
                     RatingView(rating: $viewModel.rating)
                         .frame(maxWidth: .infinity)
                 }
+                .listRowBackground(Color.clear)
                 .padding(.horizontal)
 
                 // Comment
