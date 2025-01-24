@@ -16,7 +16,7 @@ class SearchViewModel: ObservableObject {
     private var galleryTask: Task<Void, Never>?
     private var searchDebounceTask: Task<Void, Never>?
     private let debounceInterval: TimeInterval = 0.5
-    private let minSearchLength = 2
+    let minSearchLength = 2
     private let maxRecentSearches = 10
     
     enum SearchState: Equatable {
@@ -56,6 +56,9 @@ class SearchViewModel: ObservableObject {
     @Published var currentPage = 1
     @Published var hasMorePages = false
     @Published private(set) var recentSearches: [String] = []
+    @Published var selectedCategory: ItemCategory.searchable = .allItems
+    @Published var loadingStartTime: Date?
+    @Published var showLoading = false
     
     var accountsManager: AppAccountsManager?
     
@@ -203,7 +206,16 @@ class SearchViewModel: ObservableObject {
         guard let accountsManager = accountsManager else { return }
         
         if !append {
+            loadingStartTime = Date()
             searchState = .searching
+            
+            // Start a timer to show loading after 0.5s
+            Task {
+                try? await Task.sleep(nanoseconds: 500_000_000)
+                if case .searching = searchState {
+                    showLoading = true
+                }
+            }
         }
         
         do {
@@ -215,20 +227,27 @@ class SearchViewModel: ObservableObject {
                     instance: accountsManager.currentAccount.instance
                 ) {
                     if !Task.isCancelled {
-                        updateSearchResults(cachedResult, append: false)
-                        logger.debug("Using cached search results for page \(currentPage)")
-                        return
+                        updateSearchResults(cachedResult, append: append)
                     }
                 }
             }
             
-            let endpoint = CatalogEndpoint.search(query: searchText, page: currentPage)
-            let result = try await accountsManager.currentClient.fetch(endpoint, type: SearchResult.self)
+            guard !Task.isCancelled else { return }
+            
+            let endpoint = CatalogEndpoint.search(
+                query: searchText,
+                category: selectedCategory != .allItems ? selectedCategory.itemCategory : nil,
+                page: currentPage
+            )
+            
+            let result = try await accountsManager.currentClient.fetch(
+                endpoint, type: SearchResult.self)
             
             if !Task.isCancelled {
                 updateSearchResults(result, append: append)
+                showLoading = false
                 
-                // Cache only the first page
+                // Cache only if it's not appending
                 if !append {
                     try? await cacheService.cacheSearch(
                         result,
@@ -236,17 +255,15 @@ class SearchViewModel: ObservableObject {
                         page: currentPage,
                         instance: accountsManager.currentAccount.instance
                     )
-                    logger.debug("Cached search results for page \(currentPage)")
                 }
             }
-        } catch {
-            if case NetworkError.cancelled = error {
-                logger.debug("Search cancelled")
-                return
-            }
             
-            searchState = .error(error)
-            logger.error("Search failed: \(error.localizedDescription)")
+        } catch {
+            if !Task.isCancelled {
+                searchState = .error(error)
+                showLoading = false
+                logger.error("Search failed: \(error.localizedDescription)")
+            }
         }
     }
     
