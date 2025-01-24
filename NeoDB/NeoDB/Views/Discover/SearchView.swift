@@ -12,6 +12,7 @@ struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
+    @Binding var isSearchActive: Bool
     
     var body: some View {
         searchContent
@@ -66,7 +67,7 @@ struct SearchView: View {
             }
         }
         .listStyle(.plain)
-        .searchable(text: $viewModel.searchText, prompt: "Search books, movies, music...")
+        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, prompt: "Search books, movies, music...")
         .onSubmit(of: .search) {
             Task {
                 await viewModel.confirmSearch()
@@ -80,6 +81,9 @@ struct SearchView: View {
                 ForEach(ItemCategory.searchable.allCases, id: \.self) { category in
                     Button {
                         viewModel.selectedCategory = category
+                        Task {
+                            await viewModel.confirmSearch()
+                        }
                     } label: {
                         HStack {
                             Image(symbol: category.symbolImage)
@@ -217,13 +221,13 @@ struct SearchView: View {
                 } label: {
                     ItemRowView(item: item)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
                 .buttonStyle(.plain)
             } else {
                 // Other items show only title as suggestions
                 Button {
+                    viewModel.searchText = item.displayTitle ?? item.title ?? ""
                     Task {
-                        await viewModel.confirmSearch(searchText: item.displayTitle ?? item.title ?? "")
+                        await viewModel.confirmSearch()
                     }
                 } label: {
                     HStack {
@@ -235,7 +239,6 @@ struct SearchView: View {
                     .padding(.vertical, 4)
                 }
                 .buttonStyle(.plain)
-                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -301,7 +304,7 @@ struct ItemCoverImage: View {
 }
 
 #Preview {
-    SearchView()
+    SearchView(isSearchActive: .constant(true))
         .environmentObject(AppAccountsManager())
         .environmentObject(Router())
 }

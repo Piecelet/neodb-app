@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
+    @State private var isSearchActive = false
 
     var body: some View {
         TabView(selection: $router.selectedTab) {
@@ -28,7 +29,7 @@ struct ContentView: View {
 
             // Search Tab
             NavigationStack(path: router.path(for: .search)) {
-                SearchView()
+                SearchView(isSearchActive: $isSearchActive)
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)
@@ -38,6 +39,13 @@ struct ContentView: View {
                 Label("Search", systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
+            .onChangeWithPrevious(of: router.selectedTab) { oldValue, newValue in
+                if newValue == .search {
+                    if oldValue == .search {
+                        isSearchActive = true
+                    }
+                }
+            }
 
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
