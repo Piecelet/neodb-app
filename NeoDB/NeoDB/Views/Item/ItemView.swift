@@ -271,7 +271,8 @@ struct ItemView: View {
 
                 if let url = viewModel.shareURL {
                     ShareLink(item: url) {
-                        Image(systemName: "square.and.arrow.up")
+                        Label("Share", systemImage: "square.and.arrow.up")
+                            .labelStyle(.iconOnly)
                     }
                 }
             }
