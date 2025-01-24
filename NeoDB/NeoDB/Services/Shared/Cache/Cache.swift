@@ -36,6 +36,12 @@ extension CacheService {
         static func gallery(instance: String? = nil) -> String {
             "gallery_\(instance ?? "default")"
         }
+        
+        // Search related
+        static func search(query: String, page: Int, instance: String? = nil) -> String {
+            let normalizedQuery = query.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+            return "search_\(instance ?? "default")_\(normalizedQuery)_\(page)"
+        }
 
         static func timelines(key: String) -> String {
             "timelines_\(key)"
@@ -188,6 +194,23 @@ extension CacheService {
     func removeTimelines(key: String) async throws {
         let key = Keys.timelines(key: key)
         try await remove(forKey: key, type: [MastodonStatus].self)
+    }
+
+    // MARK: - Search Caching
+    
+    func cacheSearch(_ result: SearchResult, query: String, page: Int, instance: String? = nil) async throws {
+        let key = Keys.search(query: query, page: page, instance: instance)
+        try await cache(result, forKey: key, type: SearchResult.self)
+    }
+    
+    func retrieveSearch(query: String, page: Int, instance: String? = nil) async throws -> SearchResult? {
+        let key = Keys.search(query: query, page: page, instance: instance)
+        return try await retrieve(forKey: key, type: SearchResult.self)
+    }
+    
+    func removeSearch(query: String, page: Int, instance: String? = nil) async throws {
+        let key = Keys.search(query: query, page: page, instance: instance)
+        try await remove(forKey: key, type: SearchResult.self)
     }
 }
 

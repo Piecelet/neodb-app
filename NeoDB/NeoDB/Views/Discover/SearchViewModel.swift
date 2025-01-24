@@ -14,31 +14,139 @@ class SearchViewModel: ObservableObject {
     private let cacheService = CacheService()
     private var searchTask: Task<Void, Never>?
     private var galleryTask: Task<Void, Never>?
+    private var searchDebounceTask: Task<Void, Never>?
+    private let debounceInterval: TimeInterval = 0.5
+    private let minSearchLength = 2
+    private let maxRecentSearches = 10
     
-    @Published var searchText = ""
-    @Published var items: [ItemSchema] = []
+    enum SearchState: Equatable {
+        case idle
+        case searching
+        case noResults
+        case results([ItemSchema])
+        case error(Error)
+        
+        static func == (lhs: SearchState, rhs: SearchState) -> Bool {
+            switch (lhs, rhs) {
+            case (.idle, .idle):
+                return true
+            case (.searching, .searching):
+                return true
+            case (.noResults, .noResults):
+                return true
+            case (.results(let lhsItems), .results(let rhsItems)):
+                return lhsItems.map { $0.uuid } == rhsItems.map { $0.uuid }
+            case (.error, .error):
+                // 由于 Error 不遵循 Equatable，我们只比较是否都是错误状态
+                return true
+            default:
+                return false
+            }
+        }
+    }
+    
+    @Published var searchText = "" {
+        didSet {
+            debouncedSearch()
+        }
+    }
+    @Published private(set) var searchState: SearchState = .idle
     @Published var galleryItems: [GalleryResult] = []
-    @Published var isLoading = false
     @Published var isLoadingGallery = false
-    @Published var error: Error?
-    @Published var showError = false
     @Published var currentPage = 1
     @Published var hasMorePages = false
+    @Published private(set) var recentSearches: [String] = []
     
     var accountsManager: AppAccountsManager?
     
-    func search() {
-        searchTask?.cancel()
+    init() {
+        loadRecentSearches()
+    }
+    
+    private func debouncedSearch() {
+        searchDebounceTask?.cancel()
         
-        guard !searchText.isEmpty else {
-            items = []
+        // Clear results if search text is empty
+        if searchText.isEmpty {
+            searchState = .idle
             return
         }
         
-        currentPage = 1
+        // Check minimum search length
+        if searchText.count < minSearchLength {
+            return
+        }
+        
+        searchDebounceTask = Task {
+            try? await Task.sleep(nanoseconds: UInt64(debounceInterval * 1_000_000_000))
+            if !Task.isCancelled {
+                currentPage = 1
+                await search()
+            }
+        }
+    }
+    
+    func search() async {
+        searchTask?.cancel()
+        
+        guard !searchText.isEmpty else {
+            searchState = .idle
+            return
+        }
+        
+        guard searchText.count >= minSearchLength else {
+            return
+        }
+        
+        // Add to recent searches when actually performing the search
+        addToRecentSearches(searchText)
+        
         searchTask = Task {
             await performSearch()
         }
+    }
+    
+    private func addToRecentSearches(_ query: String) {
+        let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedQuery.isEmpty else { return }
+        
+        // Remove if already exists
+        recentSearches.removeAll { $0.lowercased() == trimmedQuery.lowercased() }
+        
+        // Add to the beginning
+        recentSearches.insert(trimmedQuery, at: 0)
+        
+        // Keep only the most recent searches
+        if recentSearches.count > maxRecentSearches {
+            recentSearches = Array(recentSearches.prefix(maxRecentSearches))
+        }
+        
+        // Save to UserDefaults
+        saveRecentSearches()
+    }
+    
+    private func loadRecentSearches() {
+        if let instance = accountsManager?.currentAccount.instance {
+            let key = "recent_searches_\(instance)"
+            recentSearches = UserDefaults.standard.stringArray(forKey: key) ?? []
+        }
+    }
+    
+    private func saveRecentSearches() {
+        if let instance = accountsManager?.currentAccount.instance {
+            let key = "recent_searches_\(instance)"
+            UserDefaults.standard.set(recentSearches, forKey: key)
+        }
+    }
+    
+    func clearRecentSearches() {
+        recentSearches.removeAll()
+        saveRecentSearches()
+    }
+    
+    func removeRecentSearch(_ query: String) {
+        recentSearches.removeAll { $0 == query }
+        saveRecentSearches()
     }
     
     func loadGallery() async {
@@ -74,8 +182,7 @@ class SearchViewModel: ObservableObject {
                     return
                 }
                 
-                self.error = error
-                self.showError = true
+                searchState = .error(error)
                 logger.error("Gallery loading failed: \(error.localizedDescription)")
             }
         }
@@ -84,7 +191,7 @@ class SearchViewModel: ObservableObject {
     }
     
     func loadMore() {
-        guard !isLoading, hasMorePages else { return }
+        guard case .results = searchState, !Task.isCancelled, hasMorePages else { return }
         
         currentPage += 1
         searchTask = Task {
@@ -95,51 +202,72 @@ class SearchViewModel: ObservableObject {
     private func performSearch(append: Bool = false) async {
         guard let accountsManager = accountsManager else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        if !append {
+            searchState = .searching
+        }
         
         do {
-            let cacheKey = "\(accountsManager.currentAccount.instance)_search_\(searchText)_\(currentPage)"
-            
             // Try to get cached search results first
-            if !append, let cachedResults: SearchResult = try? await cacheService.retrieve(forKey: cacheKey, type: SearchResult.self) {
-                if !Task.isCancelled {
-                    items = cachedResults.data
-                    hasMorePages = currentPage < cachedResults.pages
-                    logger.debug("Using cached search results for page \(currentPage)")
-                    return
+            if !append {
+                if let cachedResult = try? await cacheService.retrieveSearch(
+                    query: searchText,
+                    page: currentPage,
+                    instance: accountsManager.currentAccount.instance
+                ) {
+                    if !Task.isCancelled {
+                        updateSearchResults(cachedResult, append: false)
+                        logger.debug("Using cached search results for page \(currentPage)")
+                        return
+                    }
                 }
             }
             
             let endpoint = CatalogEndpoint.search(query: searchText, page: currentPage)
             let result = try await accountsManager.currentClient.fetch(endpoint, type: SearchResult.self)
             
-            if append {
-                items.append(contentsOf: result.data)
-            } else {
-                items = result.data
+            if !Task.isCancelled {
+                updateSearchResults(result, append: append)
+                
                 // Cache only the first page
-                try? await cacheService.cache(result, forKey: cacheKey, type: SearchResult.self)
-                logger.debug("Cached search results for page \(currentPage)")
+                if !append {
+                    try? await cacheService.cacheSearch(
+                        result,
+                        query: searchText,
+                        page: currentPage,
+                        instance: accountsManager.currentAccount.instance
+                    )
+                    logger.debug("Cached search results for page \(currentPage)")
+                }
             }
-            
-            hasMorePages = currentPage < result.pages
         } catch {
             if case NetworkError.cancelled = error {
                 logger.debug("Search cancelled")
                 return
             }
             
-            self.error = error
-            self.showError = true
+            searchState = .error(error)
             logger.error("Search failed: \(error.localizedDescription)")
         }
+    }
+    
+    private func updateSearchResults(_ result: SearchResult, append: Bool) {
+        if append {
+            if case .results(let existingItems) = searchState {
+                let updatedItems = existingItems + result.data
+                searchState = updatedItems.isEmpty ? .noResults : .results(updatedItems)
+            }
+        } else {
+            searchState = result.data.isEmpty ? .noResults : .results(result.data)
+        }
+        hasMorePages = currentPage < result.pages
     }
     
     func cleanup() {
         searchTask?.cancel()
         galleryTask?.cancel()
+        searchDebounceTask?.cancel()
         searchTask = nil
         galleryTask = nil
+        searchDebounceTask = nil
     }
 } 

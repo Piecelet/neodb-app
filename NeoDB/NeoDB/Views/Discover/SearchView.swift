@@ -15,13 +15,6 @@ struct SearchView: View {
     
     var body: some View {
         searchContent
-            .overlay {
-                if viewModel.isLoading && viewModel.items.isEmpty {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(.ultraThinMaterial)
-                }
-            }
             .onAppear {
                 viewModel.accountsManager = accountsManager
                 Task {
@@ -31,7 +24,7 @@ struct SearchView: View {
             .onDisappear {
                 viewModel.cleanup()
             }
-        .enableInjection()
+            .enableInjection()
     }
 
     #if DEBUG
@@ -41,24 +34,72 @@ struct SearchView: View {
     private var searchContent: some View {
         List {
             if viewModel.searchText.isEmpty {
+                if !viewModel.recentSearches.isEmpty {
+                    recentSearchesSection
+                }
                 galleryContent
             } else {
-                searchResults
-                loadingIndicator
+                Group {
+                    switch viewModel.searchState {
+                    case .idle:
+                        EmptyView()
+                    case .searching:
+                        searchLoadingView
+                    case .noResults:
+                        searchEmptyStateView
+                    case .results(let items):
+                        searchResultsView(items)
+                    case .error(let error):
+                        searchErrorView(error)
+                    }
+                }
+                .animation(.default, value: viewModel.searchState)
             }
         }
         .listStyle(.plain)
-        .searchable(text: $viewModel.searchText)
-        .onChange(of: viewModel.searchText) { _ in
-            viewModel.search()
-        }
-        .navigationTitle("Search")
-        .alert("Error", isPresented: $viewModel.showError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            if let error = viewModel.error {
-                Text(error.localizedDescription)
+        .searchable(text: $viewModel.searchText, prompt: "Search books, movies, music...")
+    }
+    
+    private var recentSearchesSection: some View {
+        Section {
+            ForEach(viewModel.recentSearches, id: \.self) { query in
+                HStack {
+                    Button {
+                        viewModel.searchText = query
+                    } label: {
+                        HStack {
+                            Image(systemName: "clock.arrow.circlepath")
+                                .foregroundStyle(.secondary)
+                            Text(query)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Spacer()
+                    
+                    Button {
+                        viewModel.removeRecentSearch(query)
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundStyle(.secondary)
+                    }
+                    .buttonStyle(.plain)
+                }
             }
+            
+            if !viewModel.recentSearches.isEmpty {
+                Button(role: .destructive) {
+                    withAnimation {
+                        viewModel.clearRecentSearches()
+                    }
+                } label: {
+                    Text("Clear All")
+                        .font(.subheadline)
+                }
+            }
+        } header: {
+            Text("Recent Searches")
         }
     }
     
@@ -69,6 +110,7 @@ struct SearchView: View {
                     LazyHStack(spacing: 12) {
                         ForEach(gallery.items, id: \.uuid) { item in
                             Button {
+                                HapticFeedback.selection()
                                 router.navigate(to: .itemDetailWithItem(item: item))
                             } label: {
                                 VStack(alignment: .leading, spacing: 0) {
@@ -93,33 +135,68 @@ struct SearchView: View {
         }
     }
     
-    private var searchResults: some View {
-        ForEach(viewModel.items, id: \.uuid) { item in
+    private var searchLoadingView: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .padding()
+            Spacer()
+        }
+    }
+    
+    private var searchEmptyStateView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 36))
+                .foregroundStyle(.secondary)
+            Text("No Results Found")
+                .font(.headline)
+            Text("Try different keywords or check your spelling")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity, minHeight: 200)
+        .listRowSeparator(.hidden)
+    }
+    
+    private func searchResultsView(_ items: [ItemSchema]) -> some View {
+        ForEach(items, id: \.uuid) { item in
             Button {
+                HapticFeedback.selection()
                 router.navigate(to: .itemDetailWithItem(item: item))
             } label: {
                 ItemRowView(item: item)
             }
             .buttonStyle(.plain)
             .onAppear {
-                if item == viewModel.items.last {
+                if item == items.last {
                     viewModel.loadMore()
                 }
             }
         }
     }
     
-    private var loadingIndicator: some View {
-        Group {
-            if viewModel.isLoading && !viewModel.items.isEmpty {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                    Spacer()
+    private func searchErrorView(_ error: Error) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 36))
+                .foregroundStyle(.secondary)
+            Text("Something Went Wrong")
+                .font(.headline)
+            Text(error.localizedDescription)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button("Try Again") {
+                Task {
+                    await viewModel.search()
                 }
-                .listRowSeparator(.hidden)
             }
+            .buttonStyle(.bordered)
         }
+        .frame(maxWidth: .infinity, minHeight: 200)
+        .listRowSeparator(.hidden)
     }
 }
 
@@ -135,7 +212,7 @@ struct ItemCoverImage: View {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(height: 128)
-        .enableInjection()
+            .enableInjection()
     }
 
     #if DEBUG
