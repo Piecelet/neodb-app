@@ -1,7 +1,7 @@
 import SwiftUI
 
 #if os(iOS)
-import UIKit
+    import UIKit
 #endif
 
 /// A wrapper for providing haptic feedback across different iOS versions and platforms
@@ -14,98 +14,85 @@ enum HapticFeedback {
         case heavy
         case rigid
         case soft
-        
+
         #if os(iOS)
-        @available(iOS, deprecated: 17.0, message: "Use SensoryFeedback instead")
-        var uiKitStyle: UIImpactFeedbackGenerator.FeedbackStyle {
-            switch self {
-            case .light: return .light
-            case .medium: return .medium
-            case .heavy: return .heavy
-            case .rigid: return .rigid
-            case .soft: return .soft
+            var uiKitStyle: UIImpactFeedbackGenerator.FeedbackStyle {
+                switch self {
+                case .light: return .light
+                case .medium: return .medium
+                case .heavy: return .heavy
+                case .rigid: return .rigid
+                case .soft: return .soft
+                }
             }
-        }
         #endif
     }
-    
+
+    // 缓存 Impact Generators
+    private static var impactGenerators: [ImpactLevel: UIImpactFeedbackGenerator] = [:]
+
     /// Trigger impact feedback
     static func impact(_ level: ImpactLevel = .medium) {
         #if os(iOS)
-        if #available(iOS 17.0, *) {
-            // On iOS 17+, we use UIKit feedback generators since we're not in a SwiftUI view context
-            let generator = UIImpactFeedbackGenerator(style: level.uiKitStyle)
-            generator.prepare()
+            let generator: UIImpactFeedbackGenerator
+            if let cachedGenerator = impactGenerators[level] {
+                generator = cachedGenerator // 复用缓存的 generator
+            } else {
+                generator = UIImpactFeedbackGenerator(style: level.uiKitStyle)
+                impactGenerators[level] = generator // 缓存新的 generator
+            }
+            // generator.prepare() // 可以选择性保留 prepare()，但通常复用情况下 prepare 的意义不大
             generator.impactOccurred()
-        } else {
-            let generator = UIImpactFeedbackGenerator(style: level.uiKitStyle)
-            generator.prepare()
-            generator.impactOccurred()
-        }
         #endif
     }
-    
+
+    // 缓存 Selection Generator
+    private static var selectionGenerator: UISelectionFeedbackGenerator?
+
     /// Trigger selection feedback
     static func selection() {
         #if os(iOS)
-        if #available(iOS 17.0, *) {
-            // On iOS 17+, we use UIKit feedback generators since we're not in a SwiftUI view context
-            let generator = UISelectionFeedbackGenerator()
-            generator.prepare()
+            let generator: UISelectionFeedbackGenerator
+            if let cachedGenerator = selectionGenerator {
+                generator = cachedGenerator // 复用缓存的 generator
+            } else {
+                generator = UISelectionFeedbackGenerator()
+                selectionGenerator = generator // 缓存新的 generator
+            }
+            // generator.prepare() // 可以选择性保留 prepare()，但通常复用情况下 prepare 的意义不大
             generator.selectionChanged()
-        } else {
-            let generator = UISelectionFeedbackGenerator()
-            generator.prepare()
-            generator.selectionChanged()
-        }
         #endif
     }
-    
+
+    // 缓存 Notification Generator
+    private static var notificationGenerator: UINotificationFeedbackGenerator?
+
     /// Trigger success feedback
     static func success() {
-        #if os(iOS)
-        if #available(iOS 17.0, *) {
-            // On iOS 17+, we use UIKit feedback generators since we're not in a SwiftUI view context
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.success)
-        } else {
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.success)
-        }
-        #endif
+        notificationFeedback(.success)
     }
-    
+
     /// Trigger error feedback
     static func error() {
-        #if os(iOS)
-        if #available(iOS 17.0, *) {
-            // On iOS 17+, we use UIKit feedback generators since we're not in a SwiftUI view context
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.error)
-        } else {
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.error)
-        }
-        #endif
+        notificationFeedback(.error)
     }
-    
+
     /// Trigger warning feedback
     static func warning() {
+        notificationFeedback(.warning)
+    }
+
+    private static func notificationFeedback(_ notificationType: UINotificationFeedbackGenerator.FeedbackType) {
         #if os(iOS)
-        if #available(iOS 17.0, *) {
-            // On iOS 17+, we use UIKit feedback generators since we're not in a SwiftUI view context
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.warning)
-        } else {
-            let generator = UINotificationFeedbackGenerator()
-            generator.prepare()
-            generator.notificationOccurred(.warning)
-        }
+            let generator: UINotificationFeedbackGenerator
+            if let cachedGenerator = notificationGenerator {
+                generator = cachedGenerator // 复用缓存的 generator
+            } else {
+                generator = UINotificationFeedbackGenerator()
+                notificationGenerator = generator // 缓存新的 generator
+            }
+            // generator.prepare() // 可以选择性保留 prepare()，但通常复用情况下 prepare 的意义不大
+            generator.notificationOccurred(notificationType)
         #endif
     }
-} 
+}

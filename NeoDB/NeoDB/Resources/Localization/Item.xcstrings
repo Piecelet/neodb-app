@@ -145,6 +145,9 @@
         }
       }
     },
+    "Clear" : {
+
+    },
     "item_add_to_shelf" : {
       "localizations" : {
         "en" : {
@@ -157,38 +160,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "添加到书架"
-          }
-        }
-      }
-    },
-    "item_rating_none" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Ratings"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂无评分"
-          }
-        }
-      }
-    },
-    "item_rating_na" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "N/A"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "暂无"
           }
         }
       }
@@ -269,6 +240,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 %@ 中打开"
+          }
+        }
+      }
+    },
+    "item_rating_na" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N/A"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无"
+          }
+        }
+      }
+    },
+    "item_rating_none" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Ratings"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无评分"
           }
         }
       }
