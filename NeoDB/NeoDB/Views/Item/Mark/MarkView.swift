@@ -53,8 +53,13 @@ struct MarkView: View {
                 )
             ) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
-                    markContentView
-                        .tag(type)
+                    if type == .wishlist {
+                        markContentView
+                            .tag(type)
+                    } else {
+                        markContentViewWithRating
+                            .tag(type)
+                    }
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -100,17 +105,29 @@ struct MarkView: View {
     }
 
     private var markContentView: some View {
+        markContentViewBase {
+            EmptyView()
+        }
+    }
+
+    private var markContentViewWithRating: some View {
+        markContentViewBase {
+            StarRatingView(inputRating: $viewModel.rating)
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func markContentViewBase<Content: View>(
+        @ViewBuilder header: @escaping () -> Content
+    ) -> some View {
         VStack(spacing: 0) {
             VStack {
-                // Rating Section (not shown for wishlist)
-                if viewModel.shelfType != .wishlist {
-                    StarRatingView(inputRating: $viewModel.rating)
-                        .frame(maxWidth: .infinity)
-                }
+                header()
 
                 TextEditor(text: $viewModel.comment)
                     .frame(
-                        minHeight: 100
+                        minHeight: 100,
+                        maxHeight: 300
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     .overlay {
@@ -120,86 +137,89 @@ struct MarkView: View {
                                 .disabled(true)
                         }
                     }
+                    .scrollDisabled(viewModel.comment.isEmpty)
                     .padding(10)
                     .background(.ultraThinMaterial)
                     .cornerRadius(8)
                     .padding(.horizontal)
 
-                Section {
-                    DisclosureGroup(
-                        String(
-                            localized: "mark_advanced_section", table: "Item"),
-                        isExpanded: $showAdvanced
-                    ) {
-                        Toggle(
-                            String(
-                                localized: "mark_public_toggle", table: "Item"),
-                            isOn: $viewModel.isPublic)
-                        Toggle(
-                            String(
-                                localized: "mark_share_fediverse_toggle",
-                                table: "Item"),
-                            isOn: $viewModel.postToFediverse)
-                        Toggle(
-                            String(
-                                localized: "mark_use_current_time_toggle",
-                                table: "Item"),
-                            isOn: $viewModel.useCurrentTime)
+                advancedOptionsSection
 
-                        if !viewModel.useCurrentTime {
-                            DatePicker(
-                                String(
-                                    localized: "mark_created_time_label",
-                                    table: "Item"),
-                                selection: $viewModel.createdTime,
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
-                        }
-                    }
-                }
-                
                 Spacer()
 
-                // Delete Button Section
                 if viewModel.existingMark != nil {
-                    Section {
-                        Button(role: .destructive) {
-                            Task {
-                                await viewModel.deleteMark()
-                            }
-                        } label: {
-                            Text("mark_delete_button", tableName: "Item")
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
+                    deleteButton
                 }
             }
             .padding(.top, viewModel.shelfType == .wishlist ? 16 : 0)
-            .listStyle(.insetGrouped)
-            .environment(\.defaultMinListRowHeight, 10)
-            .environment(\.defaultMinListHeaderHeight, 10)
-            .safeContentMargins(.top, EdgeInsets())
             .scrollContentBackground(.hidden)
 
-            // Bottom Save Button
-            VStack(spacing: 16) {
-                Button {
-                    Task {
-                        await viewModel.saveMark()
-                    }
-                } label: {
-                    Text("mark_save_button", tableName: "Item")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.isLoading)
-                .padding(.horizontal)
-            }
-            .padding(.vertical)
-            .background(.ultraThinMaterial)
-            .compositingGroup()
+            saveButton
         }
+    }
+
+    private var advancedOptionsSection: some View {
+        Section {
+            DisclosureGroup(
+                String(localized: "mark_advanced_section", table: "Item"),
+                isExpanded: $showAdvanced
+            ) {
+                Toggle(
+                    String(localized: "mark_public_toggle", table: "Item"),
+                    isOn: $viewModel.isPublic)
+                Toggle(
+                    String(
+                        localized: "mark_share_fediverse_toggle", table: "Item"),
+                    isOn: $viewModel.postToFediverse)
+                Toggle(
+                    String(
+                        localized: "mark_use_current_time_toggle", table: "Item"
+                    ),
+                    isOn: $viewModel.useCurrentTime)
+
+                if !viewModel.useCurrentTime {
+                    DatePicker(
+                        String(
+                            localized: "mark_created_time_label", table: "Item"),
+                        selection: $viewModel.createdTime,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                }
+            }
+        }
+    }
+
+    private var deleteButton: some View {
+        Section {
+            Button(role: .destructive) {
+                Task {
+                    await viewModel.deleteMark()
+                }
+            } label: {
+                Text("mark_delete_button", tableName: "Item")
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    private var saveButton: some View {
+        VStack(spacing: 16) {
+            Button {
+                Task {
+                    await viewModel.saveMark()
+                }
+            } label: {
+                Text("mark_save_button", tableName: "Item")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+            }
+            .buttonStyle(.borderedProminent)
+            .disabled(viewModel.isLoading)
+            .padding(.horizontal)
+        }
+        .padding(.vertical)
+        .background(.ultraThinMaterial)
+        .compositingGroup()
     }
 
     #if DEBUG
