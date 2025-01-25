@@ -136,9 +136,13 @@ struct MarkView: View {
                 .padding(.horizontal)
             }
             .padding(.vertical)
+//            .background(.background.opacity(0.2))
             .background(.ultraThinMaterial)
+            .compositingGroup()
         }
+//        .background(.background.opacity(0.2))
         .background(.ultraThinMaterial)
+        .compositingGroup()
         .presentationDetents([.medium, .large], selection: $detent)
         .presentationDragIndicator(.visible)
         .onChange(of: viewModel.isDismissed) { dismissed in

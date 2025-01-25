@@ -57,17 +57,20 @@ struct StarRatingView: View {
                                 // 2. Overlay Star (Selected state)
                                 Image(systemName: "star.fill")
                                     .font(.system(size: starSize))
-                                    .foregroundColor(.orange.opacity(0.8))  // Orange color for selected
-                                    .clipShape(  // Use clipShape with custom Shape
+                                    .foregroundColor(.orange.opacity(0.8))
+                                    .clipShape(
                                         StarClipShape(
                                             fillAmount: starFillAmount(
                                                 forIndex: index))
                                     )
+                                    .animation(.spring(duration: 0.3), value: internalRating)
                             }
                             .onTapGesture { location in
-                                handleStarTap(
-                                    location: location, index: index,
-                                    geometry: geometry)
+                                withAnimation(.spring(duration: 0.3)) {
+                                    handleStarTap(
+                                        location: location, index: index,
+                                        geometry: geometry)
+                                }
                             }
                     }
                 }
@@ -75,18 +78,32 @@ struct StarRatingView: View {
                 .gesture(
                     DragGesture()
                         .onChanged { value in
-                            handleDragChanged(value: value, geometry: geometry)
+                            withAnimation(.spring(duration: 0.3)) {
+                                handleDragChanged(value: value, geometry: geometry)
+                            }
                         }
                 )
             }
             .frame(height: starSize)
             .frame(maxWidth: .infinity, alignment: .center)
 
-            Button("Clear") {
-                clearRating()
+            Group {
+                if internalRating > 0 {
+                    Button("Clear", systemSymbol: .xmark) {
+                        withAnimation(.spring(duration: 0.3)) {
+                            clearRating()
+                        }
+                    }
+                    .labelStyle(.titleAndIcon)
+                    .buttonStyle(.plain)
+                } else {
+                    Text("Tap to review")
+                }
             }
-            .buttonStyle(.plain)
+            .foregroundStyle(.secondary)
             .padding(.top)
+            .font(.footnote)
+            .animation(.spring(duration: 0.3), value: internalRating)
         }
         .padding()
         .frame(maxWidth: .infinity)
@@ -165,29 +182,31 @@ struct StarRatingView: View {
     private func handleDragChanged(
         value: DragGesture.Value, geometry: GeometryProxy
     ) {
-        let dragLocation = value.location
-        let totalSpacing = CGFloat(starCount - 1) * starSpacing
-        let starAreaWidth = geometry.size.width - totalSpacing
-        let starWidth = starAreaWidth / CGFloat(starCount)
+        withAnimation(.spring(duration: 0.3)) {
+            let dragLocation = value.location
+            let totalSpacing = CGFloat(starCount - 1) * starSpacing
+            let starAreaWidth = geometry.size.width - totalSpacing
+            let starWidth = starAreaWidth / CGFloat(starCount)
 
-        let rawRating = dragLocation.x / starWidth
-        let snappedRating =
-            (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
-        var validRating = min(max(0, snappedRating), Double(starCount))  // Ensure rating is within 0 to starCount
+            let rawRating = dragLocation.x / starWidth
+            let snappedRating =
+                (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
+            var validRating = min(max(0, snappedRating), Double(starCount))  // Ensure rating is within 0 to starCount
 
-        // Enforce minimum rating of 0.5
-        if validRating < 0.5 && validRating > 0 {
-            validRating = 0.5
-        } else if validRating <= 0 {
-            validRating = 0.5  // If drag is before the first star, set to 0.5
-        }
+            // Enforce minimum rating of 0.5
+            if validRating < 0.5 && validRating > 0 {
+                validRating = 0.5
+            } else if validRating <= 0 {
+                validRating = 0.5  // If drag is before the first star, set to 0.5
+            }
 
-        let oldRating = internalRating
-        if validRating != internalRating {
-            internalRating = validRating
-            inputRating = Int(round(internalRating * 2))  // Update inputRating based on internal rating change
-            logger.debug("Current Rating (Drag): \(internalRating)")
-            performFeedback(forRatingChange: oldRating)
+            let oldRating = internalRating
+            if validRating != internalRating {
+                internalRating = validRating
+                inputRating = Int(round(internalRating * 2))  // Update inputRating based on internal rating change
+                logger.debug("Current Rating (Drag): \(internalRating)")
+                performFeedback(forRatingChange: oldRating)
+            }
         }
     }
 
