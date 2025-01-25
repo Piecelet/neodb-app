@@ -5,9 +5,9 @@
 //  Created by citron on 1/15/25.
 //
 
+import Parchment
 import SwiftUI
 import SwiftUIIntrospect
-import Parchment
 
 struct MarkView: View {
     @StateObject private var viewModel: MarkViewModel
@@ -52,7 +52,10 @@ struct MarkView: View {
                 id: \.self,
                 selectedIndex:
                     Binding(
-                        get: { ShelfType.allCases.firstIndex(of: viewModel.shelfType ?? .wishlist) ?? 0 },
+                        get: {
+                            ShelfType.allCases.firstIndex(
+                                of: viewModel.shelfType) ?? 0
+                        },
                         set: { index in
                             let type = ShelfType.allCases[index]
                             if viewModel.shelfType != type {
@@ -72,12 +75,20 @@ struct MarkView: View {
                     }
                 }
             }
-            .menuPosition(.top)
-            .menuItemSpacing(20)
-            .menuBackgroundColor(.clear)
-            .menuHorizontalAlignment(.left)
-            .indicatorColor(.accentColor)
-            .indicatorOptions(.visible(height: 2, zIndex: 0, spacing: .zero, insets: .init(top: 0, left: 0, bottom: 0, right: 0)))
+            .menuItemSize(.fixed(width: 0, height: 0))
+
+            VStack(alignment: .center, spacing: 0) {
+                saveButton
+
+                if viewModel.existingMark != nil {
+                    deleteButton
+                } else {
+                    deleteButton
+                        .hidden()
+                }
+            }
+            .background(.ultraThinMaterial)
+            .compositingGroup()
         }
         .background(.ultraThinMaterial)
         .compositingGroup()
@@ -120,7 +131,7 @@ struct MarkView: View {
     }
 
     private var markContentView: some View {
-        markContentViewBase {
+        markContentViewBase(paddingTop: true) {
             EmptyView()
         }
     }
@@ -133,6 +144,7 @@ struct MarkView: View {
     }
 
     private func markContentViewBase<Content: View>(
+        paddingTop: Bool = false,
         @ViewBuilder header: @escaping () -> Content
     ) -> some View {
         VStack(spacing: 0) {
@@ -141,7 +153,7 @@ struct MarkView: View {
 
                 TextEditor(text: $viewModel.comment)
                     .frame(
-                        minHeight: 100,
+                        minHeight: 50,
                         maxHeight: 300
                     )
                     .fixedSize(horizontal: false, vertical: true)
@@ -157,19 +169,14 @@ struct MarkView: View {
                     .background(.ultraThinMaterial)
                     .cornerRadius(8)
                     .padding(.horizontal)
+                    .padding(.top)
 
-                advancedOptionsSection
+//                advancedOptionsSection
 
                 Spacer()
-
-                if viewModel.existingMark != nil {
-                    deleteButton
-                }
             }
-            .padding(.top, viewModel.shelfType == .wishlist ? 16 : 0)
+            .padding(.top, paddingTop ? 16 : 0)
             .scrollContentBackground(.hidden)
-
-            saveButton
         }
     }
 
@@ -205,16 +212,17 @@ struct MarkView: View {
     }
 
     private var deleteButton: some View {
-        Section {
-            Button(role: .destructive) {
-                Task {
-                    await viewModel.deleteMark()
-                }
-            } label: {
-                Text("mark_delete_button", tableName: "Item")
-                    .frame(maxWidth: .infinity)
+        Button(role: .destructive) {
+            Task {
+                await viewModel.deleteMark()
             }
+        } label: {
+            Label(String(localized: "mark_delete_button", table: "Item"), systemSymbol: .trash)
+                .frame(maxWidth: .infinity)
+                .labelStyle(.titleOnly)
         }
+        .disabled(viewModel.isLoading)
+        .padding(.bottom)
     }
 
     private var saveButton: some View {
@@ -233,8 +241,6 @@ struct MarkView: View {
             .padding(.horizontal)
         }
         .padding(.vertical)
-        .background(.ultraThinMaterial)
-        .compositingGroup()
     }
 
     #if DEBUG
