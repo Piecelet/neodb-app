@@ -47,35 +47,23 @@ struct MarkView: View {
             }
             .padding(.bottom)
 
-            PageView(
-                ShelfType.allCases,
-                id: \.self,
-                selectedIndex:
-                    Binding(
-                        get: {
-                            ShelfType.allCases.firstIndex(
-                                of: viewModel.shelfType) ?? 0
-                        },
-                        set: { index in
-                            let type = ShelfType.allCases[index]
-                            if viewModel.shelfType != type {
-                                withAnimation {
-                                    viewModel.shelfType = type
-                                    HapticFeedback.impact(.light)
-                                }
-                            }
-                        }
-                    )
-            ) { type in
-                Page(type.displayName) {
+            TabView(
+                selection: Binding(
+                    get: { viewModel.shelfType },
+                    set: { viewModel.shelfType = $0 }
+                )
+            ) {
+                ForEach(ShelfType.allCases, id: \.self) { type in
                     if type == .wishlist {
                         markContentView
+                            .tag(type)
                     } else {
                         markContentViewWithRating
+                            .tag(type)
                     }
                 }
             }
-            .menuItemSize(.fixed(width: 0, height: 0))
+            .tabViewStyle(.page(indexDisplayMode: .never))
 
             VStack(alignment: .center, spacing: 0) {
                 saveButton
@@ -171,7 +159,7 @@ struct MarkView: View {
                     .padding(.horizontal)
                     .padding(.top)
 
-//                advancedOptionsSection
+                //                advancedOptionsSection
 
                 Spacer()
             }
@@ -217,9 +205,12 @@ struct MarkView: View {
                 await viewModel.deleteMark()
             }
         } label: {
-            Label(String(localized: "mark_delete_button", table: "Item"), systemSymbol: .trash)
-                .frame(maxWidth: .infinity)
-                .labelStyle(.titleOnly)
+            Label(
+                String(localized: "mark_delete_button", table: "Item"),
+                systemSymbol: .trash
+            )
+            .frame(maxWidth: .infinity)
+            .labelStyle(.titleOnly)
         }
         .disabled(viewModel.isLoading)
         .padding(.bottom)
