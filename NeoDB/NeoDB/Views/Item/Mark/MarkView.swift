@@ -39,111 +39,22 @@ struct MarkView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
+                .padding(.bottom)
                 .padding(.leading, 4)
                 shelfTypeButtons
             }
             
-            List {
-                // Shelf Type
-                Section {
-                    StarRatingView(inputRating: $viewModel.rating)
-                        .frame(maxWidth: .infinity)
-                }
-                .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
-                .listRowSeparator(.hidden)
-                .listRowBackground(Color.clear)
-
-                // Rating
-                Section {
-                }
-                .listRowBackground(Color.clear)
-
-                // Comment
-                Section {
-                    TextEditor(text: $viewModel.comment)
-                        .frame(minHeight: 100)
-                } header: {
-                    Text("mark_comment_label", tableName: "Item")
-                } footer: {
-                    Text("mark_comment_optional", tableName: "Item")
-                }
-
-                // Advanced Options
-                Section {
-                    DisclosureGroup(
-                        String(
-                            localized: "mark_advanced_section", table: "Item"),
-                        isExpanded: $showAdvanced
-                    ) {
-                        Toggle(
-                            String(
-                                localized: "mark_public_toggle", table: "Item"),
-                            isOn: $viewModel.isPublic)
-                        Toggle(
-                            String(
-                                localized: "mark_share_fediverse_toggle",
-                                table: "Item"),
-                            isOn: $viewModel.postToFediverse)
-
-                        Toggle(
-                            String(
-                                localized: "mark_use_current_time_toggle",
-                                table: "Item"),
-                            isOn: $viewModel.useCurrentTime)
-
-                        if !viewModel.useCurrentTime {
-                            DatePicker(
-                                String(
-                                    localized: "mark_created_time_label",
-                                    table: "Item"),
-                                selection: $viewModel.createdTime,
-                                displayedComponents: [.date, .hourAndMinute]
-                            )
-                        }
-                    }
-                }
-
-                // Delete Button
-                if viewModel.existingMark != nil {
-                    Section {
-                        Button(role: .destructive) {
-                            Task {
-                                await viewModel.deleteMark()
-                            }
-                        } label: {
-                            Text("mark_delete_button", tableName: "Item")
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
+            TabView(selection: Binding(
+                get: { viewModel.shelfType ?? .wishlist },
+                set: { viewModel.shelfType = $0 }
+            )) {
+                ForEach(ShelfType.allCases, id: \.self) { type in
+                    markContentView
+                        .tag(type)
                 }
             }
-            .listStyle(.insetGrouped)
-            .safeContentMargins(
-                .top, EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-            )
-            .scrollContentBackground(.hidden)
-
-            // Bottom Save Button
-            VStack(spacing: 16) {
-                Button {
-                    Task {
-                        await viewModel.saveMark()
-                    }
-                } label: {
-                    Text("mark_save_button", tableName: "Item")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.isLoading)
-                .padding(.horizontal)
-            }
-            .padding(.vertical)
-//            .background(.background.opacity(0.2))
-            .background(.ultraThinMaterial)
-            .compositingGroup()
+            .tabViewStyle(.page(indexDisplayMode: .never))
         }
-//        .background(.background.opacity(0.2))
         .background(.ultraThinMaterial)
         .compositingGroup()
         .presentationDetents([.medium, .large], selection: $detent)
@@ -182,6 +93,95 @@ struct MarkView: View {
                 }
             )
         ) { $0.displayName }
+    }
+
+    private var markContentView: some View {
+        VStack(spacing: 0) {
+            List {
+                // Rating Section (not shown for wishlist)
+                if viewModel.shelfType != .wishlist {
+                    Section {
+                        StarRatingView(inputRating: $viewModel.rating)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                }
+
+                // Comment Section
+                Section {
+                    TextEditor(text: $viewModel.comment)
+                        .frame(minHeight: 100)
+                } header: {
+                    Text("mark_comment_label", tableName: "Item")
+                } footer: {
+                    Text("mark_comment_optional", tableName: "Item")
+                }
+
+                // Advanced Options Section
+                Section {
+                    DisclosureGroup(
+                        String(localized: "mark_advanced_section", table: "Item"),
+                        isExpanded: $showAdvanced
+                    ) {
+                        Toggle(
+                            String(localized: "mark_public_toggle", table: "Item"),
+                            isOn: $viewModel.isPublic)
+                        Toggle(
+                            String(localized: "mark_share_fediverse_toggle", table: "Item"),
+                            isOn: $viewModel.postToFediverse)
+                        Toggle(
+                            String(localized: "mark_use_current_time_toggle", table: "Item"),
+                            isOn: $viewModel.useCurrentTime)
+
+                        if !viewModel.useCurrentTime {
+                            DatePicker(
+                                String(localized: "mark_created_time_label", table: "Item"),
+                                selection: $viewModel.createdTime,
+                                displayedComponents: [.date, .hourAndMinute]
+                            )
+                        }
+                    }
+                }
+
+                // Delete Button Section
+                if viewModel.existingMark != nil {
+                    Section {
+                        Button(role: .destructive) {
+                            Task {
+                                await viewModel.deleteMark()
+                            }
+                        } label: {
+                            Text("mark_delete_button", tableName: "Item")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
+            }
+            .listStyle(.insetGrouped)
+            .safeContentMargins(.top, EdgeInsets())
+            .scrollContentBackground(.hidden)
+
+            // Bottom Save Button
+            VStack(spacing: 16) {
+                Button {
+                    Task {
+                        await viewModel.saveMark()
+                    }
+                } label: {
+                    Text("mark_save_button", tableName: "Item")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.isLoading)
+                .padding(.horizontal)
+            }
+            .padding(.vertical)
+            .background(.ultraThinMaterial)
+            .compositingGroup()
+        }
     }
 
     #if DEBUG
