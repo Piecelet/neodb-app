@@ -320,7 +320,7 @@ struct StarRatingView: View {
         let adjustedX: CGFloat
         let rating: Double
         let nextRating: Double?
-        let isUsed: Bool  // 标记这个计算结果是否被使用
+        let isUsed: Bool
         
         var debugDescription: String {
             """
@@ -373,12 +373,10 @@ struct StarRatingView: View {
                         adjustedX: adjustedX,
                         rating: rating,
                         nextRating: nextRating,
-                        isUsed: isUsed
+                        isUsed: false  // 在临界值时，总是使用下一个计算结果
                     ))
                     
-                    if isUsed {
-                        return rating
-                    }
+                    // 在临界值时，总是返回下一个计算结果
                     return nextRating
                 }
                 
@@ -409,7 +407,7 @@ struct StarRatingView: View {
                 - Padding: \(padding)
                 
                 Used Calculation:
-                \(calculations.first { $0.isUsed }?.debugDescription ?? "No calculation used")
+                \(calculations.map { $0.debugDescription }.joined(separator: "\n"))
                 
                 Final Results:
                 - Raw Rating: \(rawRating)
