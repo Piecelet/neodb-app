@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftUIIntrospect
+import Parchment
 
 struct MarkView: View {
     @StateObject private var viewModel: MarkViewModel
@@ -46,23 +47,37 @@ struct MarkView: View {
             }
             .padding(.bottom)
 
-            TabView(
-                selection: Binding(
-                    get: { viewModel.shelfType },
-                    set: { viewModel.shelfType = $0 }
-                )
-            ) {
-                ForEach(ShelfType.allCases, id: \.self) { type in
+            PageView(
+                ShelfType.allCases,
+                id: \.self,
+                selectedIndex:
+                    Binding(
+                        get: { ShelfType.allCases.firstIndex(of: viewModel.shelfType ?? .wishlist) ?? 0 },
+                        set: { index in
+                            let type = ShelfType.allCases[index]
+                            if viewModel.shelfType != type {
+                                withAnimation {
+                                    viewModel.shelfType = type
+                                    HapticFeedback.impact(.light)
+                                }
+                            }
+                        }
+                    )
+            ) { type in
+                Page(type.displayName) {
                     if type == .wishlist {
                         markContentView
-                            .tag(type)
                     } else {
                         markContentViewWithRating
-                            .tag(type)
                     }
                 }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .menuPosition(.top)
+            .menuItemSpacing(20)
+            .menuBackgroundColor(.clear)
+            .menuHorizontalAlignment(.left)
+            .indicatorColor(.accentColor)
+            .indicatorOptions(.visible(height: 2, zIndex: 0, spacing: .zero, insets: .init(top: 0, left: 0, bottom: 0, right: 0)))
         }
         .background(.ultraThinMaterial)
         .compositingGroup()
