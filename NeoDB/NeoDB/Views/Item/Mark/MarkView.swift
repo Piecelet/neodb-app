@@ -109,11 +109,16 @@ struct MarkView: View {
                 }
 
                 TextEditor(text: $viewModel.comment)
-                    .frame(minHeight: 100)
+                    .frame(
+                        minHeight: 100
+                    )
+                    .fixedSize(horizontal: false, vertical: true)
                     .overlay {
-                        TextEditor(text: $viewModel.commentPlaceholder)
-                            .foregroundColor(.gray)
-                            .disabled(true)
+                        if viewModel.comment.isEmpty {
+                            TextEditor(text: .constant("Write a comment..."))
+                                .foregroundColor(.secondary)
+                                .disabled(true)
+                        }
                     }
                     .padding(10)
                     .background(.ultraThinMaterial)
@@ -152,6 +157,8 @@ struct MarkView: View {
                         }
                     }
                 }
+                
+                Spacer()
 
                 // Delete Button Section
                 if viewModel.existingMark != nil {
