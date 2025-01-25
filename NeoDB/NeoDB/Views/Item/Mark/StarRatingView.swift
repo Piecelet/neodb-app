@@ -4,13 +4,19 @@
 //
 //  Created by citron on 1/25/25.
 //
-
 import SwiftUI
+import UIKit
+
+// Assuming HapticFeedback struct is declared externally, like this example:
+// struct HapticFeedback {
+//     static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) { ... }
+//     static func selection() { ... }
+// }
 
 struct StarRatingView: View {
     @State private var rating: Double = 0
-    private let starSize: CGFloat = 30       // 统一的星星大小
-    private let starSpacing: CGFloat = 8    // 统一的星星间距
+    private let starSize: CGFloat = 40
+    private let starSpacing: CGFloat = 10
     private let starCount = 5
 
     var body: some View {
@@ -22,7 +28,7 @@ struct StarRatingView: View {
                 HStack(spacing: starSpacing) {
                     ForEach(0..<starCount) { index in
                         Image(systemName: starImageName(forIndex: index))
-                            .font(.system(size: starSize)) // 使用统一的星星大小
+                            .font(.system(size: starSize))
                             .foregroundColor(.orange)
                             .onTapGesture { location in
                                 handleStarTap(location: location, index: index, geometry: geometry)
@@ -37,7 +43,7 @@ struct StarRatingView: View {
                         }
                 )
             }
-            .frame(height: starSize) // GeometryReader 高度与星星大小一致
+            .frame(height: starSize)
             .frame(maxWidth: .infinity, alignment: .center)
 
             Button("Clear") {
