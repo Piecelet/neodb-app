@@ -6,9 +6,8 @@
 //
 
 import SwiftUI
-import UIKit
+import OSLog
 
-// Assuming HapticFeedback struct is declared externally
 
 // MARK: - Custom Clip Shape for Dynamic Width Rectangle
 struct StarClipShape: Shape {
@@ -24,6 +23,7 @@ struct StarClipShape: Shape {
 struct StarRatingView: View {
     @Binding var inputRating: Int? // Binding to allow external control
     @State private var internalRating: Double = 0 // Internal rating state for display and interaction
+    private let logger = Logger.views.mark.starRating
     private let starSize: CGFloat = 40
     private let starSpacing: CGFloat = 10
     private let starCount = 5
@@ -175,7 +175,7 @@ struct StarRatingView: View {
         if validRating != internalRating {
             internalRating = validRating
             inputRating = Int(round(internalRating * 2)) // Update inputRating based on internal rating change
-            print("Current Rating (Drag): \(internalRating)")
+            logger.debug("Current Rating (Drag): \(internalRating)")
             performFeedback(forRatingChange: oldRating)
         }
     }
@@ -184,7 +184,7 @@ struct StarRatingView: View {
         let oldRating = internalRating
         internalRating = 0
         inputRating = 0 // Clear inputRating as well
-        print("Rating cleared")
+        logger.debug("Rating cleared")
         if oldRating > 0 {
             HapticFeedback.selection()
         }

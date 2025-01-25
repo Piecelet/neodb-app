@@ -46,7 +46,6 @@ struct MarkView: View {
 
                 // Rating
                 Section {
-//                    RatingView(rating: $viewModel.rating)
                     StarRatingView(inputRating: $viewModel.rating)
                         .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
                         .frame(maxWidth: .infinity)
