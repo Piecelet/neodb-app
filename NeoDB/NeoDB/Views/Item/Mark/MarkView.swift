@@ -26,23 +26,26 @@ struct MarkView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Custom title bar
-            HStack {
-                Text(viewModel.title)
-                    .font(.headline)
-                Spacer()
-                Button(action: { dismiss() }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.gray)
-                        .font(.title2)
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text(viewModel.title)
+                        .font(.headline)
+                    Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.gray)
+                            .font(.title2)
+                    }
                 }
+                .padding(.horizontal)
+                .padding(.top)
+                .padding(.leading, 4)
+                shelfTypeButtons
             }
-            .padding()
-
+            
             List {
                 // Shelf Type
                 Section {
-                    shelfTypeButtons
-                        .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
                     StarRatingView(inputRating: $viewModel.rating)
                         .frame(maxWidth: .infinity)
                 }
@@ -167,45 +170,18 @@ struct MarkView: View {
     }
 
     private var shelfTypeButtons: some View {
-        HStack(spacing: 12) {
-            ForEach(ShelfType.allCases, id: \.self) { type in
-                shelfTypeButton(for: type)
-            }
-        }
-    }
-
-    private func shelfTypeButton(for type: ShelfType) -> some View {
-        Button {
-            if viewModel.shelfType != type {
-                viewModel.shelfType = type
-                HapticFeedback.impact(.light)
-            }
-        } label: {
-            VStack(spacing: 4) {
-                Image(
-                    symbol: (viewModel.shelfType == type)
-                        ? type.symbolImageFill : type.symbolImage
-                )
-                .font(.headline)
-                Text(type.displayName)
-                    .font(.caption)
-            }
-            .frame(width: 64)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
-            .foregroundStyle(
-                viewModel.shelfType == type
-                    ? Color.accentColor : .secondary
+        TopTabBarView(
+            items: ShelfType.allCases,
+            selection: Binding(
+                get: { viewModel.shelfType ?? .wishlist },
+                set: { newValue in
+                    if viewModel.shelfType != newValue {
+                        viewModel.shelfType = newValue
+                        HapticFeedback.impact(.light)
+                    }
+                }
             )
-            .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(.primary, lineWidth: 1.5)
-                    .background(.secondary.opacity(0.2))
-                    .opacity(viewModel.shelfType == type ? 1 : 0)
-            )
-            .foregroundStyle(.accent)
-        }
-        .buttonStyle(.plain)
+        ) { $0.displayName }
     }
 
     #if DEBUG
