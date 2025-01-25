@@ -105,7 +105,7 @@ struct StarRatingView: View {
             .font(.footnote)
             .animation(.spring(duration: 0.3), value: internalRating)
         }
-        .padding()
+        .padding(.top)
         .frame(maxWidth: .infinity)
         .onChange(of: inputRating) { newValue in  // Observe inputRating changes
             internalRating = StarRatingView.ratingValue(for: newValue)  // Update internalRating when inputRating changes

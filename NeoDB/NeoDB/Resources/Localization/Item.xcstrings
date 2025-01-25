@@ -309,6 +309,7 @@
       }
     },
     "mark_comment_label" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -325,6 +326,7 @@
       }
     },
     "mark_comment_optional" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

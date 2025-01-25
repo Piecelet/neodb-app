@@ -39,15 +39,18 @@ struct MarkView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                .padding(.bottom)
+                .padding(.bottom, 8)
                 .padding(.leading, 4)
                 shelfTypeButtons
             }
-            
-            TabView(selection: Binding(
-                get: { viewModel.shelfType ?? .wishlist },
-                set: { viewModel.shelfType = $0 }
-            )) {
+            .padding(.bottom)
+
+            TabView(
+                selection: Binding(
+                    get: { viewModel.shelfType },
+                    set: { viewModel.shelfType = $0 }
+                )
+            ) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
                     markContentView
                         .tag(type)
@@ -84,7 +87,7 @@ struct MarkView: View {
         TopTabBarView(
             items: ShelfType.allCases,
             selection: Binding(
-                get: { viewModel.shelfType ?? .wishlist },
+                get: { viewModel.shelfType },
                 set: { newValue in
                     if viewModel.shelfType != newValue {
                         viewModel.shelfType = newValue
@@ -104,7 +107,9 @@ struct MarkView: View {
                         StarRatingView(inputRating: $viewModel.rating)
                             .frame(maxWidth: .infinity)
                     }
-                    .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
+                    .listRowInsets(
+                        EdgeInsets(top: 2, leading: 6, bottom: 0, trailing: 6)
+                    )
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                 }
@@ -113,31 +118,39 @@ struct MarkView: View {
                 Section {
                     TextEditor(text: $viewModel.comment)
                         .frame(minHeight: 100)
-                } header: {
-                    Text("mark_comment_label", tableName: "Item")
-                } footer: {
-                    Text("mark_comment_optional", tableName: "Item")
+                        .overlay {
+                            TextEditor(text: $viewModel.commentPlaceholder)
+                                .foregroundColor(.gray)
+                                .disabled(true)
+                        }
                 }
 
-                // Advanced Options Section
                 Section {
                     DisclosureGroup(
-                        String(localized: "mark_advanced_section", table: "Item"),
+                        String(
+                            localized: "mark_advanced_section", table: "Item"),
                         isExpanded: $showAdvanced
                     ) {
                         Toggle(
-                            String(localized: "mark_public_toggle", table: "Item"),
+                            String(
+                                localized: "mark_public_toggle", table: "Item"),
                             isOn: $viewModel.isPublic)
                         Toggle(
-                            String(localized: "mark_share_fediverse_toggle", table: "Item"),
+                            String(
+                                localized: "mark_share_fediverse_toggle",
+                                table: "Item"),
                             isOn: $viewModel.postToFediverse)
                         Toggle(
-                            String(localized: "mark_use_current_time_toggle", table: "Item"),
+                            String(
+                                localized: "mark_use_current_time_toggle",
+                                table: "Item"),
                             isOn: $viewModel.useCurrentTime)
 
                         if !viewModel.useCurrentTime {
                             DatePicker(
-                                String(localized: "mark_created_time_label", table: "Item"),
+                                String(
+                                    localized: "mark_created_time_label",
+                                    table: "Item"),
                                 selection: $viewModel.createdTime,
                                 displayedComponents: [.date, .hourAndMinute]
                             )
@@ -159,7 +172,10 @@ struct MarkView: View {
                     }
                 }
             }
+            .padding(.top, viewModel.shelfType == .wishlist ? 16 : 0)
             .listStyle(.insetGrouped)
+            .environment(\.defaultMinListRowHeight, 10)
+            .environment(\.defaultMinListHeaderHeight, 10)
             .safeContentMargins(.top, EdgeInsets())
             .scrollContentBackground(.hidden)
 

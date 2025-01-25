@@ -18,7 +18,16 @@ class MarkViewModel: ObservableObject {
 
     @Published var shelfType: ShelfType
     @Published var rating: Int?
-    @Published var comment: String = ""
+    @Published var comment: String = "" {
+        didSet {
+            if comment.isEmpty {
+                commentPlaceholder = "Write something..."
+            } else {
+                commentPlaceholder = ""
+            }
+        }
+    }
+    @Published var commentPlaceholder: String = "Write something..."
     @AppStorage(\.mark.isPublic) public var isPublic: Bool = true
     @AppStorage(\.mark.postToFediverse) public var postToFediverse: Bool = true
     @Published var createdTime: Date = Date()
