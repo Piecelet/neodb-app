@@ -39,6 +39,14 @@ enum ShelfType: String, Codable, CaseIterable {
         }
     }
 
+    func actionNameFormat(for action: String) -> String {
+        return String(format: String(localized: "shelf_type_action_name_format", table: "Item", comment: "Action state - Add to"), action)
+    }
+
+    var actionName: String {
+        return actionNameFormat(for: displayName)
+    }
+
     func displayNameForCategory(_ category: ItemCategory) -> String {
         switch (self, category) {
         case (.wishlist, .movie):
