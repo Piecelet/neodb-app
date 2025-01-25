@@ -141,7 +141,7 @@ struct MarkView: View {
 
                 TextEditor(text: $viewModel.comment)
                     .frame(
-                        minHeight: 50,
+                        minHeight: detent == .large ? 200 : paddingTop ? 100 : 50,
                         maxHeight: 300
                     )
                     .fixedSize(horizontal: false, vertical: true)
@@ -158,12 +158,14 @@ struct MarkView: View {
                     .cornerRadius(8)
                     .padding(.horizontal)
                     .padding(.top)
-
-                //                advancedOptionsSection
+                    .onTapGesture {
+                        withAnimation {
+                            detent = .large
+                        }
+                    }
 
                 Spacer()
             }
-            .padding(.top, paddingTop ? 16 : 0)
             .scrollContentBackground(.hidden)
         }
     }

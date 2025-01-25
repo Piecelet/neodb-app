@@ -33,7 +33,7 @@ enum HapticFeedback {
         [ImpactLevel: UIImpactFeedbackGenerator] = [:]
 
     /// Trigger impact feedback
-    static func impact(_ level: ImpactLevel = .medium) {
+    static func impact(_ level: ImpactLevel = .medium, intensity: Double = 1.0) {
         #if os(iOS)
             let generator: UIImpactFeedbackGenerator
             if let cachedGenerator = impactGenerators[level] {
@@ -45,7 +45,7 @@ enum HapticFeedback {
             DispatchQueue.global(qos: .userInitiated).async {  // 异步 prepare
                 generator.prepare()
                 DispatchQueue.main.async {  // 回到主线程触发
-                    generator.impactOccurred()
+                    generator.impactOccurred(intensity: intensity)
                 }
             }
         #endif

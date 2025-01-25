@@ -7,6 +7,7 @@
 
 import OSLog
 import SwiftUI
+import CoreHaptics
 
 // MARK: - Custom Clip Shape for Dynamic Width Rectangle
 struct StarClipShape: Shape {
@@ -25,6 +26,7 @@ struct StarClipShape: Shape {
 struct StarRatingView: View {
     @Binding var inputRating: Int?  // Binding to allow external control
     @State private var internalRating: Double = 0  // Internal rating state for display and interaction
+    @State private var engine: CHHapticEngine?
     private let logger = Logger.views.mark.starRating
     private let starSize: CGFloat = 36
     private let starSpacing: CGFloat = 6
@@ -110,6 +112,7 @@ struct StarRatingView: View {
         .onChange(of: inputRating) { newValue in  // Observe inputRating changes
             internalRating = StarRatingView.ratingValue(for: newValue)  // Update internalRating when inputRating changes
         }
+        .onAppear(perform: prepareHaptics)
         .enableInjection()
     }
 
@@ -141,16 +144,100 @@ struct StarRatingView: View {
         }
     }
 
-    private func performFeedback(forRatingChange oldRating: Double) {
-        if internalRating > oldRating {  // Rating increased
-            if internalRating == floor(internalRating) {
-                HapticFeedback.impact(.medium)
-            } else {
-                HapticFeedback.impact(.light)
-            }
-        } else if internalRating < oldRating {  // Rating decreased
-            HapticFeedback.selection()
+    private func prepareHaptics() {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
+        
+        do {
+            engine = try CHHapticEngine()
+            try engine?.start()
+        } catch {
+            logger.error("Failed to start haptic engine: \(error.localizedDescription)")
         }
+    }
+
+    private func performFeedback(forRatingChange oldRating: Double) {
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics,
+              let engine = engine else {
+            fallbackHaptics(forRating: internalRating)
+            return
+        }
+
+        do {
+            let intensity = getHapticIntensity(for: internalRating)
+            let sharpness = getHapticSharpness(for: internalRating)
+            
+            let intensityParameter = CHHapticEventParameter(
+                parameterID: .hapticIntensity,
+                value: Float(intensity))
+            let sharpnessParameter = CHHapticEventParameter(
+                parameterID: .hapticSharpness,
+                value: Float(sharpness))
+            
+            let event = CHHapticEvent(
+                eventType: .hapticTransient,
+                parameters: [intensityParameter, sharpnessParameter],
+                relativeTime: 0)
+            
+            let pattern = try CHHapticPattern(events: [event], parameters: [])
+            let player = try engine.makePlayer(with: pattern)
+            try player.start(atTime: 0)
+        } catch {
+            logger.error("Failed to play haptics: \(error.localizedDescription)")
+            fallbackHaptics(forRating: internalRating)
+        }
+    }
+
+    private func getHapticIntensity(for rating: Double) -> Double {
+        let baseIntensity = rating / 5.0  // 0.2 到 1.0
+        let isHalfStar = rating != floor(rating)
+        
+        // 调整基础强度，使其更符合评分感觉
+        let adjustedIntensity = switch ceil(rating) {
+            case 1.0: 0.4  // 最低评分也要有明显感觉
+            case 2.0: 0.55
+            case 3.0: 0.7
+            case 4.0: 0.85
+            case 5.0: 0.95  // 稍微降低最高评分的强度
+            default: baseIntensity
+        }
+        
+        // 半星降低 20% 强度
+        return isHalfStar ? adjustedIntensity * 0.8 : adjustedIntensity
+    }
+
+    private func getHapticSharpness(for rating: Double) -> Double {
+        let baseSharpness = rating / 5.0  // 0.2 到 1.0
+        let isHalfStar = rating != floor(rating)
+        
+        // 调整锐度，使触感更加清晰
+        let adjustedSharpness = switch ceil(rating) {
+            case 1.0: 0.3  // 柔和但清晰
+            case 2.0: 0.4
+            case 3.0: 0.5
+            case 4.0: 0.6
+            case 5.0: 0.7  // 保持适中的锐度
+            default: baseSharpness
+        }
+        
+        // 半星略微增加锐度以区分
+        return isHalfStar ? adjustedSharpness * 1.2 : adjustedSharpness
+    }
+
+    private func fallbackHaptics(forRating rating: Double) {
+        // 当 CoreHaptics 不可用时的后备方案
+        let isHalfStar = rating != floor(rating)
+        let intensity: Double = isHalfStar ? 0.5 : 1.0
+        
+        let level: HapticFeedback.ImpactLevel = switch ceil(rating) {
+            case 1.0: .light
+            case 2.0: .light
+            case 3.0: .medium
+            case 4.0: .medium
+            case 5.0: .heavy
+            default: .medium
+        }
+        
+        HapticFeedback.impact(level, intensity: intensity)
     }
 
     private func handleStarTap(
