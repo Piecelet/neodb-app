@@ -564,6 +564,7 @@
       }
     },
     "mark_public_toggle" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -263,6 +263,7 @@
 			knownRegions = (
 				en,
 				"zh-Hans",
+				"pt-BR",
 			);
 			mainGroup = 24CEACE62D0DA6200083D4BA;
 			minimizedProjectReferenceProxies = 1;

@@ -18,20 +18,11 @@ class MarkViewModel: ObservableObject {
 
     @Published var shelfType: ShelfType
     @Published var rating: Int?
-    @Published var comment: String = "" {
-        didSet {
-            if comment.isEmpty {
-                commentPlaceholder = "Write something..."
-            } else {
-                commentPlaceholder = ""
-            }
-        }
-    }
-    @Published var commentPlaceholder: String = "Write something..."
-    @AppStorage(\.mark.isPublic) public var isPublic: Bool = true
+    @Published var comment: String = ""
+    @Published var visibility: MarkVisibility = .pub
     @AppStorage(\.mark.postToFediverse) public var postToFediverse: Bool = true
     @Published var createdTime: Date = Date()
-    @Published var useCurrentTime = true
+    @Published var changeTime = false
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
@@ -48,10 +39,9 @@ class MarkViewModel: ObservableObject {
             self.shelfType = mark.shelfType
             self.rating = mark.ratingGrade
             self.comment = mark.commentText ?? ""
-            self.isPublic = mark.visibility == 0
+            self.visibility = mark.visibility
             if let date = mark.createdTime.asDate {
                 self.createdTime = date
-                self.useCurrentTime = false
             }
         }
     }
@@ -71,12 +61,11 @@ class MarkViewModel: ObservableObject {
         do {
             let mark = MarkInSchema(
                 shelfType: shelfType,
-                visibility: isPublic ? 0 : 1,
+                visibility: visibility,
                 commentText: comment.isEmpty ? nil : comment,
-                ratingGrade: rating,
+                ratingGrade: rating == 0 ? nil : rating,
                 tags: [],
-                createdTime: useCurrentTime
-                    ? nil : ServerDate.from(createdTime),
+                createdTime: changeTime ? ServerDate.from(createdTime) : nil,
                 postToFediverse: postToFediverse
             )
 

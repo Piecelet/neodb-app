@@ -9,7 +9,7 @@ import Foundation
 
 struct MarkInSchema: Codable {
     let shelfType: ShelfType
-    let visibility: Int
+    let visibility: MarkVisibility
     let commentText: String?
     let ratingGrade: Int?
     let tags: [String]?

@@ -9,7 +9,7 @@ import Foundation
 
 struct MarkSchema: Codable, Identifiable {
     let shelfType: ShelfType
-    let visibility: Int
+    let visibility: MarkVisibility
     let item: ItemSchema
     let createdTime: ServerDate
     let commentText: String?

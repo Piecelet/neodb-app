@@ -76,20 +76,28 @@ struct MarkView: View {
                 NavigationLink {
                     Form {
                         Section {
-                            Toggle(
-                                String(localized: "mark_public_toggle", table: "Item"),
-                                isOn: $viewModel.isPublic)
+                            Picker("Visibility", selection: $viewModel.visibility) {
+                                ForEach(MarkVisibility.allCases, id: \.self) { visibility in
+                                    
+                                    Text(visibility.displayText)
+                                        .tag(visibility)
+                                }
+                            }
                             .tint(.accentColor)
+
+
                             Toggle(
                                 String(localized: "mark_share_fediverse_toggle", table: "Item"),
                                 isOn: $viewModel.postToFediverse)
                             .tint(.accentColor)
+                        }
+                        Section (header: Text("Advanced")) {
                             Toggle(
                                 String(localized: "mark_use_current_time_toggle", table: "Item"),
-                                isOn: $viewModel.useCurrentTime)
+                                isOn: $viewModel.changeTime)
                             .tint(.accentColor)
 
-                            if !viewModel.useCurrentTime {
+                            if viewModel.changeTime {
                                 DatePicker(
                                     String(localized: "mark_created_time_label", table: "Item"),
                                     selection: $viewModel.createdTime,
@@ -222,17 +230,18 @@ struct MarkView: View {
     private var advancedOptionsLabel: String {
         var components: [String] = []
         
-        if viewModel.useCurrentTime {
-            components.append("Now")
+        if !viewModel.changeTime {
+            if let mark = viewModel.existingMark,
+               let date = mark.createdTime.asDate {
+                components.append(date.formatted(date: .abbreviated, time: .shortened))
+            } else {
+                components.append("Now")
+            }
         } else {
             components.append(viewModel.createdTime.formatted(date: .abbreviated, time: .shortened))
         }
         
-        if viewModel.isPublic {
-            components.append("Public")
-        } else {
-            components.append("Private")
-        }
+        components.append(viewModel.visibility.displayText)
         
         if viewModel.postToFediverse {
             components.append("Post to fediverse")
