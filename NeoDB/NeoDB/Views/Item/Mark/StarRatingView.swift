@@ -43,12 +43,9 @@ struct StarRatingView: View {
 
     var body: some View {
         VStack {
-            Text("Mufasa: The Lion King")
-                .padding(.bottom, 8)
-
             GeometryReader { geometry in
                 HStack(spacing: starSpacing) {
-                    ForEach(0..<starCount) { index in
+                    ForEach(0..<starCount, id: \.self) { index in
                         ZStack(alignment: .leading) { // Use ZStack for overlay
                             // 1. Base Star (Unselected state)
                             Image(systemName: "star.fill")
@@ -86,12 +83,15 @@ struct StarRatingView: View {
         }
         .padding()
         .frame(maxWidth: .infinity)
-        .background(Color.white)
-        .cornerRadius(10)
         .onChange(of: inputRating) { newValue in // Observe inputRating changes
             internalRating = StarRatingView.ratingValue(for: newValue) // Update internalRating when inputRating changes
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 
     private func starImageName(forIndex index: Int) -> String {
         if internalRating >= Double(index + 1) {
@@ -160,7 +160,7 @@ struct StarRatingView: View {
         let starWidth = starAreaWidth / CGFloat(starCount)
 
         let rawRating = dragLocation.x / starWidth
-        var snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
+        let snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
         var validRating = min(max(0, snappedRating), Double(starCount)) // Ensure rating is within 0 to starCount
 
         // Enforce minimum rating of 0.5

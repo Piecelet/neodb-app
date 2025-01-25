@@ -11,7 +11,7 @@ import SwiftUI
 
 @MainActor
 class MarkViewModel: ObservableObject {
-    private let logger = Logger.views.mark
+    private let logger = Logger.views.mark.mark
 
     let item: (any ItemProtocol)
     let existingMark: MarkSchema?
