@@ -10,6 +10,12 @@
             "value" : "Name"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nome"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -24,6 +30,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "External Account"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta externa"
           }
         },
         "zh-Hans" : {
@@ -42,6 +54,12 @@
             "value" : "Account"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conta"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -58,6 +76,12 @@
             "value" : "Feature Requests & Feedbacks"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pedidos de funcionalidades e sugestões/opiniões"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -69,6 +93,12 @@
     "app_title" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        },
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "App"
@@ -90,6 +120,12 @@
             "value" : "Clear All Caches"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar cache"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -104,6 +140,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This will clear all cached data. You'll need to reload data from the network."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isso vai limpar todos os dados em cache. Você precisará recarregar todas as informações de novo."
           }
         },
         "zh-Hans" : {
@@ -122,6 +164,12 @@
             "value" : "Clearing caches will free up storage space. The app will need to download data again when needed."
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limpar os dados em cache irá liberar espaço. O aplicativo irá precisar rebaixar qualquer dado apagado de novo se necessário."
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -136,6 +184,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cache"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ""
           }
         },
         "zh-Hans" : {
@@ -154,6 +208,12 @@
             "value" : "Settings"
           }
         },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajustes"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -168,6 +228,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sign Out"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deslogar"
           }
         },
         "zh-Hans" : {
