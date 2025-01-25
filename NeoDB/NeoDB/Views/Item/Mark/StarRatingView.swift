@@ -10,6 +10,17 @@ import UIKit
 
 // Assuming HapticFeedback struct is declared externally
 
+// MARK: - Custom Clip Shape for Dynamic Width Rectangle
+struct StarClipShape: Shape {
+    var fillAmount: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.addRect(CGRect(x: rect.minX, y: rect.minY, width: rect.width * fillAmount, height: rect.height))
+        return path
+    }
+}
+
 struct StarRatingView: View {
     @State private var rating: Double = 0
     private let starSize: CGFloat = 40
@@ -24,12 +35,23 @@ struct StarRatingView: View {
             GeometryReader { geometry in
                 HStack(spacing: starSpacing) {
                     ForEach(0..<starCount) { index in
-                        Image(systemName: starImageName(forIndex: index))
-                            .font(.system(size: starSize))
-                            .foregroundColor(.orange)
-                            .onTapGesture { location in
-                                handleStarTap(location: location, index: index, geometry: geometry)
-                            }
+                        ZStack(alignment: .leading) { // Use ZStack for overlay
+                            // 1. Base Star (Unselected state)
+                            Image(systemName: "star.fill")
+                                .font(.system(size: starSize))
+                                .foregroundColor(.secondary) // Secondary color for unselected
+
+                            // 2. Overlay Star (Selected state)
+                            Image(systemName: "star.fill")
+                                .font(.system(size: starSize))
+                                .foregroundColor(.orange) // Orange color for selected
+                                .clipShape( // Use clipShape with custom Shape
+                                    StarClipShape(fillAmount: starFillAmount(forIndex: index))
+                                )
+                        }
+                        .onTapGesture { location in
+                            handleStarTap(location: location, index: index, geometry: geometry)
+                        }
                     }
                 }
                 .frame(width: geometry.size.width, alignment: .center)
@@ -58,11 +80,24 @@ struct StarRatingView: View {
         if rating >= Double(index + 1) {
             return "star.fill"
         } else if rating > Double(index) && rating < Double(index + 1) {
-            return "star.leadinghalf.fill"
+            return "star.leadinghalf.fill" // Still using leadinghalf.fill for logic, but visually hidden by overlay
         } else {
-            return "star"
+            return "star" // Visually hidden by overlay
         }
     }
+
+    // Calculate fill amount for each star based on rating
+    private func starFillAmount(forIndex index: Int) -> CGFloat {
+        let starValue = Double(index + 1)
+        if rating >= starValue {
+            return 1.0 // Full fill
+        } else if rating > starValue - 1 && rating < starValue {
+            return CGFloat(rating - Double(index)) // Partial fill (for half-star)
+        } else {
+            return 0.0 // No fill
+        }
+    }
+
 
     private func performFeedback(forRatingChange oldRating: Double) {
         if rating > oldRating { // Rating increased
