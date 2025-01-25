@@ -42,13 +42,16 @@ struct MarkView: View {
                 // Shelf Type
                 Section {
                     shelfTypeButtons
+                        .listRowInsets(EdgeInsets(top: 2, leading: 16, bottom: 2, trailing: 16))
+                    StarRatingView(inputRating: $viewModel.rating)
+                        .frame(maxWidth: .infinity)
                 }
+                .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
 
                 // Rating
                 Section {
-                    StarRatingView(inputRating: $viewModel.rating)
-                        .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
-                        .frame(maxWidth: .infinity)
                 }
                 .listRowBackground(Color.clear)
 
@@ -165,8 +168,6 @@ struct MarkView: View {
                 shelfTypeButton(for: type)
             }
         }
-        .listRowInsets(EdgeInsets(top: 2, leading: 6, bottom: 2, trailing: 6))
-        .listRowBackground(Color.clear)
     }
 
     private func shelfTypeButton(for type: ShelfType) -> some View {
@@ -181,9 +182,9 @@ struct MarkView: View {
                     symbol: (viewModel.shelfType == type)
                         ? type.symbolImageFill : type.symbolImage
                 )
-                .font(.system(size: 22))
+                .font(.headline)
                 Text(type.displayName)
-                    .font(.caption2)
+                    .font(.caption)
             }
             .frame(width: 64)
             .frame(maxWidth: .infinity)
