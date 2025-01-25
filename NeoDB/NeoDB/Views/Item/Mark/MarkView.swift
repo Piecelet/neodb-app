@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftUIIntrospect
 
 struct MarkView: View {
     @StateObject private var viewModel: MarkViewModel
@@ -39,13 +40,13 @@ struct MarkView: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                .padding(.bottom, 8)
+                .padding(.bottom)
                 .padding(.leading, 4)
                 shelfTypeButtons
             }
             .padding(.bottom)
 
-            TabView(
+            HeightPreservingTabView(
                 selection: Binding(
                     get: { viewModel.shelfType },
                     set: { viewModel.shelfType = $0 }
