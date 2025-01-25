@@ -78,9 +78,13 @@ struct MarkView: View {
                         Section {
                             Picker("Visibility", selection: $viewModel.visibility) {
                                 ForEach(MarkVisibility.allCases, id: \.self) { visibility in
-                                    
-                                    Text(visibility.displayText)
-                                        .tag(visibility)
+                                    Label {
+                                        Text(visibility.displayText)
+                                    } icon: {
+                                        Image(symbol: visibility.symbolImage)
+                                    }
+                                    .tag(visibility)
+                                    .labelStyle(.titleAndIcon)
                                 }
                             }
                             .tint(.accentColor)
@@ -93,13 +97,13 @@ struct MarkView: View {
                         }
                         Section (header: Text("Advanced")) {
                             Toggle(
-                                String(localized: "mark_use_current_time_toggle", table: "Item"),
+                                String(localized: "mark_use_change_time_toggle", table: "Item"),
                                 isOn: $viewModel.changeTime)
                             .tint(.accentColor)
 
                             if viewModel.changeTime {
                                 DatePicker(
-                                    String(localized: "mark_created_time_label", table: "Item"),
+                                    String(localized: "mark_change_time_picker_label", table: "Item"),
                                     selection: $viewModel.createdTime,
                                     displayedComponents: [.date, .hourAndMinute]
                                 )

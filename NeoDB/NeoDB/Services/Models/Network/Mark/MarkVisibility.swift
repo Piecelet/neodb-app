@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MarkVisibility: Int, Codable {
+enum MarkVisibility: Int, Codable, CaseIterable {
     case pub = 0
     case unlisted = 1
     case priv = 2
