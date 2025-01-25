@@ -28,7 +28,7 @@ extension NeoDBAccountLoginEndpoint: NetworkEndpoint {
     
     var headers: [String: String]? {
         switch self {
-        case .mastodon(let referer, let cookie, _, _):
+        case .mastodon(let referer, _, _, _):
             return [
                 "Origin": referer.host ?? "",
                 "Referer": referer.absoluteString,
