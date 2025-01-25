@@ -284,54 +284,33 @@ struct StarRatingView: View {
         let ratingIncrement = tapPositionInStar <= starWidth / 2 ? 0.5 : 1.0
         var newRating = starIndex + ratingIncrement
 
-        logger.debug(
-            """
-            Tap Debug:
-            - Location: \(location)
-            - Star Width: \(starWidth)
-            - Star Index: \(starIndex)
-            - Tap Position: \(tapPositionInStar)
-            - Rating Increment: \(ratingIncrement)
-            - New Rating: \(newRating)
-            """)
+//        logger.debug(
+//            """
+//            Tap Debug:
+//            - Location: \(location)
+//            - Star Width: \(starWidth)
+//            - Star Index: \(starIndex)
+//            - Tap Position: \(tapPositionInStar)
+//            - Rating Increment: \(ratingIncrement)
+//            - New Rating: \(newRating)
+//            """)
 
         // Enforce minimum rating of 0.5
         if newRating < 0.5 && newRating > 0 {
             newRating = 0.5
-            logger.debug("Adjusted to minimum rating: 0.5")
+//            logger.debug("Adjusted to minimum rating: 0.5")
         } else if newRating <= 0 {
             newRating = 0.5
-            logger.debug("Adjusted zero/negative to: 0.5")
+//            logger.debug("Adjusted zero/negative to: 0.5")
         }
 
         let oldRating = internalRating
         internalRating = newRating
         inputRating = Int(round(internalRating * 2))
-        logger.debug(
-            "Rating changed: \(oldRating) -> \(newRating) (input: \(inputRating ?? 0))"
-        )
+//        logger.debug(
+//            "Rating changed: \(oldRating) -> \(newRating) (input: \(inputRating ?? 0))"
+//        )
         performFeedback(forRatingChange: oldRating)
-    }
-
-    // 用于存储计算过程中的调试信息
-    private struct RatingCalculation {
-        let spacingCount: Int
-        let x: CGFloat
-        let adjustedX: CGFloat
-        let rating: Double
-        let nextRating: Double?
-        let isUsed: Bool
-        
-        var debugDescription: String {
-            """
-            Calculation \(spacingCount):
-            - X: \(x)
-            - Adjusted X: \(adjustedX)
-            - Rating: \(rating)
-            - Next Rating: \(nextRating ?? -1)
-            - Is Used: \(isUsed)
-            """
-        }
     }
 
     private func handleDragChanged(
@@ -340,80 +319,86 @@ struct StarRatingView: View {
         withAnimation(.spring(duration: 0.3)) {
             let dragLocation = value.location
             let singleSpacing = secondStarMinX - firstStarMaxX
-            let starAreaWidth = (starWidth * CGFloat(starCount)) + (singleSpacing * CGFloat(starCount - 1))
+            let starAreaWidth =
+                (starWidth * CGFloat(starCount))
+                + (singleSpacing * CGFloat(starCount - 1))
             let screenWidth = geometry.size.width
             let padding = (screenWidth - starAreaWidth) / 2
 
-            // 计算实际评分
-            func calculateRating(x: CGFloat, spacingCount: Int = 0, calculations: inout [RatingCalculation]) -> Double {
-                let adjustedX = x - padding - (singleSpacing * CGFloat(spacingCount))
-                let rating = adjustedX / starWidth
-                
-                if spacingCount >= starCount {
-                    calculations.append(RatingCalculation(
-                        spacingCount: spacingCount,
-                        x: x - padding,
-                        adjustedX: adjustedX,
-                        rating: rating,
-                        nextRating: nil,
-                        isUsed: true
-                    ))
-                    return rating
+            func calculateRating(x: CGFloat) -> Double {
+
+                // 1. 获取去除 padding 后的 x 坐标
+                let xInStarArea = max(0, x - padding)  // 确保 x 在 starArea 内，最小为 0
+
+                // 2. 计算每个 "星单元" 的宽度 (星星宽度 + 间距)
+                let starUnitWidth = starWidth + singleSpacing
+
+                // 3. 计算当前 x 坐标位于第几个 "星单元" (从 0 开始计数)
+                let starUnitIndex: Int
+
+                if xInStarArea == 0 {  // 处理拖拽到最左边的情况
+                    starUnitIndex = 0
+                } else {
+                    starUnitIndex = min(
+                        Int(xInStarArea / starUnitWidth),  // 向下取整，得到星单元索引
+                        starCount - 1  // 限制索引不超过最大星星数
+                    )
                 }
 
-                if (rating - 1 - CGFloat(spacingCount)) >= 0 {
-                    // 如果当前评分大于等于0，继续尝试下一个间距
-                    let nextRating = calculateRating(x: x, spacingCount: spacingCount + 1, calculations: &calculations)
-                    
-                    // 如果下一个间距的评分小于0，说明当前是正确的间距
-                    let isUsed = (nextRating - 1 - CGFloat(spacingCount)) < 0
-                    calculations.append(RatingCalculation(
-                        spacingCount: spacingCount,
-                        x: x - padding,
-                        adjustedX: adjustedX,
-                        rating: rating,
-                        nextRating: nextRating,
-                        isUsed: false  // 在临界值时，总是使用下一个计算结果
-                    ))
-                    
-                    // 在临界值时，总是返回下一个计算结果
-                    return nextRating
+                // 4. 计算在当前 "星单元" 内的 x 偏移量
+                let xInCurrentStarUnit =
+                    xInStarArea - CGFloat(starUnitIndex) * starUnitWidth
+
+                // 5. 根据 x 偏移量和星星宽度，计算当前星星的评分
+                let rawRatingForCurrentStar: Double
+
+                if xInCurrentStarUnit <= starWidth {
+                    // 落在当前星星的宽度范围内
+                    rawRatingForCurrentStar = Double(
+                        xInCurrentStarUnit / starWidth)
+                } else {
+                    // 落在间距范围内 (理论上不应该发生，因为我们已经计算了 starUnitIndex)
+                    // 这种情况可能发生在拖拽到非常精确的间距位置，可以考虑算作满星
+                    rawRatingForCurrentStar = 1.0
                 }
-                
-                calculations.append(RatingCalculation(
-                    spacingCount: spacingCount,
-                    x: x - padding,
-                    adjustedX: adjustedX,
-                    rating: rating,
-                    nextRating: nil,
-                    isUsed: true
-                ))
-                return rating
+
+                // 6. 计算总评分： 星单元索引 + 当前星星的评分
+                let rawRating = Double(starUnitIndex) + rawRatingForCurrentStar
+
+//                logger.debug(
+//                    """
+//                    Drag Debug:
+//                    - X: \(x)
+//                    - Padding: \(padding)
+//                    - xInStarArea: \(xInStarArea)
+//                    - starUnitWidth: \(starUnitWidth)
+//                    - starUnitIndex: \(starUnitIndex)
+//                    - xInCurrentStarUnit: \(xInCurrentStarUnit)
+//                    - rawRatingForCurrentStar: \(rawRatingForCurrentStar)
+//                    - Raw Rating: \(rawRating)
+//                    """)
+
+                return rawRating
             }
 
-            var calculations: [RatingCalculation] = []
-            let rawRating = calculateRating(x: dragLocation.x, calculations: &calculations)
-            let snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
+            let rawRating = calculateRating(x: dragLocation.x)
+            let snappedRating =
+                (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
             var validRating = min(max(0, snappedRating), Double(starCount))
 
-            // 打印所有计算过程
-            logger.debug("""
-                Drag Debug:
-                - Location: \(dragLocation)
-                - Single Spacing: \(singleSpacing)
-                - Star Width: \(starWidth)
-                - Star Area Width: \(starAreaWidth)
-                - Screen Width: \(screenWidth)
-                - Padding: \(padding)
-                
-                Used Calculation:
-                \(calculations.map { $0.debugDescription }.joined(separator: "\n"))
-                
-                Final Results:
-                - Raw Rating: \(rawRating)
-                - Snapped Rating: \(snappedRating)
-                - Valid Rating: \(validRating)
-                """)
+//            logger.debug(
+//                """
+//                Drag Debug:
+//                - Location: \(dragLocation)
+//                - Single Spacing: \(singleSpacing)
+//                - Star Width: \(starWidth)
+//                - Star Area Width: \(starAreaWidth)
+//                - Geometry Size: \(geometry.size.width)
+//                - Padding: \(padding)
+//                - Raw Rating: \(rawRating)
+//                - Snapped Rating: \(snappedRating): \(rawRating * 2) \((rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2)
+//                - Valid Rating: \(validRating)
+//                """)
 
             // Enforce minimum rating of 0.5
             if validRating < 0.5 && validRating > 0 {
@@ -426,7 +411,9 @@ struct StarRatingView: View {
             if validRating != internalRating {
                 internalRating = validRating
                 inputRating = Int(round(internalRating * 2))
-                logger.debug("Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))")
+//                logger.debug(
+//                    "Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))"
+//                )
                 performFeedback(forRatingChange: oldRating)
             }
         }
