@@ -14,7 +14,7 @@ struct MarkView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @State private var showAdvanced = false
-    @State private var detent: PresentationDetent = .medium
+    @State private var detent: PresentationDetent = .fraction(0.7)
 
     init(
         item: any ItemProtocol, mark: MarkSchema? = nil,
@@ -26,61 +26,109 @@ struct MarkView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Custom title bar
-            VStack(alignment: .leading, spacing: 0) {
-                HStack {
-                    Text(viewModel.title)
-                        .font(.headline)
-                    Spacer()
-                    Button(action: { dismiss() }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.gray)
-                            .font(.title2)
+        NavigationStack {
+            VStack(spacing: 0) {
+                // Custom title bar
+                VStack(alignment: .leading, spacing: 0) {
+                    HStack {
+                        Text(viewModel.title)
+                            .font(.headline)
+                        Spacer()
+                        Button(action: { dismiss() }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.gray)
+                                .font(.title2)
+                        }
                     }
+                    .padding(.horizontal)
+                    .padding(.top)
+                    .padding(.bottom)
+                    .padding(.leading, 4)
+                    shelfTypeButtons
                 }
-                .padding(.horizontal)
-                .padding(.top)
                 .padding(.bottom)
-                .padding(.leading, 4)
-                shelfTypeButtons
-            }
-            .padding(.bottom)
-
-            TabView(
-                selection: Binding(
-                    get: { viewModel.shelfType },
-                    set: { viewModel.shelfType = $0 }
-                )
-            ) {
-                ForEach(ShelfType.allCases, id: \.self) { type in
-                    if type == .wishlist {
-                        markContentView
-                            .tag(type)
-                    } else {
-                        markContentViewWithRating
-                            .tag(type)
+                
+                TabView(
+                    selection: Binding(
+                        get: { viewModel.shelfType },
+                        set: { viewModel.shelfType = $0 }
+                    )
+                ) {
+                    ForEach(ShelfType.allCases, id: \.self) { type in
+                        if type == .wishlist {
+                            markContentView
+                                .tag(type)
+                        } else {
+                            markContentViewWithRating
+                                .tag(type)
+                        }
                     }
                 }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-
-            VStack(alignment: .center, spacing: 0) {
-                saveButton
-
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                
                 if viewModel.existingMark != nil {
                     deleteButton
                 } else {
                     deleteButton
                         .hidden()
                 }
+                
+                NavigationLink {
+                    Form {
+                        Section {
+                            Toggle(
+                                String(localized: "mark_public_toggle", table: "Item"),
+                                isOn: $viewModel.isPublic)
+                            .tint(.accentColor)
+                            Toggle(
+                                String(localized: "mark_share_fediverse_toggle", table: "Item"),
+                                isOn: $viewModel.postToFediverse)
+                            .tint(.accentColor)
+                            Toggle(
+                                String(localized: "mark_use_current_time_toggle", table: "Item"),
+                                isOn: $viewModel.useCurrentTime)
+                            .tint(.accentColor)
+
+                            if !viewModel.useCurrentTime {
+                                DatePicker(
+                                    String(localized: "mark_created_time_label", table: "Item"),
+                                    selection: $viewModel.createdTime,
+                                    displayedComponents: [.date, .hourAndMinute]
+                                )
+                            }
+                        }
+                    }
+                    .background(.ultraThinMaterial)
+                    .compositingGroup()
+                    .scrollContentBackground(.hidden)
+                    .navigationTitle(String(localized: "mark_advanced_section", table: "Item"))
+                } label: {
+                    HStack {
+                        Text(advancedOptionsLabel)
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                }
+                
+                VStack(alignment: .center, spacing: 0) {
+                    saveButton
+                }
+                .background(.ultraThinMaterial)
+                .compositingGroup()
             }
             .background(.ultraThinMaterial)
             .compositingGroup()
         }
+        .navigationTitle(viewModel.title)
         .background(.ultraThinMaterial)
         .compositingGroup()
-        .presentationDetents([.medium, .large], selection: $detent)
+        .presentationDetents([.fraction(0.7), .large], selection: $detent)
         .presentationDragIndicator(.visible)
         .onChange(of: viewModel.isDismissed) { dismissed in
             if dismissed {
@@ -97,7 +145,7 @@ struct MarkView: View {
                 Text(error.localizedDescription)
             }
         }
-        .onAppear {
+        .task {
             viewModel.accountsManager = accountsManager
         }
         .enableInjection()
@@ -141,7 +189,8 @@ struct MarkView: View {
 
                 TextEditor(text: $viewModel.comment)
                     .frame(
-                        minHeight: detent == .large ? 200 : paddingTop ? 100 : 50,
+                        minHeight: detent == .large
+                            ? 200 : paddingTop ? 100 : 50,
                         maxHeight: 300
                     )
                     .fixedSize(horizontal: false, vertical: true)
@@ -170,35 +219,26 @@ struct MarkView: View {
         }
     }
 
-    private var advancedOptionsSection: some View {
-        Section {
-            DisclosureGroup(
-                String(localized: "mark_advanced_section", table: "Item"),
-                isExpanded: $showAdvanced
-            ) {
-                Toggle(
-                    String(localized: "mark_public_toggle", table: "Item"),
-                    isOn: $viewModel.isPublic)
-                Toggle(
-                    String(
-                        localized: "mark_share_fediverse_toggle", table: "Item"),
-                    isOn: $viewModel.postToFediverse)
-                Toggle(
-                    String(
-                        localized: "mark_use_current_time_toggle", table: "Item"
-                    ),
-                    isOn: $viewModel.useCurrentTime)
-
-                if !viewModel.useCurrentTime {
-                    DatePicker(
-                        String(
-                            localized: "mark_created_time_label", table: "Item"),
-                        selection: $viewModel.createdTime,
-                        displayedComponents: [.date, .hourAndMinute]
-                    )
-                }
-            }
+    private var advancedOptionsLabel: String {
+        var components: [String] = []
+        
+        if viewModel.useCurrentTime {
+            components.append("Now")
+        } else {
+            components.append(viewModel.createdTime.formatted(date: .abbreviated, time: .shortened))
         }
+        
+        if viewModel.isPublic {
+            components.append("Public")
+        } else {
+            components.append("Private")
+        }
+        
+        if viewModel.postToFediverse {
+            components.append("Post to fediverse")
+        }
+        
+        return components.joined(separator: " · ")
     }
 
     private var deleteButton: some View {
