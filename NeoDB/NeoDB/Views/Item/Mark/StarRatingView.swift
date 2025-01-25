@@ -313,69 +313,109 @@ struct StarRatingView: View {
         performFeedback(forRatingChange: oldRating)
     }
 
+    // 用于存储计算过程中的调试信息
+    private struct RatingCalculation {
+        let spacingCount: Int
+        let x: CGFloat
+        let adjustedX: CGFloat
+        let rating: Double
+        let nextRating: Double?
+        let isUsed: Bool  // 标记这个计算结果是否被使用
+        
+        var debugDescription: String {
+            """
+            Calculation \(spacingCount):
+            - X: \(x)
+            - Adjusted X: \(adjustedX)
+            - Rating: \(rating)
+            - Next Rating: \(nextRating ?? -1)
+            - Is Used: \(isUsed)
+            """
+        }
+    }
+
     private func handleDragChanged(
         value: DragGesture.Value, geometry: GeometryProxy
     ) {
         withAnimation(.spring(duration: 0.3)) {
             let dragLocation = value.location
             let singleSpacing = secondStarMinX - firstStarMaxX
-            let starAreaWidth =
-                (starWidth * CGFloat(starCount))
-                + (singleSpacing * CGFloat(starCount - 1))
+            let starAreaWidth = (starWidth * CGFloat(starCount)) + (singleSpacing * CGFloat(starCount - 1))
             let screenWidth = geometry.size.width
             let padding = (screenWidth - starAreaWidth) / 2
 
             // 计算实际评分
-            func calculateRating(x: CGFloat, spacingCount: Int = 0) -> Double {
-                let adjustedX =
-                    x - padding - (singleSpacing * CGFloat(spacingCount))
+            func calculateRating(x: CGFloat, spacingCount: Int = 0, calculations: inout [RatingCalculation]) -> Double {
+                let adjustedX = x - padding - (singleSpacing * CGFloat(spacingCount))
                 let rating = adjustedX / starWidth
-
-                logger.debug("""
-                    
-                    Drag Debug \(spacingCount):
-                    - X: \(x - padding)
-                    - Adjusted X: \(adjustedX)
-                    - Rating: \(rating)
-                    - Spacing Count: \(spacingCount)
-                    - nextRating: \(rating - 1 - CGFloat(spacingCount))
-                    """)
-
+                
                 if spacingCount >= starCount {
+                    calculations.append(RatingCalculation(
+                        spacingCount: spacingCount,
+                        x: x - padding,
+                        adjustedX: adjustedX,
+                        rating: rating,
+                        nextRating: nil,
+                        isUsed: true
+                    ))
                     return rating
                 }
 
                 if (rating - 1 - CGFloat(spacingCount)) >= 0 {
                     // 如果当前评分大于等于0，继续尝试下一个间距
-                    let nextRating = calculateRating(
-                        x: x, spacingCount: spacingCount + 1)
+                    let nextRating = calculateRating(x: x, spacingCount: spacingCount + 1, calculations: &calculations)
+                    
                     // 如果下一个间距的评分小于0，说明当前是正确的间距
-                    if (nextRating - 1 - CGFloat(spacingCount)) < 0 {
+                    let isUsed = (nextRating - 1 - CGFloat(spacingCount)) < 0
+                    calculations.append(RatingCalculation(
+                        spacingCount: spacingCount,
+                        x: x - padding,
+                        adjustedX: adjustedX,
+                        rating: rating,
+                        nextRating: nextRating,
+                        isUsed: isUsed
+                    ))
+                    
+                    if isUsed {
                         return rating
                     }
                     return nextRating
                 }
+                
+                calculations.append(RatingCalculation(
+                    spacingCount: spacingCount,
+                    x: x - padding,
+                    adjustedX: adjustedX,
+                    rating: rating,
+                    nextRating: nil,
+                    isUsed: true
+                ))
                 return rating
             }
 
-            let rawRating = calculateRating(x: dragLocation.x)
-            let snappedRating =
-                (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
+            var calculations: [RatingCalculation] = []
+            let rawRating = calculateRating(x: dragLocation.x, calculations: &calculations)
+            let snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
             var validRating = min(max(0, snappedRating), Double(starCount))
 
-//            logger.debug(
-//                """
-//                Drag Debug:
-//                - Location: \(dragLocation)
-//                - Single Spacing: \(singleSpacing)
-//                - Star Width: \(starWidth)
-//                - Star Area Width: \(starAreaWidth)
-//                - Geometry Size: \(geometry.size.width)
-//                - Padding: \(padding)
-//                - Raw Rating: \(rawRating)
-//                - Snapped Rating: \(snappedRating): \(rawRating * 2) \((rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2)
-//                - Valid Rating: \(validRating)
-//                """)
+            // 打印所有计算过程
+            logger.debug("""
+                Drag Debug:
+                - Location: \(dragLocation)
+                - Single Spacing: \(singleSpacing)
+                - Star Width: \(starWidth)
+                - Star Area Width: \(starAreaWidth)
+                - Screen Width: \(screenWidth)
+                - Padding: \(padding)
+                
+                Used Calculation:
+                \(calculations.first { $0.isUsed }?.debugDescription ?? "No calculation used")
+                
+                Final Results:
+                - Raw Rating: \(rawRating)
+                - Snapped Rating: \(snappedRating)
+                - Valid Rating: \(validRating)
+                """)
 
             // Enforce minimum rating of 0.5
             if validRating < 0.5 && validRating > 0 {
@@ -388,9 +428,7 @@ struct StarRatingView: View {
             if validRating != internalRating {
                 internalRating = validRating
                 inputRating = Int(round(internalRating * 2))
-                logger.debug(
-                    "Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))"
-                )
+                logger.debug("Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))")
                 performFeedback(forRatingChange: oldRating)
             }
         }
