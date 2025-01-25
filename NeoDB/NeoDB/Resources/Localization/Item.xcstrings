@@ -2488,34 +2488,162 @@
       }
     },
     "shelf_type_action_complete_category_book_label" : {
-      "comment" : "Action state - Complete - Book - Read"
+      "comment" : "Action state - Complete - Book - Read",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_collection_label" : {
-      "comment" : "Action state - Complete - Collection - Watched"
+      "comment" : "Action state - Complete - Collection - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watched"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_exhibition_label" : {
-      "comment" : "Action state - Complete - Exhibition - Watched"
+      "comment" : "Action state - Complete - Exhibition - Watched",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_fanfic_label" : {
-      "comment" : "Action state - Complete - Fanfic - Read"
+      "comment" : "Action state - Complete - Fanfic - Read",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "读过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_game_label" : {
-      "comment" : "Action state - Complete - Game - Watched"
+      "comment" : "Action state - Complete - Game - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Played"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "玩过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_movie_label" : {
-      "comment" : "Action state - Complete - Movie - Watched"
+      "comment" : "Action state - Complete - Movie - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watched"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_music_label" : {
-      "comment" : "Action state - Complete - Music - Watched"
+      "comment" : "Action state - Complete - Music - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listened"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "听过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_performance_label" : {
-      "comment" : "Action state - Complete - Performance - Watched"
+      "comment" : "Action state - Complete - Performance - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watched"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_podcast_label" : {
-      "comment" : "Action state - Complete - Podcast - Watched"
+      "comment" : "Action state - Complete - Podcast - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listened"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "听过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_category_tv_label" : {
-      "comment" : "Action state - Complete - TV - Watched"
+      "comment" : "Action state - Complete - TV - Watched",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watched"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看过"
+          }
+        }
+      }
     },
     "shelf_type_action_complete_label" : {
       "comment" : "Action state - Completed",

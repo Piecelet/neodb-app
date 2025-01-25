@@ -94,13 +94,13 @@ enum ShelfType: String, Codable, CaseIterable {
         case (.complete, .tv), (.complete, .tvSeason), (.complete, .tvEpisode):
             return String(localized: "shelf_type_complete_category_tv_label", table: "Item", comment: "Neutral noun without action - Complete - TV - Watched")
         case (.complete, .podcast):
-            return String(localized: "shelf_type_complete_category_podcast_label", table: "Item", comment: "Neutral noun without action - Complete - Podcast - Watched")
+            return String(localized: "shelf_type_complete_category_podcast_label", table: "Item", comment: "Neutral noun without action - Complete - Podcast - Listened")
         case (.complete, .book):
             return String(localized: "shelf_type_complete_category_book_label", table: "Item", comment: "Neutral noun without action - Complete - Book - Read")
         case (.complete, .music):
-            return String(localized: "shelf_type_complete_category_music_label", table: "Item", comment: "Neutral noun without action - Complete - Music - Watched")
+            return String(localized: "shelf_type_complete_category_music_label", table: "Item", comment: "Neutral noun without action - Complete - Music - Listened")
         case (.complete, .game):
-            return String(localized: "shelf_type_complete_category_game_label", table: "Item", comment: "Neutral noun without action - Complete - Game - Watched")
+            return String(localized: "shelf_type_complete_category_game_label", table: "Item", comment: "Neutral noun without action - Complete - Game - Played")
         case (.complete, .performance), (.complete, .performanceProduction):
             return String(localized: "shelf_type_complete_category_performance_label", table: "Item", comment: "Neutral noun without action - Complete - Performance - Watched")
         case (.complete, .fanfic):
