@@ -440,7 +440,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "日期"
           }
         }
@@ -635,7 +635,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "条形码"
           }
         }
@@ -863,15 +863,33 @@
       "comment" : "Book Pages format",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d pages"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d page"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d pages"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d页"
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d页"
+                }
+              }
+            }
           }
         }
       }
@@ -883,6 +901,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pages"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Páginas"
           }
         },
         "zh-Hans" : {
@@ -986,7 +1010,27 @@
       }
     },
     "metadata_book_series_label" : {
-      "comment" : "Book Series label"
+      "comment" : "Book Series label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Series"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Séries"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "系列"
+          }
+        }
+      }
     },
     "metadata_book_translator_label" : {
       "comment" : "Book Translator label",
@@ -1011,94 +1055,8 @@
         }
       }
     },
-    "metadata_choreographer" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choreographer"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Coreógrafo"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编舞"
-          }
-        }
-      }
-    },
-    "metadata_closing_date" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Closing Date"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "闭幕日期"
-          }
-        }
-      }
-    },
-    "metadata_composer" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Composer"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compositor"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "作曲"
-          }
-        }
-      }
-    },
-    "metadata_crew" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crew"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Equipe"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "工作人员"
-          }
-        }
-      }
-    },
-    "metadata_developer" : {
-      "extractionState" : "stale",
+    "metadata_game_developer_label" : {
+      "comment" : "Game Developer label",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1119,55 +1077,6 @@
           }
         }
       }
-    },
-    "metadata_episode_count" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Episode Count"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Contador de episódios"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "集数"
-          }
-        }
-      }
-    },
-    "metadata_episode_number" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Episode Number"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Número de episódios"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "集号"
-          }
-        }
-      }
-    },
-    "metadata_game_developer_label" : {
-      "comment" : "Game Developer label"
     },
     "metadata_game_genre_label" : {
       "comment" : "Game Genre label",
@@ -1216,7 +1125,27 @@
       }
     },
     "metadata_game_platform_label" : {
-      "comment" : "Game Platform label"
+      "comment" : "Game Platform label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Platform"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plataforma"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "平台"
+          }
+        }
+      }
     },
     "metadata_game_publisher_label" : {
       "comment" : "Game Publisher label",
@@ -1283,52 +1212,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "发行类型"
-          }
-        }
-      }
-    },
-    "metadata_imdb" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "IMDB"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ""
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "IMDB"
-          }
-        }
-      }
-    },
-    "metadata_last_episode_date" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Last Episode Date"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Data do último episódio"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "最新一集日期"
           }
         }
       }
@@ -1449,7 +1332,27 @@
       }
     },
     "metadata_movie_imdb_label" : {
-      "comment" : "Movie IMDB label"
+      "comment" : "Movie IMDB label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        }
+      }
     },
     "metadata_movie_language_label" : {
       "comment" : "Movie Language label",
@@ -1520,75 +1423,6 @@
         }
       }
     },
-    "metadata_opening_date" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opening Date"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Data de abertura"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "开幕日期"
-          }
-        }
-      }
-    },
-    "metadata_orig_creator" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Original Creator"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Criador original"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "原作"
-          }
-        }
-      }
-    },
-    "metadata_pages" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pages"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Páginas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "页数"
-          }
-        }
-      }
-    },
     "metadata_performance_actor_label" : {
       "comment" : "Performance Actor label",
       "localizations" : {
@@ -1613,7 +1447,27 @@
       }
     },
     "metadata_performance_choreographer_label" : {
-      "comment" : "Performance Choreographer label"
+      "comment" : "Performance Choreographer label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choreographer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coreógrafo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编舞"
+          }
+        }
+      }
     },
     "metadata_performance_closing_date_label" : {
       "comment" : "Performance Closing Date label",
@@ -1623,14 +1477,60 @@
             "state" : "translated",
             "value" : "Closing Date"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闭幕日期"
+          }
         }
       }
     },
     "metadata_performance_composer_label" : {
-      "comment" : "Performance Composer label"
+      "comment" : "Performance Composer label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Composer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compositor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作曲"
+          }
+        }
+      }
     },
     "metadata_performance_crew_label" : {
-      "comment" : "Performance Crew label"
+      "comment" : "Performance Crew label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crew"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipe"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "工作人员"
+          }
+        }
+      }
     },
     "metadata_performance_director_label" : {
       "comment" : "Performance Director label",
@@ -1732,11 +1632,43 @@
             "state" : "translated",
             "value" : "Opening Date"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data de abertura"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开幕日期"
+          }
         }
       }
     },
     "metadata_performance_orig_creator_label" : {
-      "comment" : "Performance Orig Creator label"
+      "comment" : "Performance Orig Creator label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original Creator"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criador original"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原作"
+          }
+        }
+      }
     },
     "metadata_performance_performer_label" : {
       "comment" : "Performance Performer label",
@@ -1802,7 +1734,27 @@
       }
     },
     "metadata_performance_production_choreographer_label" : {
-      "comment" : "Performance Production Choreographer label"
+      "comment" : "Performance Production Choreographer label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choreographer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coreógrafo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编舞`"
+          }
+        }
+      }
     },
     "metadata_performance_production_closing_date_label" : {
       "comment" : "Performance Production Closing Date label",
@@ -1812,14 +1764,60 @@
             "state" : "translated",
             "value" : "Closing Date"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "闭幕日期"
+          }
         }
       }
     },
     "metadata_performance_production_composer_label" : {
-      "comment" : "Performance Production Composer label"
+      "comment" : "Performance Production Composer label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Composer"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compositor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "作曲"
+          }
+        }
+      }
     },
     "metadata_performance_production_crew_label" : {
-      "comment" : "Performance Production Crew label"
+      "comment" : "Performance Production Crew label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crew"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Equipe"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "工作人员"
+          }
+        }
+      }
     },
     "metadata_performance_production_director_label" : {
       "comment" : "Performance Production Director label",
@@ -1898,11 +1896,43 @@
             "state" : "translated",
             "value" : "Opening Date"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data de abertura"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开幕日期"
+          }
         }
       }
     },
     "metadata_performance_production_orig_creator_label" : {
-      "comment" : "Performance Production Orig Creator label"
+      "comment" : "Performance Production Orig Creator label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Original Creator"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Criador original"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "原作"
+          }
+        }
+      }
     },
     "metadata_performance_production_performer_label" : {
       "comment" : "Performance Production Performer label",
@@ -1944,48 +1974,63 @@
         }
       }
     },
-    "metadata_platform" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Platform"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plataforma"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "平台"
-          }
-        }
-      }
-    },
     "metadata_podcast_episode_count_format" : {
       "comment" : "Podcast Episode Count formatted",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d episodes"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d episode"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d episodes"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d集"
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d集"
+                }
+              }
+            }
           }
         }
       }
     },
     "metadata_podcast_episode_count_label" : {
-      "comment" : "Podcast Episode Count label"
+      "comment" : "Podcast Episode Count label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Episode Count"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contador de episódios"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "集数"
+          }
+        }
+      }
     },
     "metadata_podcast_genre_label" : {
       "comment" : "Podcast Genre label",
@@ -2051,7 +2096,27 @@
       }
     },
     "metadata_podcast_last_episode_date_label" : {
-      "comment" : "Podcast Last Episode Date label"
+      "comment" : "Podcast Last Episode Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Episode Date"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Data do último episódio"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "最新一集日期"
+          }
+        }
+      }
     },
     "metadata_podcast_rss_url_label" : {
       "comment" : "Podcast RSS URL label",
@@ -2095,52 +2160,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "网站链接"
-          }
-        }
-      }
-    },
-    "metadata_season_number" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Season Number"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Número da temporada"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "季号"
-          }
-        }
-      }
-    },
-    "metadata_series" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Series"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Séries"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "系列"
           }
         }
       }
@@ -2218,24 +2237,82 @@
       "comment" : "TV Show Episode Count format",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d episodes"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d episode"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d episodes"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d集"
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d集"
+                }
+              }
+            }
           }
         }
       }
     },
     "metadata_tv_episode_count_label" : {
-      "comment" : "TV Show Episode Count label"
+      "comment" : "TV Show Episode Count label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Episode Count"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contador de episódios"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "集号"
+          }
+        }
+      }
     },
     "metadata_tv_episode_number_label" : {
-      "comment" : "TV Show Episode Number label"
+      "comment" : "TV Show Episode Number label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Episode Number"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Número de episódios"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "集数"
+          }
+        }
+      }
     },
     "metadata_tv_genre_label" : {
       "comment" : "TV Show Genre label",
@@ -2261,7 +2338,27 @@
       }
     },
     "metadata_tv_imdb_label" : {
-      "comment" : "TV Show IMDB ID label"
+      "comment" : "TV Show IMDB ID label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDB"
+          }
+        }
+      }
     },
     "metadata_tv_language_label" : {
       "comment" : "TV Show Language label",
@@ -2313,21 +2410,59 @@
       "comment" : "TV Show Season Count format",
       "localizations" : {
         "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d seasons"
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d season"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d seasons"
+                }
+              }
+            }
           }
         },
         "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d季"
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%d季"
+                }
+              }
+            }
           }
         }
       }
     },
     "metadata_tv_season_number_label" : {
-      "comment" : "TV Show Season Number label"
+      "comment" : "TV Show Season Number label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Season Number"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Número da temporada"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "季号"
+          }
+        }
+      }
     },
     "metadata_tv_year_label" : {
       "comment" : "TV Show Year label",
@@ -2352,7 +2487,38 @@
         }
       }
     },
-    "shelf_type_action_complete" : {
+    "shelf_type_action_complete_category_book_label" : {
+      "comment" : "Action state - Complete - Book - Read"
+    },
+    "shelf_type_action_complete_category_collection_label" : {
+      "comment" : "Action state - Complete - Collection - Watched"
+    },
+    "shelf_type_action_complete_category_exhibition_label" : {
+      "comment" : "Action state - Complete - Exhibition - Watched"
+    },
+    "shelf_type_action_complete_category_fanfic_label" : {
+      "comment" : "Action state - Complete - Fanfic - Read"
+    },
+    "shelf_type_action_complete_category_game_label" : {
+      "comment" : "Action state - Complete - Game - Watched"
+    },
+    "shelf_type_action_complete_category_movie_label" : {
+      "comment" : "Action state - Complete - Movie - Watched"
+    },
+    "shelf_type_action_complete_category_music_label" : {
+      "comment" : "Action state - Complete - Music - Watched"
+    },
+    "shelf_type_action_complete_category_performance_label" : {
+      "comment" : "Action state - Complete - Performance - Watched"
+    },
+    "shelf_type_action_complete_category_podcast_label" : {
+      "comment" : "Action state - Complete - Podcast - Watched"
+    },
+    "shelf_type_action_complete_category_tv_label" : {
+      "comment" : "Action state - Complete - TV - Watched"
+    },
+    "shelf_type_action_complete_label" : {
+      "comment" : "Action state - Completed",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2374,7 +2540,38 @@
         }
       }
     },
-    "shelf_type_action_dropped" : {
+    "shelf_type_action_dropped_category_book_label" : {
+      "comment" : "Action state - Dropped - Book - Dropped"
+    },
+    "shelf_type_action_dropped_category_collection_label" : {
+      "comment" : "Action state - Dropped - Collection - Dropped"
+    },
+    "shelf_type_action_dropped_category_exhibition_label" : {
+      "comment" : "Action state - Dropped - Exhibition - Dropped"
+    },
+    "shelf_type_action_dropped_category_fanfic_label" : {
+      "comment" : "Action state - Dropped - Fanfic - Dropped"
+    },
+    "shelf_type_action_dropped_category_game_label" : {
+      "comment" : "Action state - Dropped - Game - Dropped"
+    },
+    "shelf_type_action_dropped_category_movie_label" : {
+      "comment" : "Action state - Dropped - Movie - Dropped"
+    },
+    "shelf_type_action_dropped_category_music_label" : {
+      "comment" : "Action state - Dropped - Music - Dropped"
+    },
+    "shelf_type_action_dropped_category_performance_label" : {
+      "comment" : "Action state - Dropped - Performance - Dropped"
+    },
+    "shelf_type_action_dropped_category_podcast_label" : {
+      "comment" : "Action state - Dropped - Podcast - Dropped"
+    },
+    "shelf_type_action_dropped_category_tv_label" : {
+      "comment" : "Action state - Dropped - TV - Dropped"
+    },
+    "shelf_type_action_dropped_label" : {
+      "comment" : "Action state - Dropped",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2396,7 +2593,38 @@
         }
       }
     },
-    "shelf_type_action_progress" : {
+    "shelf_type_action_progress_category_book_label" : {
+      "comment" : "Action state - Progress - Book - Reading"
+    },
+    "shelf_type_action_progress_category_collection_label" : {
+      "comment" : "Action state - Progress - Collection - Watching"
+    },
+    "shelf_type_action_progress_category_exhibition_label" : {
+      "comment" : "Action state - Progress - Exhibition - Watching"
+    },
+    "shelf_type_action_progress_category_fanfic_label" : {
+      "comment" : "Action state - Progress - Fanfic - Reading"
+    },
+    "shelf_type_action_progress_category_game_label" : {
+      "comment" : "Action state - Progress - Game - Playing"
+    },
+    "shelf_type_action_progress_category_movie_label" : {
+      "comment" : "Action state - Progress - Movie - Watching"
+    },
+    "shelf_type_action_progress_category_music_label" : {
+      "comment" : "Action state - Progress - Music - Listening"
+    },
+    "shelf_type_action_progress_category_performance_label" : {
+      "comment" : "Action state - Progress - Performance - Watching"
+    },
+    "shelf_type_action_progress_category_podcast_label" : {
+      "comment" : "Action state - Progress - Podcast - Listening"
+    },
+    "shelf_type_action_progress_category_tv_label" : {
+      "comment" : "Action state - Progress - TV - Watching"
+    },
+    "shelf_type_action_progress_label" : {
+      "comment" : "Action state - In progress",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2418,7 +2646,35 @@
         }
       }
     },
-    "shelf_type_action_wishlist" : {
+    "shelf_type_action_wishlist_category_book_label" : {
+      "comment" : "Action state - Wishlisted - Book - Wanted to read"
+    },
+    "shelf_type_action_wishlist_category_collection_label" : {
+      "comment" : "Action state - Wishlisted - Collection - Wanted to watch"
+    },
+    "shelf_type_action_wishlist_category_exhibition_label" : {
+      "comment" : "Action state - Wishlisted - Exhibition - Wanted to watch"
+    },
+    "shelf_type_action_wishlist_category_fanfic_label" : {
+      "comment" : "Action state - Wishlisted - Fanfic - Wanted to read"
+    },
+    "shelf_type_action_wishlist_category_game_label" : {
+      "comment" : "Action state - Wishlisted - Game - Wanted to play"
+    },
+    "shelf_type_action_wishlist_category_movie_label" : {
+      "comment" : "Action state - Wishlisted - Movie - Wanted to watch"
+    },
+    "shelf_type_action_wishlist_category_music_label" : {
+      "comment" : "Action state - Wishlisted - Music - Wanted to listen"
+    },
+    "shelf_type_action_wishlist_category_performance_label" : {
+      "comment" : "Action state - Wishlisted - Performance - Wanted to watch"
+    },
+    "shelf_type_action_wishlist_category_podcast_label" : {
+      "comment" : "Action state - Wishlisted - Podcast - Wanted to listen"
+    },
+    "shelf_type_action_wishlist_label" : {
+      "comment" : "Action state - Wishlisted",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2440,7 +2696,38 @@
         }
       }
     },
-    "shelf_type_complete" : {
+    "shelf_type_complete_category_book_label" : {
+      "comment" : "Neutral noun without action - Complete - Book - Read"
+    },
+    "shelf_type_complete_category_collection_label" : {
+      "comment" : "Neutral noun without action - Complete - Collection - Watched"
+    },
+    "shelf_type_complete_category_exhibition_label" : {
+      "comment" : "Neutral noun without action - Complete - Exhibition - Watched"
+    },
+    "shelf_type_complete_category_fanfic_label" : {
+      "comment" : "Neutral noun without action - Complete - Fanfic - Read"
+    },
+    "shelf_type_complete_category_game_label" : {
+      "comment" : "Neutral noun without action - Complete - Game - Watched"
+    },
+    "shelf_type_complete_category_movie_label" : {
+      "comment" : "Neutral noun without action - Complete - Movie - Watched"
+    },
+    "shelf_type_complete_category_music_label" : {
+      "comment" : "Neutral noun without action - Complete - Music - Watched"
+    },
+    "shelf_type_complete_category_performance_label" : {
+      "comment" : "Neutral noun without action - Complete - Performance - Watched"
+    },
+    "shelf_type_complete_category_podcast_label" : {
+      "comment" : "Neutral noun without action - Complete - Podcast - Watched"
+    },
+    "shelf_type_complete_category_tv_label" : {
+      "comment" : "Neutral noun without action - Complete - TV - Watched"
+    },
+    "shelf_type_complete_label" : {
+      "comment" : "Neutral noun without action - Complete",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2462,7 +2749,38 @@
         }
       }
     },
-    "shelf_type_dropped" : {
+    "shelf_type_dropped_category_book_label" : {
+      "comment" : "Neutral noun without action - Dropped - Book"
+    },
+    "shelf_type_dropped_category_collection_label" : {
+      "comment" : "Neutral noun without action - Dropped - Collection"
+    },
+    "shelf_type_dropped_category_exhibition_label" : {
+      "comment" : "Neutral noun without action - Dropped - Exhibition"
+    },
+    "shelf_type_dropped_category_fanfic_label" : {
+      "comment" : "Neutral noun without action - Dropped - Fanfic"
+    },
+    "shelf_type_dropped_category_game_label" : {
+      "comment" : "Neutral noun without action - Dropped - Game"
+    },
+    "shelf_type_dropped_category_movie_label" : {
+      "comment" : "Neutral noun without action - Dropped - Movie"
+    },
+    "shelf_type_dropped_category_music_label" : {
+      "comment" : "Neutral noun without action - Dropped - Music"
+    },
+    "shelf_type_dropped_category_performance_label" : {
+      "comment" : "Neutral noun without action - Dropped - Performance"
+    },
+    "shelf_type_dropped_category_podcast_label" : {
+      "comment" : "Neutral noun without action - Dropped - Podcast"
+    },
+    "shelf_type_dropped_category_tv_label" : {
+      "comment" : "Neutral noun without action - Dropped - TV"
+    },
+    "shelf_type_dropped_label" : {
+      "comment" : "Neutral noun without action - Drop",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2484,7 +2802,38 @@
         }
       }
     },
-    "shelf_type_progress" : {
+    "shelf_type_progress_category_book_label" : {
+      "comment" : "Neutral noun without action - Progress - Book - Reading"
+    },
+    "shelf_type_progress_category_collection_label" : {
+      "comment" : "Neutral noun without action - Progress - Collection - Watching"
+    },
+    "shelf_type_progress_category_exhibition_label" : {
+      "comment" : "Neutral noun without action - Progress - Exhibition - Watching"
+    },
+    "shelf_type_progress_category_fanfic_label" : {
+      "comment" : "Neutral noun without action - Progress - Fanfic - Reading"
+    },
+    "shelf_type_progress_category_game_label" : {
+      "comment" : "Neutral noun without action - Progress - Game - Playing"
+    },
+    "shelf_type_progress_category_movie_label" : {
+      "comment" : "Neutral noun without action - Progress - Movie - Watching"
+    },
+    "shelf_type_progress_category_music_label" : {
+      "comment" : "Neutral noun without action - Progress - Music - Listening"
+    },
+    "shelf_type_progress_category_performance_label" : {
+      "comment" : "Neutral noun without action - Progress - Performance - Watching"
+    },
+    "shelf_type_progress_category_podcast_label" : {
+      "comment" : "Neutral noun without action - Progress - Podcast - Listening"
+    },
+    "shelf_type_progress_category_tv_label" : {
+      "comment" : "Neutral noun without action - Progress - TV - Watching"
+    },
+    "shelf_type_progress_label" : {
+      "comment" : "Neutral noun without action - Progress",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2506,7 +2855,38 @@
         }
       }
     },
-    "shelf_type_wishlist" : {
+    "shelf_type_wishlist_category_book_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Book - Want to read"
+    },
+    "shelf_type_wishlist_category_collection_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Collection - Want to watch"
+    },
+    "shelf_type_wishlist_category_exhibition_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Exhibition - Want to watch"
+    },
+    "shelf_type_wishlist_category_fanfic_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Fanfic - Want to read"
+    },
+    "shelf_type_wishlist_category_game_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Game - Want to play"
+    },
+    "shelf_type_wishlist_category_movie_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Movie - Want to watch"
+    },
+    "shelf_type_wishlist_category_music_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Music - Want to listen"
+    },
+    "shelf_type_wishlist_category_performance_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Performance - Want to watch"
+    },
+    "shelf_type_wishlist_category_podcast_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Podcast - Want to listen"
+    },
+    "shelf_type_wishlist_category_tv_label" : {
+      "comment" : "Neutral noun without action - Wishlist - TV - Want to watch"
+    },
+    "shelf_type_wishlist_label" : {
+      "comment" : "Neutral noun without action - Wishlist",
       "localizations" : {
         "en" : {
           "stringUnit" : {
