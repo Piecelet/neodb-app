@@ -5,9 +5,9 @@
 //  Created by citron on 1/25/25.
 //
 
+import CoreHaptics
 import OSLog
 import SwiftUI
-import CoreHaptics
 
 // MARK: - Custom Clip Shape for Dynamic Width Rectangle
 struct StarClipShape: Shape {
@@ -69,7 +69,9 @@ struct StarRatingView: View {
                                             fillAmount: starFillAmount(
                                                 forIndex: index))
                                     )
-                                    .animation(.spring(duration: 0.3), value: internalRating)
+                                    .animation(
+                                        .spring(duration: 0.3),
+                                        value: internalRating)
                             }
                             .onTapGesture { location in
                                 withAnimation(.spring(duration: 0.3)) {
@@ -84,7 +86,9 @@ struct StarRatingView: View {
                                         .task(id: proxy.size) {
                                             if starWidth != proxy.size.width {
                                                 starWidth = proxy.size.width
-                                                logger.debug("Star width updated: \(starWidth)")
+                                                logger.debug(
+                                                    "Star width updated: \(starWidth)"
+                                                )
                                             }
                                             let frame = proxy.frame(in: .global)
                                             if index == 0 {
@@ -168,19 +172,23 @@ struct StarRatingView: View {
     }
 
     private func prepareHaptics() {
-        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else { return }
-        
+        guard CHHapticEngine.capabilitiesForHardware().supportsHaptics else {
+            return
+        }
+
         do {
             engine = try CHHapticEngine()
             try engine?.start()
         } catch {
-            logger.error("Failed to start haptic engine: \(error.localizedDescription)")
+            logger.error(
+                "Failed to start haptic engine: \(error.localizedDescription)")
         }
     }
 
     private func performFeedback(forRatingChange oldRating: Double) {
         guard CHHapticEngine.capabilitiesForHardware().supportsHaptics,
-              let engine = engine else {
+            let engine = engine
+        else {
             fallbackHaptics(forRating: internalRating)
             return
         }
@@ -188,24 +196,25 @@ struct StarRatingView: View {
         do {
             let intensity = getHapticIntensity(for: internalRating)
             let sharpness = getHapticSharpness(for: internalRating)
-            
+
             let intensityParameter = CHHapticEventParameter(
                 parameterID: .hapticIntensity,
                 value: Float(intensity))
             let sharpnessParameter = CHHapticEventParameter(
                 parameterID: .hapticSharpness,
                 value: Float(sharpness))
-            
+
             let event = CHHapticEvent(
                 eventType: .hapticTransient,
                 parameters: [intensityParameter, sharpnessParameter],
                 relativeTime: 0)
-            
+
             let pattern = try CHHapticPattern(events: [event], parameters: [])
             let player = try engine.makePlayer(with: pattern)
             try player.start(atTime: 0)
         } catch {
-            logger.error("Failed to play haptics: \(error.localizedDescription)")
+            logger.error(
+                "Failed to play haptics: \(error.localizedDescription)")
             fallbackHaptics(forRating: internalRating)
         }
     }
@@ -213,17 +222,18 @@ struct StarRatingView: View {
     private func getHapticIntensity(for rating: Double) -> Double {
         let baseIntensity = rating / 5.0  // 0.2 到 1.0
         let isHalfStar = rating != floor(rating)
-        
+
         // 调整基础强度，使其更符合评分感觉
-        let adjustedIntensity = switch ceil(rating) {
+        let adjustedIntensity =
+            switch ceil(rating) {
             case 1.0: 0.4  // 最低评分也要有明显感觉
             case 2.0: 0.55
             case 3.0: 0.7
             case 4.0: 0.85
             case 5.0: 0.95  // 稍微降低最高评分的强度
             default: baseIntensity
-        }
-        
+            }
+
         // 半星降低 20% 强度
         return isHalfStar ? adjustedIntensity * 0.8 : adjustedIntensity
     }
@@ -231,17 +241,18 @@ struct StarRatingView: View {
     private func getHapticSharpness(for rating: Double) -> Double {
         let baseSharpness = rating / 5.0  // 0.2 到 1.0
         let isHalfStar = rating != floor(rating)
-        
+
         // 调整锐度，使触感更加清晰
-        let adjustedSharpness = switch ceil(rating) {
+        let adjustedSharpness =
+            switch ceil(rating) {
             case 1.0: 0.3  // 柔和但清晰
             case 2.0: 0.4
             case 3.0: 0.5
             case 4.0: 0.6
             case 5.0: 0.7  // 保持适中的锐度
             default: baseSharpness
-        }
-        
+            }
+
         // 半星略微增加锐度以区分
         return isHalfStar ? adjustedSharpness * 1.2 : adjustedSharpness
     }
@@ -250,16 +261,17 @@ struct StarRatingView: View {
         // 当 CoreHaptics 不可用时的后备方案
         let isHalfStar = rating != floor(rating)
         let intensity: Double = isHalfStar ? 0.5 : 1.0
-        
-        let level: HapticFeedback.ImpactLevel = switch ceil(rating) {
+
+        let level: HapticFeedback.ImpactLevel =
+            switch ceil(rating) {
             case 1.0: .light
             case 2.0: .light
             case 3.0: .medium
             case 4.0: .medium
             case 5.0: .heavy
             default: .medium
-        }
-        
+            }
+
         HapticFeedback.impact(level, intensity: intensity)
     }
 
@@ -272,7 +284,8 @@ struct StarRatingView: View {
         let ratingIncrement = tapPositionInStar <= starWidth / 2 ? 0.5 : 1.0
         var newRating = starIndex + ratingIncrement
 
-        logger.debug("""
+        logger.debug(
+            """
             Tap Debug:
             - Location: \(location)
             - Star Width: \(starWidth)
@@ -294,7 +307,9 @@ struct StarRatingView: View {
         let oldRating = internalRating
         internalRating = newRating
         inputRating = Int(round(internalRating * 2))
-        logger.debug("Rating changed: \(oldRating) -> \(newRating) (input: \(inputRating ?? 0))")
+        logger.debug(
+            "Rating changed: \(oldRating) -> \(newRating) (input: \(inputRating ?? 0))"
+        )
         performFeedback(forRatingChange: oldRating)
     }
 
@@ -304,42 +319,78 @@ struct StarRatingView: View {
         withAnimation(.spring(duration: 0.3)) {
             let dragLocation = value.location
             let singleSpacing = secondStarMinX - firstStarMaxX
-            let starAreaWidth = (starWidth * CGFloat(starCount)) + (singleSpacing * CGFloat(starCount - 1))
+            let starAreaWidth =
+                (starWidth * CGFloat(starCount))
+                + (singleSpacing * CGFloat(starCount - 1))
             let screenWidth = geometry.size.width
             let padding = (screenWidth - starAreaWidth) / 2
-            let rawRating = (dragLocation.x - padding) / (starWidth)
+
+            // 计算实际评分
+            func calculateRating(x: CGFloat, spacingCount: Int = 0) -> Double {
+                let adjustedX =
+                    x - padding - (singleSpacing * CGFloat(spacingCount))
+                let rating = adjustedX / starWidth
+
+                logger.debug("""
+                    
+                    Drag Debug \(spacingCount):
+                    - X: \(x - padding)
+                    - Adjusted X: \(adjustedX)
+                    - Rating: \(rating)
+                    - Spacing Count: \(spacingCount)
+                    - nextRating: \(rating - 1 - CGFloat(spacingCount))
+                    """)
+
+                if spacingCount >= starCount {
+                    return rating
+                }
+
+                if (rating - 1 - CGFloat(spacingCount)) >= 0 {
+                    // 如果当前评分大于等于0，继续尝试下一个间距
+                    let nextRating = calculateRating(
+                        x: x, spacingCount: spacingCount + 1)
+                    // 如果下一个间距的评分小于0，说明当前是正确的间距
+                    if (nextRating - 1 - CGFloat(spacingCount)) < 0 {
+                        return rating
+                    }
+                    return nextRating
+                }
+                return rating
+            }
+
+            let rawRating = calculateRating(x: dragLocation.x)
             let snappedRating =
                 (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
-            var validRating = min(max(0, snappedRating), Double(starCount))  // Ensure rating is within 0 to starCount
+            var validRating = min(max(0, snappedRating), Double(starCount))
 
-            
-            logger.debug("""
-            Drag Debug:
-            - Location: \(dragLocation)
-            - Single Spacing: \(singleSpacing)
-            - Star Width: \(starWidth)
-            - Star Area Width: \(starAreaWidth)
-            - Geometry Size: \(geometry.size.width)
-            - Padding: \(padding)
-            - Raw Rating: \(rawRating)
-            - Snapped Rating: \(snappedRating)
-            - Valid Rating: \(validRating)
-            """)
-            
+//            logger.debug(
+//                """
+//                Drag Debug:
+//                - Location: \(dragLocation)
+//                - Single Spacing: \(singleSpacing)
+//                - Star Width: \(starWidth)
+//                - Star Area Width: \(starAreaWidth)
+//                - Geometry Size: \(geometry.size.width)
+//                - Padding: \(padding)
+//                - Raw Rating: \(rawRating)
+//                - Snapped Rating: \(snappedRating): \(rawRating * 2) \((rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2)
+//                - Valid Rating: \(validRating)
+//                """)
+
             // Enforce minimum rating of 0.5
             if validRating < 0.5 && validRating > 0 {
                 validRating = 0.5
-//                logger.debug("Adjusted to minimum rating: 0.5")
             } else if validRating <= 0 {
                 validRating = 0.5
-//                logger.debug("Adjusted zero/negative to: 0.5")
             }
-            
+
             let oldRating = internalRating
             if validRating != internalRating {
                 internalRating = validRating
-                inputRating = Int(round(internalRating * 2))  // Update inputRating based on internal rating change
-                logger.debug("Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))")
+                inputRating = Int(round(internalRating * 2))
+                logger.debug(
+                    "Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))"
+                )
                 performFeedback(forRatingChange: oldRating)
             }
         }
