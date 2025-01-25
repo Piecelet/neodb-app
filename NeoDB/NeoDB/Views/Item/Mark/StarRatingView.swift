@@ -22,10 +22,24 @@ struct StarClipShape: Shape {
 }
 
 struct StarRatingView: View {
-    @State private var rating: Double = 0
+    @Binding var inputRating: Int? // Binding to allow external control
+    @State private var internalRating: Double = 0 // Internal rating state for display and interaction
     private let starSize: CGFloat = 40
     private let starSpacing: CGFloat = 10
     private let starCount = 5
+
+    // Initialize internalRating based on inputRating
+    init(inputRating: Binding<Int?>) {
+        _inputRating = inputRating
+        _internalRating = State(initialValue: StarRatingView.ratingValue(for: inputRating.wrappedValue))
+    }
+
+    private static func ratingValue(for input: Int?) -> Double {
+        guard let input = input else { return 0 }
+        if input <= 0 { return 0 } // Handle 0 and negative input as 0 stars
+        return Double(input) / 2.0 // Convert 0-10 scale to 0-5 scale
+    }
+
 
     var body: some View {
         VStack {
@@ -74,12 +88,15 @@ struct StarRatingView: View {
         .frame(maxWidth: .infinity)
         .background(Color.white)
         .cornerRadius(10)
+        .onChange(of: inputRating) { newValue in // Observe inputRating changes
+            internalRating = StarRatingView.ratingValue(for: newValue) // Update internalRating when inputRating changes
+        }
     }
 
     private func starImageName(forIndex index: Int) -> String {
-        if rating >= Double(index + 1) {
+        if internalRating >= Double(index + 1) {
             return "star.fill"
-        } else if rating > Double(index) && rating < Double(index + 1) {
+        } else if internalRating > Double(index) && internalRating < Double(index + 1) {
             return "star.leadinghalf.fill" // Still using leadinghalf.fill for logic, but visually hidden by overlay
         } else {
             return "star" // Visually hidden by overlay
@@ -89,10 +106,10 @@ struct StarRatingView: View {
     // Calculate fill amount for each star based on rating
     private func starFillAmount(forIndex index: Int) -> CGFloat {
         let starValue = Double(index + 1)
-        if rating >= starValue {
+        if internalRating >= starValue {
             return 1.0 // Full fill
-        } else if rating > starValue - 1 && rating < starValue {
-            return CGFloat(rating - Double(index)) // Partial fill (for half-star)
+        } else if internalRating > starValue - 1 && internalRating < starValue {
+            return CGFloat(internalRating - Double(index)) // Partial fill (for half-star)
         } else {
             return 0.0 // No fill
         }
@@ -100,13 +117,13 @@ struct StarRatingView: View {
 
 
     private func performFeedback(forRatingChange oldRating: Double) {
-        if rating > oldRating { // Rating increased
-            if rating == floor(rating) {
+        if internalRating > oldRating { // Rating increased
+            if internalRating == floor(internalRating) {
                 HapticFeedback.impact(.medium)
             } else {
                 HapticFeedback.impact(.light)
             }
-        } else if rating < oldRating { // Rating decreased
+        } else if internalRating < oldRating { // Rating decreased
             HapticFeedback.selection()
         }
     }
@@ -129,9 +146,10 @@ struct StarRatingView: View {
         }
 
 
-        let oldRating = rating
-        rating = newRating
-        print("Current Rating: \(rating)")
+        let oldRating = internalRating
+        internalRating = newRating
+        inputRating = Int(round(internalRating * 2)) // Update inputRating based on internal rating change
+        print("Current Rating: \(internalRating)")
         performFeedback(forRatingChange: oldRating)
     }
 
@@ -153,17 +171,19 @@ struct StarRatingView: View {
         }
 
 
-        let oldRating = rating
-        if validRating != rating {
-            rating = validRating
-            print("Current Rating (Drag): \(rating)")
+        let oldRating = internalRating
+        if validRating != internalRating {
+            internalRating = validRating
+            inputRating = Int(round(internalRating * 2)) // Update inputRating based on internal rating change
+            print("Current Rating (Drag): \(internalRating)")
             performFeedback(forRatingChange: oldRating)
         }
     }
 
     private func clearRating() {
-        let oldRating = rating
-        rating = 0
+        let oldRating = internalRating
+        internalRating = 0
+        inputRating = 0 // Clear inputRating as well
         print("Rating cleared")
         if oldRating > 0 {
             HapticFeedback.selection()
@@ -173,7 +193,18 @@ struct StarRatingView: View {
 
 struct StarRatingView_Previews: PreviewProvider {
     static var previews: some View {
-        StarRatingView()
+        // Example with initial rating set to 3 (1.5 stars)
+        StarRatingView(inputRating: .constant(3))
+            .previewLayout(.sizeThatFits)
+            .padding()
+
+        // Example with no initial rating (nil)
+        StarRatingView(inputRating: .constant(nil))
+            .previewLayout(.sizeThatFits)
+            .padding()
+
+        // Example with zero initial rating
+        StarRatingView(inputRating: .constant(0))
             .previewLayout(.sizeThatFits)
             .padding()
     }
