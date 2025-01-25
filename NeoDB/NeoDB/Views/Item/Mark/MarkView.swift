@@ -46,7 +46,7 @@ struct MarkView: View {
             }
             .padding(.bottom)
 
-            HeightPreservingTabView(
+            TabView(
                 selection: Binding(
                     get: { viewModel.shelfType },
                     set: { viewModel.shelfType = $0 }
@@ -101,30 +101,24 @@ struct MarkView: View {
 
     private var markContentView: some View {
         VStack(spacing: 0) {
-            List {
+            VStack {
                 // Rating Section (not shown for wishlist)
                 if viewModel.shelfType != .wishlist {
-                    Section {
-                        StarRatingView(inputRating: $viewModel.rating)
-                            .frame(maxWidth: .infinity)
-                    }
-                    .listRowInsets(
-                        EdgeInsets(top: 2, leading: 6, bottom: 0, trailing: 6)
-                    )
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
+                    StarRatingView(inputRating: $viewModel.rating)
+                        .frame(maxWidth: .infinity)
                 }
 
-                // Comment Section
-                Section {
-                    TextEditor(text: $viewModel.comment)
-                        .frame(minHeight: 100)
-                        .overlay {
-                            TextEditor(text: $viewModel.commentPlaceholder)
-                                .foregroundColor(.gray)
-                                .disabled(true)
-                        }
-                }
+                TextEditor(text: $viewModel.comment)
+                    .frame(minHeight: 100)
+                    .overlay {
+                        TextEditor(text: $viewModel.commentPlaceholder)
+                            .foregroundColor(.gray)
+                            .disabled(true)
+                    }
+                    .padding(10)
+                    .background(.ultraThinMaterial)
+                    .cornerRadius(8)
+                    .padding(.horizontal)
 
                 Section {
                     DisclosureGroup(
