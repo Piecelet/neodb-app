@@ -187,10 +187,10 @@ extension EditionSchema {
             metadata.append((String(localized: "metadata_book_publisher_label", table: "Item", comment: "Book Publisher label"), pubHouse))
         }
         if let pubYear = pubYear {
-            metadata.append((String(localized: "metadata_book_year_label", table: "Item", comment: "Book Year label"), String(pubYear)))
+            metadata.append((String(localized: "metadata_book_pub_year_label", table: "Item", comment: "Book Publication Date Year label"), String(pubYear)))
         }
         if let pubMonth = pubMonth {
-            metadata.append((String(localized: "metadata_book_month_label", table: "Item", comment: "Book Month label"), String(pubMonth)))
+            metadata.append((String(localized: "metadata_book_pub_month_label", table: "Item", comment: "Book Publication Date Month label"), String(pubMonth)))
         }
         if let binding = binding {
             metadata.append((String(localized: "metadata_book_binding_label", table: "Item", comment: "Book Binding label"), binding))

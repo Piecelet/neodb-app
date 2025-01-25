@@ -97,13 +97,13 @@ struct MarkView: View {
                         }
                         Section (header: Text("Advanced")) {
                             Toggle(
-                                String(localized: "mark_use_change_time_toggle", table: "Item"),
+                                String(localized: "mark_change_date_toggle", table: "Item", comment: "When mark is created, user can change the date, otherwise the date is the creation date. This is the toggle to change the date or not."),
                                 isOn: $viewModel.changeTime)
                             .tint(.accentColor)
 
                             if viewModel.changeTime {
                                 DatePicker(
-                                    String(localized: "mark_change_time_picker_label", table: "Item"),
+                                    String(localized: "mark_change_date_picker_label", table: "Item", comment: "When mark is created, user can change the date, otherwise the date is the creation date. This is the date of the changed date."),
                                     selection: $viewModel.createdTime,
                                     displayedComponents: [.date, .hourAndMinute]
                                 )
