@@ -4,14 +4,11 @@
 //
 //  Created by citron on 1/25/25.
 //
+
 import SwiftUI
 import UIKit
 
-// Assuming HapticFeedback struct is declared externally, like this example:
-// struct HapticFeedback {
-//     static func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle) { ... }
-//     static func selection() { ... }
-// }
+// Assuming HapticFeedback struct is declared externally
 
 struct StarRatingView: View {
     @State private var rating: Double = 0
@@ -87,9 +84,17 @@ struct StarRatingView: View {
         let starIndex = Double(index)
         let tapPositionInStar = location.x
         let ratingIncrement = tapPositionInStar <= starWidth / 2 ? 0.5 : 1.0
-        let newRating = starIndex + ratingIncrement
-        let oldRating = rating
+        var newRating = starIndex + ratingIncrement
 
+        // Enforce minimum rating of 0.5
+        if newRating < 0.5 && newRating > 0 {
+            newRating = 0.5
+        } else if newRating <= 0 {
+            newRating = 0.5 // If tap is before the first star, set to 0.5
+        }
+
+
+        let oldRating = rating
         rating = newRating
         print("Current Rating: \(rating)")
         performFeedback(forRatingChange: oldRating)
@@ -102,10 +107,18 @@ struct StarRatingView: View {
         let starWidth = starAreaWidth / CGFloat(starCount)
 
         let rawRating = dragLocation.x / starWidth
-        let snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
-        let validRating = min(max(0, snappedRating), Double(starCount)) // Ensure rating is within 0 to starCount
-        let oldRating = rating
+        var snappedRating = (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
+        var validRating = min(max(0, snappedRating), Double(starCount)) // Ensure rating is within 0 to starCount
 
+        // Enforce minimum rating of 0.5
+        if validRating < 0.5 && validRating > 0 {
+            validRating = 0.5
+        } else if validRating <= 0 {
+            validRating = 0.5 // If drag is before the first star, set to 0.5
+        }
+
+
+        let oldRating = rating
         if validRating != rating {
             rating = validRating
             print("Current Rating (Drag): \(rating)")
