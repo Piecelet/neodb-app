@@ -27,9 +27,12 @@ struct StarRatingView: View {
     @Binding var inputRating: Int?  // Binding to allow external control
     @State private var internalRating: Double = 0  // Internal rating state for display and interaction
     @State private var engine: CHHapticEngine?
+    @State private var starWidth: CGFloat = 0
+    @State private var firstStarMaxX: CGFloat = 0
+    @State private var secondStarMinX: CGFloat = 0
     private let logger = Logger.views.mark.starRating
     private let starSize: CGFloat = 36
-    private let starSpacing: CGFloat = 6
+    private let starSpacing: CGFloat = 14
     private let starCount = 5
 
     // Initialize internalRating based on inputRating
@@ -54,6 +57,7 @@ struct StarRatingView: View {
                         // 1. Base Star (Unselected state)
                         Image(systemName: "star.fill")
                             .font(.system(size: starSize))
+                            .frame(width: starSize, height: starSize)
                             .foregroundColor(.secondary.opacity(0.2))  // Secondary color for unselected
                             .overlay {
                                 // 2. Overlay Star (Selected state)
@@ -70,10 +74,27 @@ struct StarRatingView: View {
                             .onTapGesture { location in
                                 withAnimation(.spring(duration: 0.3)) {
                                     handleStarTap(
-                                        location: location, index: index,
-                                        geometry: geometry)
+                                        location: location,
+                                        index: index)
                                 }
                             }
+                            .background(
+                                GeometryReader { proxy in
+                                    Color.clear
+                                        .task(id: proxy.size) {
+                                            if starWidth != proxy.size.width {
+                                                starWidth = proxy.size.width
+                                                logger.debug("Star width updated: \(starWidth)")
+                                            }
+                                            let frame = proxy.frame(in: .global)
+                                            if index == 0 {
+                                                firstStarMaxX = frame.maxX
+                                            } else if index == 1 {
+                                                secondStarMinX = frame.minX
+                                            }
+                                        }
+                                }
+                            )
                     }
                 }
                 .frame(width: geometry.size.width, alignment: .center)
@@ -81,7 +102,9 @@ struct StarRatingView: View {
                     DragGesture()
                         .onChanged { value in
                             withAnimation(.spring(duration: 0.3)) {
-                                handleDragChanged(value: value, geometry: geometry)
+                                handleDragChanged(
+                                    value: value,
+                                    geometry: geometry)
                             }
                         }
                 )
@@ -241,28 +264,37 @@ struct StarRatingView: View {
     }
 
     private func handleStarTap(
-        location: CGPoint, index: Int, geometry: GeometryProxy
+        location: CGPoint,
+        index: Int
     ) {
-        let totalSpacing = CGFloat(starCount - 1) * starSpacing
-        let starAreaWidth = geometry.size.width - totalSpacing
-        let starWidth = starAreaWidth / CGFloat(starCount)
-
         let starIndex = Double(index)
         let tapPositionInStar = location.x
         let ratingIncrement = tapPositionInStar <= starWidth / 2 ? 0.5 : 1.0
         var newRating = starIndex + ratingIncrement
 
+        logger.debug("""
+            Tap Debug:
+            - Location: \(location)
+            - Star Width: \(starWidth)
+            - Star Index: \(starIndex)
+            - Tap Position: \(tapPositionInStar)
+            - Rating Increment: \(ratingIncrement)
+            - New Rating: \(newRating)
+            """)
+
         // Enforce minimum rating of 0.5
         if newRating < 0.5 && newRating > 0 {
             newRating = 0.5
+            logger.debug("Adjusted to minimum rating: 0.5")
         } else if newRating <= 0 {
-            newRating = 0.5  // If tap is before the first star, set to 0.5
+            newRating = 0.5
+            logger.debug("Adjusted zero/negative to: 0.5")
         }
 
         let oldRating = internalRating
         internalRating = newRating
-        inputRating = Int(round(internalRating * 2))  // Update inputRating based on internal rating change
-        print("Current Rating: \(internalRating)")
+        inputRating = Int(round(internalRating * 2))
+        logger.debug("Rating changed: \(oldRating) -> \(newRating) (input: \(inputRating ?? 0))")
         performFeedback(forRatingChange: oldRating)
     }
 
@@ -271,27 +303,43 @@ struct StarRatingView: View {
     ) {
         withAnimation(.spring(duration: 0.3)) {
             let dragLocation = value.location
-            let totalSpacing = CGFloat(starCount - 1) * starSpacing
-            let starAreaWidth = geometry.size.width - totalSpacing
-            let starWidth = starAreaWidth / CGFloat(starCount)
-
-            let rawRating = dragLocation.x / starWidth
+            let singleSpacing = secondStarMinX - firstStarMaxX
+            let starAreaWidth = (starWidth * CGFloat(starCount)) + (singleSpacing * CGFloat(starCount - 1))
+            let screenWidth = geometry.size.width
+            let padding = (screenWidth - starAreaWidth) / 2
+            let rawRating = (dragLocation.x - padding) / (starWidth)
             let snappedRating =
                 (rawRating * 2).rounded(.toNearestOrAwayFromZero) / 2
             var validRating = min(max(0, snappedRating), Double(starCount))  // Ensure rating is within 0 to starCount
 
+            
+            logger.debug("""
+            Drag Debug:
+            - Location: \(dragLocation)
+            - Single Spacing: \(singleSpacing)
+            - Star Width: \(starWidth)
+            - Star Area Width: \(starAreaWidth)
+            - Geometry Size: \(geometry.size.width)
+            - Padding: \(padding)
+            - Raw Rating: \(rawRating)
+            - Snapped Rating: \(snappedRating)
+            - Valid Rating: \(validRating)
+            """)
+            
             // Enforce minimum rating of 0.5
             if validRating < 0.5 && validRating > 0 {
                 validRating = 0.5
+//                logger.debug("Adjusted to minimum rating: 0.5")
             } else if validRating <= 0 {
-                validRating = 0.5  // If drag is before the first star, set to 0.5
+                validRating = 0.5
+//                logger.debug("Adjusted zero/negative to: 0.5")
             }
-
+            
             let oldRating = internalRating
             if validRating != internalRating {
                 internalRating = validRating
                 inputRating = Int(round(internalRating * 2))  // Update inputRating based on internal rating change
-                logger.debug("Current Rating (Drag): \(internalRating)")
+                logger.debug("Rating changed: \(oldRating) -> \(validRating) (input: \(inputRating ?? 0))")
                 performFeedback(forRatingChange: oldRating)
             }
         }
