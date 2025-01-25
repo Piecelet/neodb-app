@@ -664,24 +664,6 @@
         }
       }
     },
-    "metadata_album_duration_format" : {
-      "comment" : "Album Duration formatted",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d minutes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%d分钟"
-          }
-        }
-      }
-    },
     "metadata_album_duration_label" : {
       "comment" : "Album Duration label",
       "localizations" : {
@@ -752,7 +734,27 @@
       }
     },
     "metadata_album_track_list_label" : {
-      "comment" : "Album Track List label"
+      "comment" : "Album Track List label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track List"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Faixas"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "曲目列表"
+          }
+        }
+      }
     },
     "metadata_book_author_label" : {
       "comment" : "Book Author label",
@@ -795,7 +797,21 @@
       }
     },
     "metadata_book_imprint_label" : {
-      "comment" : "Book Imprint label"
+      "comment" : "Book Imprint label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imprint"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出版社"
+          }
+        }
+      }
     },
     "metadata_book_isbn_label" : {
       "comment" : "Book ISBN label",
@@ -878,7 +894,27 @@
       }
     },
     "metadata_book_price_label" : {
-      "comment" : "Book Price label"
+      "comment" : "Book Price label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Price"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preço"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "价格"
+          }
+        }
+      }
     },
     "metadata_book_pub_month_label" : {
       "comment" : "Book Publication Date Month label",
@@ -953,28 +989,24 @@
       "comment" : "Book Series label"
     },
     "metadata_book_translator_label" : {
-      "comment" : "Book Translator label"
-    },
-    "metadata_book_year_label" : {
-      "comment" : "Book Year label",
-      "extractionState" : "stale",
+      "comment" : "Book Translator label",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Year"
+            "value" : "Translator"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ano"
+            "value" : "Tradutor"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "年份"
+            "value" : "译者"
           }
         }
       }
@@ -1088,29 +1120,6 @@
         }
       }
     },
-    "metadata_director" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Director"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diretor"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "导演"
-          }
-        }
-      }
-    },
     "metadata_episode_count" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1184,7 +1193,27 @@
       }
     },
     "metadata_game_official_site_label" : {
-      "comment" : "Game Official Site label"
+      "comment" : "Game Official Site label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Site"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site oficial"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方网站"
+          }
+        }
+      }
     },
     "metadata_game_platform_label" : {
       "comment" : "Game Platform label"
@@ -1258,23 +1287,6 @@
         }
       }
     },
-    "metadata_host" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Host"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主播"
-          }
-        }
-      }
-    },
     "metadata_imdb" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1294,23 +1306,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "IMDB"
-          }
-        }
-      }
-    },
-    "metadata_imprint" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Imprint"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "出版社"
           }
         }
       }
@@ -1385,7 +1380,27 @@
       }
     },
     "metadata_movie_director_label" : {
-      "comment" : "Movie Director label"
+      "comment" : "Movie Director label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Director"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diretor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导演"
+          }
+        }
+      }
     },
     "metadata_movie_duration_label" : {
       "comment" : "Movie Duration label",
@@ -1460,7 +1475,27 @@
       }
     },
     "metadata_movie_playwright_label" : {
-      "comment" : "Movie Playwright label"
+      "comment" : "Movie Playwright label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playwright"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escritor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编剧"
+          }
+        }
+      }
     },
     "metadata_movie_year_label" : {
       "comment" : "Movie Year label",
@@ -1481,29 +1516,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年份"
-          }
-        }
-      }
-    },
-    "metadata_official_site" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Official Site"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Site oficial"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "官方网站"
           }
         }
       }
@@ -1604,7 +1616,15 @@
       "comment" : "Performance Choreographer label"
     },
     "metadata_performance_closing_date_label" : {
-      "comment" : "Performance Closing Date label"
+      "comment" : "Performance Closing Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closing Date"
+          }
+        }
+      }
     },
     "metadata_performance_composer_label" : {
       "comment" : "Performance Composer label"
@@ -1613,7 +1633,27 @@
       "comment" : "Performance Crew label"
     },
     "metadata_performance_director_label" : {
-      "comment" : "Performance Director label"
+      "comment" : "Performance Director label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Director"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diretor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导演"
+          }
+        }
+      }
     },
     "metadata_performance_genre_label" : {
       "comment" : "Performance Genre label",
@@ -1662,19 +1702,81 @@
       }
     },
     "metadata_performance_official_site_label" : {
-      "comment" : "Performance Official Site label"
+      "comment" : "Performance Official Site label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Site"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site oficial"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方网站"
+          }
+        }
+      }
     },
     "metadata_performance_opening_date_label" : {
-      "comment" : "Performance Opening Date label"
+      "comment" : "Performance Opening Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening Date"
+          }
+        }
+      }
     },
     "metadata_performance_orig_creator_label" : {
       "comment" : "Performance Orig Creator label"
     },
     "metadata_performance_performer_label" : {
-      "comment" : "Performance Performer label"
+      "comment" : "Performance Performer label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Performer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "表演者"
+          }
+        }
+      }
     },
     "metadata_performance_playwright_label" : {
-      "comment" : "Performance Playwright label"
+      "comment" : "Performance Playwright label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playwright"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escritor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编剧"
+          }
+        }
+      }
     },
     "metadata_performance_production_actor_label" : {
       "comment" : "Performance Production Actor label",
@@ -1703,7 +1805,15 @@
       "comment" : "Performance Production Choreographer label"
     },
     "metadata_performance_production_closing_date_label" : {
-      "comment" : "Performance Production Closing Date label"
+      "comment" : "Performance Production Closing Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Closing Date"
+          }
+        }
+      }
     },
     "metadata_performance_production_composer_label" : {
       "comment" : "Performance Production Composer label"
@@ -1712,7 +1822,27 @@
       "comment" : "Performance Production Crew label"
     },
     "metadata_performance_production_director_label" : {
-      "comment" : "Performance Production Director label"
+      "comment" : "Performance Production Director label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Director"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diretor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导演"
+          }
+        }
+      }
     },
     "metadata_performance_production_language_label" : {
       "comment" : "Performance Production Language label",
@@ -1738,22 +1868,44 @@
       }
     },
     "metadata_performance_production_official_site_label" : {
-      "comment" : "Performance Production Official Site label"
+      "comment" : "Performance Production Official Site label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Official Site"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Site oficial"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方网站"
+          }
+        }
+      }
     },
     "metadata_performance_production_opening_date_label" : {
-      "comment" : "Performance Production Opening Date label"
+      "comment" : "Performance Production Opening Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opening Date"
+          }
+        }
+      }
     },
     "metadata_performance_production_orig_creator_label" : {
       "comment" : "Performance Production Orig Creator label"
     },
     "metadata_performance_production_performer_label" : {
-      "comment" : "Performance Production Performer label"
-    },
-    "metadata_performance_production_playwright_label" : {
-      "comment" : "Performance Production Playwright label"
-    },
-    "metadata_performer" : {
-      "extractionState" : "stale",
+      "comment" : "Performance Production Performer label",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1765,6 +1917,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "表演者"
+          }
+        }
+      }
+    },
+    "metadata_performance_production_playwright_label" : {
+      "comment" : "Performance Production Playwright label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playwright"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escritor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编剧"
           }
         }
       }
@@ -1788,29 +1963,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "平台"
-          }
-        }
-      }
-    },
-    "metadata_playwright" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Playwright"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Escritor"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "编剧"
           }
         }
       }
@@ -1859,7 +2011,21 @@
       }
     },
     "metadata_podcast_host_label" : {
-      "comment" : "Podcast Host label"
+      "comment" : "Podcast Host label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Host"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主播"
+          }
+        }
+      }
     },
     "metadata_podcast_language_label" : {
       "comment" : "Podcast Language label",
@@ -1888,7 +2054,27 @@
       "comment" : "Podcast Last Episode Date label"
     },
     "metadata_podcast_rss_url_label" : {
-      "comment" : "Podcast RSS URL label"
+      "comment" : "Podcast RSS URL label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RSS URL"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "URL RSS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RSS 链接"
+          }
+        }
+      }
     },
     "metadata_podcast_website_url_label" : {
       "comment" : "Podcast Website URL label",
@@ -1909,52 +2095,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "网站链接"
-          }
-        }
-      }
-    },
-    "metadata_price" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Price"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Preço"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "价格"
-          }
-        }
-      }
-    },
-    "metadata_rss_url" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RSS URL"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "URL RSS"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "RSS 链接"
           }
         }
       }
@@ -2001,52 +2141,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "系列"
-          }
-        }
-      }
-    },
-    "metadata_track_list" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Track List"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Faixas"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "曲目列表"
-          }
-        }
-      }
-    },
-    "metadata_translator" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Translator"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tradutor"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "译者"
           }
         }
       }
@@ -2098,7 +2192,27 @@
       }
     },
     "metadata_tv_director_label" : {
-      "comment" : "TV Show Director label"
+      "comment" : "TV Show Director label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Director"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diretor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "导演"
+          }
+        }
+      }
     },
     "metadata_tv_episode_count_format" : {
       "comment" : "TV Show Episode Count format",
@@ -2173,7 +2287,27 @@
       }
     },
     "metadata_tv_playwright_label" : {
-      "comment" : "TV Show Playwright label"
+      "comment" : "TV Show Playwright label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playwright"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Escritor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "编剧"
+          }
+        }
+      }
     },
     "metadata_tv_season_count_format" : {
       "comment" : "TV Show Season Count format",
