@@ -105,7 +105,7 @@ struct MarkView: View {
                                 DatePicker(
                                     String(localized: "mark_change_date_picker_label", table: "Item", comment: "When mark is created, user can change the date, otherwise the date is the creation date. This is the date of the changed date."),
                                     selection: $viewModel.createdTime,
-                                    displayedComponents: [.date, .hourAndMinute]
+                                    displayedComponents: [.date]
                                 )
                             }
                         }

@@ -497,6 +497,17 @@ struct AlbumSchema: ItemProtocol {
     let releaseDate: String?
     let trackList: String?
     let barcode: String?
+
+    var durationString: String? {
+        if let duration = duration {
+            let totalSeconds = duration / 1000  // Convert milliseconds to seconds
+            let hours = totalSeconds / 3600
+            let minutes = (totalSeconds % 3600) / 60
+            let seconds = totalSeconds % 60
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        }
+        return nil
+    }
 }
 
 extension AlbumSchema {
@@ -512,8 +523,8 @@ extension AlbumSchema {
         if let releaseDate = releaseDate {
             metadata.append(releaseDate)
         }
-        if let duration = duration {
-            metadata.append(String(format: String(localized: "metadata_album_duration_format", table: "Item", comment: "Album Duration formatted"), duration))
+        if let durationString = durationString {
+            metadata.append(durationString)
         }
         return metadata
     }
@@ -530,8 +541,8 @@ extension AlbumSchema {
         if !company.isEmpty {
             metadata.append((String(localized: "metadata_album_company_label", table: "Item", comment: "Album Company label"), company.joined(separator: metadataArraySeparator)))
         }
-        if let duration = duration {
-            metadata.append((String(localized: "metadata_album_duration_label", table: "Item", comment: "Album Duration label"), "\(duration) minutes"))
+        if let durationString = durationString {
+            metadata.append((String(localized: "metadata_album_duration_label", table: "Item", comment: "Album Duration label"), durationString))
         }
         if let releaseDate = releaseDate {
             metadata.append((String(localized: "metadata_album_release_date_label", table: "Item", comment: "Album Release Date label"), releaseDate))

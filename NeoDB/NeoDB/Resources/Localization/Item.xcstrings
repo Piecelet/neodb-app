@@ -430,6 +430,7 @@
       }
     },
     "mark_change_date_picker_label" : {
+      "comment" : "When mark is created, user can change the date, otherwise the date is the creation date. This is the date of the changed date.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -441,6 +442,23 @@
           "stringUnit" : {
             "state" : "needs_review",
             "value" : "日期"
+          }
+        }
+      }
+    },
+    "mark_change_date_toggle" : {
+      "comment" : "When mark is created, user can change the date, otherwise the date is the creation date. This is the toggle to change the date or not.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change Date"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "指定日期"
           }
         }
       }
@@ -577,22 +595,6 @@
         }
       }
     },
-    "mark_change_date_toggle" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Change Date"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "指定日期"
-          }
-        }
-      }
-    },
     "metadata_album_artist_label" : {
       "comment" : "Album Artist label",
       "localizations" : {
@@ -663,10 +665,45 @@
       }
     },
     "metadata_album_duration_format" : {
-      "comment" : "Album Duration formatted"
+      "comment" : "Album Duration formatted",
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d minutes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d分钟"
+          }
+        }
+      }
     },
     "metadata_album_duration_label" : {
-      "comment" : "Album Duration label"
+      "comment" : "Album Duration label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duração"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时长"
+          }
+        }
+      }
     },
     "metadata_album_genre_label" : {
       "comment" : "Album Genre label",
@@ -692,27 +729,30 @@
       }
     },
     "metadata_album_release_date_label" : {
-      "comment" : "Album Release Date label"
-    },
-    "metadata_album_track_list_label" : {
-      "comment" : "Album Track List label"
-    },
-    "metadata_binding" : {
-      "extractionState" : "stale",
+      "comment" : "Album Release Date label",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Binding"
+            "value" : "Release Date"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia de lançamento"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "装帧"
+            "value" : "发行日期"
           }
         }
       }
+    },
+    "metadata_album_track_list_label" : {
+      "comment" : "Album Track List label"
     },
     "metadata_book_author_label" : {
       "comment" : "Book Author label",
@@ -738,7 +778,21 @@
       }
     },
     "metadata_book_binding_label" : {
-      "comment" : "Book Binding label"
+      "comment" : "Book Binding label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Binding"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "装帧"
+          }
+        }
+      }
     },
     "metadata_book_imprint_label" : {
       "comment" : "Book Imprint label"
@@ -790,10 +844,38 @@
       }
     },
     "metadata_book_pages_format" : {
-      "comment" : "Book Pages format"
+      "comment" : "Book Pages format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d pages"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d页"
+          }
+        }
+      }
     },
     "metadata_book_pages_label" : {
-      "comment" : "Book Pages label"
+      "comment" : "Book Pages label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pages"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "页数"
+          }
+        }
+      }
     },
     "metadata_book_price_label" : {
       "comment" : "Book Price label"
@@ -1029,29 +1111,6 @@
         }
       }
     },
-    "metadata_duration" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duration"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Duração"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时长"
-          }
-        }
-      }
-    },
     "metadata_episode_count" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1154,10 +1213,50 @@
       }
     },
     "metadata_game_release_date_label" : {
-      "comment" : "Game Release Date label"
+      "comment" : "Game Release Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release Date"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dia de lançamento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发行日期"
+          }
+        }
+      }
     },
     "metadata_game_release_type_label" : {
-      "comment" : "Game Release Type label"
+      "comment" : "Game Release Type label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Release Type"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tipo de lançamento"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发行类型"
+          }
+        }
+      }
     },
     "metadata_host" : {
       "extractionState" : "stale",
@@ -1289,7 +1388,27 @@
       "comment" : "Movie Director label"
     },
     "metadata_movie_duration_label" : {
-      "comment" : "Movie Duration label"
+      "comment" : "Movie Duration label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duration"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Duração"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "时长"
+          }
+        }
+      }
     },
     "metadata_movie_genre_label" : {
       "comment" : "Movie Genre label",
@@ -1697,7 +1816,21 @@
       }
     },
     "metadata_podcast_episode_count_format" : {
-      "comment" : "Podcast Episode Count formatted"
+      "comment" : "Podcast Episode Count formatted",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d episodes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d集"
+          }
+        }
+      }
     },
     "metadata_podcast_episode_count_label" : {
       "comment" : "Podcast Episode Count label"
@@ -1799,52 +1932,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "价格"
-          }
-        }
-      }
-    },
-    "metadata_release_date" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Release Date"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dia de lançamento"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发行日期"
-          }
-        }
-      }
-    },
-    "metadata_release_type" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Release Type"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tipo de lançamento"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "发行类型"
           }
         }
       }
@@ -2014,7 +2101,21 @@
       "comment" : "TV Show Director label"
     },
     "metadata_tv_episode_count_format" : {
-      "comment" : "TV Show Episode Count format"
+      "comment" : "TV Show Episode Count format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d episodes"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d集"
+          }
+        }
+      }
     },
     "metadata_tv_episode_count_label" : {
       "comment" : "TV Show Episode Count label"
@@ -2075,7 +2176,21 @@
       "comment" : "TV Show Playwright label"
     },
     "metadata_tv_season_count_format" : {
-      "comment" : "TV Show Season Count format"
+      "comment" : "TV Show Season Count format",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d seasons"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%d季"
+          }
+        }
+      }
     },
     "metadata_tv_season_number_label" : {
       "comment" : "TV Show Season Number label"
