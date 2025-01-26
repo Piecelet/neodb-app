@@ -218,14 +218,13 @@ struct ItemView: View {
                                 HapticFeedback.impact(.medium)
                             } label: {
                                 HStack(spacing: 4) {
-                                    Image(symbol: type.symbolImage)
-                                        .font(.caption)
+                                    Image(symbol: type.symbolActionStateDoneFill)
                                     Text(
                                         type.displayNameForCategory(
                                             viewModel.item?.category)
                                     )
-                                    .font(.subheadline)
                                 }
+                                .font(.subheadline)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                             }
@@ -240,13 +239,12 @@ struct ItemView: View {
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(symbol: type.symbolImage)
-                                        .font(.caption)
                                     Text(
                                         type.displayNameForCategory(
                                             viewModel.item?.category)
                                     )
-                                    .font(.subheadline)
                                 }
+                                .font(.subheadline)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                             }

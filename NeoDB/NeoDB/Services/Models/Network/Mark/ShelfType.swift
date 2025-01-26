@@ -235,8 +235,8 @@ enum ShelfType: String, Codable, CaseIterable {
     var symbolImage: Symbol {
         switch self {
         case .wishlist: return .sfSymbol(.heart)
-        case .progress: return .sfSymbol(.book)
-        case .complete: return .sfSymbol(.checkmarkCircle)
+        case .progress: return .sfSymbol(.circleCircle)
+        case .complete: return .sfSymbol(.star)
         case .dropped: return .sfSymbol(.xmarkCircle)
         }
     }
@@ -247,6 +247,78 @@ enum ShelfType: String, Codable, CaseIterable {
         case .progress: return .sfSymbol(.bookFill)
         case .complete: return .sfSymbol(.checkmarkCircleFill)
         case .dropped: return .sfSymbol(.xmarkCircleFill)
+        }
+    }
+
+    var symbolActionStateAdd: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.badge.plus")
+        case .progress: return .custom("custom.circle.circle.badge.plus")
+        case .complete: return .custom("custom.star.badge.plus")
+        case .dropped: return .custom("custom.xmark.circle.badge.plus")
+        }
+    }
+
+    var symbolActionStateRemove: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.badge.minus")
+        case .progress: return .custom("custom.circle.circle.badge.minus")
+        case .complete: return .custom("custom.star.badge.minus")
+        case .dropped: return .custom("custom.xmark.circle.badge.minus")
+        }
+    }
+
+    var symbolActionStateDone: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.badge.checkmark.badge.plus")
+        case .progress: return .custom("custom.circle.circle.badge.checkmark")
+        case .complete: return .custom("custom.star.badge.checkmark")
+        case .dropped: return .custom("custom.xmark.circle.badge.checkmark")
+        }
+    }
+
+    var symbolActionStateUndone: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.badge.xmark")
+        case .progress: return .custom("custom.circle.circle.badge.xmark")
+        case .complete: return .custom("custom.star.badge.xmark")
+        case .dropped: return .custom("custom.xmark.circle.badge.xmark")
+        }
+    }
+
+    var symbolActionStateAddFill: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.fill.badge.plus")
+        case .progress: return .custom("custom.circle.circle.fill.badge.plus")
+        case .complete: return .custom("custom.star.fill.badge.plus")
+        case .dropped: return .custom("custom.xmark.circle.fill.badge.plus")
+        }
+    }
+
+    var symbolActionStateRemoveFill: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.fill.badge.minus")
+        case .progress: return .custom("custom.circle.circle.fill.badge.minus")
+        case .complete: return .custom("custom.star.fill.badge.minus")
+        case .dropped: return .custom("custom.xmark.circle.fill.badge.minus")
+        }
+    }
+
+    var symbolActionStateDoneFill: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.fill.badge.checkmark")
+        case .progress: return .custom("custom.circle.circle.fill.badge.checkmark")
+        case .complete: return .custom("custom.star.fill.badge.checkmark")
+        case .dropped: return .custom("custom.xmark.circle.fill.badge.checkmark")
+        }
+    }
+
+    var symbolActionStateUndoneFill: Symbol {
+        switch self {
+        case .wishlist: return .custom("custom.heart.fill.badge.xmark")
+        case .progress: return .custom("custom.circle.circle.fill.badge.xmark")
+        case .complete: return .custom("custom.star.fill.badge.xmark")
+        case .dropped: return .custom("custom.xmark.circle.fill.badge.xmark")
         }
     }
 }
