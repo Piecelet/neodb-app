@@ -16,6 +16,11 @@ enum StoreConfig {
     
     enum RevenueCat {
         static let apiKey = "appl_piTjpqjRBRGEtJCEVXwILxxKmvY"
+        enum plus {
+            static let entitlementName = "plus"
+            static let offeringIdentifier = "plu"
+        }
+
     }
     
     struct Feature: Identifiable {

@@ -89,6 +89,8 @@ struct ContentView: View {
                     .environmentObject(accountsManager)
             case .itemDetails(let item):
                 ItemDetailsSheet(item: item)
+            case .purchase:
+                PurchaseView()
             }
         }
         .whatsNewSheet()
@@ -134,6 +136,8 @@ struct ContentView: View {
             Text("Followers: \(id)")  // TODO: Implement FollowersView
         case .following(let id):
             Text("Following: \(id)")  // TODO: Implement FollowingView
+        case .purchase:
+            PurchaseView()
         }
     }
 }

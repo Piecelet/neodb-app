@@ -171,6 +171,7 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.refresh) private var refresh
+    @EnvironmentObject private var router: Router
 
     private let avatarSize: CGFloat = 60
 
@@ -293,8 +294,8 @@ struct SettingsView: View {
     
     private var appSection: some View {
         Section {
-            NavigationLink {
-                PurchaseView()
+            Button {
+                router.navigate(to: .purchase)
             } label: {
                 Label {
                     Text("app_subscription", tableName: "Settings")

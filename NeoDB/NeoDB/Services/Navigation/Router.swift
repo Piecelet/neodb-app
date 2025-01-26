@@ -25,6 +25,9 @@ enum RouterDestination: Hashable {
     // Lists
     case followers(id: String)
     case following(id: String)
+
+    // Store
+    case purchase
     
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -62,6 +65,8 @@ enum RouterDestination: Hashable {
         case .following(let id):
             hasher.combine(10)
             hasher.combine(id)
+        case .purchase:
+            hasher.combine(11)
         }
     }
     
@@ -89,6 +94,8 @@ enum RouterDestination: Hashable {
             return id1 == id2
         case (.following(let id1), .following(let id2)):
             return id1 == id2
+        case (.purchase, .purchase):
+            return true
         default:
             return false
         }
@@ -102,6 +109,9 @@ enum SheetDestination: Identifiable {
     case addToShelf(item: any ItemProtocol, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
     case editShelfItem(mark: MarkSchema, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
     case itemDetails(item: any ItemProtocol)
+
+    // Store
+    case purchase
     
     var id: String {
         switch self {
@@ -113,6 +123,8 @@ enum SheetDestination: Identifiable {
             return "shelfItemEditor"
         case .itemDetails:
             return "itemDetails"
+        case .purchase:
+            return "purchase"
         }
     }
 }

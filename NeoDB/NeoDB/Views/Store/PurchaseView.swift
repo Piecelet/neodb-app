@@ -14,13 +14,14 @@ class PurchaseViewModel: NSObject, ObservableObject {
     @Published private(set) var customerInfo: CustomerInfo?
     @Published private(set) var purchaseError: String?
     @Published var isLoading = false
+    @Published var showAllPlans = false
+    @Published var selectedPackage: Package?
+    @Published var shouldDismiss = false
     
     override init() {
         super.init()
-        // 设置代理以接收更新
         Purchases.shared.delegate = self
         
-        // 获取当前用户状态
         Task {
             await updateCustomerInfo()
         }
@@ -32,8 +33,9 @@ class PurchaseViewModel: NSObject, ObservableObject {
         
         do {
             let offerings = try await Purchases.shared.offerings()
-            // 使用指定的 offering identifier
             currentOffering = offerings.offering(identifier: "plus") ?? offerings.current
+            // 默认选择年度套餐
+            selectedPackage = currentOffering?.availablePackages.first { $0.packageType == .annual }
         } catch {
             purchaseError = error.localizedDescription
         }
@@ -46,26 +48,36 @@ class PurchaseViewModel: NSObject, ObservableObject {
         do {
             let result = try await Purchases.shared.purchase(package: package)
             customerInfo = result.customerInfo
-            // 处理购买成功
+            // Only set shouldDismiss if purchase is successful and user has active entitlements
+            if result.customerInfo.entitlements.active.isEmpty == false {
+                shouldDismiss = true
+            }
         } catch {
             purchaseError = error.localizedDescription
         }
     }
     
     func restorePurchases() async {
-        isLoading = true
-        defer { isLoading = false }
-        
-        do {
-            customerInfo = try await Purchases.shared.restorePurchases()
-        } catch {
-            purchaseError = error.localizedDescription
-        }
+//        isLoading = true
+//        defer { isLoading = false }
+//        
+//        do {
+//            let info = try await Purchases.shared.restorePurchases()
+//            customerInfo = info
+//            // Only set shouldDismiss if restore is successful and user has active entitlements
+//            if info.entitlements.active.isEmpty == false {
+//                shouldDismiss = true
+//            }
+//        } catch {
+//            purchaseError = error.localizedDescription
+//        }
     }
     
     private func updateCustomerInfo() async {
         do {
-            customerInfo = try await Purchases.shared.customerInfo()
+            let info = try await Purchases.shared.customerInfo()
+            customerInfo = info
+            // Don't auto-dismiss on initial customer info load
         } catch {
             purchaseError = error.localizedDescription
         }
@@ -77,13 +89,18 @@ extension PurchaseViewModel: PurchasesDelegate {
     func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
         Task { @MainActor in
             self.customerInfo = customerInfo
+            // Don't auto-dismiss on delegate updates
         }
     }
 }
 
 struct PurchaseView: View {
-    @StateObject private var viewModel = PurchaseViewModel()
+    @EnvironmentObject private var storeManager: StoreManager
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+    
+    @State private var showAllPlans = false
+    @State private var selectedPackage: Package?
     
     var body: some View {
         NavigationStack {
@@ -109,85 +126,26 @@ struct PurchaseView: View {
                         }
                     }
                     .padding(.horizontal)
-                    
-                    // Subscription Plans
-                    VStack(spacing: 16) {
-                        if let offering = viewModel.currentOffering {
-                            ForEach(offering.availablePackages.sorted { $0.storeProduct.price < $1.storeProduct.price }, id: \.identifier) { package in
-                                Button {
-                                    Task {
-                                        await viewModel.purchase(package)
-                                    }
-                                } label: {
-                                    PackageView(package: package)
-                                }
-                                .disabled(viewModel.isLoading)
-                            }
-                        }
-                        
-                        if viewModel.isLoading {
-                            ProgressView()
-                        }
-                    }
-                    .padding(.horizontal)
-                    
-                    // Legal Links
-                    HStack(spacing: 16) {
-                        Button("Terms of Service") {
-                            openURL(StoreConfig.URLs.termsOfService)
-                        }
-                        Button("Privacy Policy") {
-                            openURL(StoreConfig.URLs.privacyPolicy)
-                        }
-                    }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
                 }
                 .padding(.vertical, 32)
-            }
-            .safeAreaInset(edge: .bottom) {
-                
-                    // Subscription Plans
-                    VStack(spacing: 16) {
-                        if let offering = viewModel.currentOffering {
-                            ForEach(offering.availablePackages.sorted { $0.storeProduct.price < $1.storeProduct.price }, id: \.identifier) { package in
-                                Button {
-                                    Task {
-                                        await viewModel.purchase(package)
-                                    }
-                                } label: {
-                                    PackageView(package: package)
-                                }
-                                .disabled(viewModel.isLoading)
-                            }
-                        }
-                        
-                        if viewModel.isLoading {
-                            ProgressView()
-                        }
-                    }
-                    .background(.bar)
-                    .padding(.horizontal)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Restore") {
                         Task {
-                            await viewModel.restorePurchases()
+                            _ = await storeManager.getCurrentCustomerInfo()
                         }
                     }
                 }
             }
-            .task {
-                await viewModel.loadOfferings()
-            }
-            .alert("Purchase Error", isPresented: .constant(viewModel.purchaseError != nil)) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                if let error = viewModel.purchaseError {
-                    Text(error)
-                }
+            .safeAreaInset(edge: .bottom) {
+                BottomPurchaseView(
+                    offering: storeManager.plusOffering,
+                    showAllPlans: $showAllPlans,
+                    selectedPackage: $selectedPackage
+                )
+                .background(.bar)
             }
         }
         .enableInjection()
@@ -230,6 +188,96 @@ struct PurchaseView: View {
         .background(.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .opacity(feature.isComingSoon ? 0.8 : 1)
+    }
+}
+
+struct BottomPurchaseView: View {
+    let offering: Offering?
+    @Binding var showAllPlans: Bool
+    @Binding var selectedPackage: Package?
+    @EnvironmentObject private var storeManager: StoreManager
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // Plans Selector
+            if let offering = offering {
+                VStack {
+                    Button {
+                        withAnimation {
+                            showAllPlans.toggle()
+                        }
+                    } label: {
+                        HStack {
+                            Text(showAllPlans ? "Hide all plans" : "Show all plans")
+                                .font(.headline)
+                            Image(systemName: showAllPlans ? "chevron.up" : "chevron.down")
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                    
+                    if showAllPlans {
+                        VStack(spacing: 8) {
+                            ForEach(offering.availablePackages.sorted { $0.storeProduct.price < $1.storeProduct.price }, id: \.identifier) { package in
+                                Button {
+                                    selectedPackage = package
+                                } label: {
+                                    HStack {
+                                        VStack(alignment: .leading) {
+                                            Text(package.packageType == .lifetime ? "Lifetime • \(package.storeProduct.localizedPriceString)" : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)")
+                                                .font(.headline)
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        if package.packageType == .annual {
+                                            Text("SAVE 44%")
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(Color.accentColor)
+                                                .foregroundStyle(.white)
+                                                .clipShape(Capsule())
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .padding()
+                                .background(selectedPackage?.identifier == package.identifier ? .gray.opacity(0.2) : .clear)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
+                        }
+                        .padding(.top)
+                    }
+                }
+                .padding(.horizontal)
+                
+                // Action Button
+                if let selectedPackage = selectedPackage {
+                    VStack(spacing: 4) {
+                        Button {
+                            Task {
+                                // TODO: Purchase
+                            }
+                        } label: {
+                            Text("Try Free For 7 Days")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(.black)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .padding(.horizontal)
+                        
+                        if selectedPackage.packageType == .annual {
+                            Text("Then \(selectedPackage.storeProduct.localizedPriceString) per year • Cancel anytime")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -282,4 +330,5 @@ struct PackageView: View {
 
 #Preview {
     PurchaseView()
+        .environmentObject(StoreManager())
 } 

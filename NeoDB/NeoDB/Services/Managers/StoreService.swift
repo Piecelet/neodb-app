@@ -8,34 +8,40 @@
 import Foundation
 import RevenueCat
 
-enum StoreService {
-    /// RevenueCat API Key
-    private static let apiKey = StoreConfig.RevenueCat.apiKey
-    
+class StoreManager: ObservableObject {
+    @Published var appUserID: String? = nil
+    @Published var customerInfo: RevenueCat.CustomerInfo? = nil
+    @Published var plusOffering: Offering? = nil
+
+    var isPlus: Bool {
+        return customerInfo?.entitlements.active[StoreConfig.RevenueCat.plus.entitlementName] != nil
+    }
+
+    private var offerings: Offerings? = nil
+
+    init() {
+        configure()
+    }
+
     /// 配置 RevenueCat SDK
-    static func configure() {
+    private func configure() {
         Purchases.logLevel = .debug
         Purchases.configure(
-            with: Configuration.Builder(withAPIKey: apiKey)
-                .with(appUserID: nil)  // 让 RevenueCat 生成匿名用户 ID
+            with: Configuration
+                .builder(withAPIKey: StoreConfig.RevenueCat.apiKey)
+                .with(storeKitVersion: .storeKit2)
                 .build()
         )
-    }
-    
-    /// 检查是否是订阅用户
-    static func checkSubscriptionStatus() async -> Bool {
-        do {
+        Task {
             let customerInfo = try await Purchases.shared.customerInfo()
-            // 检查是否有活跃的订阅或者终身会员
-            return customerInfo.entitlements.active.isEmpty == false
-        } catch {
-            print("Error checking subscription status: \(error)")
-            return false
+            self.customerInfo = customerInfo
+            self.appUserID = Purchases.shared.appUserID
+            offerings = try await Purchases.shared.offerings()
+            self.plusOffering = offerings?.offering(identifier: StoreConfig.RevenueCat.plus.offeringIdentifier) ?? offerings?.current
         }
     }
-    
-    /// 获取当前用户信息
-    static func getCurrentCustomerInfo() async -> CustomerInfo? {
+
+    func getCurrentCustomerInfo() async -> CustomerInfo? {
         do {
             return try await Purchases.shared.customerInfo()
         } catch {
@@ -43,4 +49,5 @@ enum StoreService {
             return nil
         }
     }
-} 
+    
+}
