@@ -167,7 +167,7 @@ struct MarkView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .overlay {
                         if viewModel.comment.isEmpty {
-                            TextEditor(text: .constant("Write a comment..."))
+                            TextEditor(text: .constant(String(localized: "mark_comment_placeholder", table: "Item", comment: "Mark - Placeholder text shown in empty comment field")))
                                 .foregroundColor(.secondary)
                                 .disabled(true)
                         }
@@ -202,7 +202,7 @@ struct MarkView: View {
         components.append(viewModel.visibility.displayText)
 
         if viewModel.postToFediverse {
-            components.append("Post to fediverse")
+            components.append(String(localized: "mark_share_fediverse_label", table: "Item", comment: "Mark - Label shown in advanced options when post to fediverse is enabled"))
         }
 
         return components.joined(separator: " · ")
@@ -246,7 +246,7 @@ struct MarkView: View {
     private var advancedSettingsView: some View {
         Form {
             Section {
-                Picker("Visibility", selection: $viewModel.visibility) {
+                Picker(String(localized: "mark_visibility_picker_label", table: "Item", comment: "Mark - Label for visibility picker"), selection: $viewModel.visibility) {
                     ForEach(MarkVisibility.allCases, id: \.self) { visibility in
                         Label {
                             Text(visibility.displayText)

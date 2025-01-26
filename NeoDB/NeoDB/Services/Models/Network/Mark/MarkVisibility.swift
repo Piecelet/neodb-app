@@ -14,17 +14,23 @@ enum MarkVisibility: Int, Codable, CaseIterable {
 
     var displayText: String {
         switch self {
-        case .pub: return "Public"
-        case .unlisted: return "Unlisted"
-        case .priv: return "Private"
+        case .pub:
+            return String(localized: "mark_visibility_public_label", table: "Item", comment: "Mark Visibility - Label for public visibility option")
+        case .unlisted:
+            return String(localized: "mark_visibility_unlisted_label", table: "Item", comment: "Mark Visibility - Label for unlisted visibility option")
+        case .priv:
+            return String(localized: "mark_visibility_private_label", table: "Item", comment: "Mark Visibility - Label for private visibility option")
         }
     }
 
     var descriptionText: String {
         switch self {
-        case .pub: return "Everyone can see it."
-        case .unlisted: return "Not shown on timeline, but can be seen by anyone with the link."
-        case .priv: return "Only you can see it."
+        case .pub:
+            return String(localized: "mark_visibility_public_description", table: "Item", comment: "Mark Visibility - Description for public visibility option")
+        case .unlisted:
+            return String(localized: "mark_visibility_unlisted_description", table: "Item", comment: "Mark Visibility - Description for unlisted visibility option")
+        case .priv:
+            return String(localized: "mark_visibility_private_description", table: "Item", comment: "Mark Visibility - Description for private visibility option")
         }
     }
 

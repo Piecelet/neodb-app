@@ -453,6 +453,23 @@
         }
       }
     },
+    "mark_comment_placeholder" : {
+      "comment" : "Mark - Placeholder text shown in empty comment field",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write something…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "写点什么吧..."
+          }
+        }
+      }
+    },
     "mark_delete_button" : {
       "localizations" : {
         "en" : {
@@ -541,24 +558,41 @@
         }
       }
     },
+    "mark_share_fediverse_label" : {
+      "comment" : "Mark - Label shown in advanced options when post to fediverse is enabled",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share to External Feeds"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "转发到外部动态"
+          }
+        }
+      }
+    },
     "mark_share_fediverse_toggle" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Share to Fediverse"
+            "value" : "Share to External Feeds"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Compartilhar com o Fediverso"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "分享到联邦宇宙"
+            "value" : "分享至外部动态"
           }
         }
       }
@@ -581,6 +615,125 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "标记"
+          }
+        }
+      }
+    },
+    "mark_visibility_picker_label" : {
+      "comment" : "Mark - Label for visibility picker",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visibility"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "可见性"
+          }
+        }
+      }
+    },
+    "mark_visibility_private_description" : {
+      "comment" : "Mark Visibility - Description for private visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only you can see it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有你能看到。"
+          }
+        }
+      }
+    },
+    "mark_visibility_private_label" : {
+      "comment" : "Mark Visibility - Label for private visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Private"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "私有"
+          }
+        }
+      }
+    },
+    "mark_visibility_public_description" : {
+      "comment" : "Mark Visibility - Description for public visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Everyone can see it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "所有人都可以看到。"
+          }
+        }
+      }
+    },
+    "mark_visibility_public_label" : {
+      "comment" : "Mark Visibility - Label for public visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Public"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "公开"
+          }
+        }
+      }
+    },
+    "mark_visibility_unlisted_description" : {
+      "comment" : "Mark Visibility - Description for unlisted visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not shown on timeline, but can be seen by anyone with the link."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不会在时间线上显示，但知道链接的人仍然可以看到。"
+          }
+        }
+      }
+    },
+    "mark_visibility_unlisted_label" : {
+      "comment" : "Mark Visibility - Label for unlisted visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlisted"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏在时间线"
           }
         }
       }
