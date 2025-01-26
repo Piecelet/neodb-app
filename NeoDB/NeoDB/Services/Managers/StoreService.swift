@@ -24,7 +24,8 @@ class StoreManager: ObservableObject {
     }
 
     private func configure() {
-        Purchases.logLevel = .debug
+        Purchases.logLevel = .error
+        Purchases.proxyURL = StoreConfig.RevenueCat.proxyURL
         Purchases.configure(
             with:
                 Configuration

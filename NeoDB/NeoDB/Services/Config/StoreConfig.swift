@@ -16,6 +16,7 @@ enum StoreConfig {
     
     enum RevenueCat {
         static let apiKey = "appl_piTjpqjRBRGEtJCEVXwILxxKmvY"
+        static let proxyURL = URL(string: "https://rc.piecelet.app")!
         enum plus {
             static let entitlementName = "plus"
             static let offeringIdentifier = "plu"

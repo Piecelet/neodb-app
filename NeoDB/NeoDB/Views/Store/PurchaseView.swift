@@ -70,6 +70,7 @@ class PurchaseViewModel: NSObject, ObservableObject {
 
     func purchase(_ package: Package) async {
         isLoading = true
+        defer { isLoading = false }
 
         do {
             let customerInfo = try await storeManager.purchase(package)
@@ -79,8 +80,6 @@ class PurchaseViewModel: NSObject, ObservableObject {
         } catch {
             purchaseError = error.localizedDescription
         }
-
-        isLoading = false
     }
 
     func restorePurchases() async {
@@ -352,12 +351,12 @@ struct BottomPurchaseView: View {
                                             HStack {
                                                 VStack(alignment: .leading) {
                                                     Text(
-                                                        package.packageType
+                                                        (package.packageType
                                                             == .lifetime
-                                                            ? String(localized: "store_package_yearly", table: "Settings")
-                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings")) • \(package.storeProduct.localizedPriceString)"
-                                                    )
-                                                    .font(.headline)
+                                                            ? String(localized: "store_package_lifetime", table: "Settings")
+                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings"))") + " • \(package.storeProduct.localizedPriceString)"
+                                                    ).font(.headline)
+                                                    
                                                 }
 
                                                 Spacer()
@@ -392,6 +391,7 @@ struct BottomPurchaseView: View {
                                                 }
                                             }
                                         }
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                         .buttonStyle(.plain)
                                         .padding()
                                         .background(
