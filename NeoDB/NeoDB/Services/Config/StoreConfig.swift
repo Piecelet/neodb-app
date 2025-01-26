@@ -25,14 +25,14 @@ enum StoreConfig {
     
     struct Feature: Identifiable {
         let id = UUID()
-        let icon: String
+        let icon: Symbol
         let title: String
         let description: String
         let isComingSoon: Bool
         let color: Color
         
         init(
-            icon: String,
+            icon: Symbol,
             title: String,
             description: String,
             isComingSoon: Bool = false,
@@ -48,41 +48,72 @@ enum StoreConfig {
     
     static let features: [Feature] = [
         Feature(
-            icon: "person.2",
+            icon: .sfSymbol(.sparkles),
+            title: "Smooth Experience",
+            description: "Enjoy a fluid and responsive interface for browsing and managing your collections.",
+            color: .pink
+        ),
+        Feature(
+            icon: .sfSymbol(.infinity),
+            title: "Unlimited Collections",
+            description: "Mark and collect unlimited books, movies, and music without restrictions.",
+            color: .mint
+        ),
+        Feature(
+            icon: .sfSymbol(.magnifyingglassCircle),
+            title: "Quick Discovery",
+            description: "Instantly search and discover trending books, movies, and music.",
+            color: .cyan
+        ),
+        Feature(
+            icon: .sfSymbol(.heart),
+            title: "Support Future Development",
+            description: "Help a student developer continue building and improving Piecelet.",
+            color: .red
+        ),
+        Feature(
+            icon: .sfSymbol(.handRaised),
+            title: "Support NeoDB Community",
+            description: "Part of the revenue will be donated to support the NeoDB open source project.",
+            color: .teal
+        ),
+        Feature(
+            icon: .sfSymbol(.person2),
             title: "Multiple Accounts",
             description: "Connect and switch between multiple NeoDB accounts seamlessly.",
+            isComingSoon: true,
             color: .blue
         ),
         Feature(
-            icon: "arrow.triangle.2.circlepath",
+            icon: .sfSymbol(.arrowTriangle2Circlepath),
             title: "Cross-platform Sync",
             description: "Sync your marks with Trakt and other platforms.",
             isComingSoon: true,
             color: .purple
         ),
         Feature(
-            icon: "magnifyingglass",
+            icon: .sfSymbol(.magnifyingglass),
             title: "Enhanced Search",
             description: "Access additional search sources for better results.",
             isComingSoon: true,
             color: .orange
         ),
         Feature(
-            icon: "arrow.left.arrow.right",
+            icon: .sfSymbol(.arrowLeftArrowRight),
             title: "Quick Actions",
             description: "Quickly search and open items in Douban.",
             isComingSoon: true,
             color: .green
         ),
         Feature(
-            icon: "bell",
+            icon: .sfSymbol(.bell),
             title: "Series Updates",
             description: "Track and get notified about series updates.",
             isComingSoon: true,
             color: .red
         ),
         Feature(
-            icon: "checklist",
+            icon: .sfSymbol(.checklist),
             title: "Batch Actions",
             description: "Mark multiple items at once efficiently.",
             isComingSoon: true,

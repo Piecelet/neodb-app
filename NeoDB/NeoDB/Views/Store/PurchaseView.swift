@@ -142,6 +142,17 @@ struct PurchaseView: View {
                     }
                 }
                 .padding(.horizontal)
+                
+                HStack(spacing: 16) {
+                    Button("Terms of Service") {
+                        openURL(StoreConfig.URLs.termsOfService)
+                    }
+                    Button("Privacy Policy") {
+                        openURL(StoreConfig.URLs.privacyPolicy)
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
             .padding(.bottom, 32)
         }
@@ -185,7 +196,7 @@ struct PurchaseView: View {
 
     private func featureRow(feature: StoreConfig.Feature) -> some View {
         HStack(alignment: .top, spacing: 16) {
-            Image(systemName: feature.icon)
+            Image(symbol: feature.icon)
                 .font(.title2)
                 .frame(width: 32, height: 32)
                 .foregroundStyle(feature.color)
