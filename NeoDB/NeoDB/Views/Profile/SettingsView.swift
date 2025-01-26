@@ -106,12 +106,6 @@ struct ProfileHeaderView: View {
                         AvatarPlaceholderView(
                             isLoading: isLoading, size: avatarSize)
                     }
-                    .onFailure { _ in
-                        Image(systemName: "person.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.secondary)
-                            .font(.system(size: avatarSize * 0.8))
-                    }
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: avatarSize, height: avatarSize)

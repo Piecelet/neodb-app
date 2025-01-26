@@ -212,16 +212,6 @@ struct StatusView: View {
                             .fill(Color.gray.opacity(0.2))
                             .aspectRatio(1, contentMode: .fill)
                     }
-                    .onFailure { _ in
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(1, contentMode: .fill)
-                            .overlay {
-                                Image(systemName: "photo")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.secondary)
-                            }
-                    }
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .clipShape(RoundedRectangle(cornerRadius: 8))
