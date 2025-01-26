@@ -73,25 +73,31 @@ struct ContentView: View {
         }
         .tint(.accentColor)
         .environmentObject(router)
-        .sheet(item: $router.presentedSheet) { sheet in
-            switch sheet {
-            case .newStatus:
-                Text("New Status")  // TODO: Implement StatusEditorView
-            case .editStatus(let status):
-                Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
-            case .replyToStatus(let status):
-                StatusReplyView(status: status)
-            case .addToShelf(let item, let shelfType, let detentLevel):
-                MarkView(item: item, shelfType: shelfType, detentLevel: detentLevel)
-                    .environmentObject(accountsManager)
-            case .editShelfItem(let mark, let shelfType, let detentLevel):
-                MarkView(item: mark.item, mark: mark, shelfType: shelfType, detentLevel: detentLevel)
-                    .environmentObject(accountsManager)
-            case .itemDetails(let item):
-                ItemDetailsSheet(item: item)
-            case .purchase:
-                PurchaseView()
+        .sheet(item: Binding(
+            get: { router.sheetStack.last },
+            set: { _, _ in router.dismissSheet() }
+        )) { sheet in
+            Group {
+                switch sheet {
+                case .newStatus:
+                    Text("New Status")  // TODO: Implement StatusEditorView
+                case .editStatus(let status):
+                    Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
+                case .replyToStatus(let status):
+                    StatusReplyView(status: status)
+                case .addToShelf(let item, let shelfType, let detentLevel):
+                    MarkView(item: item, shelfType: shelfType, detentLevel: detentLevel)
+                        .environmentObject(accountsManager)
+                case .editShelfItem(let mark, let shelfType, let detentLevel):
+                    MarkView(item: mark.item, mark: mark, shelfType: shelfType, detentLevel: detentLevel)
+                        .environmentObject(accountsManager)
+                case .itemDetails(let item):
+                    ItemDetailsSheet(item: item)
+                case .purchase:
+                    PurchaseView()
+                }
             }
+            .environmentObject(router)
         }
         .whatsNewSheet()
         .enableInjection()

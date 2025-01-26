@@ -301,7 +301,7 @@ struct SettingsView: View {
                 Label {
                     Text("app_plus_purchase", tableName: "Settings")
                 } icon: {
-                    Image(systemName: "star")
+                    Image(systemName: "bubbles.and.sparkles")
                 }
             }
         }

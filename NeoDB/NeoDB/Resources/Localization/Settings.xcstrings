@@ -964,6 +964,22 @@
         }
       }
     },
+    "store_plus_purchase_to_get_faster_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Subscribe to Piecelet+ to help developers develop faster"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "订阅 Piecelet+ 以帮助开发者更快地开发"
+          }
+        }
+      }
+    },
     "store_privacy" : {
       "localizations" : {
         "en" : {

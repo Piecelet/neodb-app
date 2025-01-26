@@ -139,7 +139,12 @@ enum TabSection: String, CaseIterable {
 @MainActor
 class Router: ObservableObject {
     @Published var paths: [TabSection: [RouterDestination]] = [:]
-    @Published var presentedSheet: SheetDestination?
+    @Published var sheetStack: [SheetDestination] = []
+    
+    var presentedSheet: SheetDestination? {
+        sheetStack.last
+    }
+    
     @Published var itemToLoad: (any ItemProtocol)?
     @Published var selectedTab: TabSection = .home
     
@@ -171,11 +176,15 @@ class Router: ObservableObject {
     }
     
     func dismissSheet() {
-        presentedSheet = nil
+        sheetStack.removeLast()
+    }
+    
+    func dismissAllSheets() {
+        sheetStack.removeAll()
     }
     
     func presentSheet(_ destination: SheetDestination) {
-        presentedSheet = destination
+        sheetStack.append(destination)
     }
     
     func handleURL(_ url: URL) -> Bool {
