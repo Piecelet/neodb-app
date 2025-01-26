@@ -118,7 +118,9 @@ struct StarRatingView: View {
 
             Group {
                 if internalRating > 0 {
-                    Button("Clear", systemSymbol: .xmark) {
+                    Button(
+                        String(localized: "rating_star_clear_button", table: "Item", comment: "Rating - Button to clear star rating"),
+                        systemSymbol: .xmark) {
                         withAnimation(.spring(duration: 0.3)) {
                             clearRating()
                         }
@@ -126,7 +128,7 @@ struct StarRatingView: View {
                     .labelStyle(.titleAndIcon)
                     .buttonStyle(.plain)
                 } else {
-                    Text("Tap to review")
+                    Text("rating_star_prompt_label", tableName: "Item", comment: "Rating - Label shown when no rating is set")
                 }
             }
             .foregroundStyle(.secondary)

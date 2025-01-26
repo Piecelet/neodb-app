@@ -199,16 +199,6 @@
         }
       }
     },
-    "Clear" : {
-      "localizations" : {
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limpar"
-          }
-        }
-      }
-    },
     "item_add_to_shelf" : {
       "localizations" : {
         "en" : {
@@ -629,7 +619,7 @@
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Código de barra"
           }
         },
@@ -1020,7 +1010,7 @@
         },
         "pt-BR" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "Séries"
           }
         },
@@ -2483,6 +2473,46 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "年份"
+          }
+        }
+      }
+    },
+    "rating_star_clear_button" : {
+      "comment" : "Rating - Button to clear star rating",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Limpar"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除星星"
+          }
+        }
+      }
+    },
+    "rating_star_prompt_label" : {
+      "comment" : "Rating - Label shown when no rating is set",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to rate"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "点击星星评分"
           }
         }
       }
