@@ -299,7 +299,7 @@ struct SettingsView: View {
                 PurchaseView()
             } label: {
                 Label {
-                    Text("app_subscription", tableName: "Settings")
+                    Text("app_plus_purchase", tableName: "Settings")
                 } icon: {
                     Image(systemName: "star")
                 }

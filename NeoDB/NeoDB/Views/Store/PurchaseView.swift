@@ -114,25 +114,23 @@ struct PurchaseView: View {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 8) {
-                    VStack (spacing: 0) {
+                    VStack(spacing: 0) {
                         Image("piecelet-symbol")
                             .resizable()
                             .scaledToFit()
                             .frame(width: 120, height: 120)
-                        
-                        Text("Piecelet+")
+
+                        Text(String(localized: "store_title", table: "Settings"))
                             .font(.largeTitle)
                             .fontWeight(.bold)
                             .padding(.leading, 8)
                     }
 
-                    Text(
-                        "Unlock a richer experience for your NeoDB journey"
-                    )
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                    Text(String(localized: "store_description", table: "Settings"))
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
                 }
 
                 // Feature List
@@ -142,7 +140,7 @@ struct PurchaseView: View {
                     }
                 }
                 .padding(.horizontal)
-                
+
                 HStack(spacing: 16) {
                     Button("Terms of Service") {
                         openURL(StoreConfig.URLs.termsOfService)
@@ -156,17 +154,17 @@ struct PurchaseView: View {
             }
             .padding(.bottom, 32)
         }
-        .navigationTitle("Piecelet+")
+        .navigationTitle(String(localized: "store_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text("Piecelet+")
+                Text(String(localized: "store_title", table: "Settings"))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
                     .hidden()
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Restore") {
+                Button(String(localized: "store_button_restore", table: "Settings")) {
                     Task {
                         await viewModel.restorePurchases()
                     }
@@ -210,11 +208,21 @@ struct PurchaseView: View {
                                 ? Color.primary.opacity(0.8) : .primary)
 
                     if feature.isComingSoon {
-                        Text("Soon")
+                        Text("store_badge_soon", tableName: "Settings")
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(Color.secondary.opacity(0.2))
+                            .clipShape(Capsule())
+                    }
+
+                    if feature.isFree {
+                        Text("store_badge_free", tableName: "Settings")
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.green.opacity(0.2))
+                            .foregroundStyle(.green)
                             .clipShape(Capsule())
                     }
                 }
@@ -239,15 +247,18 @@ struct BottomPurchaseView: View {
         case lifetime(price: String)
         case yearly(price: String)
         case monthly(price: String)
+        case purchased(package: Package)
 
         var buttonText: String {
             switch self {
             case .lifetime:
-                return "Upgrade Forever"
+                return String(localized: "store_button_upgrade_forever", table: "Settings")
             case .yearly:
-                return "Try Free For 7 Days"
+                return String(localized: "store_button_try_free", table: "Settings")
             case .monthly:
-                return "Upgrade Now"
+                return String(localized: "store_button_upgrade_now", table: "Settings")
+            case .purchased:
+                return String(localized: "store_button_thank_you", table: "Settings")
             }
         }
 
@@ -259,6 +270,17 @@ struct BottomPurchaseView: View {
                 return "Then \(price) per year · Cancel anytime"
             case .monthly(let price):
                 return "\(price) per month · Cancel anytime"
+            case .purchased(let package):
+                switch package.packageType {
+                case .lifetime:
+                    return "Lifetime access"
+                case .annual:
+                    return "Annual subscription"
+                case .monthly:
+                    return "Monthly subscription"
+                default:
+                    return "Active subscription"
+                }
             }
         }
     }
@@ -270,6 +292,10 @@ struct BottomPurchaseView: View {
     let viewModel: PurchaseViewModel
 
     private func getPackageText(for package: Package) -> PackageText {
+        if storeManager.isPlus {
+            return .purchased(package: package)
+        }
+
         let price = package.storeProduct.localizedPriceString
         switch package.packageType {
         case .lifetime:
@@ -292,83 +318,97 @@ struct BottomPurchaseView: View {
             } else {
                 // Plans Selector
                 if let offering = offering {
-                    VStack {
-                        Button {
-                            withAnimation {
-                                showAllPlans.toggle()
+                    if !storeManager.isPlus {
+                        VStack {
+                            Button {
+                                withAnimation {
+                                    showAllPlans.toggle()
+                                }
+                            } label: {
+                                HStack {
+                                    Text(
+                                        showAllPlans
+                                            ? String(localized: "store_plans_hide", table: "Settings")
+                                            : String(localized: "store_plans_show", table: "Settings")
+                                    )
+                                    .font(.headline)
+                                    Image(
+                                        systemName: showAllPlans
+                                            ? "chevron.down" : "chevron.up")
+                                }
                             }
-                        } label: {
-                            HStack {
-                                Text(
-                                    showAllPlans
-                                        ? "Hide all plans" : "Show all plans"
-                                )
-                                .font(.headline)
-                                Image(
-                                    systemName: showAllPlans
-                                        ? "chevron.down" : "chevron.up")
-                            }
-                        }
-                        .foregroundStyle(Color.primary)
+                            .foregroundStyle(Color.primary)
 
-                        if showAllPlans {
-                            VStack(spacing: 8) {
-                                ForEach(
-                                    offering.availablePackages.sorted {
-                                        $0.storeProduct.price
-                                            < $1.storeProduct.price
-                                    }, id: \.identifier
-                                ) { package in
-                                    Button {
-                                        selectedPackage = package
-                                    } label: {
-                                        HStack {
-                                            VStack(alignment: .leading) {
-                                                Text(
-                                                    package.packageType
-                                                        == .lifetime
-                                                        ? "Lifetime • \(package.storeProduct.localizedPriceString)"
-                                                        : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)"
-                                                )
-                                                .font(.headline)
-                                            }
+                            if showAllPlans {
+                                VStack(spacing: 8) {
+                                    ForEach(
+                                        offering.availablePackages.sorted {
+                                            $0.storeProduct.price
+                                                < $1.storeProduct.price
+                                        }, id: \.identifier
+                                    ) { package in
+                                        Button {
+                                            selectedPackage = package
+                                        } label: {
+                                            HStack {
+                                                VStack(alignment: .leading) {
+                                                    Text(
+                                                        package.packageType
+                                                            == .lifetime
+                                                            ? "Lifetime • \(package.storeProduct.localizedPriceString)"
+                                                            : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)"
+                                                    )
+                                                    .font(.headline)
+                                                }
 
-                                            Spacer()
+                                                Spacer()
 
-                                            if package.packageType == .annual {
-                                                if let savings =
-                                                    viewModel.calculateSavings(
-                                                        for: package,
-                                                        in: offering)
+                                                if package.packageType
+                                                    == .annual
                                                 {
-                                                    Text("SAVE \(savings)%")
-                                                        .font(.caption)
-                                                        .padding(.horizontal, 8)
-                                                        .padding(.vertical, 4)
-                                                        .background(
-                                                            Color.accentColor
-                                                        )
-                                                        .foregroundStyle(.white)
-                                                        .clipShape(Capsule())
+                                                    if let savings =
+                                                        viewModel
+                                                        .calculateSavings(
+                                                            for: package,
+                                                            in: offering)
+                                                    {
+                                                        Text(String(format: String(localized: "store_badge_save", table: "Settings"), String(savings)))
+                                                            .font(.caption)
+                                                            .padding(
+                                                                .horizontal, 8
+                                                            )
+                                                            .padding(
+                                                                .vertical, 4
+                                                            )
+                                                            .background(
+                                                                Color
+                                                                    .accentColor
+                                                            )
+                                                            .foregroundStyle(
+                                                                .white
+                                                            )
+                                                            .clipShape(
+                                                                Capsule())
+                                                    }
                                                 }
                                             }
                                         }
+                                        .buttonStyle(.plain)
+                                        .padding()
+                                        .background(
+                                            selectedPackage?.identifier
+                                                == package.identifier
+                                                ? .gray.opacity(0.2) : .clear
+                                        )
+                                        .clipShape(
+                                            RoundedRectangle(cornerRadius: 12))
                                     }
-                                    .buttonStyle(.plain)
-                                    .padding()
-                                    .background(
-                                        selectedPackage?.identifier
-                                            == package.identifier
-                                            ? .gray.opacity(0.2) : .clear
-                                    )
-                                    .clipShape(
-                                        RoundedRectangle(cornerRadius: 12))
                                 }
+                                .padding(.top)
                             }
-                            .padding(.top)
                         }
+                        .padding(.horizontal)
                     }
-                    .padding(.horizontal)
 
                     // Action Button
                     if let selectedPackage = selectedPackage {
@@ -383,11 +423,15 @@ struct BottomPurchaseView: View {
                                     .font(.headline)
                                     .frame(maxWidth: .infinity)
                                     .padding()
-                                    .background(Color.accentColor)
+                                    .background(
+                                        storeManager.isPlus
+                                            ? Color.gray : Color.accentColor
+                                    )
                                     .foregroundStyle(.white)
                                     .clipShape(
                                         RoundedRectangle(cornerRadius: 12))
                             }
+                            .disabled(storeManager.isPlus)
                             .padding(.horizontal)
 
                             Text(packageText.descriptionText)

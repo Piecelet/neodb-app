@@ -29,6 +29,7 @@ enum StoreConfig {
         let title: String
         let description: String
         let isComingSoon: Bool
+        let isFree: Bool
         let color: Color
         
         init(
@@ -36,12 +37,14 @@ enum StoreConfig {
             title: String,
             description: String,
             isComingSoon: Bool = false,
+            isFree: Bool = false,
             color: Color = .accentColor
         ) {
             self.icon = icon
             self.title = title
             self.description = description
             self.isComingSoon = isComingSoon
+            self.isFree = isFree
             self.color = color
         }
     }
@@ -49,73 +52,76 @@ enum StoreConfig {
     static let features: [Feature] = [
         Feature(
             icon: .sfSymbol(.sparkles),
-            title: "Smooth Experience",
-            description: "Enjoy a fluid and responsive interface for browsing and managing your collections.",
+            title: String(localized: "store_feature_smooth_title", table: "Settings"),
+            description: String(localized: "store_feature_smooth_description", table: "Settings"),
+            isFree: true,
             color: .pink
         ),
         Feature(
             icon: .sfSymbol(.infinity),
-            title: "Unlimited Collections",
-            description: "Mark and collect unlimited books, movies, and music without restrictions.",
+            title: String(localized: "store_feature_unlimited_title", table: "Settings"),
+            description: String(localized: "store_feature_unlimited_description", table: "Settings"),
+            isFree: true,
             color: .mint
         ),
         Feature(
             icon: .sfSymbol(.magnifyingglassCircle),
-            title: "Quick Discovery",
-            description: "Instantly search and discover trending books, movies, and music.",
+            title: String(localized: "store_feature_discovery_title", table: "Settings"),
+            description: String(localized: "store_feature_discovery_description", table: "Settings"),
+            isFree: true,
             color: .cyan
         ),
         Feature(
             icon: .sfSymbol(.heart),
-            title: "Support Future Development",
-            description: "Help a student developer continue building and improving Piecelet.",
+            title: String(localized: "store_feature_support_dev_title", table: "Settings"),
+            description: String(localized: "store_feature_support_dev_description", table: "Settings"),
             color: .red
         ),
         Feature(
             icon: .sfSymbol(.handRaised),
-            title: "Support NeoDB Community",
-            description: "Part of the revenue will be donated to support the NeoDB open source project.",
+            title: String(localized: "store_feature_support_community_title", table: "Settings"),
+            description: String(localized: "store_feature_support_community_description", table: "Settings"),
             color: .teal
         ),
         Feature(
             icon: .sfSymbol(.person2),
-            title: "Multiple Accounts",
-            description: "Connect and switch between multiple NeoDB accounts seamlessly.",
+            title: String(localized: "store_feature_accounts_title", table: "Settings"),
+            description: String(localized: "store_feature_accounts_description", table: "Settings"),
             isComingSoon: true,
             color: .blue
         ),
         Feature(
             icon: .sfSymbol(.arrowTriangle2Circlepath),
-            title: "Cross-platform Sync",
-            description: "Sync your marks with Trakt and other platforms.",
+            title: String(localized: "store_feature_sync_title", table: "Settings"),
+            description: String(localized: "store_feature_sync_description", table: "Settings"),
             isComingSoon: true,
             color: .purple
         ),
         Feature(
             icon: .sfSymbol(.magnifyingglass),
-            title: "Enhanced Search",
-            description: "Access additional search sources for better results.",
+            title: String(localized: "store_feature_search_title", table: "Settings"),
+            description: String(localized: "store_feature_search_description", table: "Settings"),
             isComingSoon: true,
             color: .orange
         ),
         Feature(
             icon: .sfSymbol(.arrowLeftArrowRight),
-            title: "Quick Actions",
-            description: "Quickly search and open items in Douban.",
+            title: String(localized: "store_feature_actions_title", table: "Settings"),
+            description: String(localized: "store_feature_actions_description", table: "Settings"),
             isComingSoon: true,
             color: .green
         ),
         Feature(
             icon: .sfSymbol(.bell),
-            title: "Series Updates",
-            description: "Track and get notified about series updates.",
+            title: String(localized: "store_feature_updates_title", table: "Settings"),
+            description: String(localized: "store_feature_updates_description", table: "Settings"),
             isComingSoon: true,
             color: .red
         ),
         Feature(
             icon: .sfSymbol(.checklist),
-            title: "Batch Actions",
-            description: "Mark multiple items at once efficiently.",
+            title: String(localized: "store_feature_batch_title", table: "Settings"),
+            description: String(localized: "store_feature_batch_description", table: "Settings"),
             isComingSoon: true,
             color: .indigo
         )
