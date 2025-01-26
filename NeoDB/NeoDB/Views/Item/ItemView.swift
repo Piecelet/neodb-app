@@ -193,7 +193,7 @@ struct ItemView: View {
                 ItemMarkView(mark: mark, size: .large)
             }
 
-            actionButton
+            shelfTypeButtons
         }
         .onChange(of: viewModel.isRefreshing) { newValue in
             if newValue {
@@ -202,32 +202,61 @@ struct ItemView: View {
         }
     }
 
-    private var actionButton: some View {
-        Button {
-            if let item = viewModel.item {
-                if let mark = viewModel.mark {
-                    router.presentSheet(.editShelfItem(mark: mark))
-                } else {
-                    router.presentSheet(.addToShelf(item: item))
+    private var shelfTypeButtons: some View {
+        HStack(spacing: 8) {
+            ForEach([ShelfType.wishlist, .progress, .complete], id: \.self) {
+                type in
+                if let item = viewModel.item {
+                    Group {
+                        if let mark = viewModel.mark,
+                         mark.shelfType == type {
+                            Button {
+                                router.presentSheet(
+                                    .editShelfItem(
+                                        mark: mark, shelfType: type,
+                                        detentLevel: .detailed))
+                                HapticFeedback.impact(.medium)
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(symbol: type.symbolImage)
+                                        .font(.caption)
+                                    Text(
+                                        type.displayNameForCategory(
+                                            viewModel.item?.category)
+                                    )
+                                    .font(.subheadline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(ShelfTypeButtonStyle(filled: false))
+                        } else {
+                            Button {
+                                router.presentSheet(
+                                    .addToShelf(
+                                        item: item, shelfType: type,
+                                        detentLevel: .detailed))
+                                HapticFeedback.impact(.medium)
+                            } label: {
+                                HStack(spacing: 4) {
+                                    Image(symbol: type.symbolImage)
+                                        .font(.caption)
+                                    Text(
+                                        type.displayNameForCategory(
+                                            viewModel.item?.category)
+                                    )
+                                    .font(.subheadline)
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                            }
+                            .buttonStyle(ShelfTypeButtonStyle(filled: true))
+                        }
+                    }
+                    .disabled(viewModel.isMarkLoading)
                 }
-                HapticFeedback.impact(.medium)
             }
-        } label: {
-            HStack {
-                Image(
-                    systemName: viewModel.shelfType == nil
-                        ? "plus" : "checkmark")
-                if let shelfType = viewModel.shelfType {
-                    Text(shelfType.displayActionState)
-                } else {
-                    Text("item_add_to_shelf", tableName: "Item")
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
         }
-        .buttonStyle(.borderedProminent)
-        .disabled(viewModel.isMarkLoading)
     }
 
     // MARK: - Toolbar Content
@@ -284,6 +313,33 @@ struct ItemView: View {
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
+}
+
+// MARK: - Button Style
+private struct ShelfTypeButtonStyle: ButtonStyle {
+    let filled: Bool
+    
+    init(filled: Bool = false) {
+        self.filled = filled
+    }
+
+    private let cornerRadius: CGFloat = 8
+    private let strokeWidth: CGFloat = 1
+    private let color: Color = .accentColor
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(filled ? color.opacity(0.2) : Color.clear)
+            )
+            .foregroundStyle(filled ? color : color)
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .stroke(filled ? color.opacity(0.4) : color, lineWidth: strokeWidth)
+            }
+            .opacity(configuration.isPressed ? 0.7 : 1.0)
+    }
 }
 
 // MARK: - Preview

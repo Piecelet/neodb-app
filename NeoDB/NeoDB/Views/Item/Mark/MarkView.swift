@@ -10,19 +10,33 @@ import SwiftUI
 import SwiftUIIntrospect
 
 struct MarkView: View {
+    enum DetailLevel: Hashable {
+        case brief
+        case detailed
+        
+        var presentationDetent: PresentationDetent {
+            switch self {
+            case .brief: return .fraction(0.65)
+            case .detailed: return .large
+            }
+        }
+    }
+    
     @StateObject private var viewModel: MarkViewModel
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @State private var showAdvanced = false
-    @State private var detent: PresentationDetent = .fraction(0.7)
+    @State private var detentLevel: DetailLevel
 
     init(
-        item: any ItemProtocol, mark: MarkSchema? = nil,
-        shelfType: ShelfType? = nil
+        item: any ItemProtocol,
+        mark: MarkSchema? = nil,
+        shelfType: ShelfType? = nil,
+        detentLevel: DetailLevel = .brief
     ) {
         _viewModel = StateObject(
             wrappedValue: MarkViewModel(
                 item: item, mark: mark, shelfType: shelfType))
+        _detentLevel = State(initialValue: detentLevel)
     }
 
     var body: some View {
@@ -90,7 +104,15 @@ struct MarkView: View {
         .navigationTitle(viewModel.title)
         .background(.ultraThinMaterial)
         .compositingGroup()
-        .presentationDetents([.fraction(0.7), .large], selection: $detent)
+        .presentationDetents(
+            [DetailLevel.brief.presentationDetent, DetailLevel.detailed.presentationDetent],
+            selection: Binding(
+                get: { self.detentLevel.presentationDetent },
+                set: { detent in
+                    self.detentLevel = detent == .large ? .detailed : .brief
+                }
+            )
+        )
         .presentationDragIndicator(.visible)
         .onChange(of: viewModel.isDismissed) { dismissed in
             if dismissed {
@@ -151,7 +173,7 @@ struct MarkView: View {
 
                 TextEditor(text: $viewModel.comment)
                     .frame(
-                        minHeight: detent == .large
+                        minHeight: detentLevel == .detailed
                             ? 200 : paddingTop ? 100 : 50,
                         maxHeight: 300
                     )
@@ -179,7 +201,7 @@ struct MarkView: View {
                     .padding(.top)
                     .onTapGesture {
                         withAnimation {
-                            detent = .large
+                            detentLevel = .detailed
                         }
                     }
 
@@ -238,6 +260,8 @@ struct MarkView: View {
                 }
                 .labelStyle(.titleAndIcon)
             }
+            
+            Image(systemSymbol: .chevronRight)
         }
         .padding(.horizontal, 18)
         .padding(.top)

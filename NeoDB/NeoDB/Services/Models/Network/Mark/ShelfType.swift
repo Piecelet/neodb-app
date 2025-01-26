@@ -16,13 +16,13 @@ enum ShelfType: String, Codable, CaseIterable {
     var displayName: String {
         switch self {
         case .wishlist:
-            return String(localized: "shelf_type_wishlist_label", table: "Item", comment: "Neutral noun without action - Wishlist")
+            return String(localized: "shelf_type_wishlist_label", table: "Item", comment: "Shelf type - Wishlist")
         case .progress:
-            return String(localized: "shelf_type_progress_label", table: "Item", comment: "Neutral noun without action - Progress")
+            return String(localized: "shelf_type_progress_label", table: "Item", comment: "Shelf type - In progress")
         case .complete:
-            return String(localized: "shelf_type_complete_label", table: "Item", comment: "Neutral noun without action - Complete")
+            return String(localized: "shelf_type_complete_label", table: "Item", comment: "Shelf type - Completed")
         case .dropped:
-            return String(localized: "shelf_type_dropped_label", table: "Item", comment: "Neutral noun without action - Drop")
+            return String(localized: "shelf_type_dropped_label", table: "Item", comment: "Shelf type - Dropped")
         }
     }
 
@@ -47,7 +47,7 @@ enum ShelfType: String, Codable, CaseIterable {
         return actionNameFormat(for: displayName)
     }
 
-    func displayNameForCategory(_ category: ItemCategory) -> String {
+    func displayNameForCategory(_ category: ItemCategory?) -> String {
         switch (self, category) {
         case (.wishlist, .movie):
             return String(localized: "shelf_type_wishlist_category_movie_label", table: "Item", comment: "Neutral noun without action - Wishlist - Movie - Want to watch")
@@ -129,10 +129,12 @@ enum ShelfType: String, Codable, CaseIterable {
             return String(localized: "shelf_type_dropped_category_exhibition_label", table: "Item", comment: "Neutral noun without action - Dropped - Exhibition")
         case (.dropped, .collection):
             return String(localized: "shelf_type_dropped_category_collection_label", table: "Item", comment: "Neutral noun without action - Dropped - Collection")
+        default:
+            return displayName
         }
     }
 
-    func displayActionStateForCategory(_ category: ItemCategory) -> String {
+    func displayActionStateForCategory(_ category: ItemCategory?) -> String {
         switch (self, category) {
         case (.wishlist, .movie), (.wishlist, .tv), (.wishlist, .tvSeason), (.wishlist, .tvEpisode):
             return String(localized: "shelf_type_action_wishlist_category_movie_label", table: "Item", comment: "Action state - Wishlisted - Movie - Wanted to watch")
@@ -212,13 +214,15 @@ enum ShelfType: String, Codable, CaseIterable {
             return String(localized: "shelf_type_action_dropped_category_exhibition_label", table: "Item", comment: "Action state - Dropped - Exhibition - Dropped")
         case (.dropped, .collection):
             return String(localized: "shelf_type_action_dropped_category_collection_label", table: "Item", comment: "Action state - Dropped - Collection - Dropped")
+        default:
+            return displayActionState
         }
     }
 
     var iconName: String {
         switch self {
         case .wishlist:
-            return "heart"
+            return "star"
         case .progress:
             return "book"
         case .complete:
