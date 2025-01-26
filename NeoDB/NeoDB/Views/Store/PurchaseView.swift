@@ -142,10 +142,10 @@ struct PurchaseView: View {
                 .padding(.horizontal)
 
                 HStack(spacing: 16) {
-                    Button("Terms of Service") {
+                    Button(String(localized: "store_terms", table: "Settings")) {
                         openURL(StoreConfig.URLs.termsOfService)
                     }
-                    Button("Privacy Policy") {
+                    Button(String(localized: "store_privacy", table: "Settings")) {
                         openURL(StoreConfig.URLs.privacyPolicy)
                     }
                 }
@@ -221,8 +221,7 @@ struct PurchaseView: View {
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
-                            .background(Color.green.opacity(0.2))
-                            .foregroundStyle(.green)
+                            .background(Color.secondary.opacity(0.2))
                             .clipShape(Capsule())
                     }
                 }
@@ -265,21 +264,21 @@ struct BottomPurchaseView: View {
         var descriptionText: String {
             switch self {
             case .lifetime(let price):
-                return "\(price) once · Lifetime access"
+                return String(format: String(localized: "store_package_lifetime_price", table: "Settings"), price)
             case .yearly(let price):
-                return "Then \(price) per year · Cancel anytime"
+                return String(format: String(localized: "store_package_yearly_price", table: "Settings"), price)
             case .monthly(let price):
-                return "\(price) per month · Cancel anytime"
+                return String(format: String(localized: "store_package_monthly_price", table: "Settings"), price)
             case .purchased(let package):
                 switch package.packageType {
                 case .lifetime:
-                    return "Lifetime access"
+                    return String(localized: "store_package_lifetime", table: "Settings")
                 case .annual:
-                    return "Annual subscription"
+                    return String(localized: "store_package_annual", table: "Settings")
                 case .monthly:
-                    return "Monthly subscription"
+                    return String(localized: "store_package_monthly", table: "Settings")
                 default:
-                    return "Active subscription"
+                    return String(localized: "store_package_active", table: "Settings")
                 }
             }
         }
@@ -355,8 +354,8 @@ struct BottomPurchaseView: View {
                                                     Text(
                                                         package.packageType
                                                             == .lifetime
-                                                            ? "Lifetime • \(package.storeProduct.localizedPriceString)"
-                                                            : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)"
+                                                            ? String(localized: "store_package_yearly", table: "Settings")
+                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings")) • \(package.storeProduct.localizedPriceString)"
                                                     )
                                                     .font(.headline)
                                                 }
@@ -462,7 +461,7 @@ struct PackageView: View {
                     Text(package.storeProduct.localizedTitle)
                         .font(.headline)
                     if package.packageType == .lifetime {
-                        Text("One-time Purchase")
+                        Text(String(localized: "store_purchase_onetime", table: "Settings"))
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
                     } else {
@@ -482,7 +481,8 @@ struct PackageView: View {
                     if package.packageType != .lifetime {
                         Text(
                             package.packageType == .annual
-                                ? "per year" : "per month"
+                                ? String(format: String(localized: "store_period_year", table: "Settings"), package.storeProduct.localizedPriceString)
+                                : String(format: String(localized: "store_period_month", table: "Settings"), package.storeProduct.localizedPriceString)
                         )
                         .font(.caption)
                         .foregroundStyle(.secondary)
