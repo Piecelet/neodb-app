@@ -176,11 +176,15 @@ class Router: ObservableObject {
     }
     
     func dismissSheet() {
-        sheetStack.removeLast()
+        if sheetStack.count > 1 {
+            sheetStack.removeLast()
+        }
     }
     
     func dismissAllSheets() {
-        sheetStack.removeAll()
+        if sheetStack.count > 1 {
+            sheetStack.removeAll()
+        }
     }
     
     func presentSheet(_ destination: SheetDestination) {
