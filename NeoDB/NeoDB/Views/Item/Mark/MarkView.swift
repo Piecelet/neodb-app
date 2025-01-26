@@ -73,21 +73,12 @@ struct MarkView: View {
                         .hidden()
                 }
 
-                NavigationLink {
-                    advancedSettingsView
-                } label: {
-                    HStack(spacing: 0) {
-                        Text(advancedOptionsLabel)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 8)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                }
-
                 VStack(alignment: .center, spacing: 0) {
+                    NavigationLink {
+                        advancedSettingsView
+                    } label: {
+                        advancedOptionsLabel
+                    }
                     saveButton
                 }
                 .background(.ultraThinMaterial)
@@ -167,9 +158,17 @@ struct MarkView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .overlay {
                         if viewModel.comment.isEmpty {
-                            TextEditor(text: .constant(String(localized: "mark_comment_placeholder", table: "Item", comment: "Mark - Placeholder text shown in empty comment field")))
-                                .foregroundColor(.secondary)
-                                .disabled(true)
+                            TextEditor(
+                                text: .constant(
+                                    String(
+                                        localized: "mark_comment_placeholder",
+                                        table: "Item",
+                                        comment:
+                                            "Mark - Placeholder text shown in empty comment field"
+                                    ))
+                            )
+                            .foregroundColor(.secondary)
+                            .disabled(true)
                         }
                     }
                     .scrollDisabled(viewModel.comment.isEmpty)
@@ -190,63 +189,118 @@ struct MarkView: View {
         }
     }
 
-    private var advancedOptionsLabel: String {
-        var components: [String] = []
+    private var advancedOptionsLabel: some View {
+        HStack {
+            Label {
+                Text(viewModel.visibility.displayText)
+            } icon: {
+                Image(symbol: viewModel.visibility.symbolImage)
+                    .padding(.trailing, -6)
+            }
+            .labelStyle(.titleAndIcon)
 
-        if viewModel.changeTime {
-            components.append(
-                viewModel.createdTime.formatted(
-                    date: .abbreviated, time: .omitted))
+            if viewModel.postToFediverse {
+                Label {
+                    Text(
+                        "mark_share_fediverse_enabled_label",
+                        tableName: "Item",
+                        comment:
+                            "Mark - Label shown in advanced options when post to fediverse is enabled"
+                    )
+                } icon: {
+                    Image(systemSymbol: .arrow2Squarepath)
+                        .padding(.trailing, -6)
+                }
+                .labelStyle(.titleAndIcon)
+            } else {
+                Label {
+                    Text(
+                        "mark_share_fediverse_disabled_label",
+                        tableName: "Item",
+                        comment:
+                            "Mark - Label shown in advanced options when post to fediverse is disabled"
+                    )
+                } icon: {
+                    Image(symbol: .custom("custom.arrow.2.squarepath.slash"))
+                        .padding(.trailing, -6)
+                }
+                .labelStyle(.titleAndIcon)
+            }
+
+            if viewModel.changeTime {
+                Label {
+                    Text(
+                        viewModel.createdTime.formatted(
+                            date: .abbreviated, time: .omitted))
+                } icon: {
+                    Image(systemSymbol: .clock)
+                        .padding(.trailing, -6)
+                }
+                .labelStyle(.titleAndIcon)
+            }
         }
-
-        components.append(viewModel.visibility.displayText)
-
-        if viewModel.postToFediverse {
-            components.append(String(localized: "mark_share_fediverse_label", table: "Item", comment: "Mark - Label shown in advanced options when post to fediverse is enabled"))
-        }
-
-        return components.joined(separator: " · ")
+        .padding(.horizontal, 18)
+        .padding(.top)
+        .font(.subheadline)
     }
 
     private var deleteButton: some View {
-        Button(role: .destructive) {
-            Task {
-                await viewModel.deleteMark()
+        Menu {
+            Button(role: .destructive) {
+                Task {
+                    await viewModel.deleteMark()
+                }
+            } label: {
+                Label(
+                    String(
+                        localized: "mark_delete_confirm_button", table: "Item",
+                        comment: "Mark - Button to confirm deletion"),
+                    systemSymbol: .trash
+                )
+                .labelStyle(.titleAndIcon)
             }
         } label: {
             Label(
-                String(localized: "mark_delete_button", table: "Item"),
+                String(
+                    localized: "mark_delete_button", table: "Item",
+                    comment: "Mark - Button to delete mark"),
                 systemSymbol: .trash
             )
             .frame(maxWidth: .infinity)
-            .labelStyle(.titleOnly)
+            .labelStyle(.titleAndIcon)
         }
+        .font(.subheadline)
+        .foregroundStyle(.gray)
         .disabled(viewModel.isLoading)
         .padding(.bottom)
     }
 
     private var saveButton: some View {
-        VStack(spacing: 16) {
-            Button {
-                Task {
-                    await viewModel.saveMark()
-                }
-            } label: {
-                Text("mark_save_button", tableName: "Item")
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+        Button {
+            Task {
+                await viewModel.saveMark()
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(viewModel.isLoading)
-            .padding(.horizontal)
+        } label: {
+            Text("mark_save_button", tableName: "Item")
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 8)
         }
+        .buttonStyle(.borderedProminent)
+        .disabled(viewModel.isLoading)
+        .padding(.horizontal)
         .padding(.vertical)
     }
 
     private var advancedSettingsView: some View {
         Form {
             Section {
-                Picker(String(localized: "mark_visibility_picker_label", table: "Item", comment: "Mark - Label for visibility picker"), selection: $viewModel.visibility) {
+                Picker(
+                    String(
+                        localized: "mark_visibility_picker_label",
+                        table: "Item",
+                        comment: "Mark - Label for visibility picker"),
+                    selection: $viewModel.visibility
+                ) {
                     ForEach(MarkVisibility.allCases, id: \.self) { visibility in
                         Label {
                             Text(visibility.displayText)
@@ -266,7 +320,7 @@ struct MarkView: View {
                 )
                 .tint(.accentColor)
             }
-            Section(header: Text("Advanced")) {
+            Section(header: Text("mark_advanced_view_advanced_settings_header", tableName: "Item", comment: "Mark - Header text for advanced settings section")) {
                 Toggle(
                     String(
                         localized: "mark_change_date_toggle",
@@ -296,7 +350,7 @@ struct MarkView: View {
         .compositingGroup()
         .scrollContentBackground(.hidden)
         .navigationTitle(
-            String(localized: "mark_advanced_section", table: "Item"))
+            String(localized: "mark_advanced_view", table: "Item", comment: "Mark - Title for advanced view"))
     }
 
     #if DEBUG

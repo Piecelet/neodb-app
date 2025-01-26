@@ -397,7 +397,31 @@
         }
       }
     },
-    "mark_advanced_section" : {
+    "mark_advanced_view" : {
+      "comment" : "Mark - Title for advanced view",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Avançado"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "设定"
+          }
+        }
+      }
+    },
+    "mark_advanced_view_advanced_settings_header" : {
+      "comment" : "Mark - Header text for advanced settings section",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -405,16 +429,10 @@
             "value" : "Advanced"
           }
         },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Avançado"
-          }
-        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "高级选项"
+            "value" : "高级"
           }
         }
       }
@@ -471,6 +489,7 @@
       }
     },
     "mark_delete_button" : {
+      "comment" : "Mark - Button to delete mark",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -488,6 +507,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "删除标记"
+          }
+        }
+      }
+    },
+    "mark_delete_confirm_button" : {
+      "comment" : "Mark - Button to confirm deletion",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confirm Delete"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "确认删除"
           }
         }
       }
@@ -558,13 +594,30 @@
         }
       }
     },
-    "mark_share_fediverse_label" : {
+    "mark_share_fediverse_disabled_label" : {
+      "comment" : "Mark - Label shown in advanced options when post to fediverse is disabled",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Sharing"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不转发外部动态"
+          }
+        }
+      }
+    },
+    "mark_share_fediverse_enabled_label" : {
       "comment" : "Mark - Label shown in advanced options when post to fediverse is enabled",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Share to External Feeds"
+            "value" : "Timelines Sharing"
           }
         },
         "zh-Hans" : {
