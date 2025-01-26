@@ -56,10 +56,12 @@ class StoreManager: ObservableObject {
         }
     }
 
-    func loadOfferings() async {
+    func loadOfferings(refresh: Bool = false) async {
         do {
-            let offerings = try await Purchases.shared.offerings()
-            plusOffering = offerings.offering(identifier: "plus") ?? offerings.current
+            if plusOffering == nil || refresh {
+                let offerings = try await Purchases.shared.offerings()
+                plusOffering = offerings.offering(identifier: "plus") ?? offerings.current
+            }
         } catch {
             print("Error loading offerings: \(error)")
         }

@@ -35,11 +35,17 @@ class PurchaseViewModel: NSObject, ObservableObject {
         storeManager.plusOffering
     }
 
-    func calculateSavings(for annualPackage: Package, in offering: Offering) -> Int? {
-        guard let monthlyPackage = offering.availablePackages.first(where: { $0.packageType == .monthly }) else {
+    func calculateSavings(for annualPackage: Package, in offering: Offering)
+        -> Int?
+    {
+        guard
+            let monthlyPackage = offering.availablePackages.first(where: {
+                $0.packageType == .monthly
+            })
+        else {
             return nil
         }
-        
+
         let monthlyPrice = monthlyPackage.storeProduct.price as Decimal
         let annualPrice = annualPackage.storeProduct.price as Decimal
         let twelve = Decimal(12)
@@ -48,7 +54,7 @@ class PurchaseViewModel: NSObject, ObservableObject {
         var savings = (monthlyTotal - annualPrice) / monthlyTotal * hundred
         var rounded = Decimal()
         NSDecimalRound(&rounded, &savings, 0, .plain)
-        
+
         return Int(truncating: rounded as NSNumber)
     }
 
@@ -78,7 +84,6 @@ class PurchaseViewModel: NSObject, ObservableObject {
     }
 
     func restorePurchases() async {
-        isLoading = true
 
         do {
             let customerInfo = try await storeManager.restorePurchases()
@@ -109,9 +114,17 @@ struct PurchaseView: View {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 8) {
-                    Text("Piecelet+")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
+                    VStack (spacing: 0) {
+                        Image("piecelet-symbol")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 120, height: 120)
+                        
+                        Text("Piecelet+")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .padding(.leading, 8)
+                    }
 
                     Text(
                         "Unlock a richer experience for your NeoDB journey"
@@ -130,7 +143,7 @@ struct PurchaseView: View {
                 }
                 .padding(.horizontal)
             }
-            .padding(.vertical, 32)
+            .padding(.bottom, 32)
         }
         .navigationTitle("Piecelet+")
         .navigationBarTitleDisplayMode(.inline)
@@ -215,7 +228,7 @@ struct BottomPurchaseView: View {
         case lifetime(price: String)
         case yearly(price: String)
         case monthly(price: String)
-        
+
         var buttonText: String {
             switch self {
             case .lifetime:
@@ -226,7 +239,7 @@ struct BottomPurchaseView: View {
                 return "Upgrade Now"
             }
         }
-        
+
         var descriptionText: String {
             switch self {
             case .lifetime(let price):
@@ -238,13 +251,13 @@ struct BottomPurchaseView: View {
             }
         }
     }
-    
+
     let offering: Offering?
     @Binding var showAllPlans: Bool
     @Binding var selectedPackage: Package?
     @EnvironmentObject private var storeManager: StoreManager
     let viewModel: PurchaseViewModel
-    
+
     private func getPackageText(for package: Package) -> PackageText {
         let price = package.storeProduct.localizedPriceString
         switch package.packageType {
@@ -312,12 +325,18 @@ struct BottomPurchaseView: View {
                                             Spacer()
 
                                             if package.packageType == .annual {
-                                                if let savings = viewModel.calculateSavings(for: package, in: offering) {
+                                                if let savings =
+                                                    viewModel.calculateSavings(
+                                                        for: package,
+                                                        in: offering)
+                                                {
                                                     Text("SAVE \(savings)%")
                                                         .font(.caption)
                                                         .padding(.horizontal, 8)
                                                         .padding(.vertical, 4)
-                                                        .background(Color.accentColor)
+                                                        .background(
+                                                            Color.accentColor
+                                                        )
                                                         .foregroundStyle(.white)
                                                         .clipShape(Capsule())
                                                 }
@@ -355,7 +374,8 @@ struct BottomPurchaseView: View {
                                     .padding()
                                     .background(Color.accentColor)
                                     .foregroundStyle(.white)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .clipShape(
+                                        RoundedRectangle(cornerRadius: 12))
                             }
                             .padding(.horizontal)
 
