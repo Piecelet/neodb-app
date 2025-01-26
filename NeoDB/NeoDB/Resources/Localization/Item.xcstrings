@@ -3441,34 +3441,174 @@
       }
     },
     "shelf_type_dropped_category_book_label" : {
-      "comment" : "Neutral noun without action - Dropped - Book"
+      "comment" : "Neutral noun without action - Dropped - Book",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃读"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_collection_label" : {
-      "comment" : "Neutral noun without action - Dropped - Collection"
+      "comment" : "Neutral noun without action - Dropped - Collection",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃看"
+          }
+        } 
+      }
     },
     "shelf_type_dropped_category_exhibition_label" : {
-      "comment" : "Neutral noun without action - Dropped - Exhibition"
+      "comment" : "Neutral noun without action - Dropped - Exhibition",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃看"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_fanfic_label" : {
-      "comment" : "Neutral noun without action - Dropped - Fanfic"
+      "comment" : "Neutral noun without action - Dropped - Fanfic",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃读"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_game_label" : {
-      "comment" : "Neutral noun without action - Dropped - Game"
+      "comment" : "Neutral noun without action - Dropped - Game",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃玩"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_movie_label" : {
-      "comment" : "Neutral noun without action - Dropped - Movie"
+      "comment" : "Neutral noun without action - Dropped - Movie",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃看"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_music_label" : {
-      "comment" : "Neutral noun without action - Dropped - Music"
+      "comment" : "Neutral noun without action - Dropped - Music",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃听"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_performance_label" : {
-      "comment" : "Neutral noun without action - Dropped - Performance"
+      "comment" : "Neutral noun without action - Dropped - Performance",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃看"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_podcast_label" : {
-      "comment" : "Neutral noun without action - Dropped - Podcast"
+      "comment" : "Neutral noun without action - Dropped - Podcast",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },  
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃听"
+          }
+        }
+      }
     },
     "shelf_type_dropped_category_tv_label" : {
-      "comment" : "Neutral noun without action - Dropped - TV"
+      "comment" : "Neutral noun without action - Dropped - TV",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dropped"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "弃看"
+          }
+        }
+      }
     },
     "shelf_type_dropped_label" : {
       "comment" : "Neutral noun without action - Drop",
@@ -3494,34 +3634,138 @@
       }
     },
     "shelf_type_progress_category_book_label" : {
-      "comment" : "Neutral noun without action - Progress - Book - Reading"
+      "comment" : "Neutral noun without action - Progress - Book - Reading",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_collection_label" : {
-      "comment" : "Neutral noun without action - Progress - Collection - Watching"
+      "comment" : "Neutral noun without action - Progress - Collection - Watching",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watching"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_exhibition_label" : {
-      "comment" : "Neutral noun without action - Progress - Exhibition - Watching"
+      "comment" : "Neutral noun without action - Progress - Exhibition - Watching",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watching"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_fanfic_label" : {
-      "comment" : "Neutral noun without action - Progress - Fanfic - Reading"
+      "comment" : "Neutral noun without action - Progress - Fanfic - Reading",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_game_label" : {
-      "comment" : "Neutral noun without action - Progress - Game - Playing"
+      "comment" : "Neutral noun without action - Progress - Game - Playing",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Playing"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_movie_label" : {
-      "comment" : "Neutral noun without action - Progress - Movie - Watching"
+      "comment" : "Neutral noun without action - Progress - Movie - Watching",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watching"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_music_label" : {
-      "comment" : "Neutral noun without action - Progress - Music - Listening"
+      "comment" : "Neutral noun without action - Progress - Music - Listening",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listening"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在听"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_performance_label" : {
-      "comment" : "Neutral noun without action - Progress - Performance - Watching"
+      "comment" : "Neutral noun without action - Progress - Performance - Watching",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watching"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在看"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_podcast_label" : {
-      "comment" : "Neutral noun without action - Progress - Podcast - Listening"
+      "comment" : "Neutral noun without action - Progress - Podcast - Listening",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Listening"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在听"
+          }
+        }
+      }
     },
     "shelf_type_progress_category_tv_label" : {
-      "comment" : "Neutral noun without action - Progress - TV - Watching"
+      "comment" : "Neutral noun without action - Progress - TV - Watching",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watching"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在看"
+          }
+        }
+      }
     },
     "shelf_type_progress_label" : {
       "comment" : "Neutral noun without action - Progress",
@@ -3547,34 +3791,157 @@
       }
     },
     "shelf_type_wishlist_category_book_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Book - Want to read"
+      "comment" : "Neutral noun without action - Wishlist - Book - Want to read",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to read"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想读"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_collection_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Collection - Want to watch"
+      "comment" : "Neutral noun without action - Wishlist - Collection - Want to watch",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to watch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想看"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_exhibition_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Exhibition - Want to watch"
+      "comment" : "Neutral noun without action - Wishlist - Exhibition - Want to watch",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to watch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想看"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_fanfic_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Fanfic - Want to read"
+      "comment" : "Neutral noun without action - Wishlist - Fanfic - Want to read",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to read"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想读"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_game_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Game - Want to play"
+      "comment" : "Neutral noun without action - Wishlist - Game - Want to play",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to play"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想玩"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_movie_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Movie - Want to watch"
+      "comment" : "Neutral noun without action - Wishlist - Movie - Want to watch",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to watch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想看"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_music_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Music - Want to listen"
+      "comment" : "Neutral noun without action - Wishlist - Music - Want to listen",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to listen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想听"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_performance_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Performance - Want to watch"
-    },
-    "shelf_type_wishlist_category_podcast_label" : {
-      "comment" : "Neutral noun without action - Wishlist - Podcast - Want to listen"
+      "comment" : "Neutral noun without action - Wishlist - Performance - Want to watch",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to watch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想看"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_category_tv_label" : {
-      "comment" : "Neutral noun without action - Wishlist - TV - Want to watch"
+      "comment" : "Neutral noun without action - Wishlist - TV - Want to watch",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to watch"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想看"
+          }
+        }
+      }
     },
     "shelf_type_wishlist_label" : {
       "comment" : "Neutral noun without action - Wishlist",
