@@ -12,7 +12,7 @@ import SwiftUI
 @MainActor
 class PurchaseViewModel: NSObject, ObservableObject {
     @Published private(set) var purchaseError: String?
-    @Published var isLoading = false
+    @Published var isLoading = true
     @Published var showAllPlans = false
     @Published var selectedPackage: Package?
     @Published var shouldDismiss = false
@@ -33,6 +33,23 @@ class PurchaseViewModel: NSObject, ObservableObject {
 
     var currentOffering: Offering? {
         storeManager.plusOffering
+    }
+
+    func calculateSavings(for annualPackage: Package, in offering: Offering) -> Int? {
+        guard let monthlyPackage = offering.availablePackages.first(where: { $0.packageType == .monthly }) else {
+            return nil
+        }
+        
+        let monthlyPrice = monthlyPackage.storeProduct.price as Decimal
+        let annualPrice = annualPackage.storeProduct.price as Decimal
+        let twelve = Decimal(12)
+        let hundred = Decimal(100)
+        let monthlyTotal = monthlyPrice * twelve
+        var savings = (monthlyTotal - annualPrice) / monthlyTotal * hundred
+        var rounded = Decimal()
+        NSDecimalRound(&rounded, &savings, 0, .plain)
+        
+        return Int(truncating: rounded as NSNumber)
     }
 
     func loadOfferings() async {
@@ -169,7 +186,7 @@ struct PurchaseView: View {
                                 ? Color.primary.opacity(0.8) : .primary)
 
                     if feature.isComingSoon {
-                        Text("Coming Soon")
+                        Text("Soon")
                             .font(.caption2)
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
@@ -194,11 +211,53 @@ struct PurchaseView: View {
 }
 
 struct BottomPurchaseView: View {
+    private enum PackageText {
+        case lifetime(price: String)
+        case yearly(price: String)
+        case monthly(price: String)
+        
+        var buttonText: String {
+            switch self {
+            case .lifetime:
+                return "Upgrade Forever"
+            case .yearly:
+                return "Try Free For 7 Days"
+            case .monthly:
+                return "Upgrade Now"
+            }
+        }
+        
+        var descriptionText: String {
+            switch self {
+            case .lifetime(let price):
+                return "\(price) once · Lifetime access"
+            case .yearly(let price):
+                return "Then \(price) per year · Cancel anytime"
+            case .monthly(let price):
+                return "\(price) per month · Cancel anytime"
+            }
+        }
+    }
+    
     let offering: Offering?
     @Binding var showAllPlans: Bool
     @Binding var selectedPackage: Package?
     @EnvironmentObject private var storeManager: StoreManager
     let viewModel: PurchaseViewModel
+    
+    private func getPackageText(for package: Package) -> PackageText {
+        let price = package.storeProduct.localizedPriceString
+        switch package.packageType {
+        case .lifetime:
+            return .lifetime(price: price)
+        case .annual:
+            return .yearly(price: price)
+        case .monthly:
+            return .monthly(price: price)
+        default:
+            return .monthly(price: price)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 16) {
@@ -253,15 +312,15 @@ struct BottomPurchaseView: View {
                                             Spacer()
 
                                             if package.packageType == .annual {
-                                                Text("SAVE 44%")
-                                                    .font(.caption)
-                                                    .padding(.horizontal, 8)
-                                                    .padding(.vertical, 4)
-                                                    .background(
-                                                        Color.accentColor
-                                                    )
-                                                    .foregroundStyle(.white)
-                                                    .clipShape(Capsule())
+                                                if let savings = viewModel.calculateSavings(for: package, in: offering) {
+                                                    Text("SAVE \(savings)%")
+                                                        .font(.caption)
+                                                        .padding(.horizontal, 8)
+                                                        .padding(.vertical, 4)
+                                                        .background(Color.accentColor)
+                                                        .foregroundStyle(.white)
+                                                        .clipShape(Capsule())
+                                                }
                                             }
                                         }
                                     }
@@ -283,31 +342,27 @@ struct BottomPurchaseView: View {
 
                     // Action Button
                     if let selectedPackage = selectedPackage {
+                        let packageText = getPackageText(for: selectedPackage)
                         VStack(spacing: 4) {
                             Button {
                                 Task {
                                     await viewModel.purchase(selectedPackage)
                                 }
                             } label: {
-                                Text("Try Free For 7 Days")
+                                Text(packageText.buttonText)
                                     .font(.headline)
                                     .frame(maxWidth: .infinity)
                                     .padding()
                                     .background(Color.accentColor)
                                     .foregroundStyle(.white)
-                                    .clipShape(
-                                        RoundedRectangle(cornerRadius: 12))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
                             }
                             .padding(.horizontal)
 
-                            if selectedPackage.packageType == .annual {
-                                Text(
-                                    "Then \(selectedPackage.storeProduct.localizedPriceString) per year • Cancel anytime"
-                                )
+                            Text(packageText.descriptionText)
                                 .font(.headline)
                                 .foregroundStyle(.secondary)
                                 .padding(.top, 8)
-                            }
                         }
                     }
                 }
