@@ -139,6 +139,9 @@ struct PurchaseView: View {
                     }
                 }
             }
+            .task {
+                
+            }
             .safeAreaInset(edge: .bottom) {
                 BottomPurchaseView(
                     offering: storeManager.plusOffering,

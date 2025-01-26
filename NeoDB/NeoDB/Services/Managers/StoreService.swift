@@ -23,7 +23,6 @@ class StoreManager: ObservableObject {
         configure()
     }
 
-    /// 配置 RevenueCat SDK
     private func configure() {
         Purchases.logLevel = .debug
         Purchases.configure(
@@ -32,6 +31,9 @@ class StoreManager: ObservableObject {
                 .with(storeKitVersion: .storeKit2)
                 .build()
         )
+    }
+
+    func setCustomerInfo() {
         Task {
             let customerInfo = try await Purchases.shared.customerInfo()
             self.customerInfo = customerInfo
@@ -49,5 +51,17 @@ class StoreManager: ObservableObject {
             return nil
         }
     }
-    
+
+    func getOfferings() async throws -> Offerings {
+        if let existingOfferings = offerings {
+            return existingOfferings
+        }
+        offerings = try await Purchases.shared.offerings()
+        return offerings!
+    }
+
+    func getPlusOffering() async throws -> Offering? {
+        let offerings = try await getOfferings()
+        return offerings.offering(identifier: StoreConfig.RevenueCat.plus.offeringIdentifier) ?? offerings.current
+    }
 }
