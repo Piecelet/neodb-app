@@ -97,15 +97,23 @@ class PurchaseViewModel: NSObject, ObservableObject {
     }
 }
 
+enum PurchaseViewType {
+    case view
+    case sheet
+}
+
 struct PurchaseView: View {
     @StateObject private var viewModel: PurchaseViewModel
     @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
 
-    init() {
-        _viewModel = StateObject(
+    var type: PurchaseViewType = .view
+
+    init(type: PurchaseViewType = .view) {
+        self._viewModel = StateObject(
             wrappedValue: PurchaseViewModel(storeManager: StoreManager()))
+        self.type = type
     }
 
     var body: some View {
@@ -151,6 +159,7 @@ struct PurchaseView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
             }
+            .padding(.top, type == .view ? 0 : 32)
             .padding(.bottom, 32)
         }
         .navigationTitle(String(localized: "store_title", table: "Settings"))

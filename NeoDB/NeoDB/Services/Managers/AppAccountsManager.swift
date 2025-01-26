@@ -17,6 +17,12 @@ class AppAccountsManager: ObservableObject {
     @AppStorage("latestCurrentAccountKey") static public
         var latestCurrentAccountKey: String = ""
 
+    @AppStorage("hasShownPurchaseView") private var hasShownPurchaseView = false {
+        didSet {
+            logger.debug("hasShownPurchaseView changed to \(hasShownPurchaseView)")
+        }
+    }
+    
     @Published var currentAccount: AppAccount {
         didSet {
             Self.latestCurrentAccountKey = currentAccount.id
@@ -30,6 +36,11 @@ class AppAccountsManager: ObservableObject {
     @Published var currentClient: NetworkClient
     @Published var isAuthenticated: Bool = false
     @Published var isAuthenticating: Bool = false
+    @Published var shouldShowPurchase = false {
+        didSet {
+            logger.debug("shouldShowPurchase changed to \(shouldShowPurchase)")
+        }
+    }
 
     init() {
         var defaultAccount = AppAccount(
@@ -75,6 +86,11 @@ class AppAccountsManager: ObservableObject {
                 ?? AppAccount(instance: "neodb.social", oauthToken: nil)
             isAuthenticated = currentAccount.oauthToken != nil
         }
+        
+        // Reset hasShownPurchaseView when deleting the last account
+            shouldShowPurchase = false
+            hasShownPurchaseView = false
+            logger.debug("Last account deleted, reset hasShownPurchaseView to false")
     }
     
     // MARK: - Authentication
@@ -137,10 +153,20 @@ class AppAccountsManager: ObservableObject {
                 instance: state
             )
             
+            logger.debug("Authentication successful, hasShownPurchaseView: \(hasShownPurchaseView)")
             let account = AppAccount(instance: state, oauthToken: token)
             add(account: account)
             isAuthenticated = true
-            
+            logger.debug("After adding account, shouldShowPurchase: \(shouldShowPurchase)")
+            if isAuthenticated, !hasShownPurchaseView {
+                hasShownPurchaseView = true
+                Task {
+                    try? await Task.sleep(for: .seconds(1))
+                    shouldShowPurchase = true
+                }
+            } else {
+                shouldShowPurchase = false
+            }
         } catch {
             logger.error("Token exchange failed")
             throw error

@@ -73,7 +73,7 @@ struct StatusItemView: View {
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)
-        .alert("Error", isPresented: $viewModel.showError) {
+        .alert("Error", isPresented: .constant(false)) {
             Button("OK", role: .cancel) {}
         } message: {
             if let error = viewModel.error {

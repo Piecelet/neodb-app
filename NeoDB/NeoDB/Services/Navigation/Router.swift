@@ -184,6 +184,7 @@ class Router: ObservableObject {
     }
     
     func presentSheet(_ destination: SheetDestination) {
+        logger.debug("Presenting sheet: \(destination)")
         sheetStack.append(destination)
     }
     

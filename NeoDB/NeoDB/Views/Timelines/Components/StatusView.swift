@@ -176,7 +176,7 @@ struct StatusView: View {
                 }
             }
         }
-        .alert("Error", isPresented: $viewModel.showError) {
+        .alert("Error", isPresented: .constant(false)) {
             Button("OK") {}
         } message: {
             Text(viewModel.error?.localizedDescription ?? "Unknown error")

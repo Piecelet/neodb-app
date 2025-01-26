@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
     @State private var isSearchActive = false
+    private let logger = Logger.views.contentView
 
     var body: some View {
         TabView(selection: $router.selectedTab.onUpdate { oldTab, newTab in
@@ -73,6 +75,12 @@ struct ContentView: View {
         }
         .tint(.accentColor)
         .environmentObject(router)
+        .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
+            logger.debug("shouldShowPurchase changed to \(shouldShow)")
+            if shouldShow {
+                router.presentSheet(.purchase)
+            }
+        }
         .sheet(item: Binding(
             get: { router.sheetStack.last },
             set: { _, _ in router.dismissSheet() }
@@ -94,7 +102,7 @@ struct ContentView: View {
                 case .itemDetails(let item):
                     ItemDetailsSheet(item: item)
                 case .purchase:
-                    PurchaseView()
+                    PurchaseView(type: .sheet)
                 }
             }
             .environmentObject(router)
