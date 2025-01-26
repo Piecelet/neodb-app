@@ -274,14 +274,22 @@ struct BottomPurchaseView: View {
                                 await viewModel.purchase(selectedPackage)
                             }
                         } label: {
-                            Text("Try Free For 7 Days")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            Group {
+                                if viewModel.isLoading {
+                                    ProgressView()
+                                        .tint(.white)
+                                } else {
+                                    Text("Try Free For 7 Days")
+                                }
+                            }
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.accentColor)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
+                        .disabled(viewModel.isLoading)
                         .padding(.horizontal)
 
                         if selectedPackage.packageType == .annual {
