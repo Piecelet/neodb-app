@@ -199,29 +199,6 @@
         }
       }
     },
-    "item_add_to_shelf" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add to Shelf"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Adicionar a estante"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "添加到书架"
-          }
-        }
-      }
-    },
     "item_description" : {
       "localizations" : {
         "en" : {

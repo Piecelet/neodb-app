@@ -11,6 +11,7 @@ import WhatsNewKit
 @main
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
+    @StateObject private var storeManager = StoreManager()
     @StateObject private var router = Router()
     
     var body: some Scene {
@@ -18,7 +19,7 @@ struct NeoDBApp: App {
             Group {
                 if accountsManager.isAuthenticated {
                     ContentView()
-                        .environmentObject(router)
+                        .environmentObject(self.router)
                         .environment(
                             \.whatsNew,
                             WhatsNewEnvironment(
@@ -30,7 +31,8 @@ struct NeoDBApp: App {
                     LoginView()
                 }
             }
-            .environmentObject(accountsManager)
+            .environmentObject(self.accountsManager)
+            .environmentObject(self.storeManager)
             .onOpenURL { url in
                 // First try to handle OAuth callback
                 if url.scheme == "neodb" && url.host == "oauth" {

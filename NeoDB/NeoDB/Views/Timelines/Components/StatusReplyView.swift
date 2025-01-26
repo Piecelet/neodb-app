@@ -11,7 +11,8 @@ import OSLog
 struct StatusReplyView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    
+    @EnvironmentObject private var router: Router
+
     let status: MastodonStatus
     
     init(status: MastodonStatus) {
@@ -19,7 +20,7 @@ struct StatusReplyView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack {
             // Custom title bar
             HStack {
                 Spacer()
@@ -31,6 +32,14 @@ struct StatusReplyView: View {
             }
             .padding()
             Text("timelines_status_reply_development", tableName: "Timelines")
+
+            Button(action: {
+                router.presentSheet(.purchase)
+            }) {
+                Text("store_plus_purchase_to_get_faster_development", tableName: "Settings")
+            }
+            .buttonStyle(.borderedProminent)
+            .padding()
             Spacer()
         }
         .background(.ultraThinMaterial)

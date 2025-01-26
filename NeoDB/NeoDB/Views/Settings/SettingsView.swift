@@ -106,12 +106,6 @@ struct ProfileHeaderView: View {
                         AvatarPlaceholderView(
                             isLoading: isLoading, size: avatarSize)
                     }
-                    .onFailure { _ in
-                        Image(systemName: "person.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                            .foregroundStyle(.secondary)
-                            .font(.system(size: avatarSize * 0.8))
-                    }
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: avatarSize, height: avatarSize)
@@ -177,6 +171,7 @@ struct SettingsView: View {
     @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.refresh) private var refresh
+    @EnvironmentObject private var router: Router
 
     private let avatarSize: CGFloat = 60
 
@@ -234,6 +229,7 @@ struct SettingsView: View {
         List {
             profileHeaderSection
             accountInformationSection
+            purchaseSection
             appSection
             cacheManagementSection
             logoutSection
@@ -296,19 +292,23 @@ struct SettingsView: View {
             }
         }
     }
-    
-    private var appSection: some View {
+
+    private var purchaseSection: some View {
         Section {
             NavigationLink {
                 PurchaseView()
             } label: {
                 Label {
-                    Text("app_subscription", tableName: "Settings")
+                    Text("app_plus_purchase", tableName: "Settings")
                 } icon: {
-                    Image(systemName: "star")
+                    Image(systemName: "bubbles.and.sparkles")
                 }
             }
-            
+        }
+    }
+    
+    private var appSection: some View {
+        Section {
             NavigationLink {
                 WishKit.FeedbackListView()
                     .padding(.bottom)
@@ -317,6 +317,15 @@ struct SettingsView: View {
                     Text("app_feature_requests", tableName: "Settings")
                 } icon: {
                     Image(systemName: "lightbulb")
+                }
+            }
+            NavigationLink {
+                AboutView()
+            } label: {
+                Label {
+                    Text("app_about", tableName: "Settings")
+                } icon: {
+                    Image(systemName: "info.circle")
                 }
             }
         } header: {

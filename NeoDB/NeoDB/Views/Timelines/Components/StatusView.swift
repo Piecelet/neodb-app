@@ -176,7 +176,7 @@ struct StatusView: View {
                 }
             }
         }
-        .alert("Error", isPresented: $viewModel.showError) {
+        .alert("Error", isPresented: .constant(false)) {
             Button("OK") {}
         } message: {
             Text(viewModel.error?.localizedDescription ?? "Unknown error")
@@ -211,16 +211,6 @@ struct StatusView: View {
                         Rectangle()
                             .fill(Color.gray.opacity(0.2))
                             .aspectRatio(1, contentMode: .fill)
-                    }
-                    .onFailure { _ in
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.2))
-                            .aspectRatio(1, contentMode: .fill)
-                            .overlay {
-                                Image(systemName: "photo")
-                                    .font(.largeTitle)
-                                    .foregroundStyle(.secondary)
-                            }
                     }
                     .resizable()
                     .aspectRatio(contentMode: .fill)

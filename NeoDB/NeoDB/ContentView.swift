@@ -6,11 +6,13 @@
 //
 
 import SwiftUI
+import OSLog
 
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @StateObject private var router = Router()
     @State private var isSearchActive = false
+    private let logger = Logger.views.contentView
 
     var body: some View {
         TabView(selection: $router.selectedTab.onUpdate { oldTab, newTab in
@@ -73,23 +75,37 @@ struct ContentView: View {
         }
         .tint(.accentColor)
         .environmentObject(router)
-        .sheet(item: $router.presentedSheet) { sheet in
-            switch sheet {
-            case .newStatus:
-                Text("New Status")  // TODO: Implement StatusEditorView
-            case .editStatus(let status):
-                Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
-            case .replyToStatus(let status):
-                StatusReplyView(status: status)
-            case .addToShelf(let item, let shelfType, let detentLevel):
-                MarkView(item: item, shelfType: shelfType, detentLevel: detentLevel)
-                    .environmentObject(accountsManager)
-            case .editShelfItem(let mark, let shelfType, let detentLevel):
-                MarkView(item: mark.item, mark: mark, shelfType: shelfType, detentLevel: detentLevel)
-                    .environmentObject(accountsManager)
-            case .itemDetails(let item):
-                ItemDetailsSheet(item: item)
+        .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
+            logger.debug("shouldShowPurchase changed to \(shouldShow)")
+            if shouldShow {
+                router.presentSheet(.purchase)
             }
+        }
+        .sheet(item: Binding(
+            get: { router.sheetStack.last },
+            set: { _, _ in router.dismissSheet() }
+        )) { sheet in
+            Group {
+                switch sheet {
+                case .newStatus:
+                    Text("New Status")  // TODO: Implement StatusEditorView
+                case .editStatus(let status):
+                    Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
+                case .replyToStatus(let status):
+                    StatusReplyView(status: status)
+                case .addToShelf(let item, let shelfType, let detentLevel):
+                    MarkView(item: item, shelfType: shelfType, detentLevel: detentLevel)
+                        .environmentObject(accountsManager)
+                case .editShelfItem(let mark, let shelfType, let detentLevel):
+                    MarkView(item: mark.item, mark: mark, shelfType: shelfType, detentLevel: detentLevel)
+                        .environmentObject(accountsManager)
+                case .itemDetails(let item):
+                    ItemDetailsSheet(item: item)
+                case .purchase:
+                    PurchaseView(type: .sheet)
+                }
+            }
+            .environmentObject(router)
         }
         .whatsNewSheet()
         .enableInjection()
@@ -134,6 +150,8 @@ struct ContentView: View {
             Text("Followers: \(id)")  // TODO: Implement FollowersView
         case .following(let id):
             Text("Following: \(id)")  // TODO: Implement FollowingView
+        case .purchase:
+            PurchaseView()
         }
     }
 }
