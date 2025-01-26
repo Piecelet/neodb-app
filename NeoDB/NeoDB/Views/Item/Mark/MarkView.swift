@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftUIIntrospect
 
 struct MarkView: View {
     enum DetailLevel: Hashable {
