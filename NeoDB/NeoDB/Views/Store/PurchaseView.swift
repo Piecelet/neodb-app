@@ -83,7 +83,6 @@ extension PurchaseViewModel: PurchasesDelegate {
 
 struct PurchaseView: View {
     @StateObject private var viewModel = PurchaseViewModel()
-    @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
     
     var body: some View {
@@ -172,10 +171,10 @@ struct PurchaseView: View {
                     // Legal Links
                     HStack(spacing: 16) {
                         Button("Terms of Service") {
-                            openURL(StoreConfig.termsURL)
+                            openURL(StoreConfig.URLs.termsOfService)
                         }
                         Button("Privacy Policy") {
-                            openURL(StoreConfig.privacyURL)
+                            openURL(StoreConfig.URLs.privacyPolicy)
                         }
                     }
                     .font(.footnote)

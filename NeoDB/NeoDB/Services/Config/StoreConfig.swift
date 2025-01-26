@@ -8,6 +8,11 @@
 import Foundation
 
 enum StoreConfig {
+    enum URLs {
+        static let privacyPolicy = URL(string: "https://piecelet.app/privacy")!
+        static let termsOfService = URL(string: "https://piecelet.app/terms")!
+    }
+    
     enum RevenueCat {
         static let apiKey = "appl_piTjpqjRBRGEtJCEVXwILxxKmvY"
     }
