@@ -21,6 +21,8 @@
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 		24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24ECD3B62D46432A00E24D7D /* StoreKit.framework */; };
+		24ECD3C42D464AC100E24D7D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 24ECD3C32D464AC100E24D7D /* RevenueCat */; };
+		24ECD3C62D464AC100E24D7D /* RevenueCatUI in Frameworks */ = {isa = PBXBuildFile; productRef = 24ECD3C52D464AC100E24D7D /* RevenueCatUI */; };
 		24F75A2E2D451D4D00DB8774 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 24F75A2D2D451D4D00DB8774 /* SwiftUIIntrospect */; };
 		24F75A312D45566300DB8774 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = 24F75A302D45566300DB8774 /* Parchment */; };
 /* End PBXBuildFile section */
@@ -99,7 +101,9 @@
 				24F75A312D45566300DB8774 /* Parchment in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 				243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */,
+				24ECD3C42D464AC100E24D7D /* RevenueCat in Frameworks */,
 				24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */,
+				24ECD3C62D464AC100E24D7D /* RevenueCatUI in Frameworks */,
 				2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */,
 				24F75A2E2D451D4D00DB8774 /* SwiftUIIntrospect in Frameworks */,
 			);
@@ -187,6 +191,8 @@
 				2405C5E22D42757100457DF5 /* WebView */,
 				24F75A2D2D451D4D00DB8774 /* SwiftUIIntrospect */,
 				24F75A302D45566300DB8774 /* Parchment */,
+				24ECD3C32D464AC100E24D7D /* RevenueCat */,
+				24ECD3C52D464AC100E24D7D /* RevenueCatUI */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -285,6 +291,7 @@
 				2405C5E12D42757100457DF5 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */,
 				24F75A2C2D451D4D00DB8774 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				24F75A2F2D45566300DB8774 /* XCRemoteSwiftPackageReference "Parchment" */,
+				24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -797,6 +804,14 @@
 				minimumVersion = 2.2.1;
 			};
 		};
+		24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.15.0;
+			};
+		};
 		24F75A2C2D451D4D00DB8774 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/siteline/swiftui-introspect";
@@ -874,6 +889,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */;
 			productName = Inject;
+		};
+		24ECD3C32D464AC100E24D7D /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCat;
+		};
+		24ECD3C52D464AC100E24D7D /* RevenueCatUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
+			productName = RevenueCatUI;
 		};
 		24F75A2D2D451D4D00DB8774 /* SwiftUIIntrospect */ = {
 			isa = XCSwiftPackageProductDependency;

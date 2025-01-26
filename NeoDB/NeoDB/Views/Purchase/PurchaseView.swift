@@ -5,47 +5,79 @@
 //  Created by citron on 1/26/25.
 //
 
-import StoreKit
+import RevenueCat
 import SwiftUI
 
 @MainActor
-class PurchaseViewModel: ObservableObject {
-    @Published private(set) var subscriptions: [Product] = []
+class PurchaseViewModel: NSObject, ObservableObject {
+    @Published private(set) var currentOffering: Offering?
+    @Published private(set) var customerInfo: CustomerInfo?
     @Published private(set) var purchaseError: String?
     @Published var isLoading = false
     
-    func loadProducts() async {
+    override init() {
+        super.init()
+        // 设置代理以接收更新
+        Purchases.shared.delegate = self
+        
+        // 获取当前用户状态
+        Task {
+            await updateCustomerInfo()
+        }
+    }
+    
+    func loadOfferings() async {
         isLoading = true
         defer { isLoading = false }
         
         do {
-            let products = try await Product.products(for: StoreConfig.subscriptionIds)
-            subscriptions = products.sorted { $0.price < $1.price }
+            let offerings = try await Purchases.shared.offerings()
+            // 使用指定的 offering identifier
+            currentOffering = offerings.offering(identifier: "plus") ?? offerings.current
         } catch {
             purchaseError = error.localizedDescription
         }
     }
     
-    func purchase(_ product: Product) async throws {
-        let result = try await product.purchase()
+    func purchase(_ package: Package) async {
+        isLoading = true
+        defer { isLoading = false }
         
-        switch result {
-        case .success(let verification):
+        do {
+            let result = try await Purchases.shared.purchase(package: package)
+            customerInfo = result.customerInfo
             // 处理购买成功
-            break
-        case .pending:
-            // 等待用户确认购买
-            break
-        case .userCancelled:
-            // 用户取消购买
-            break
-        @unknown default:
-            break
+        } catch {
+            purchaseError = error.localizedDescription
         }
     }
     
-    func restorePurchases() async throws {
-        try await AppStore.sync()
+    func restorePurchases() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            customerInfo = try await Purchases.shared.restorePurchases()
+        } catch {
+            purchaseError = error.localizedDescription
+        }
+    }
+    
+    private func updateCustomerInfo() async {
+        do {
+            customerInfo = try await Purchases.shared.customerInfo()
+        } catch {
+            purchaseError = error.localizedDescription
+        }
+    }
+}
+
+// MARK: - PurchasesDelegate
+extension PurchaseViewModel: PurchasesDelegate {
+    func purchases(_ purchases: Purchases, receivedUpdated customerInfo: CustomerInfo) {
+        Task { @MainActor in
+            self.customerInfo = customerInfo
+        }
     }
 }
 
@@ -60,7 +92,7 @@ struct PurchaseView: View {
                 VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 8) {
-                        Text("Piecelet+")
+                        Text("NeoDB+")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         
@@ -116,39 +148,26 @@ struct PurchaseView: View {
                     }
                     .padding(.horizontal)
                     
-                    // Show all plans button
-                    NavigationLink {
-                        plansView
-                    } label: {
-                        Text("Show all plans")
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    // Trial Button
-                    if let yearlyProduct = viewModel.subscriptions.first {
-                        Button {
-                            Task {
-                                try await viewModel.purchase(yearlyProduct)
+                    // Subscription Plans
+                    VStack(spacing: 16) {
+                        if let offering = viewModel.currentOffering {
+                            ForEach(offering.availablePackages.sorted { $0.storeProduct.price < $1.storeProduct.price }, id: \.identifier) { package in
+                                Button {
+                                    Task {
+                                        await viewModel.purchase(package)
+                                    }
+                                } label: {
+                                    PackageView(package: package)
+                                }
+                                .disabled(viewModel.isLoading)
                             }
-                        } label: {
-                            Text("Try Free For 7 Days")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(.black)
-                                .foregroundStyle(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        .padding(.horizontal)
                         
-                        // Price Info
-                        Text("Then \(yearlyProduct.displayPrice) per year • Cancel anytime")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    } else if viewModel.isLoading {
-                        ProgressView()
+                        if viewModel.isLoading {
+                            ProgressView()
+                        }
                     }
+                    .padding(.horizontal)
                     
                     // Legal Links
                     HStack(spacing: 16) {
@@ -173,13 +192,13 @@ struct PurchaseView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Restore") {
                         Task {
-                            try await viewModel.restorePurchases()
+                            await viewModel.restorePurchases()
                         }
                     }
                 }
             }
             .task {
-                await viewModel.loadProducts()
+                await viewModel.loadOfferings()
             }
             .alert("Purchase Error", isPresented: .constant(viewModel.purchaseError != nil)) {
                 Button("OK", role: .cancel) {}
@@ -189,35 +208,6 @@ struct PurchaseView: View {
                 }
             }
         }
-    }
-    
-    private var plansView: some View {
-        List {
-            ForEach(viewModel.subscriptions) { product in
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(product.displayName)
-                        .font(.headline)
-                    Text(product.description)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Button {
-                        Task {
-                            try await viewModel.purchase(product)
-                        }
-                    } label: {
-                        Text("Subscribe for \(product.displayPrice)")
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(.black)
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-        }
-        .navigationTitle("Subscription Plans")
-        .listStyle(.insetGrouped)
     }
     
     private func featureRow(icon: String, title: String, description: String, isComingSoon: Bool = false) -> some View {
@@ -241,6 +231,48 @@ struct PurchaseView: View {
         .background(.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .opacity(isComingSoon ? 0.8 : 1)
+    }
+}
+
+struct PackageView: View {
+    let package: Package
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(package.storeProduct.localizedTitle)
+                        .font(.headline)
+                    if package.packageType == .lifetime {
+                        Text("One-time Purchase")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Text(package.storeProduct.localizedDescription)
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(package.storeProduct.localizedPriceString)
+                        .font(.title3)
+                        .fontWeight(.bold)
+                    
+                    if package.packageType != .lifetime {
+                        Text(package.packageType == .annual ? "per year" : "per month")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding()
+        .background(.gray.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }
 

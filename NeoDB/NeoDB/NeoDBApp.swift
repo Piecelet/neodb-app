@@ -13,6 +13,11 @@ struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
     @StateObject private var router = Router()
     
+    init() {
+        // 配置 RevenueCat
+        StoreService.configure()
+    }
+    
     var body: some Scene {
         WindowGroup {
             Group {
