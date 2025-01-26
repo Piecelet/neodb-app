@@ -215,7 +215,7 @@ struct MarkView: View {
                     }
                     .scrollDisabled(viewModel.comment.isEmpty)
                     .padding(10)
-                    .background(.ultraThinMaterial)
+                    .background(.secondary.opacity(0.5))
                     .cornerRadius(8)
                     .padding(.horizontal)
                     .padding(.top)
