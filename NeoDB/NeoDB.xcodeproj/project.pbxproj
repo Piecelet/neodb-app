@@ -20,6 +20,7 @@
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
+		24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24ECD3B62D46432A00E24D7D /* StoreKit.framework */; };
 		24F75A2E2D451D4D00DB8774 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 24F75A2D2D451D4D00DB8774 /* SwiftUIIntrospect */; };
 		24F75A312D45566300DB8774 /* Parchment in Frameworks */ = {isa = PBXBuildFile; productRef = 24F75A302D45566300DB8774 /* Parchment */; };
 /* End PBXBuildFile section */
@@ -47,6 +48,7 @@
 		24CEACEF2D0DA6200083D4BA /* NeoDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeoDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24CEAD002D0DA6210083D4BA /* NeoDBTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeoDBTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		24CEAD0A2D0DA6210083D4BA /* NeoDBUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NeoDBUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		24ECD3B62D46432A00E24D7D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -97,6 +99,7 @@
 				24F75A312D45566300DB8774 /* Parchment in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 				243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */,
+				24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */,
 				2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */,
 				24F75A2E2D451D4D00DB8774 /* SwiftUIIntrospect in Frameworks */,
 			);
@@ -122,6 +125,7 @@
 		245FD27F2D2A9AF0005B55B3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				24ECD3B62D46432A00E24D7D /* StoreKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

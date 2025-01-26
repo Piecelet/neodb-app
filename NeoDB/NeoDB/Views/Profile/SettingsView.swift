@@ -300,6 +300,16 @@ struct SettingsView: View {
     private var appSection: some View {
         Section {
             NavigationLink {
+                PurchaseView()
+            } label: {
+                Label {
+                    Text("app_subscription", tableName: "Settings")
+                } icon: {
+                    Image(systemName: "star")
+                }
+            }
+            
+            NavigationLink {
                 WishKit.FeedbackListView()
                     .padding(.bottom)
             } label: {

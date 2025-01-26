@@ -90,6 +90,9 @@
         }
       }
     },
+    "app_subscription" : {
+
+    },
     "app_title" : {
       "localizations" : {
         "en" : {

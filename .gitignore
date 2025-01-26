@@ -104,3 +104,5 @@ NeoDB.xcconfig
 build/XCBuildData/
 
 IceNewTimelineRef
+
+*.storekit
