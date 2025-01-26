@@ -86,58 +86,62 @@ struct PurchaseView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("Piecelet+")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(spacing: 8) {
+                    Text("Piecelet+")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
 
-                        Text(
-                            "Unlock a richer experience for your NeoDB journey"
-                        )
-                        .font(.headline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    }
-
-                    // Feature List
-                    VStack(spacing: 16) {
-                        ForEach(StoreConfig.features) { feature in
-                            featureRow(feature: feature)
-                        }
-                    }
+                    Text(
+                        "Unlock a richer experience for your NeoDB journey"
+                    )
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 }
-                .padding(.vertical, 32)
-            }
 
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Restore") {
-                        Task {
-                            await viewModel.restorePurchases()
-                        }
+                // Feature List
+                VStack(spacing: 16) {
+                    ForEach(StoreConfig.features) { feature in
+                        featureRow(feature: feature)
+                    }
+                }
+                .padding(.horizontal)
+            }
+            .padding(.vertical, 32)
+        }
+        .navigationTitle("Piecelet+")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Piecelet+")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Restore") {
+                    Task {
+                        await viewModel.restorePurchases()
                     }
                 }
             }
-            .task {
-                await viewModel.loadOfferings()
-            }
-            .safeAreaInset(edge: .bottom) {
-                BottomPurchaseView(
-                    offering: viewModel.currentOffering,
-                    showAllPlans: $viewModel.showAllPlans,
-                    selectedPackage: $viewModel.selectedPackage,
-                    viewModel: viewModel
-                )
-                .background(.bar)
-                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
-            }
+        }
+        .task {
+            await viewModel.loadOfferings()
+        }
+        .safeAreaInset(edge: .bottom) {
+            BottomPurchaseView(
+                offering: viewModel.currentOffering,
+                showAllPlans: $viewModel.showAllPlans,
+                selectedPackage: $viewModel.selectedPackage,
+                viewModel: viewModel
+            )
+            .background(.bar)
+            .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
         }
         .enableInjection()
         .toolbar(.hidden, for: .tabBar)
@@ -305,7 +309,12 @@ struct BottomPurchaseView: View {
             }
         }
         .padding(.vertical)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct PackageView: View {
