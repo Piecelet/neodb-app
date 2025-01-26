@@ -51,5 +51,18 @@ Thanks!
 ## Acknowledgements
 - [IceCubesApp](https://github.com/Dimillian/IceCubesApp)
 - [keychain-swift](https://github.com/evgenyneu/keychain-swift)
+- [ExpandableText](https://github.com/n3d1117/ExpandableText)
+- [BetterSafariView](https://github.com/stleary/BetterSafariView)
+- [Cache](https://github.com/hyperoslo/Cache)
+- [Inject](https://github.com/johnsundell/Inject)
+- [WishKit](https://github.com/wishkithq/WishKit)
+- [RevenueCat](https://www.revenuecat.com/)
+- [SwiftSoup](https://github.com/scinfu/SwiftSoup)
+- [WebView](https://github.com/stleary/WebView)
+- [WhatsNewKit](https://github.com/SvenTiigi/WhatsNewKit)
+- [Kingfisher](https://github.com/onevcat/Kingfisher)
+
+### Localization
+- Portuguese (pt-BR) by [Dennis Nunes](https://github.com/nunesdennis)
 
 ![Icon](NeoDB/NeoDB/Assets.xcassets/AppIcon.appiconset/1024x1024%20copy%202%401x.png)

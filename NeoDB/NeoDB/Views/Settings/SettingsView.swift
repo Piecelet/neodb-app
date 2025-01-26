@@ -319,6 +319,15 @@ struct SettingsView: View {
                     Image(systemName: "lightbulb")
                 }
             }
+            NavigationLink {
+                AboutView()
+            } label: {
+                Label {
+                    Text("app_about", tableName: "Settings")
+                } icon: {
+                    Image(systemName: "info.circle")
+                }
+            }
         } header: {
             Text("app_title", tableName: "Settings")
         }
