@@ -5,7 +5,6 @@
 //  Created by citron on 1/15/25.
 //
 
-import Parchment
 import SwiftUI
 import SwiftUIIntrospect
 
