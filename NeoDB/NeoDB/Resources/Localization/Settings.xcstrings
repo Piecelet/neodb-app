@@ -91,7 +91,20 @@
       }
     },
     "app_plus_purchase" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet+"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet+"
+          }
+        }
+      }
     },
     "app_title" : {
       "localizations" : {
@@ -254,6 +267,12 @@
             "state" : "translated",
             "value" : "Free"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费"
+          }
         }
       }
     },
@@ -263,6 +282,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "SAVE %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立省 %@"
           }
         }
       }
@@ -274,6 +299,12 @@
             "state" : "translated",
             "value" : "Soon"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即将推出"
+          }
         }
       }
     },
@@ -283,6 +314,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Restore"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复购买"
           }
         }
       }
@@ -294,6 +331,12 @@
             "state" : "translated",
             "value" : "Thank you"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "感谢支持"
+          }
         }
       }
     },
@@ -303,6 +346,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Try Free For 7 Days"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "免费试用 7 天"
           }
         }
       }
@@ -314,6 +363,12 @@
             "state" : "translated",
             "value" : "Upgrade Forever"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "永久升级"
+          }
         }
       }
     },
@@ -323,6 +378,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Upgrade Now"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "立即升级"
           }
         }
       }
@@ -334,6 +395,12 @@
             "state" : "translated",
             "value" : "Unlock a richer experience for your NeoDB journey"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "解锁更丰富的 NeoDB 体验"
+          }
         }
       }
     },
@@ -343,6 +410,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Connect and switch between multiple NeoDB accounts seamlessly."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无缝连接和切换多个 NeoDB 账号。"
           }
         }
       }
@@ -354,6 +427,12 @@
             "state" : "translated",
             "value" : "Multiple Accounts"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "多账号支持"
+          }
         }
       }
     },
@@ -363,6 +442,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quickly search and open items in Douban."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速搜索和打开豆瓣条目。"
           }
         }
       }
@@ -374,6 +459,12 @@
             "state" : "translated",
             "value" : "Quick Actions"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快捷操作"
+          }
         }
       }
     },
@@ -383,6 +474,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mark multiple items at once efficiently."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "高效地批量标记多个条目。"
           }
         }
       }
@@ -394,6 +491,12 @@
             "state" : "translated",
             "value" : "Batch Actions"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "批量操作"
+          }
         }
       }
     },
@@ -403,6 +506,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instantly search and discover trending books, movies, and music."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速搜索和发现热门书籍、电影和音乐。"
           }
         }
       }
@@ -414,6 +523,12 @@
             "state" : "translated",
             "value" : "Quick Discovery"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速发现"
+          }
         }
       }
     },
@@ -423,6 +538,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Access additional search sources for better results."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "访问更多搜索源以获得更好的结果。"
           }
         }
       }
@@ -434,6 +555,12 @@
             "state" : "translated",
             "value" : "Enhanced Search"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "增强搜索"
+          }
         }
       }
     },
@@ -443,6 +570,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Enjoy a fluid and responsive interface for browsing and managing your collections."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "享受流畅响应的界面，轻松浏览和管理你的收藏。"
           }
         }
       }
@@ -454,6 +587,12 @@
             "state" : "translated",
             "value" : "Smooth Experience"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "流畅体验"
+          }
         }
       }
     },
@@ -463,6 +602,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Part of the revenue will be donated to support the NeoDB open source project."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分收入将捐赠用于支持 NeoDB 开源项目。"
           }
         }
       }
@@ -474,6 +619,12 @@
             "state" : "translated",
             "value" : "Support NeoDB Community"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持 NeoDB 社区"
+          }
         }
       }
     },
@@ -483,6 +634,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Help a student developer continue building and improving Piecelet."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "帮助学生开发者继续构建和改进 Piecelet。"
           }
         }
       }
@@ -494,6 +651,12 @@
             "state" : "translated",
             "value" : "Support Future Development"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "支持未来开发"
+          }
         }
       }
     },
@@ -503,6 +666,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sync your marks with Trakt and other platforms."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与 Trakt 等平台同步你的标记。"
           }
         }
       }
@@ -514,6 +683,12 @@
             "state" : "translated",
             "value" : "Cross-platform Sync"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "跨平台同步"
+          }
         }
       }
     },
@@ -523,6 +698,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mark and collect unlimited books, movies, and music without restrictions."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无限制地标记和收藏书籍、电影和音乐。"
           }
         }
       }
@@ -534,6 +715,12 @@
             "state" : "translated",
             "value" : "Unlimited Collections"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无限收藏"
+          }
         }
       }
     },
@@ -543,6 +730,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Track and get notified about series updates."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "追踪并接收系列更新通知。"
           }
         }
       }
@@ -554,6 +747,12 @@
             "state" : "translated",
             "value" : "Series Updates"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系列更新"
+          }
         }
       }
     },
@@ -563,6 +762,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hide all plans"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐藏所有方案"
           }
         }
       }
@@ -574,12 +779,24 @@
             "state" : "translated",
             "value" : "Show all plans"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示所有方案"
+          }
         }
       }
     },
     "store_title" : {
       "localizations" : {
         "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet+"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Piecelet+"
