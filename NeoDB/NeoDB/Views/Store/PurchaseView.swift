@@ -91,11 +91,11 @@ struct PurchaseView: View {
                 VStack(spacing: 24) {
                     // Header
                     VStack(spacing: 8) {
-                        Text("NeoDB+")
+                        Text("Piecelet+")
                             .font(.largeTitle)
                             .fontWeight(.bold)
                         
-                        Text("Unlock premium features and supercharge your tracking experience.")
+                        Text("Unlock a richer experience for your NeoDB journey")
                             .font(.headline)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
@@ -104,46 +104,9 @@ struct PurchaseView: View {
                     
                     // Feature List
                     VStack(spacing: 16) {
-                        featureRow(
-                            icon: "person.2",
-                            title: "Multiple Accounts",
-                            description: "Connect and switch between multiple NeoDB accounts seamlessly."
-                        )
-                        
-                        featureRow(
-                            icon: "arrow.triangle.2.circlepath",
-                            title: "Cross-platform Sync",
-                            description: "Sync your marks with Trakt and other platforms. (Coming soon)",
-                            isComingSoon: true
-                        )
-                        
-                        featureRow(
-                            icon: "magnifyingglass",
-                            title: "Enhanced Search",
-                            description: "Access additional search sources for better results. (Coming soon)",
-                            isComingSoon: true
-                        )
-                        
-                        featureRow(
-                            icon: "arrow.left.arrow.right",
-                            title: "Quick Actions",
-                            description: "Quickly search and open items in Douban. (Coming soon)",
-                            isComingSoon: true
-                        )
-                        
-                        featureRow(
-                            icon: "bell",
-                            title: "Series Updates",
-                            description: "Track and get notified about series updates. (Coming soon)",
-                            isComingSoon: true
-                        )
-                        
-                        featureRow(
-                            icon: "checklist",
-                            title: "Batch Actions",
-                            description: "Mark multiple items at once efficiently. (Coming soon)",
-                            isComingSoon: true
-                        )
+                        ForEach(StoreConfig.features) { feature in
+                            featureRow(feature: feature)
+                        }
                     }
                     .padding(.horizontal)
                     
@@ -182,12 +145,32 @@ struct PurchaseView: View {
                 }
                 .padding(.vertical, 32)
             }
+            .safeAreaInset(edge: .bottom) {
+                
+                    // Subscription Plans
+                    VStack(spacing: 16) {
+                        if let offering = viewModel.currentOffering {
+                            ForEach(offering.availablePackages.sorted { $0.storeProduct.price < $1.storeProduct.price }, id: \.identifier) { package in
+                                Button {
+                                    Task {
+                                        await viewModel.purchase(package)
+                                    }
+                                } label: {
+                                    PackageView(package: package)
+                                }
+                                .disabled(viewModel.isLoading)
+                            }
+                        }
+                        
+                        if viewModel.isLoading {
+                            ProgressView()
+                        }
+                    }
+                    .background(.bar)
+                    .padding(.horizontal)
+            }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Text("Preferences")
-                        .font(.headline)
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Restore") {
                         Task {
@@ -207,29 +190,46 @@ struct PurchaseView: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
-    private func featureRow(icon: String, title: String, description: String, isComingSoon: Bool = false) -> some View {
+    private func featureRow(feature: StoreConfig.Feature) -> some View {
         HStack(alignment: .top, spacing: 16) {
-            Image(systemName: icon)
+            Image(systemName: feature.icon)
                 .font(.title2)
                 .frame(width: 32, height: 32)
-                .foregroundStyle(isComingSoon ? Color.secondary.opacity(0.6) : .secondary)
+                .foregroundStyle(feature.color)
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(isComingSoon ? Color.primary.opacity(0.8) : .primary)
-                Text(description)
+                HStack(alignment: .center, spacing: 8) {
+                    Text(feature.title)
+                        .font(.headline)
+                        .foregroundStyle(feature.isComingSoon ? Color.primary.opacity(0.8) : .primary)
+                    
+                    if feature.isComingSoon {
+                        Text("Coming Soon")
+                            .font(.caption2)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .background(Color.secondary.opacity(0.2))
+                            .clipShape(Capsule())
+                    }
+                }
+                
+                Text(feature.description)
                     .font(.subheadline)
-                    .foregroundStyle(isComingSoon ? Color.secondary.opacity(0.6) : .secondary)
+                    .foregroundStyle(feature.isComingSoon ? Color.secondary.opacity(0.6) : .secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .opacity(isComingSoon ? 0.8 : 1)
+        .opacity(feature.isComingSoon ? 0.8 : 1)
     }
 }
 
@@ -272,7 +272,12 @@ struct PackageView: View {
         .padding()
         .background(.gray.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 #Preview {
