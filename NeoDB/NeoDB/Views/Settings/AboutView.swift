@@ -45,7 +45,7 @@ struct AboutView: View {
             // Actions Section
             Section {
                 Button {
-                    if let url = URL(string: "itms-apps://itunes.apple.com/app/id6476473920?action=write-review") {
+                    if let url = URL(string: "itms-apps://itunes.apple.com/app/id\(AppConfig.appStoreId)?action=write-review") {
                         openURL(url)
                     }
                 } label: {
@@ -93,23 +93,84 @@ struct AboutView: View {
             
             // Links Section
             Section {
-                Link(destination: URL(string: "https://twitter.com/piecelethq")!) {
+                Link(destination: URL(string: "https://blog.citrons.cc")!) {
                     HStack {
-                        Label("Twitter", systemImage: "link")
+                        Label(String(localized: "about_developer_blog", table: "Settings"), systemImage: "link")
                         Spacer()
-                        Text("@piecelethq")
+                        Text("citrons.cc")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Link(destination: URL(string: "https://twitter.com/vanillaCitron")!) {
+                    HStack {
+                        Label(String(localized: "about_developer_twitter", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("@vanillaCitron")
                             .foregroundStyle(.secondary)
                     }
                 }
                 
-                Link(destination: URL(string: "https://blog.piecelet.com")!) {
+                Link(destination: URL(string: "https://github.com/lcandy2")!) {
                     HStack {
-                        Label("Blog", systemImage: "link")
+                        Label(String(localized: "about_developer_github", table: "Settings"), systemImage: "link")
                         Spacer()
-                        Text("blog.piecelet.com")
+                        Text("@lcandy2")
                             .foregroundStyle(.secondary)
                     }
                 }
+
+                Link(destination: URL(string: "https://lcandy.bsky.app")!) {
+                    HStack {
+                        Label(String(localized: "about_developer_bluesky", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("@lcandy.bsky.app")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Link(destination: URL(string: "https://mastodon.social/@seril")!) {
+                    HStack {
+                        Label(String(localized: "about_developer_mastodon", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("@seril")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text(String(localized: "about_developer_links_title", table: "Settings"))
+            }
+
+            // Policy Section
+            Section {
+                Link(destination: URL(string: "https://github.com/lcandy2/neodb-app")!) {
+                    HStack {
+                        Label(String(localized: "about_policy_github", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("@lcandy2/neodb-app")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Link(destination: StoreConfig.URLs.privacyPolicy) {
+                    HStack {
+                        Label(String(localized: "about_policy_privacy", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("piecelet.app/privacy")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                Link(destination: StoreConfig.URLs.termsOfService) {
+                    HStack {
+                        Label(String(localized: "about_policy_terms", table: "Settings"), systemImage: "link")
+                        Spacer()
+                        Text("piecelet.app/terms")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            } header: {
+                Text(String(localized: "about_policy_title", table: "Settings"))
             }
         }
         .navigationTitle(String(localized: "about_title", table: "Settings"))

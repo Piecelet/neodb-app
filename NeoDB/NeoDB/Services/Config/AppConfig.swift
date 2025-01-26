@@ -8,6 +8,8 @@ enum AppConfig {
     static let defaultItemCoverRatio: CGFloat = 3 / 4
     
     static let wishkitApiKey = "6AA7DB14-8EED-4895-B4D6-3F6EB5210921"
+
+    static let appStoreId = "6739444863"
     
     enum OAuth {
         static let redirectUri = "neodb://oauth/callback"
