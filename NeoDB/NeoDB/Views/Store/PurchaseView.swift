@@ -136,9 +136,11 @@ struct PurchaseView: View {
                     viewModel: viewModel
                 )
                 .background(.bar)
+                .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: -4)
             }
         }
         .enableInjection()
+        .toolbar(.hidden, for: .tabBar)
     }
 
     #if DEBUG
@@ -276,7 +278,7 @@ struct BottomPurchaseView: View {
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(.black)
+                                .background(Color.accentColor)
                                 .foregroundStyle(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
