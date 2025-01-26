@@ -2524,6 +2524,12 @@
     "shelf_type_action_complete_category_exhibition_label" : {
       "comment" : "Action state - Complete - Exhibition - Watched",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Watched"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2535,6 +2541,12 @@
     "shelf_type_action_complete_category_fanfic_label" : {
       "comment" : "Action state - Complete - Fanfic - Read",
       "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read"
+          }
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2994,7 +3006,7 @@
             "state" : "translated",
             "value" : "正在听"
           }
-        } 
+        }
       }
     },
     "shelf_type_action_progress_category_performance_label" : {
@@ -3066,7 +3078,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-              "value" : "正在看"
+            "value" : "正在看"
           }
         }
       }
@@ -3204,7 +3216,7 @@
             "state" : "translated",
             "value" : "已想看"
           }
-        } 
+        }
       }
     },
     "shelf_type_action_wishlist_category_podcast_label" : {
@@ -3471,7 +3483,7 @@
             "state" : "translated",
             "value" : "弃看"
           }
-        } 
+        }
       }
     },
     "shelf_type_dropped_category_exhibition_label" : {
@@ -3584,7 +3596,7 @@
             "state" : "translated",
             "value" : "Dropped"
           }
-        },  
+        },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3641,6 +3653,12 @@
             "state" : "translated",
             "value" : "Reading"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在读"
+          }
         }
       }
     },
@@ -3651,6 +3669,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Watching"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在看"
           }
         }
       }
@@ -3663,6 +3687,12 @@
             "state" : "translated",
             "value" : "Watching"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在看"
+          }
         }
       }
     },
@@ -3673,6 +3703,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Reading"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在读"
           }
         }
       }
@@ -3685,6 +3721,12 @@
             "state" : "translated",
             "value" : "Playing"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在玩"
+          }
         }
       }
     },
@@ -3695,6 +3737,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Watching"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在看"
           }
         }
       }
@@ -3922,6 +3970,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "想看"
+          }
+        }
+      }
+    },
+    "shelf_type_wishlist_category_podcast_label" : {
+      "comment" : "Neutral noun without action - Wishlist - Podcast - Want to listen",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Want to listen"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "想听"
           }
         }
       }
