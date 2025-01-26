@@ -46,7 +46,7 @@ struct InstanceInputView: View {
         VStack(spacing: 0) {
             // Custom title bar
             HStack {
-                Text("Select Instance")
+                Text(String(localized: "instance_select_title", table: "Settings"))
                     .font(.headline)
                 Spacer()
                 Button(action: { dismiss() }) {
@@ -107,7 +107,7 @@ struct InstanceInputView: View {
                         .foregroundColor(.primary)
                     }
                 } header: {
-                    Text("Choose an Instance")
+                    Text(String(localized: "instance_choose_title", table: "Settings"))
                 }
 
                 Section {
@@ -135,13 +135,11 @@ struct InstanceInputView: View {
                             }
                         )
                 } header: {
-                    Text("Custom Instance")
+                    Text(String(localized: "instance_custom_title", table: "Settings"))
                 } footer: {
-                    Text(
-                        "Enter your own instance URL if it's not listed above."
-                    )
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                    Text(String(localized: "instance_custom_description", table: "Settings"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                 }
             }
             .listStyle(.insetGrouped)

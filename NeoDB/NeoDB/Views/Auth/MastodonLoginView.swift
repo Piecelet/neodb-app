@@ -17,7 +17,7 @@ struct MastodonLoginView: View {
         NavigationStack {
             // Step 1: Choose Mastodon Instance
             MastodonInstanceView(viewModel: viewModel)
-                .navigationTitle("Sign In with Mastodon")
+                .navigationTitle(String(localized: "mastodon_login_title", table: "Settings"))
                 .navigationBarTitleDisplayMode(.inline)
                 .sheet(isPresented: $viewModel.isWebViewPresented) {
                     NavigationView {
@@ -30,8 +30,8 @@ struct MastodonLoginView: View {
                                     .tint(.accentColor)
                             }
                         }
-                        .navigationBarTitle("Sign In", displayMode: .inline)
-                        .navigationBarItems(leading: Button("Cancel") {
+                        .navigationBarTitle(String(localized: "mastodon_login_signin", table: "Settings"), displayMode: .inline)
+                        .navigationBarItems(leading: Button(String(localized: "mastodon_login_cancel", table: "Settings")) {
                             viewModel.isWebViewPresented = false
                             viewModel.isAuthenticating = false
                             webViewStore.webView.stopLoading()
@@ -80,7 +80,7 @@ struct MastodonInstanceView: View {
                         viewModel.searchInstances()
                     }
             } header: {
-                Text("Mastodon Instance")
+                Text(String(localized: "mastodon_instance_title", table: "Settings"))
             }
             
             Section {
@@ -92,9 +92,9 @@ struct MastodonInstanceView: View {
                             ProgressView()
                                 .tint(.white)
                         } else if viewModel.isInstanceUnavailable {
-                            Text("Unavailable")
+                            Text(String(localized: "mastodon_instance_unavailable", table: "Settings"))
                         } else {
-                            Text("Continue")
+                            Text(String(localized: "mastodon_instance_continue", table: "Settings"))
                             Image(systemSymbol: .arrowRight)
                         }
                     }
@@ -154,30 +154,30 @@ struct MastodonInstanceView: View {
             }
 
             HStack {
-                Text("Users")
+                Text(String(localized: "mastodon_instance_users", table: "Settings"))
                 Spacer()
-                Text("\(instance.stats.userCount) users")
+                Text(String(format: String(localized: "mastodon_instance_users_count", table: "Settings"), "\(instance.stats.userCount)"))
             }
             .foregroundStyle(.secondary)
             .font(.subheadline)
 
             HStack {
-                Text("Posts")
+                Text(String(localized: "mastodon_instance_posts", table: "Settings"))
                 Spacer()
-                Text("\(instance.stats.statusCount) posts")
+                Text(String(format: String(localized: "mastodon_instance_posts_count", table: "Settings"), "\(instance.stats.statusCount)"))
             }
             .foregroundStyle(.secondary)
             .font(.subheadline)
 
             HStack {
-                Text("Links")
+                Text(String(localized: "mastodon_instance_links", table: "Settings"))
                 Spacer()
-                Text("\(instance.stats.domainCount) links")
+                Text(String(format: String(localized: "mastodon_instance_links_count", table: "Settings"), "\(instance.stats.domainCount)"))
             }
             .foregroundStyle(.secondary)
             .font(.subheadline)
         } header: {
-            Text("Instance Details")
+            Text(String(localized: "mastodon_instance_details", table: "Settings"))
         }
     }
 
@@ -204,7 +204,7 @@ struct MastodonInstanceView: View {
                         EdgeInsets(
                             top: 11, leading: 11, bottom: 11, trailing: 20))
                 } header: {
-                    Text("Instance Rules")
+                    Text(String(localized: "mastodon_instance_rules", table: "Settings"))
                 }
             }
         }
@@ -233,7 +233,7 @@ struct MastodonInstanceView: View {
                 .foregroundColor(.primary)
             }
         } header: {
-            Text("Popular Instances")
+            Text(String(localized: "mastodon_instance_popular", table: "Settings"))
         }
     }
 }
@@ -262,14 +262,14 @@ struct NeoDBInstanceView: View {
                     
                     Spacer()
                     
-                    Button("Change") {
+                    Button(String(localized: "login_instance_change", table: "Settings")) {
                         withAnimation {
                             viewModel.showInstanceInput = true
                         }
                     }
                 }
             } header: {
-                Text("NeoDB Instance")
+                Text(String(localized: "mastodon_neodb_instance", table: "Settings"))
             }
             
             Section {
@@ -286,7 +286,7 @@ struct NeoDBInstanceView: View {
                             if #available(iOS 17.0, *) {
                                 Image(systemSymbol: .personCircle)
                             }
-                            Text("Sign In with \(viewModel.mastodonInstance)")
+                            Text(String(format: String(localized: "login_button_signin_with", table: "Settings"), viewModel.mastodonInstance))
                         }
                     }
                     .frame(maxWidth: .infinity)
@@ -302,7 +302,7 @@ struct NeoDBInstanceView: View {
         }
         .scrollContentBackground(.hidden)
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Choose NeoDB Instance")
+        .navigationTitle(String(localized: "mastodon_neodb_instance_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $viewModel.showInstanceInput) {
             InstanceInputView(

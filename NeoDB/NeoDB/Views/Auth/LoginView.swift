@@ -11,6 +11,7 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
+    @Environment(\.openURL) private var openURL
     
     // Animation states
     @State private var logoScale = 0.5
@@ -28,13 +29,13 @@ struct LoginView: View {
                     .scaleEffect(logoScale)
                     .animation(.spring(response: 0.6, dampingFraction: 0.6), value: logoScale)
                 
-                Text("Welcome to Piecelet")
+                Text(String(localized: "login_title_welcome", table: "Settings"))
                     .font(.title)
                     .fontWeight(.bold)
                     .offset(y: titleOffset)
                     .opacity(contentOpacity)
                 
-                Text("Track and share your books, movies, music, and more")
+                Text(String(localized: "login_description", table: "Settings"))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
@@ -42,7 +43,7 @@ struct LoginView: View {
                     .opacity(contentOpacity)
                 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Instance")
+                    Text(String(localized: "login_instance_title", table: "Settings"))
                         .font(.headline)
                     
                     HStack {
@@ -51,7 +52,7 @@ struct LoginView: View {
                         
                         Spacer()
                         
-                        Button("Change") {
+                        Button(String(localized: "login_instance_change", table: "Settings")) {
                             withAnimation {
                                 viewModel.showInstanceInput = true
                             }
@@ -88,7 +89,7 @@ struct LoginView: View {
                                     .tint(.white)
                             } else {
                                 Image(systemName: "person.fill")
-                                Text("Sign in with \(accountsManager.currentAccount.instance)")
+                                Text(String(format: String(localized: "login_button_signin_with", table: "Settings"), accountsManager.currentAccount.instance))
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -105,7 +106,7 @@ struct LoginView: View {
                     } label: {
                         HStack {
                             Image(symbol: .custom("custom.mastodon.fill"))
-                            Text("Sign in with Mastodon")
+                            Text(String(localized: "mastodon_login_title", table: "Settings"))
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
@@ -117,12 +118,23 @@ struct LoginView: View {
                 .padding(.horizontal)
                 .opacity(contentOpacity)
                 
-                Text("Piecelet is a open sourced third-party client for NeoDB made by citron.")
+                Text(String(localized: "login_footer_description", table: "Settings"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                     .opacity(contentOpacity)
+                
+                HStack(spacing: 16) {
+                    Button(String(localized: "store_terms", table: "Settings")) {
+                        openURL(StoreConfig.URLs.termsOfService)
+                    }
+                    Button(String(localized: "store_privacy", table: "Settings")) {
+                        openURL(StoreConfig.URLs.privacyPolicy)
+                    }
+                }
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
             .padding()
             .alert(
