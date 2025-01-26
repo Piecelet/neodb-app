@@ -8,16 +8,16 @@
 import Foundation
 import RevenueCat
 
+@MainActor
 class StoreManager: ObservableObject {
     @Published var appUserID: String? = nil
     @Published var customerInfo: RevenueCat.CustomerInfo? = nil
     @Published var plusOffering: Offering? = nil
 
     var isPlus: Bool {
-        return customerInfo?.entitlements.active[StoreConfig.RevenueCat.plus.entitlementName] != nil
+        return customerInfo?.entitlements.active[
+            StoreConfig.RevenueCat.plus.entitlementName] != nil
     }
-
-    private var offerings: Offerings? = nil
 
     init() {
         configure()
@@ -26,20 +26,24 @@ class StoreManager: ObservableObject {
     private func configure() {
         Purchases.logLevel = .debug
         Purchases.configure(
-            with: Configuration
+            with:
+                Configuration
                 .builder(withAPIKey: StoreConfig.RevenueCat.apiKey)
                 .with(storeKitVersion: .storeKit2)
                 .build()
         )
+        setCustomerInfo()
     }
 
     func setCustomerInfo() {
         Task {
-            let customerInfo = try await Purchases.shared.customerInfo()
-            self.customerInfo = customerInfo
-            self.appUserID = Purchases.shared.appUserID
-            offerings = try await Purchases.shared.offerings()
-            self.plusOffering = offerings?.offering(identifier: StoreConfig.RevenueCat.plus.offeringIdentifier) ?? offerings?.current
+            do {
+                let customerInfo = try await Purchases.shared.customerInfo()
+                self.customerInfo = customerInfo
+                self.appUserID = Purchases.shared.appUserID
+            } catch {
+                print("Error setting customer info: \(error)")
+            }
         }
     }
 
@@ -52,16 +56,28 @@ class StoreManager: ObservableObject {
         }
     }
 
-    func getOfferings() async throws -> Offerings {
-        if let existingOfferings = offerings {
-            return existingOfferings
+    func loadOfferings() async {
+        do {
+            let offerings = try await Purchases.shared.offerings()
+            plusOffering = offerings.offering(identifier: "plus") ?? offerings.current
+        } catch {
+            print("Error loading offerings: \(error)")
         }
-        offerings = try await Purchases.shared.offerings()
-        return offerings!
     }
 
-    func getPlusOffering() async throws -> Offering? {
-        let offerings = try await getOfferings()
-        return offerings.offering(identifier: StoreConfig.RevenueCat.plus.offeringIdentifier) ?? offerings.current
+    func purchase(_ package: Package) async throws -> CustomerInfo {
+        let result = try await Purchases.shared.purchase(package: package)
+        await MainActor.run {
+            self.customerInfo = result.customerInfo
+        }
+        return result.customerInfo
+    }
+
+    func restorePurchases() async throws -> CustomerInfo {
+        let info = try await Purchases.shared.restorePurchases()
+        await MainActor.run {
+            self.customerInfo = info
+        }
+        return info
     }
 }

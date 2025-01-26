@@ -33,9 +33,6 @@ struct NeoDBApp: App {
             }
             .environmentObject(self.accountsManager)
             .environmentObject(self.storeManager)
-            .task {
-                storeManager.setCustomerInfo()
-            }
             .onOpenURL { url in
                 // First try to handle OAuth callback
                 if url.scheme == "neodb" && url.host == "oauth" {
