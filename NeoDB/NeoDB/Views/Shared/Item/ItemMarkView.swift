@@ -54,14 +54,14 @@ struct ItemMarkView: View {
                     if let rating = mark.ratingGrade {
                         markRatingView(rating)
                         Spacer()
-                        Text(mark.createdTime.formatted)
+                        Text(mark.createdTime.relativeFormatted)
                             .foregroundStyle(.secondary)
                         Image(symbol: mark.shelfType.symbolImage)
                             .foregroundStyle(.secondary)
                     } else {
                         Image(symbol: mark.shelfType.symbolImage)
                             .foregroundStyle(.secondary)
-                        Text(mark.createdTime.formatted)
+                        Text(mark.createdTime.relativeFormatted)
                             .foregroundStyle(.secondary)
                     }
                 }

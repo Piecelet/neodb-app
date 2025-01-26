@@ -46,7 +46,23 @@ extension ServerDate {
         return nil
     }
 
-    public var formatted: String {
+    public enum FormatStyle {
+        case dateOnly
+        case dateAndTime
+    }
+
+    public func formatted(_ style: FormatStyle = .dateAndTime) -> String {
+        guard let date = asDate else { return self }
+        
+        switch style {
+        case .dateOnly:
+            return date.formatted(date: .abbreviated, time: .omitted)
+        case .dateAndTime:
+            return date.formatted(date: .abbreviated, time: .shortened)
+        }
+    }
+
+    public var relativeFormatted: String {
         guard let date = asDate else { return self }
 
         let calendar = Calendar(identifier: .gregorian)

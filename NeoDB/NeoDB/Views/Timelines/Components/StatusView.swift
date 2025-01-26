@@ -67,7 +67,7 @@ struct StatusView: View {
 
                 Spacer()
 
-                Text(status.createdAt.formatted)
+                Text(status.createdAt.relativeFormatted)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

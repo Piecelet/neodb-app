@@ -47,7 +47,7 @@ struct MarkView: View {
                     shelfTypeButtons
                 }
                 .padding(.bottom)
-                
+
                 TabView(
                     selection: Binding(
                         get: { viewModel.shelfType },
@@ -65,69 +65,28 @@ struct MarkView: View {
                     }
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
-                
+
                 if viewModel.existingMark != nil {
                     deleteButton
                 } else {
                     deleteButton
                         .hidden()
                 }
-                
+
                 NavigationLink {
-                    Form {
-                        Section {
-                            Picker("Visibility", selection: $viewModel.visibility) {
-                                ForEach(MarkVisibility.allCases, id: \.self) { visibility in
-                                    Label {
-                                        Text(visibility.displayText)
-                                    } icon: {
-                                        Image(symbol: visibility.symbolImage)
-                                    }
-                                    .tag(visibility)
-                                    .labelStyle(.titleAndIcon)
-                                }
-                            }
-                            .tint(.accentColor)
-
-
-                            Toggle(
-                                String(localized: "mark_share_fediverse_toggle", table: "Item"),
-                                isOn: $viewModel.postToFediverse)
-                            .tint(.accentColor)
-                        }
-                        Section (header: Text("Advanced")) {
-                            Toggle(
-                                String(localized: "mark_change_date_toggle", table: "Item", comment: "When mark is created, user can change the date, otherwise the date is the creation date. This is the toggle to change the date or not."),
-                                isOn: $viewModel.changeTime)
-                            .tint(.accentColor)
-
-                            if viewModel.changeTime {
-                                DatePicker(
-                                    String(localized: "mark_change_date_picker_label", table: "Item", comment: "When mark is created, user can change the date, otherwise the date is the creation date. This is the date of the changed date."),
-                                    selection: $viewModel.createdTime,
-                                    displayedComponents: [.date]
-                                )
-                            }
-                        }
-                    }
-                    .background(.ultraThinMaterial)
-                    .compositingGroup()
-                    .scrollContentBackground(.hidden)
-                    .navigationTitle(String(localized: "mark_advanced_section", table: "Item"))
+                    advancedSettingsView
                 } label: {
-                    HStack {
+                    HStack(spacing: 0) {
                         Text(advancedOptionsLabel)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
                         Spacer()
                         Image(systemName: "chevron.right")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
                     }
                     .padding(.horizontal)
                     .padding(.vertical, 8)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
                 }
-                
+
                 VStack(alignment: .center, spacing: 0) {
                     saveButton
                 }
@@ -233,24 +192,19 @@ struct MarkView: View {
 
     private var advancedOptionsLabel: String {
         var components: [String] = []
-        
-        if !viewModel.changeTime {
-            if let mark = viewModel.existingMark,
-               let date = mark.createdTime.asDate {
-                components.append(date.formatted(date: .abbreviated, time: .shortened))
-            } else {
-                components.append("Now")
-            }
-        } else {
-            components.append(viewModel.createdTime.formatted(date: .abbreviated, time: .shortened))
+
+        if viewModel.changeTime {
+            components.append(
+                viewModel.createdTime.formatted(
+                    date: .abbreviated, time: .omitted))
         }
-        
+
         components.append(viewModel.visibility.displayText)
-        
+
         if viewModel.postToFediverse {
             components.append("Post to fediverse")
         }
-        
+
         return components.joined(separator: " · ")
     }
 
@@ -287,6 +241,62 @@ struct MarkView: View {
             .padding(.horizontal)
         }
         .padding(.vertical)
+    }
+
+    private var advancedSettingsView: some View {
+        Form {
+            Section {
+                Picker("Visibility", selection: $viewModel.visibility) {
+                    ForEach(MarkVisibility.allCases, id: \.self) { visibility in
+                        Label {
+                            Text(visibility.displayText)
+                        } icon: {
+                            Image(symbol: visibility.symbolImage)
+                        }
+                        .tag(visibility)
+                        .labelStyle(.titleAndIcon)
+                    }
+                }
+                .tint(.accentColor)
+
+                Toggle(
+                    String(
+                        localized: "mark_share_fediverse_toggle", table: "Item"),
+                    isOn: $viewModel.postToFediverse
+                )
+                .tint(.accentColor)
+            }
+            Section(header: Text("Advanced")) {
+                Toggle(
+                    String(
+                        localized: "mark_change_date_toggle",
+                        table: "Item",
+                        comment:
+                            "When mark is created, user can change the date, otherwise the date is the creation date. This is the toggle to change the date or not."
+                    ),
+                    isOn: $viewModel.changeTime
+                )
+                .tint(.accentColor)
+
+                if viewModel.changeTime {
+                    DatePicker(
+                        String(
+                            localized: "mark_change_date_picker_label",
+                            table: "Item",
+                            comment:
+                                "When mark is created, user can change the date, otherwise the date is the creation date. This is the date of the changed date."
+                        ),
+                        selection: $viewModel.createdTime,
+                        displayedComponents: [.date]
+                    )
+                }
+            }
+        }
+        .background(.ultraThinMaterial)
+        .compositingGroup()
+        .scrollContentBackground(.hidden)
+        .navigationTitle(
+            String(localized: "mark_advanced_section", table: "Item"))
     }
 
     #if DEBUG
