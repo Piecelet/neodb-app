@@ -229,6 +229,7 @@ struct SettingsView: View {
         List {
             profileHeaderSection
             accountInformationSection
+            purchaseSection
             appSection
             cacheManagementSection
             logoutSection
@@ -291,11 +292,11 @@ struct SettingsView: View {
             }
         }
     }
-    
-    private var appSection: some View {
+
+    private var purchaseSection: some View {
         Section {
-            Button {
-                router.navigate(to: .purchase)
+            NavigationLink {
+                PurchaseView()
             } label: {
                 Label {
                     Text("app_subscription", tableName: "Settings")
@@ -303,7 +304,11 @@ struct SettingsView: View {
                     Image(systemName: "star")
                 }
             }
-            
+        }
+    }
+    
+    private var appSection: some View {
+        Section {
             NavigationLink {
                 WishKit.FeedbackListView()
                     .padding(.bottom)

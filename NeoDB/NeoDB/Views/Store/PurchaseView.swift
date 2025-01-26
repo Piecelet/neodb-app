@@ -37,17 +37,16 @@ class PurchaseViewModel: NSObject, ObservableObject {
 
     func loadOfferings() async {
         isLoading = true
-        defer { isLoading = false }
-
         await storeManager.loadOfferings()
+
         selectedPackage = currentOffering?.availablePackages.first {
             $0.packageType == .annual
         }
+        isLoading = false
     }
 
     func purchase(_ package: Package) async {
         isLoading = true
-        defer { isLoading = false }
 
         do {
             let customerInfo = try await storeManager.purchase(package)
@@ -57,11 +56,12 @@ class PurchaseViewModel: NSObject, ObservableObject {
         } catch {
             purchaseError = error.localizedDescription
         }
+
+        isLoading = false
     }
 
     func restorePurchases() async {
         isLoading = true
-        defer { isLoading = false }
 
         do {
             let customerInfo = try await storeManager.restorePurchases()
@@ -71,6 +71,8 @@ class PurchaseViewModel: NSObject, ObservableObject {
         } catch {
             purchaseError = error.localizedDescription
         }
+
+        isLoading = false
     }
 }
 
@@ -200,109 +202,112 @@ struct BottomPurchaseView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // Plans Selector
-            if let offering = offering {
-                VStack {
-                    Button {
-                        withAnimation {
-                            showAllPlans.toggle()
-                        }
-                    } label: {
-                        HStack {
-                            Text(
-                                showAllPlans
-                                    ? "Hide all plans" : "Show all plans"
-                            )
-                            .font(.headline)
-                            Image(
-                                systemName: showAllPlans
-                                    ? "chevron.down" : "chevron.up")
-                        }
-                    }
-                    .foregroundStyle(Color.primary)
-
-                    if showAllPlans {
-                        VStack(spacing: 8) {
-                            ForEach(
-                                offering.availablePackages.sorted {
-                                    $0.storeProduct.price
-                                        < $1.storeProduct.price
-                                }, id: \.identifier
-                            ) { package in
-                                Button {
-                                    selectedPackage = package
-                                } label: {
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text(
-                                                package.packageType == .lifetime
-                                                    ? "Lifetime • \(package.storeProduct.localizedPriceString)"
-                                                    : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)"
-                                            )
-                                            .font(.headline)
-                                        }
-
-                                        Spacer()
-
-                                        if package.packageType == .annual {
-                                            Text("SAVE 44%")
-                                                .font(.caption)
-                                                .padding(.horizontal, 8)
-                                                .padding(.vertical, 4)
-                                                .background(Color.accentColor)
-                                                .foregroundStyle(.white)
-                                                .clipShape(Capsule())
-                                        }
-                                    }
-                                }
-                                .buttonStyle(.plain)
-                                .padding()
-                                .background(
-                                    selectedPackage?.identifier
-                                        == package.identifier
-                                        ? .gray.opacity(0.2) : .clear
-                                )
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                            }
-                        }
-                        .padding(.top)
-                    }
-                }
-                .padding(.horizontal)
-
-                // Action Button
-                if let selectedPackage = selectedPackage {
-                    VStack(spacing: 4) {
+            if viewModel.isLoading {
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical)
+            } else {
+                // Plans Selector
+                if let offering = offering {
+                    VStack {
                         Button {
-                            Task {
-                                await viewModel.purchase(selectedPackage)
+                            withAnimation {
+                                showAllPlans.toggle()
                             }
                         } label: {
-                            Group {
-                                if viewModel.isLoading {
-                                    ProgressView()
-                                        .tint(.white)
-                                } else {
-                                    Text("Try Free For 7 Days")
+                            HStack {
+                                Text(
+                                    showAllPlans
+                                        ? "Hide all plans" : "Show all plans"
+                                )
+                                .font(.headline)
+                                Image(
+                                    systemName: showAllPlans
+                                        ? "chevron.down" : "chevron.up")
+                            }
+                        }
+                        .foregroundStyle(Color.primary)
+
+                        if showAllPlans {
+                            VStack(spacing: 8) {
+                                ForEach(
+                                    offering.availablePackages.sorted {
+                                        $0.storeProduct.price
+                                            < $1.storeProduct.price
+                                    }, id: \.identifier
+                                ) { package in
+                                    Button {
+                                        selectedPackage = package
+                                    } label: {
+                                        HStack {
+                                            VStack(alignment: .leading) {
+                                                Text(
+                                                    package.packageType
+                                                        == .lifetime
+                                                        ? "Lifetime • \(package.storeProduct.localizedPriceString)"
+                                                        : "\(package.packageType == .annual ? "Yearly" : "Monthly") • \(package.storeProduct.localizedPriceString)"
+                                                )
+                                                .font(.headline)
+                                            }
+
+                                            Spacer()
+
+                                            if package.packageType == .annual {
+                                                Text("SAVE 44%")
+                                                    .font(.caption)
+                                                    .padding(.horizontal, 8)
+                                                    .padding(.vertical, 4)
+                                                    .background(
+                                                        Color.accentColor
+                                                    )
+                                                    .foregroundStyle(.white)
+                                                    .clipShape(Capsule())
+                                            }
+                                        }
+                                    }
+                                    .buttonStyle(.plain)
+                                    .padding()
+                                    .background(
+                                        selectedPackage?.identifier
+                                            == package.identifier
+                                            ? .gray.opacity(0.2) : .clear
+                                    )
+                                    .clipShape(
+                                        RoundedRectangle(cornerRadius: 12))
                                 }
                             }
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.accentColor)
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            .padding(.top)
                         }
-                        .disabled(viewModel.isLoading)
-                        .padding(.horizontal)
+                    }
+                    .padding(.horizontal)
 
-                        if selectedPackage.packageType == .annual {
-                            Text(
-                                "Then \(selectedPackage.storeProduct.localizedPriceString) per year • Cancel anytime"
-                            )
-                            .font(.headline)
-                            .foregroundStyle(.secondary)
-                            .padding(.top, 8)
+                    // Action Button
+                    if let selectedPackage = selectedPackage {
+                        VStack(spacing: 4) {
+                            Button {
+                                Task {
+                                    await viewModel.purchase(selectedPackage)
+                                }
+                            } label: {
+                                Text("Try Free For 7 Days")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.accentColor)
+                                    .foregroundStyle(.white)
+                                    .clipShape(
+                                        RoundedRectangle(cornerRadius: 12))
+                            }
+                            .padding(.horizontal)
+
+                            if selectedPackage.packageType == .annual {
+                                Text(
+                                    "Then \(selectedPackage.storeProduct.localizedPriceString) per year • Cancel anytime"
+                                )
+                                .font(.headline)
+                                .foregroundStyle(.secondary)
+                                .padding(.top, 8)
+                            }
                         }
                     }
                 }
@@ -313,7 +318,7 @@ struct BottomPurchaseView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
