@@ -650,6 +650,40 @@
         }
       }
     },
+    "mark_visibility_followers_only_description" : {
+      "comment" : "Mark Visibility - Description for unlisted visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only your followers can see it."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只有你的关注者能看到。"
+          }
+        }
+      }
+    },
+    "mark_visibility_followers_only_label" : {
+      "comment" : "Mark Visibility - Label for unlisted visibility option",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Followers Only"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "仅关注者"
+          }
+        }
+      }
+    },
     "mark_visibility_picker_label" : {
       "comment" : "Mark - Label for visibility picker",
       "localizations" : {
@@ -737,6 +771,7 @@
     },
     "mark_visibility_unlisted_description" : {
       "comment" : "Mark Visibility - Description for unlisted visibility option",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -754,6 +789,7 @@
     },
     "mark_visibility_unlisted_label" : {
       "comment" : "Mark Visibility - Label for unlisted visibility option",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -106,3 +106,5 @@ build/XCBuildData/
 IceNewTimelineRef
 
 *.storekit
+
+.cursorrules
