@@ -19,7 +19,7 @@ class SettingsViewModel: ObservableObject {
             }
         }
     }
-    
+
     @Published var user: User?
     @Published var isLoading = false
     @Published var error: String?
@@ -31,7 +31,7 @@ class SettingsViewModel: ObservableObject {
 
     func loadUserProfile(forceRefresh: Bool = false) async {
         guard accountsManager != nil else { return }
-        
+
         if forceRefresh {
             isLoading = true
         }
@@ -46,13 +46,15 @@ class SettingsViewModel: ObservableObject {
         isLoading = false
     }
 
-    private func getCurrentUser(forceRefresh: Bool = false) async throws -> User {
+    private func getCurrentUser(forceRefresh: Bool = false) async throws -> User
+    {
         guard let accountsManager = accountsManager else {
             throw NetworkError.unauthorized
         }
 
         if !forceRefresh,
-           let cachedUser = try? await cacheService.retrieveUser(key: accountsManager.currentAccount.id)
+            let cachedUser = try? await cacheService.retrieveUser(
+                key: accountsManager.currentAccount.id)
         {
             logger.debug(
                 "Returning cached user for instance: \(accountsManager.currentAccount.instance)"
@@ -69,7 +71,8 @@ class SettingsViewModel: ObservableObject {
         let user = try await accountsManager.currentClient.fetch(
             UserEndpoint.me, type: User.self)
 
-        try? await cacheService.cacheUser(user, key: accountsManager.currentAccount.id)
+        try? await cacheService.cacheUser(
+            user, key: accountsManager.currentAccount.id)
         logger.debug(
             "Cached user profile for instance: \(accountsManager.currentAccount.instance)"
         )
@@ -80,7 +83,8 @@ class SettingsViewModel: ObservableObject {
     func logout() {
         guard let accountsManager = accountsManager else { return }
         Task {
-            try? await cacheService.removeUser(key: accountsManager.currentAccount.id)
+            try? await cacheService.removeUser(
+                key: accountsManager.currentAccount.id)
             logger.debug("Cleared user cache")
         }
         accountsManager.delete(account: accountsManager.currentAccount)
@@ -136,7 +140,7 @@ struct ProfileHeaderView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -158,11 +162,11 @@ struct AvatarPlaceholderView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-        .enableInjection()
+            .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -177,7 +181,7 @@ struct SettingsView: View {
 
     init() {
         WishKit.configure(with: AppConfig.wishkitApiKey)
-        WishKit.theme.primaryColor = .accent       
+        WishKit.theme.primaryColor = .accent
     }
 
     // MARK: - Body
@@ -192,7 +196,7 @@ struct SettingsView: View {
         .navigationTitle(String(localized: "settings_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.large)
         #if DEBUG
-        .enableInjection()
+            .enableInjection()
         #endif
     }
 
@@ -216,7 +220,7 @@ struct SettingsView: View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     private func errorView(_ error: String) -> some View {
         EmptyStateView(
             "Couldn't Load Profile",
@@ -253,7 +257,7 @@ struct SettingsView: View {
             Text("cache_clear_confirmation", tableName: "Settings")
         }
     }
-    
+
     // MARK: - Section Views
     private var profileHeaderSection: some View {
         Section {
@@ -264,15 +268,18 @@ struct SettingsView: View {
             )
         }
     }
-    
+
     private var accountInformationSection: some View {
         Group {
-            if let user = viewModel.user, let externalAcct = user.externalAcct {
+            if let user = viewModel.user, !user.externalAccounts.isEmpty {
                 Section {
-                    LabeledContent {
-                        Text(externalAcct)
-                    } label: {
-                        Text("account_external", tableName: "Settings")
+                    ForEach(user.externalAccounts, id: \.self) {
+                        externalAccount in
+                        LabeledContent {
+                            Text(externalAccount.handle)
+                        } label: {
+                            Text(externalAccount.platform.capitalized)
+                        }
                     }
                     .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 } header: {
@@ -306,7 +313,7 @@ struct SettingsView: View {
             }
         }
     }
-    
+
     private var appSection: some View {
         Section {
             NavigationLink {
@@ -332,7 +339,7 @@ struct SettingsView: View {
             Text("app_title", tableName: "Settings")
         }
     }
-    
+
     private var cacheManagementSection: some View {
         Section {
             Button(role: .destructive) {
@@ -354,7 +361,7 @@ struct SettingsView: View {
             Text("cache_clear_footer", tableName: "Settings")
         }
     }
-    
+
     private var logoutSection: some View {
         Section {
             Button(role: .destructive) {
