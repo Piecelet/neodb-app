@@ -100,8 +100,7 @@ struct ItemCoverView: View {
             .aspectRatio(item?.category.placeholderRatio, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
             .frame(
-                maxWidth: size.height * AppConfig.defaultItemCoverRatio,
-                maxHeight: size.height,
+                width: size.height * AppConfig.defaultItemCoverRatio,
                 alignment: .topLeading
             )
             .fixedSize(horizontal: false, vertical: false)

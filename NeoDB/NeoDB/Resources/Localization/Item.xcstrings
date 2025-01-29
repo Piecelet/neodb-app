@@ -769,42 +769,6 @@
         }
       }
     },
-    "mark_visibility_unlisted_description" : {
-      "comment" : "Mark Visibility - Description for unlisted visibility option",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not shown on timeline, but can be seen by anyone with the link."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不会在时间线上显示，但知道链接的人仍然可以看到。"
-          }
-        }
-      }
-    },
-    "mark_visibility_unlisted_label" : {
-      "comment" : "Mark Visibility - Label for unlisted visibility option",
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unlisted"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐藏在时间线"
-          }
-        }
-      }
-    },
     "metadata_album_artist_label" : {
       "comment" : "Album Artist label",
       "localizations" : {
