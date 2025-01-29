@@ -1,16 +1,18 @@
 # Piecelet - iOS App for NeoDB
 
-[Public TestFlight beta](https://testflight.apple.com/join/apxemRpF) (An proper App Store release will come eventually)
+[![Download Piecelet on the App Store](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg)](https://apps.apple.com/app/piecelet-for-neodb/id6739444863)
 
-<a rel="me" href="https://mastodon.social/@piecelet">Mastodon</a> | <a rel="me" href="https://m.cmx.im/@piecelet">Mastodon（中文）</a> | [Bluesky](https://bsky.app/profile/neodb.app)
+Follow Piecelet on <a rel="me" href="https://mastodon.social/@piecelet">Mastodon</a> | <a rel="me" href="https://m.cmx.im/@piecelet">Mastodon（中文）</a> | [Bluesky](https://bsky.app/profile/neodb.app)
 
 <p float="left">
-    <img src="Images/LoginView.png" width="300" />
-    <img src="Images/TimelinesView.png" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/6b/fb/0a/6bfb0a17-e4db-b0d7-9013-d277419017a7/simulator_screenshot_D763125F-02C1-4718-B2D0-4446E358942C_1.png/460x0w.webp" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/8d/2b/98/8d2b98d6-fe93-b287-f3c9-33a633471490/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-01-27_at_00.33.10.png/460x0w.webp" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/0d/58/74/0d587488-71ac-ba5d-4cb3-8c32682c24ef/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-01-27_at_00.32.49.png/460x0w.webp" width="300" />
 </p>
 <p float="left">
-    <img src="Images/LibraryView.png" width="300" />
-    <img src="Images/ItemView.png" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/16/e4/49/16e4496f-2268-ef69-d5b0-a04f545a858e/simulator_screenshot_B7D75C35-1954-4DCF-91F5-C732DE663658_1.png/460x0w.webp" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/cc/94/16/cc9416cc-3f60-5aa5-9fbd-eaf727128177/simulator_screenshot_DDB6BD2E-E5F0-4C81-8441-1237B588E83A_1.png/460x0w.webp" width="300" />
+    <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource211/v4/dd/dc/49/dddc49d6-7267-ed6c-9b40-1cb8db5fe1d9/Simulator_Screenshot_-_iPhone_16_Pro_-_2025-01-27_at_00.32.56.png/460x0w.webp" width="300" />
 </p>
 
 For contributors and myself, here is a todo list of features that could be added (while giving you a good idea of what's already done if not in this list, the app is quite complete already!)
