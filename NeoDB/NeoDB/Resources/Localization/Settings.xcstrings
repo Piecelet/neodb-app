@@ -627,7 +627,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Piecelet is a open sourced third-party client for NeoDB made by citron."
+            "value" : "Piecelet is an open sourced third-party client for NeoDB made by citron."
           }
         },
         "zh-Hans" : {
