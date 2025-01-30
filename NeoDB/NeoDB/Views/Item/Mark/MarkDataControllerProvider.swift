@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Perception
 
 // MARK: - Protocol
 @MainActor
@@ -52,7 +53,7 @@ import SwiftUI
 }
 
 // MARK: - Controller
-@Observable
+@Perceptible
 final class MarkDataController: MarkDataControlling {
     private let mark: MarkSchema
     private let client: NetworkClient
