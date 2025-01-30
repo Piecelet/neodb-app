@@ -8,11 +8,4 @@
 
 import Foundation
 
-struct NeoDBAccountField:  Codable, Identifiable, Sendable, Equatable, Hashable {
-    var id: String {
-        value + name
-    }
-    let name: String
-    let value: String
-    let verifiedAt: String?
-}
+typealias NeoDBAccountField = MastodonAccount.Field
