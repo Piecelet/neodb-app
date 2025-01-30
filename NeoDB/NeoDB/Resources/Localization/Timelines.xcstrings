@@ -3,6 +3,12 @@
   "strings" : {
     "timelines_error_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan ikke indlæse tidslinje"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -19,6 +25,12 @@
     },
     "timelines_no_posts_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Følg andre brugere for at se deres indlæg her"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -35,6 +47,12 @@
     },
     "timelines_no_posts_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen indlæg endnu"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -51,6 +69,12 @@
     },
     "timelines_profile_error_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan ikke indlæse profil"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -67,6 +91,12 @@
     },
     "timelines_profile_followers" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Følgere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -83,6 +113,12 @@
     },
     "timelines_profile_following" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Følger"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -99,6 +135,12 @@
     },
     "timelines_profile_joined" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilmeld dig %@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -115,6 +157,12 @@
     },
     "timelines_profile_not_found_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den angivne profil kan ikke findes eller er blevet slettet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -131,6 +179,12 @@
     },
     "timelines_profile_not_found_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profil findes ikke"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -147,6 +201,12 @@
     },
     "timelines_profile_posts" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæg"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -163,6 +223,12 @@
     },
     "timelines_status_browser_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Åbn i browser"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -179,6 +245,12 @@
     },
     "timelines_status_comments_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis kommentarer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -195,6 +267,12 @@
     },
     "timelines_status_error_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan ikke indlæse status"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -211,6 +289,12 @@
     },
     "timelines_status_not_found_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Den angivne status kan ikke findes eller er blevet slettet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -227,6 +311,12 @@
     },
     "timelines_status_not_found_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status finde ikke"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -243,6 +333,12 @@
     },
     "timelines_status_posted_via" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæg via"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -257,8 +353,36 @@
         }
       }
     },
+    "timelines_status_reply_development" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Svar er under udvikling"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply is under development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回复功能开发中"
+          }
+        }
+      }
+    },
     "timelines_status_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæg"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -275,6 +399,12 @@
     },
     "timelines_status_visibility" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synlighed"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -291,6 +421,12 @@
     },
     "timelines_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tidslinjer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -308,6 +444,12 @@
     "timelines_title_home" : {
       "extractionState" : "manual",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjem"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -324,6 +466,12 @@
     },
     "timelines_type_fediverse" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fødivers"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -340,6 +488,12 @@
     },
     "timelines_type_friends" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Venner"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -356,6 +510,12 @@
     },
     "timelines_type_home" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjem"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -372,6 +532,12 @@
     },
     "timelines_type_popular" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Populær"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -388,6 +554,12 @@
     },
     "timelines_visibility_direct" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Direkte"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -404,6 +576,12 @@
     },
     "timelines_visibility_private" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privat"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -420,6 +598,12 @@
     },
     "timelines_visibility_public" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offentlig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -436,6 +620,12 @@
     },
     "timelines_visibility_unlisted" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unoteret"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -446,22 +636,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "不公开"
-          }
-        }
-      }
-    },
-    "timelines_status_reply_development" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reply is under development"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回复功能开发中"
           }
         }
       }

@@ -65,6 +65,7 @@ Thanks!
 - [Kingfisher](https://github.com/onevcat/Kingfisher)
 
 ### Localization
+- German (de) by [Daniel Noesgaard](https://github.com/dnoesgaard)
 - Portuguese (pt-BR) by [Dennis Nunes](https://github.com/nunesdennis)
 
 ![Icon](NeoDB/NeoDB/Assets.xcassets/AppIcon.appiconset/1024x1024%20copy%202%401x.png)

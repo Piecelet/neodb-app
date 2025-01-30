@@ -3,6 +3,12 @@
   "strings" : {
     "library_empty_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj noge til din %@ liste"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25,6 +31,12 @@
     },
     "library_empty_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Intet fundet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -47,6 +59,12 @@
     },
     "library_error_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan ikke indlæse bibliotek"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -69,6 +87,12 @@
     },
     "library_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bibliotek"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

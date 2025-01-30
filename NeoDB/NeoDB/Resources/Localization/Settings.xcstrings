@@ -3,6 +3,12 @@
   "strings" : {
     "about_developer_blog" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blog"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -25,6 +31,12 @@
     },
     "about_developer_bluesky" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluesky"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -41,6 +53,12 @@
     },
     "about_developer_github" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -57,6 +75,12 @@
     },
     "about_developer_links_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udvikler"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -73,6 +97,12 @@
     },
     "about_developer_mastodon" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastodon"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -89,6 +119,12 @@
     },
     "about_developer_twitter" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Twitter"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -105,6 +141,12 @@
     },
     "about_policy_github" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "GitHub"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -121,6 +163,12 @@
     },
     "about_policy_privacy" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortrolighedspolitik"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -137,6 +185,12 @@
     },
     "about_policy_terms" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicevilkår"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -153,6 +207,12 @@
     },
     "about_policy_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politik"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -169,6 +229,12 @@
     },
     "about_rate_us" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeld os"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -185,6 +251,12 @@
     },
     "about_share" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Del med venner"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -201,6 +273,12 @@
     },
     "about_share_text" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prøv Piecelet - en fin NeoDB klient til IOS"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -217,6 +295,12 @@
     },
     "about_social_bluesky" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bluesky"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -233,6 +317,12 @@
     },
     "about_social_mastodon" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastodon"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -249,6 +339,12 @@
     },
     "about_social_mastodon_cn" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastodon (kinesisk)"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -265,6 +361,12 @@
     },
     "about_social_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sociale medier"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -281,6 +383,12 @@
     },
     "about_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -298,6 +406,12 @@
     "account_displayname" : {
       "comment" : "A placeholder of the display name of an account.",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navn"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -320,6 +434,12 @@
     },
     "account_external" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ekstern konto"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -342,6 +462,12 @@
     },
     "account_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konto"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -364,6 +490,12 @@
     },
     "app_about" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Om"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -380,6 +512,12 @@
     },
     "app_feature_requests" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feature requests og feedback"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -402,6 +540,12 @@
     },
     "app_plus_purchase" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet+"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -418,6 +562,12 @@
     },
     "app_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -440,6 +590,12 @@
     },
     "cache_clear_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tøm alle caches"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -462,6 +618,12 @@
     },
     "cache_clear_confirmation" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Denne handling sletter alt cached data. Data vil skulle hentes igen fra nettet."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -484,6 +646,12 @@
     },
     "cache_clear_footer" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plads frigives når cachen tømmes. App’en downloader data igen når det er krævet."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -506,6 +674,12 @@
     },
     "cache_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cache"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -528,6 +702,12 @@
     },
     "instance_choose_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vælg en server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -544,6 +724,12 @@
     },
     "instance_custom_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indtast din servers adresse hvis den ikke findes ovenfor."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -560,6 +746,12 @@
     },
     "instance_custom_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brugerdefineret server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -576,6 +768,12 @@
     },
     "instance_select_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vælg server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -592,6 +790,12 @@
     },
     "login_button_signin_with" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ind med %@"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -608,6 +812,12 @@
     },
     "login_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold styr på og del dine bøger, film, musik og mere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -624,6 +834,12 @@
     },
     "login_footer_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet er en open-source klient til NeoDB lavet af citron."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -640,6 +856,12 @@
     },
     "login_instance_change" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skift"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -656,6 +878,12 @@
     },
     "login_instance_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -672,6 +900,12 @@
     },
     "login_title_welcome" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velkommen til Piecelet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -688,6 +922,12 @@
     },
     "mastodon_instance_continue" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortsæt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -704,6 +944,12 @@
     },
     "mastodon_instance_details" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverdetaljer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -720,6 +966,12 @@
     },
     "mastodon_instance_links" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Links"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -736,6 +988,12 @@
     },
     "mastodon_instance_links_count" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ links"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -752,6 +1010,12 @@
     },
     "mastodon_instance_popular" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Populære servere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -768,6 +1032,12 @@
     },
     "mastodon_instance_posts" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæg"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -784,6 +1054,12 @@
     },
     "mastodon_instance_posts_count" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ indlæg"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -800,6 +1076,12 @@
     },
     "mastodon_instance_rules" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Serverregler"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -816,6 +1098,12 @@
     },
     "mastodon_instance_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mastodon-server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -832,6 +1120,12 @@
     },
     "mastodon_instance_unavailable" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikke tilgængelig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -848,6 +1142,12 @@
     },
     "mastodon_instance_users" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brugere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -864,6 +1164,12 @@
     },
     "mastodon_instance_users_count" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ brugere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -880,6 +1186,12 @@
     },
     "mastodon_login_cancel" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuller"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -896,6 +1208,12 @@
     },
     "mastodon_login_signin" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ind"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -912,6 +1230,12 @@
     },
     "mastodon_login_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ind med Mastodon"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -928,6 +1252,12 @@
     },
     "mastodon_neodb_instance" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NeoDB server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -944,6 +1274,12 @@
     },
     "mastodon_neodb_instance_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vælg NeoDB server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -960,6 +1296,12 @@
     },
     "settings_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indstillinger"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -982,6 +1324,12 @@
     },
     "signout_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ud"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1004,6 +1352,12 @@
     },
     "store_badge_free" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gratis"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1020,6 +1374,12 @@
     },
     "store_badge_save" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spar %@ %%"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1036,6 +1396,12 @@
     },
     "store_badge_soon" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Snart"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1052,6 +1418,12 @@
     },
     "store_button_restore" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genskab"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1068,6 +1440,12 @@
     },
     "store_button_thank_you" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tak"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1084,6 +1462,12 @@
     },
     "store_button_try_free" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prøv gratis i syv dage"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1100,6 +1484,12 @@
     },
     "store_button_upgrade_forever" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opgrader for evigt"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1116,6 +1506,12 @@
     },
     "store_button_upgrade_now" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opgrader nu"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1132,6 +1528,12 @@
     },
     "store_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Få mulighed for en større oplevelse med NeoBD"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1148,6 +1550,12 @@
     },
     "store_feature_accounts_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forbind med og skift mellem flere NeoDB konti."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1164,6 +1572,12 @@
     },
     "store_feature_accounts_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flere konti"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1180,6 +1594,12 @@
     },
     "store_feature_actions_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søg hurtig og åbn i Douban"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1196,6 +1616,12 @@
     },
     "store_feature_actions_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hurtige handlinger"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1212,6 +1638,12 @@
     },
     "store_feature_batch_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Markér flere elementer på én gang"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1228,6 +1660,12 @@
     },
     "store_feature_batch_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Batchhandlinger"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1244,6 +1682,12 @@
     },
     "store_feature_discovery_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søg og find populære bøger, film og musik."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1260,6 +1704,12 @@
     },
     "store_feature_discovery_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hurtig fremsøgning"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1276,6 +1726,12 @@
     },
     "store_feature_search_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Få adgang til flere søgekilder og bedre resultater"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1292,6 +1748,12 @@
     },
     "store_feature_search_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udvidet søgning"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1308,6 +1770,12 @@
     },
     "store_feature_smooth_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Få en strømlinet og responsiv grænseflade til at håndtere dine samlinger."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1324,6 +1792,12 @@
     },
     "store_feature_smooth_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gnidningsfri oplevelse"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1340,6 +1814,12 @@
     },
     "store_feature_support_community_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En del af overskuddet går til at støtte udviklingen af NeoDB projektet."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1356,6 +1836,12 @@
     },
     "store_feature_support_community_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Støt NeoDB fællesskabet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1372,6 +1858,12 @@
     },
     "store_feature_support_dev_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hjælp udvikleren med at bygge og forbedre Piecelet."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1388,6 +1880,12 @@
     },
     "store_feature_support_dev_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Støt fremtidig udvikling"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1404,6 +1902,12 @@
     },
     "store_feature_sync_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synkroniser dine markeringer med Trakt og andre platform"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1420,6 +1924,12 @@
     },
     "store_feature_sync_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Synkronisering på tværs af platforme"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1436,6 +1946,12 @@
     },
     "store_feature_unlimited_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saml bøger, film og musik uden begrænser."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1452,6 +1968,12 @@
     },
     "store_feature_unlimited_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ubegrænsede samlinger"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1468,6 +1990,12 @@
     },
     "store_feature_updates_description" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Få notifikationer om opdateringer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1484,6 +2012,12 @@
     },
     "store_feature_updates_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Opdateringer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1500,6 +2034,12 @@
     },
     "store_package_active" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivt abonnement"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1516,6 +2056,12 @@
     },
     "store_package_annual" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Årligt abonnement"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1532,6 +2078,12 @@
     },
     "store_package_lifetime" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Livstidsadgang"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1548,6 +2100,12 @@
     },
     "store_package_lifetime_price" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ én gang · Livstidsadgang"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1564,6 +2122,12 @@
     },
     "store_package_monthly" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Månedligt abonnement"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1580,6 +2144,12 @@
     },
     "store_package_monthly_price" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ per måned · Annuller når som helst"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1596,6 +2166,12 @@
     },
     "store_package_monthly_short" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Månedlig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1612,6 +2188,12 @@
     },
     "store_package_yearly" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Årlig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1628,6 +2210,12 @@
     },
     "store_package_yearly_price" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Derefter %@ per år · Annuller når som helst"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1644,6 +2232,12 @@
     },
     "store_period_month" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ per måned"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1660,6 +2254,12 @@
     },
     "store_period_year" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ per år"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1676,6 +2276,12 @@
     },
     "store_plans_hide" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skjul alle abonnementer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1692,6 +2298,12 @@
     },
     "store_plans_show" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vis alle abonnementer"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1708,6 +2320,12 @@
     },
     "store_plus_purchase_to_get_faster_development" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abonnér på Piecelet+ og hjælp udviklerne udvikle hurtigere"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1724,6 +2342,12 @@
     },
     "store_privacy" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortrolighedspolitik"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1740,6 +2364,12 @@
     },
     "store_purchase_onetime" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Engangskøb"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1756,6 +2386,12 @@
     },
     "store_terms" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicevilkår"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1772,6 +2408,12 @@
     },
     "store_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet+"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
