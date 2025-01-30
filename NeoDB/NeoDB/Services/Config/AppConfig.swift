@@ -17,6 +17,10 @@ enum AppConfig {
         static let userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Mobile/15E148 Safari/604.1"
     }
     
+    enum Trakt {
+        static let redirectUri = "piecelet://oauth/trakt/callback"
+    }
+    
     enum InstanceSocial {
         static let token = "0psygl3dJMy3JKHG3wmzjFvORbN7DAqb7E0CLwKckZ8tGOnvU5t4QA5MhJnOICU0hgUb2BbngwhDwlXY3boEXLbTN1K7Ppuku5bRStnZOSJcwGc5JhgfVWJ8LiyOUBN1"
     }
