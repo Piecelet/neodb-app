@@ -91,19 +91,22 @@ struct ItemMarkView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(size.padding)
+            .padding(.bottom, (showEditButton && mark.ratingGrade != nil && mark.commentText == nil) ? 20 : 0)
             .background(Color(.systemGray5).opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .overlay(alignment: .bottomTrailing) {
             if showEditButton {
-                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .pencil) {
+                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .ellipsis) {
                     router.presentSheet(.editShelfItem(mark: mark))
                     UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
+                .buttonStyle(.plain)
                 .accentColor(.gray)
+                .frame(width: 16, height: 14)
                 .labelStyle(.iconOnly)
-                .padding(.bottom, 6)
-                .padding(.trailing, 6)
+                .padding(.bottom, 8)
+                .padding(.trailing, 12)
             }
         }
         .enableInjection()
