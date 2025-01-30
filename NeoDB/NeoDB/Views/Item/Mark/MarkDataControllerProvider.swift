@@ -11,43 +11,43 @@ import Perception
 
 // MARK: - Protocol
 @MainActor
- protocol MarkDataControlling {
+protocol MarkDataControlling {
     var shelfType: ShelfType { get set }
     var visibility: MarkVisibility { get set }
     var commentText: String? { get set }
     var ratingGrade: Int? { get set }
     var tags: [String] { get set }
     
-    func updateMark() async
-    func deleteMark() async
+    func updateMark() async throws
+    func deleteMark() async throws
 }
 
 // MARK: - Provider
 @MainActor
- final class MarkDataControllerProvider {
-     static let shared = MarkDataControllerProvider()
+final class MarkDataControllerProvider {
+    static let shared = MarkDataControllerProvider()
     private let cacheService = CacheService()
     
     // 内存缓存，用于快速访问
     private var controllers: [String: MarkDataController] = [:]
     
-     func dataController(for mark: MarkSchema, client: NetworkClient) -> MarkDataController {
+    func dataController(for mark: MarkSchema, accountsManager: AppAccountsManager) -> MarkDataController {
         if let controller = controllers[mark.id] {
             return controller
         }
-        let controller = MarkDataController(mark: mark, client: client, cacheService: cacheService)
+        let controller = MarkDataController(mark: mark, accountsManager: accountsManager, cacheService: cacheService)
         controllers[mark.id] = controller
         return controller
     }
     
-     func updateDataControllers(for marks: [MarkSchema], client: NetworkClient) {
+    func updateDataControllers(for marks: [MarkSchema], accountsManager: AppAccountsManager) {
         for mark in marks {
-            let controller = dataController(for: mark, client: client)
+            let controller = dataController(for: mark, accountsManager: accountsManager)
             controller.updateFrom(mark: mark)
         }
     }
     
-     func removeController(for markId: String) {
+    func removeController(for markId: String) {
         controllers.removeValue(forKey: markId)
     }
 }
@@ -56,7 +56,7 @@ import Perception
 @Perceptible
 final class MarkDataController: MarkDataControlling {
     private let mark: MarkSchema
-    private let client: NetworkClient
+    private let accountsManager: AppAccountsManager
     private let cacheService: CacheService
     
     var shelfType: ShelfType
@@ -65,11 +65,12 @@ final class MarkDataController: MarkDataControlling {
     var ratingGrade: Int?
     var tags: [String]
     var postToFediverse: Bool = true
-    var createdTime: Date?
+    var createdTime: Date = Date()
+    var changeTime: Bool = false
     
-    init(mark: MarkSchema, client: NetworkClient, cacheService: CacheService) {
+    init(mark: MarkSchema, accountsManager: AppAccountsManager, cacheService: CacheService) {
         self.mark = mark
-        self.client = client
+        self.accountsManager = accountsManager
         self.cacheService = cacheService
         
         self.shelfType = mark.shelfType
@@ -77,6 +78,9 @@ final class MarkDataController: MarkDataControlling {
         self.commentText = mark.commentText
         self.ratingGrade = mark.ratingGrade
         self.tags = mark.tags
+        if let date = mark.createdTime.asDate {
+            self.createdTime = date
+        }
     }
     
     func updateFrom(mark: MarkSchema) {
@@ -85,6 +89,9 @@ final class MarkDataController: MarkDataControlling {
         self.commentText = mark.commentText
         self.ratingGrade = mark.ratingGrade
         self.tags = mark.tags
+        if let date = mark.createdTime.asDate {
+            self.createdTime = date
+        }
     }
     
     func updateMark() async throws {
@@ -95,25 +102,30 @@ final class MarkDataController: MarkDataControlling {
             let markIn = MarkInSchema(
                 shelfType: shelfType,
                 visibility: visibility,
-                commentText: commentText,
-                ratingGrade: ratingGrade,
+                commentText: commentText?.isEmpty == false ? commentText : nil,
+                ratingGrade: ratingGrade == 0 ? nil : ratingGrade,
                 tags: tags,
-                createdTime: createdTime.map { ServerDate.from($0) },
+                createdTime: changeTime ? ServerDate.from(createdTime) : nil,
                 postToFediverse: postToFediverse
             )
             
             let endpoint = MarkEndpoint.mark(itemId: mark.item.uuid, mark: markIn)
-            _ = try await client.fetch(endpoint, type: MessageSchema.self)
+            _ = try await accountsManager.currentClient.fetch(endpoint, type: MessageSchema.self)
             
             // 更新缓存
-            if let accountId = client.accountId {
-                try await cacheService.cacheMark(
-                    mark,
-                    key: accountId,
-                    itemUUID: mark.item.uuid,
-                    instance: client.instance
-                )
-            }
+            // 注意：需要获取新的mark数据来更新缓存，因为服务器可能会修改一些字段
+            let getEndpoint = MarkEndpoint.get(itemId: mark.item.uuid)
+            let updatedMark = try await accountsManager.currentClient.fetch(getEndpoint, type: MarkSchema.self)
+            
+            try await cacheService.cacheMark(
+                updatedMark,
+                key: accountsManager.currentAccount.id,
+                itemUUID: mark.item.uuid,
+                instance: accountsManager.currentAccount.instance
+            )
+            
+            // 更新控制器状态
+            updateFrom(mark: updatedMark)
             
         } catch {
             // 错误回滚
@@ -124,15 +136,13 @@ final class MarkDataController: MarkDataControlling {
     
     func deleteMark() async throws {
         let endpoint = MarkEndpoint.delete(itemId: mark.item.uuid)
-        _ = try await client.fetch(endpoint, type: MessageSchema.self)
+        _ = try await accountsManager.currentClient.fetch(endpoint, type: MessageSchema.self)
         
         // 删除缓存
-        if let accountId = client.accountId {
-            try await cacheService.removeMark(
-                key: accountId,
-                itemUUID: mark.item.uuid
-            )
-        }
+        try await cacheService.removeMark(
+            key: accountsManager.currentAccount.id,
+            itemUUID: mark.item.uuid
+        )
         
         // 从provider中移除controller
         MarkDataControllerProvider.shared.removeController(for: mark.id)
