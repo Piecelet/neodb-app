@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct NeoDBTag: Codable, Identifiable {
+public struct NeoDBExtTag: Codable, Identifiable {
 
     public var id: String {
         href.absoluteString

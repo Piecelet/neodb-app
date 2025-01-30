@@ -10,11 +10,9 @@
 
 import Foundation
 
-struct MastodonMention: Codable, Equatable, Hashable {
-  let id: String
-  let username: String
-  let url: URL
-  let acct: String
+struct MastodonMention: Codable, Identifiable, Hashable, Sendable, Equatable {
+    let id: String
+    let username: String
+    let url: URL
+    let acct: String
 }
-
-extension MastodonMention: Sendable {}
