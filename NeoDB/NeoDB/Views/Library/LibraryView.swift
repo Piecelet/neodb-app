@@ -107,39 +107,30 @@ struct LibraryView: View {
                     .padding()
             }
         } else {
-            ScrollView {
-                shelfItemsList(for: type)
-            }
-        }
-    }
-
-    private func shelfItemsList(for type: ShelfType) -> some View {
-        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-
-        return LazyVStack(spacing: 12) {
-            ForEach(state.items) { mark in
-                Button {
-                    router.navigate(to: .itemDetailWithItem(item: mark.item))
-                } label: {
-                    shelfItemView(mark: mark)
-                        .onAppear {
-                            if mark.id == state.items.last?.id {
-                                Task {
-                                    await viewModel.loadNextPage(type: type)
+            List {
+                ForEach(state.items) { mark in
+                    Button {
+                        router.navigate(to: .itemDetailWithItem(item: mark.item))
+                    } label: {
+                        shelfItemView(mark: mark)
+                            .onAppear {
+                                if mark.id == state.items.last?.id {
+                                    Task {
+                                        await viewModel.loadNextPage(type: type)
+                                    }
                                 }
                             }
-                        }
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                if state.isLoading && !state.isRefreshing {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
             }
-
-            if state.isLoading && !state.isRefreshing {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .padding()
-            }
+            .listStyle(.plain)
         }
-        .padding()
     }
 
     // MARK: - Item View Components
