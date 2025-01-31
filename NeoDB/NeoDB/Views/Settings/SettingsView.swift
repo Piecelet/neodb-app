@@ -418,6 +418,17 @@ struct SettingsView: View {
                     Image(systemName: "info.circle")
                 }
             }
+            #if DEBUG
+            NavigationLink {
+                DeveloperView()
+            } label: {
+                Label {
+                    Text("Developer")
+                } icon: {
+                    Image(systemName: "hammer")
+                }
+            }
+            #endif
         } header: {
             Text("app_title", tableName: "Settings")
         }

@@ -102,6 +102,9 @@ extension Logger {
             static let item = Logger(
                 subsystem: subsystem, category: "view.status.item")
         }
+        
+        static let developer = Logger(
+            subsystem: subsystem, category: "view.developer")
     }
 
     // MARK: - User Actions
