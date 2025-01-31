@@ -102,8 +102,6 @@ struct BottomPurchaseView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            // 如果要在加载 Offerings（loadOfferings）时全局显示进度，可保留此视图判断
-            // 但此处若只想让按钮自身在购买时显示加载动画，可酌情去掉对 viewModel.isLoading 的判断
             if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
@@ -111,112 +109,12 @@ struct BottomPurchaseView: View {
             } else {
                 if let offering {
                     if !storeManager.isPlus {
-                        // 展示套餐列表切换，使用更快的动画
-                        VStack {
-                            Button {
-                                // 加快动画速度
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    showAllPlans.toggle()
-                                }
-                            } label: {
-                                HStack {
-                                    Text(
-                                        showAllPlans
-                                            ? String(
-                                                localized: "store_plans_hide",
-                                                table: "Settings")
-                                            : String(
-                                                localized: "store_plans_show",
-                                                table: "Settings")
-                                    )
-                                    .font(.headline)
-                                    Image(
-                                        systemName: showAllPlans
-                                            ? "chevron.down" : "chevron.up")
-                                }
-                            }
-                            .foregroundStyle(.primary)
-
-                            if showAllPlans {
-                                VStack(spacing: 8) {
-                                    ForEach(
-                                        offering.availablePackages.sorted {
-                                            $0.storeProduct.price
-                                                < $1.storeProduct.price
-                                        }, id: \.identifier
-                                    ) { package in
-                                        Button {
-                                            selectedPackage = package
-                                        } label: {
-                                            HStack {
-                                                VStack(alignment: .leading) {
-                                                    Text(
-                                                        (package.packageType
-                                                            == .lifetime
-                                                            ? String(
-                                                                localized:
-                                                                    "store_package_lifetime",
-                                                                table:
-                                                                    "Settings")
-                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings"))")
-                                                            + " • \(package.storeProduct.localizedPriceString)"
-                                                    ).font(.headline)
-
-                                                }
-                                                Spacer()
-                                                // 如果是年订阅，展示节省多少
-                                                if package.packageType
-                                                    == .annual
-                                                {
-                                                    if let savings =
-                                                        viewModel
-                                                        .calculateSavings(
-                                                            for: package,
-                                                            in: offering)
-                                                    {
-                                                        Text(
-                                                            String(
-                                                                format: String(
-                                                                    localized:
-                                                                        "store_badge_save",
-                                                                    table:
-                                                                        "Settings"
-                                                                ),
-                                                                String(savings)
-                                                            )
-                                                        )
-                                                        .font(.caption)
-                                                        .padding(.horizontal, 8)
-                                                        .padding(.vertical, 4)
-                                                        .background(
-                                                            Color.accentColor
-                                                        )
-                                                        .foregroundStyle(.white)
-                                                        .clipShape(Capsule())
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        .frame(
-                                            maxWidth: .infinity,
-                                            alignment: .leading
-                                        )
-                                        .buttonStyle(.plain)
-                                        .padding()
-                                        .background(
-                                            selectedPackage?.identifier
-                                                == package.identifier
-                                                ? Color.gray.opacity(0.2)
-                                                : .clear
-                                        )
-                                        .clipShape(
-                                            RoundedRectangle(cornerRadius: 12))
-                                    }
-                                }
-                                .padding(.top)
-                            }
-                        }
-                        .padding(.horizontal)
+                        PackageListView(
+                            offering: offering,
+                            showAllPlans: $showAllPlans,
+                            selectedPackage: $selectedPackage,
+                            viewModel: viewModel
+                        )
                     }
 
                     // 在这里使用 AsyncButton 触发购买操作，并指定 asyncButtonStyle
@@ -225,7 +123,6 @@ struct BottomPurchaseView: View {
 
                         VStack(spacing: 4) {
                             AsyncButton {
-                                // 使用 ButtonKit 的 async/throwable API，这里如果 purchase 抛出错误，会触发 ButtonKit 的默认动画
                                 await viewModel.purchase(selectedPackage)
                             } label: {
                                 Text(packageText.buttonText)
@@ -240,11 +137,10 @@ struct BottomPurchaseView: View {
                                     .clipShape(
                                         RoundedRectangle(cornerRadius: 12))
                             }
-                            // 购买按钮在执行中会自动替换为进度动画
-                            .asyncButtonStyle(.overlay)  // 在按钮本身覆盖显示加载动画
-                            .throwableButtonStyle(.none)  // 不需要抛错时摇晃
-                            .disabledWhenLoading()  // 加载时禁用二次点击
-                            .disabled(storeManager.isPlus)  // 若已是Plus则禁用
+                            .asyncButtonStyle(.overlay)
+                            .throwableButtonStyle(.none)
+                            .disabledWhenLoading()
+                            .disabled(storeManager.isPlus)
                             .padding(.horizontal)
 
                             Text(packageText.descriptionText)

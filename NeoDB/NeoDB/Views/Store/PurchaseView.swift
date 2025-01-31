@@ -66,19 +66,18 @@ struct PurchaseView: View {
                 VStack(spacing: 16) {
                     // 在此插入兑换按钮，放到条款与隐私按钮之前
                     Button {
-                        showRedeemSheet = true
+                        Purchases.shared.presentCodeRedemptionSheet()
                     } label: {
                         Text("store_button_redeem", tableName: "Settings")
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(background(.gray.opacity(0.1)))
+                            .background(.gray.opacity(0.1))
                             .foregroundStyle(.secondary)
                             .clipShape(
                                 RoundedRectangle(cornerRadius: 12))
                     }
                     .foregroundStyle(.secondary)
                     .padding(.horizontal)
-                    .offerCodeRedemption(isPresented: $showRedeemSheet)
                     .font(.headline)
 
                     HStack(spacing: 16) {
