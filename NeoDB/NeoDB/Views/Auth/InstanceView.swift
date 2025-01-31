@@ -46,8 +46,42 @@ struct InstanceView: View {
     var body: some View {
         WithPerceptionTracking {
             List {
+                if let instance = instanceViewModel.instanceInfo,
+                    !instances.contains(where: { $0.host == searchText })
+                {
+                    Section {
+                        if instanceViewModel.isCompatible {
+                            NavigationLink {
+                                LoginView()
+                                    .onAppear {
+                                        viewModel.updateInstance(searchText)
+                                    }
+                            } label: {
+                                InstanceRowView(
+                                    instance: .mastodon(
+                                        instance, host: searchText,
+                                        isCompatible: true))
+                            }
+                        } else {
+                            Button {
+                                instanceViewModel.showIncompatibleAlert = true
+                            } label: {
+                                InstanceRowView(
+                                    instance: .mastodon(
+                                        instance, host: searchText,
+                                        isCompatible: false))
+                            }
+                            .foregroundColor(.primary)
+                        }
+                    }
+                    .listSectionSeparator(.hidden, edges: .top)
+                }
+
                 Section {
-                    ForEach(filteredInstances, id: \.host) { instance in
+                    ForEach(
+                        filteredInstances.isEmpty
+                            ? instances : filteredInstances, id: \.host
+                    ) { instance in
                         NavigationLink {
                             LoginView()
                                 .onAppear {
@@ -57,6 +91,19 @@ struct InstanceView: View {
                             InstanceRowView(instance: .app(instance))
                         }
                     }
+                }
+                .listSectionSeparator(.hidden, edges: .top)
+
+                if instanceViewModel.error != nil {
+                    Section {
+                        HStack {
+                            Spacer()
+                            Text(String(localized: "instance_search_empty", table: "Settings"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                        }
+                    }
+                    .listSectionSeparator(.hidden, edges: .bottom)
                 }
 
                 if instanceViewModel.isLoading {
@@ -68,41 +115,16 @@ struct InstanceView: View {
                         }
                         .listRowBackground(Color.clear)
                     }
-                } else if let instance = instanceViewModel.instanceInfo {
-                    Section {
-                        if instanceViewModel.isCompatible {
-                            NavigationLink {
-                                LoginView()
-                                    .onAppear {
-                                        viewModel.updateInstance(searchText)
-                                    }
-                            } label: {
-                                InstanceRowView(instance: .mastodon(instance, host: searchText, isCompatible: true))
-                            }
-                        } else {
-                            Button {
-                                instanceViewModel.showIncompatibleAlert = true
-                            } label: {
-                                InstanceRowView(instance: .mastodon(instance, host: searchText, isCompatible: false))
-                            }
-                            .foregroundColor(.primary)
-                        }
-                    }
-                } else if let error = instanceViewModel.error {
-                    Section {
-                        Text(error.localizedDescription)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
+                    .listSectionSeparator(.hidden, edges: .bottom)
                 }
             }
-            .navigationTitle("Sign In")
+            .navigationTitle(String(localized: "instance_title", table: "Settings"))
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.plain)
             .searchable(
                 text: $searchText,
-                placement: .toolbar,
-                prompt: "Community Name or URL..."
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: String(localized: "instance_search_prompt", table: "Settings")
             )
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
@@ -114,33 +136,47 @@ struct InstanceView: View {
             }
             .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
                 WithPerceptionTracking {
-                    NavigationStack {
+                    VStack(spacing: 0) {
+                        HStack {
+                            Text(String(localized: "instance_alert_title", table: "Settings"))
+                                .font(.headline)
+                            Spacer()
+                            Button(action: {
+                                instanceViewModel.showIncompatibleAlert = false
+                            }) {
+                                Image(systemSymbol: .xmarkCircleFill)
+                                    .font(.title2)
+                            }
+                            .foregroundStyle(.secondary)
+                        }
+                        .padding()
+
+                        Spacer()
+
                         VStack(spacing: 20) {
                             Image(systemSymbol: .exclamationmarkTriangleFill)
                                 .font(.largeTitle)
-                                .foregroundColor(.orange)
 
-                            Text("Incompatible Instance")
-                                .font(.headline)
+                            VStack(spacing: 12) {
+                                Text(String(format: String(localized: "instance_alert_incompatible", table: "Settings"), searchText))
+                                    .font(.body)
+                                    .multilineTextAlignment(.center)
 
-                            Text(instanceViewModel.incompatibleReason)
-                                .font(.body)
-                                .multilineTextAlignment(.center)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding()
-                        .navigationTitle("Warning")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .topBarTrailing) {
-                                Button("Dismiss") {
-                                    instanceViewModel.showIncompatibleAlert =
-                                        false
-                                }
+                                Text(String(localized: "instance_alert_description", table: "Settings"))
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                    .multilineTextAlignment(.center)
                             }
                         }
+                        .padding(.top, -40)
+                        .padding(.horizontal)
+
+                        Spacer()
                     }
+                    .background(.ultraThinMaterial)
                 }
+                .presentationDetents([.fraction(0.45)])
+                .presentationDragIndicator(.visible)
             }
         }
         .enableInjection()
@@ -213,7 +249,7 @@ private struct InstanceRowView: View {
             case .app(let instance): return instance.iconName
             }
         }
-        
+
         var isCompatible: Bool {
             switch self {
             case .mastodon(_, _, let isCompatible): return isCompatible
@@ -254,7 +290,7 @@ private struct InstanceRowView: View {
                     Text(instance.host)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    
+
                     if !instance.isCompatible {
                         Spacer()
                         Image(systemSymbol: .exclamationmarkTriangleFill)
@@ -271,8 +307,11 @@ private struct InstanceRowView: View {
 
                     if !instance.tags.isEmpty {
                         HStack(spacing: 4) {
-                            Image(systemName: instance.secondaryIconType.systemName)
-                                .foregroundColor(.secondary)
+                            Image(
+                                systemName: instance.secondaryIconType
+                                    .systemName
+                            )
+                            .foregroundColor(.secondary)
                             Text(instance.tags.joined(separator: ", "))
                         }
                     }

@@ -650,6 +650,57 @@
         }
       }
     },
+    "instance_alert_description" : {
+      "comment" : "Description explaining why instance is not compatible and what to do next",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet is an app for NeoDB, please choose one of the NeoDB instances above. You can still use your Mastodon account to sign in after selecting a NeoDB instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet 是 NeoDB 应用程序，请选择上述 NeoDB 站点之一。选择 NeoDB 站点后，你仍然可以使用你的 Mastodon 账号登录。"
+          }
+        }
+      }
+    },
+    "instance_alert_incompatible" : {
+      "comment" : "Message shown when instance is not compatible (includes %@ for instance name)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is not a NeoDB instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 并不是一个 NeoDB 站点"
+          }
+        }
+      }
+    },
+    "instance_alert_title" : {
+      "comment" : "Title for incompatible instance alert",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Available"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "不可用"
+          }
+        }
+      }
+    },
     "instance_choose_title" : {
       "localizations" : {
         "da" : {
@@ -689,7 +740,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "如果上面没有列出你的实例，请输入实例地址。"
+            "value" : "如果上面没有列出你的站点，请输入实例地址。"
           }
         }
       }
@@ -716,6 +767,40 @@
         }
       }
     },
+    "instance_search_empty" : {
+      "comment" : "Message shown when no search results are found",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No results found"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有更多结果"
+          }
+        }
+      }
+    },
+    "instance_search_prompt" : {
+      "comment" : "Placeholder text for instance search field",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Community Name or URL..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "社群名称或URL…"
+          }
+        }
+      }
+    },
     "instance_select_title" : {
       "localizations" : {
         "da" : {
@@ -734,6 +819,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择实例"
+          }
+        }
+      }
+    },
+    "instance_title" : {
+      "comment" : "Navigation title for instance selection view",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select Instance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "选择站点"
           }
         }
       }

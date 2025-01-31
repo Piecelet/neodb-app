@@ -33,7 +33,7 @@ enum AppConfig {
     static let instances: [AppInstance] = [
         AppInstance(name: "NeoDB", iconName: "appInstance.neodb", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文"], users: "19.7K"),
         AppInstance(name: "Eggplant", iconName: "appInstance.eggplant", host: "eggplant.place", description: "Reviews about book, film, music, podcast and game.", tags: ["English", "Beta"], users: "270"),
-        AppInstance(name: "ReviewDB", iconName: nil, host: "reviewdb.app", description: "A community for book, film, music, podcast and game reviews.", tags: ["English", "Beta"], users: "58"),
+        AppInstance(name: "ReviewDB", iconName: nil, host: "reviewdb.app", description: "A community for book, film, music, podcast and game reviews.", tags: ["International"], users: "58"),
         AppInstance(name: "Minreol", iconName: "appInstance.minreol", host: "minreol.dk", description: "MinReol er et dansk fællesskab centreret om bøger, film, TV-serier, spil og podcasts.", tags: ["Danish"], users: "38"),
     ]
 }
