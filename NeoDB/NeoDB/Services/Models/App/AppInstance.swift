@@ -8,6 +8,7 @@
 
 struct AppInstance: Codable {
     let name: String
+    let iconName: String?
     let host: String
     let description: String
     let tags: [String]

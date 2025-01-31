@@ -6,8 +6,22 @@
 //  Copyright © 2025 https://github.com/lcandy2. All Rights Reserved.
 //
 
+import Kingfisher
 import Perception
 import SwiftUI
+
+// 定义图标类型枚举
+private enum IconType {
+    case globe
+    case tag
+
+    var systemName: String {
+        switch self {
+        case .globe: return "globe"
+        case .tag: return "tag.fill"
+        }
+    }
+}
 
 struct InstanceView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
@@ -40,39 +54,7 @@ struct InstanceView: View {
                                     viewModel.updateInstance(instance.host)
                                 }
                         } label: {
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack(spacing: 4) {
-                                    Text(instance.name)
-                                        .font(.headline)
-                                    Text(instance.host)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                HStack(spacing: 12) {
-                                    HStack(spacing: 4) {
-                                        Image(systemSymbol: .personFill)
-                                            .foregroundColor(.secondary)
-                                        Text(instance.users)
-                                    }
-
-                                    HStack(spacing: 4) {
-                                        Image(systemSymbol: .tagFill)
-                                            .foregroundColor(.secondary)
-                                        Text(
-                                            instance.tags.joined(
-                                                separator: ", "))
-                                    }
-                                }
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-
-                                Text(instance.description)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(2)
-                            }
-                            .padding(.vertical, 4)
+                            InstanceRowView(instance: .app(instance))
                         }
                     }
                 }
@@ -88,47 +70,22 @@ struct InstanceView: View {
                     }
                 } else if let instance = instanceViewModel.instanceInfo {
                     Section {
-                        NavigationLink {
-                            LoginView()
-                                .onAppear {
-                                    viewModel.updateInstance(searchText)
-                                }
-                        } label: {
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack(spacing: 4) {
-                                    Text(instance.title)
-                                        .font(.headline)
-                                    Text(searchText)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                }
-
-                                HStack(spacing: 12) {
-                                    HStack(spacing: 4) {
-                                        Image(systemSymbol: .personFill)
-                                            .foregroundColor(.secondary)
-                                        Text("\(instance.stats.userCount)")
+                        if instanceViewModel.isCompatible {
+                            NavigationLink {
+                                LoginView()
+                                    .onAppear {
+                                        viewModel.updateInstance(searchText)
                                     }
-
-                                    if let languages = instance.languages {
-                                        HStack(spacing: 4) {
-                                            Image(systemSymbol: .globe)
-                                                .foregroundColor(.secondary)
-                                            Text(
-                                                languages.joined(
-                                                    separator: ", "))
-                                        }
-                                    }
-                                }
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-
-                                Text(instance.shortDescription)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .lineLimit(2)
+                            } label: {
+                                InstanceRowView(instance: .mastodon(instance, host: searchText, isCompatible: true))
                             }
-                            .padding(.vertical, 4)
+                        } else {
+                            Button {
+                                instanceViewModel.showIncompatibleAlert = true
+                            } label: {
+                                InstanceRowView(instance: .mastodon(instance, host: searchText, isCompatible: false))
+                            }
+                            .foregroundColor(.primary)
                         }
                     }
                 } else if let error = instanceViewModel.error {
@@ -139,30 +96,52 @@ struct InstanceView: View {
                     }
                 }
             }
-            .safeAreaInset(edge: .top) {
-                VStack(spacing: 16) {
-                    TextField("Community Name or URL...", text: $searchText)
-                        .textFieldStyle(.plain)
-                        .autocapitalization(.none)
-                        .disableAutocorrection(true)
-                        .keyboardType(.URL)
-                        .padding(.vertical, 12)
-                        .padding(.horizontal)
-                        .background(.secondary.opacity(0.5))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                        .onChange(of: searchText) { newValue in
-                            instanceViewModel.updateSearchText(newValue)
-                        }
-                }
-                .padding()
-                .background(.bar)
+            .navigationTitle("Sign In")
+            .navigationBarTitleDisplayMode(.inline)
+            .listStyle(.plain)
+            .searchable(
+                text: $searchText,
+                placement: .toolbar,
+                prompt: "Community Name or URL..."
+            )
+            .autocorrectionDisabled()
+            .textInputAutocapitalization(.never)
+            .onChange(of: searchText) { newValue in
+                instanceViewModel.updateSearchText(newValue)
             }
-        }
-        .navigationTitle("Sign In")
-        .navigationBarTitleDisplayMode(.inline)
-        .listStyle(.plain)
-        .task {
-            viewModel.accountsManager = accountsManager
+            .task {
+                viewModel.accountsManager = accountsManager
+            }
+            .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
+                WithPerceptionTracking {
+                    NavigationStack {
+                        VStack(spacing: 20) {
+                            Image(systemSymbol: .exclamationmarkTriangleFill)
+                                .font(.largeTitle)
+                                .foregroundColor(.orange)
+
+                            Text("Incompatible Instance")
+                                .font(.headline)
+
+                            Text(instanceViewModel.incompatibleReason)
+                                .font(.body)
+                                .multilineTextAlignment(.center)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding()
+                        .navigationTitle("Warning")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button("Dismiss") {
+                                    instanceViewModel.showIncompatibleAlert =
+                                        false
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         .enableInjection()
     }
@@ -170,4 +149,143 @@ struct InstanceView: View {
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
+}
+
+// 抽取实例行视图为单独的组件
+private struct InstanceRowView: View {
+    enum InstanceType {
+        case mastodon(MastodonInstance, host: String, isCompatible: Bool)
+        case app(AppInstance)
+
+        var title: String {
+            switch self {
+            case .mastodon(let instance, _, _): return instance.title
+            case .app(let instance): return instance.name
+            }
+        }
+
+        var host: String {
+            switch self {
+            case .mastodon(_, let host, _): return host
+            case .app(let instance): return instance.host
+            }
+        }
+
+        var description: String {
+            switch self {
+            case .mastodon(let instance, _, _): return instance.shortDescription
+            case .app(let instance): return instance.description
+            }
+        }
+
+        var userCount: String {
+            switch self {
+            case .mastodon(let instance, _, _):
+                return "\(instance.stats.userCount)"
+            case .app(let instance): return instance.users
+            }
+        }
+
+        var tags: [String] {
+            switch self {
+            case .mastodon(let instance, _, _): return instance.languages ?? []
+            case .app(let instance): return instance.tags
+            }
+        }
+
+        var secondaryIconType: IconType {
+            switch self {
+            case .mastodon: return .globe
+            case .app: return .tag
+            }
+        }
+
+        var iconURL: URL? {
+            switch self {
+            case .mastodon(let instance, _, _): return instance.thumbnail
+            case .app: return nil
+            }
+        }
+
+        var iconName: String? {
+            switch self {
+            case .mastodon: return nil
+            case .app(let instance): return instance.iconName
+            }
+        }
+        
+        var isCompatible: Bool {
+            switch self {
+            case .mastodon(_, _, let isCompatible): return isCompatible
+            case .app: return true
+            }
+        }
+    }
+
+    let instance: InstanceType
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Group {
+                if let url = instance.iconURL {
+                    KFImage(url)
+                        .placeholder {
+                            Image(systemSymbol: .serverRack)
+                                .foregroundColor(.secondary)
+                        }
+                        .resizable()
+                        .scaledToFill()
+                } else if let iconName = instance.iconName {
+                    Image(iconName)
+                        .resizable()
+                        .scaledToFill()
+                } else {
+                    Image(systemSymbol: .serverRack)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(width: 40, height: 40)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 4) {
+                    Text(instance.title)
+                        .font(.headline)
+                    Text(instance.host)
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    if !instance.isCompatible {
+                        Spacer()
+                        Image(systemSymbol: .exclamationmarkTriangleFill)
+                            .foregroundColor(.orange)
+                    }
+                }
+
+                HStack(spacing: 12) {
+                    HStack(spacing: 4) {
+                        Image(systemSymbol: .personFill)
+                            .foregroundColor(.secondary)
+                        Text(instance.userCount)
+                    }
+
+                    if !instance.tags.isEmpty {
+                        HStack(spacing: 4) {
+                            Image(systemName: instance.secondaryIconType.systemName)
+                                .foregroundColor(.secondary)
+                            Text(instance.tags.joined(separator: ", "))
+                        }
+                    }
+                }
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+                Text(instance.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+            }
+        }
+        .padding(.vertical, 4)
+    }
 }

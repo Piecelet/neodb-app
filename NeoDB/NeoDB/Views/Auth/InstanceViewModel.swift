@@ -13,14 +13,33 @@ import Perception
 @Perceptible final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var client: NetworkClient?
+    private let versionIdentifier = "neodb"
     
     var isLoading = false
     var instanceInfo: MastodonInstance?
     var error: Error?
+    var showIncompatibleAlert = false
+    
+    var isCompatible: Bool {
+        guard let instance = instanceInfo else { return false }
+        return instance.version.localizedCaseInsensitiveContains(versionIdentifier)
+    }
+    
+    var incompatibleReason: String {
+        guard let instance = instanceInfo else { return "" }
+        return """
+            This instance (\(instance.title)) is not compatible with NeoDB.
+            
+            Reason: This instance is running \(instance.version), which is not a NeoDB server.
+            
+            Please choose a NeoDB instance or enter a valid NeoDB server address.
+            """
+    }
     
     func updateSearchText(_ text: String) {
         // Cancel previous task if exists
         fetchTask?.cancel()
+        showIncompatibleAlert = false
         
         guard text.contains(".") else {
             instanceInfo = nil
