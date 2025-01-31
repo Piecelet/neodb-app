@@ -62,8 +62,6 @@ class PurchaseViewModel: ObservableObject {
     }
 
     func purchase(_ package: Package) async {
-        isLoading = true
-        defer { isLoading = false }
         guard let storeManager else { return }
 
         do {

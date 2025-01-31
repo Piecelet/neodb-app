@@ -31,7 +31,12 @@ struct HeightPreservingTabView<SelectionValue: Hashable, Content: View>: View {
     .onPreferenceChange(TabViewMinHeightPreference.self) { minHeight in
       self.minHeight = minHeight
     }
+      .enableInjection()
   }
+
+  #if DEBUG
+  @ObserveInjection var forceRedraw
+  #endif
 }
 
 private struct TabViewMinHeightPreference: PreferenceKey {

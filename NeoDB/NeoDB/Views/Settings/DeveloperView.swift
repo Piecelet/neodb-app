@@ -236,6 +236,11 @@ struct DeveloperView: View {
         } message: {
             Text("This will clear all UserDefaults data. This action cannot be undone.")
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 

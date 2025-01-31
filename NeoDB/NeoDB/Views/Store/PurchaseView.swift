@@ -7,6 +7,7 @@
 
 import RevenueCat
 import SwiftUI
+import ButtonKit
 
 enum PurchaseViewType {
     case view
@@ -87,17 +88,20 @@ struct PurchaseView: View {
                     .hidden()
             }
             ToolbarItem(placement: .topBarTrailing) {
-                Button(
+                AsyncButton(
                     String(localized: "store_button_restore", table: "Settings")
                 ) {
                     Task {
                         await viewModel.restorePurchases()
                     }
                 }
+                .asyncButtonStyle(.overlay)          // 在按钮本身覆盖显示加载动画
+                .throwableButtonStyle(.none)         // 不需要抛错时摇晃
+                .disabledWhenLoading()               // 加载时禁用二次点击
             }
         }
         .task {
-            await viewModel.initializeIfNeeded(with: storeManager)
+            viewModel.initializeIfNeeded(with: storeManager)
         }
         .safeAreaInset(edge: .bottom) {
             BottomPurchaseView(

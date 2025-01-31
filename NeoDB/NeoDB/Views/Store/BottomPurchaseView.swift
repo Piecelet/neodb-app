@@ -6,6 +6,7 @@
 //  Copyright © 2025 https://github.com/lcandy2. All Rights Reserved.
 //
 
+import ButtonKit  // 引入 ButtonKit
 import RevenueCat
 import SwiftUI
 
@@ -40,17 +41,23 @@ struct BottomPurchaseView: View {
                 return String(
                     format: String(
                         localized: "store_package_lifetime_price",
-                        table: "Settings"), price)
+                        table: "Settings"),
+                    price
+                )
             case .yearly(let price):
                 return String(
                     format: String(
                         localized: "store_package_yearly_price",
-                        table: "Settings"), price)
+                        table: "Settings"),
+                    price
+                )
             case .monthly(let price):
                 return String(
                     format: String(
                         localized: "store_package_monthly_price",
-                        table: "Settings"), price)
+                        table: "Settings"),
+                    price
+                )
             case .purchased(let package):
                 switch package.packageType {
                 case .lifetime:
@@ -95,6 +102,8 @@ struct BottomPurchaseView: View {
 
     var body: some View {
         VStack(spacing: 16) {
+            // 如果要在加载 Offerings（loadOfferings）时全局显示进度，可保留此视图判断
+            // 但此处若只想让按钮自身在购买时显示加载动画，可酌情去掉对 viewModel.isLoading 的判断
             if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
@@ -102,10 +111,11 @@ struct BottomPurchaseView: View {
             } else {
                 if let offering {
                     if !storeManager.isPlus {
-                        // 展示套餐列表切换
+                        // 展示套餐列表切换，使用更快的动画
                         VStack {
                             Button {
-                                withAnimation {
+                                // 加快动画速度
+                                withAnimation(.easeInOut(duration: 0.2)) {
                                     showAllPlans.toggle()
                                 }
                             } label: {
@@ -125,7 +135,7 @@ struct BottomPurchaseView: View {
                                             ? "chevron.down" : "chevron.up")
                                 }
                             }
-                            .foregroundStyle(Color.primary)
+                            .foregroundStyle(.primary)
 
                             if showAllPlans {
                                 VStack(spacing: 8) {
@@ -143,12 +153,18 @@ struct BottomPurchaseView: View {
                                                     Text(
                                                         (package.packageType
                                                             == .lifetime
-                                                            ? String(localized: "store_package_lifetime", table: "Settings")
-                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings"))") + " • \(package.storeProduct.localizedPriceString)"
+                                                            ? String(
+                                                                localized:
+                                                                    "store_package_lifetime",
+                                                                table:
+                                                                    "Settings")
+                                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings"))")
+                                                            + " • \(package.storeProduct.localizedPriceString)"
                                                     ).font(.headline)
-                                                    
+
                                                 }
                                                 Spacer()
+                                                // 如果是年订阅，展示节省多少
                                                 if package.packageType
                                                     == .annual
                                                 {
@@ -166,7 +182,8 @@ struct BottomPurchaseView: View {
                                                                     table:
                                                                         "Settings"
                                                                 ),
-                                                                String(savings))
+                                                                String(savings)
+                                                            )
                                                         )
                                                         .font(.caption)
                                                         .padding(.horizontal, 8)
@@ -201,14 +218,15 @@ struct BottomPurchaseView: View {
                         }
                         .padding(.horizontal)
                     }
-                    // 底部购买按钮
+
+                    // 在这里使用 AsyncButton 触发购买操作，并指定 asyncButtonStyle
                     if let selectedPackage {
                         let packageText = getPackageText(for: selectedPackage)
+
                         VStack(spacing: 4) {
-                            Button {
-                                Task {
-                                    await viewModel.purchase(selectedPackage)
-                                }
+                            AsyncButton {
+                                // 使用 ButtonKit 的 async/throwable API，这里如果 purchase 抛出错误，会触发 ButtonKit 的默认动画
+                                await viewModel.purchase(selectedPackage)
                             } label: {
                                 Text(packageText.buttonText)
                                     .font(.headline)
@@ -222,7 +240,11 @@ struct BottomPurchaseView: View {
                                     .clipShape(
                                         RoundedRectangle(cornerRadius: 12))
                             }
-                            .disabled(storeManager.isPlus)
+                            // 购买按钮在执行中会自动替换为进度动画
+                            .asyncButtonStyle(.overlay)  // 在按钮本身覆盖显示加载动画
+                            .throwableButtonStyle(.none)  // 不需要抛错时摇晃
+                            .disabledWhenLoading()  // 加载时禁用二次点击
+                            .disabled(storeManager.isPlus)  // 若已是Plus则禁用
                             .padding(.horizontal)
 
                             Text(packageText.descriptionText)
@@ -235,5 +257,10 @@ struct BottomPurchaseView: View {
             }
         }
         .padding(.vertical)
+        .enableInjection()
     }
+
+    #if DEBUG
+        @ObserveInjection var forceRedraw
+    #endif
 }

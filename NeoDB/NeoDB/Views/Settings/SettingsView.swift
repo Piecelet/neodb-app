@@ -206,7 +206,12 @@ struct AccountRow: View {
                 }
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func switchToAccount(_ account: AppAccount) {
         withAnimation {
@@ -241,7 +246,12 @@ struct AccountManagementSection: View {
                 Text("Tap an account to switch to it. Swipe left to remove.")
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
     
     private func addAccount() {
         router.presentSheet(.login)

@@ -73,6 +73,12 @@ enum StoreConfig {
             color: .cyan
         ),
         Feature(
+            icon: .sfSymbol(.person2),
+            title: String(localized: "store_feature_accounts_title", table: "Settings"),
+            description: String(localized: "store_feature_accounts_description", table: "Settings"),
+            color: .blue
+        ),
+        Feature(
             icon: .sfSymbol(.heart),
             title: String(localized: "store_feature_support_dev_title", table: "Settings"),
             description: String(localized: "store_feature_support_dev_description", table: "Settings"),
@@ -83,13 +89,6 @@ enum StoreConfig {
             title: String(localized: "store_feature_support_community_title", table: "Settings"),
             description: String(localized: "store_feature_support_community_description", table: "Settings"),
             color: .teal
-        ),
-        Feature(
-            icon: .sfSymbol(.person2),
-            title: String(localized: "store_feature_accounts_title", table: "Settings"),
-            description: String(localized: "store_feature_accounts_description", table: "Settings"),
-            isComingSoon: true,
-            color: .blue
         ),
         Feature(
             icon: .sfSymbol(.arrowTriangle2Circlepath),

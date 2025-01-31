@@ -64,5 +64,10 @@ struct SearchableInner_iOS16<Content: View>: View {
         content()
         .onChange(of: environmentIsSearching) { legacyIsSearching = $0 }
         .onAppear { legacyIsSearching = environmentIsSearching }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
