@@ -50,7 +50,7 @@ struct WelcomeView: View {
                 Spacer()
 
                 NavigationLink {
-                    LoginView()
+                    InstanceView()
                 } label: {
                     Text("welcome_get_started", tableName: "Settings")
                         .font(.headline)
@@ -59,6 +59,11 @@ struct WelcomeView: View {
                         .background(Color.accentColor)
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
+                }
+                .onTapGesture {
+                    Task {
+                        HapticFeedback.impact(.light)
+                    }
                 }
                 .opacity(contentOpacity)
 
