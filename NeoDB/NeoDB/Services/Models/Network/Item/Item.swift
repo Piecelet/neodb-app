@@ -11,9 +11,9 @@ private let metadataArraySeparator = " "
 private let metadataArraySeparatorHidden = " "
 
 // MARK: - Base Item Protocol
-protocol ItemProtocol: Codable, Equatable, Hashable, Identifiable {
+protocol ItemProtocol: Codable, Decodable, Equatable, Hashable, Identifiable {
     var id: String { get }
-    var type: String { get }
+    var type: ItemType { get }
     var uuid: String { get }
     var url: String { get }
     var apiUrl: String { get }
@@ -68,7 +68,7 @@ extension ItemProtocol {
 // MARK: - Base Item Schema
 struct ItemSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -90,7 +90,7 @@ struct ItemSchema: ItemProtocol {
 extension ItemSchema {
     static func make(category: ItemCategory) -> any ItemProtocol.Type {
         switch category {
-        case .book:
+        case .book, .fanfic, .exhibition, .collection:
             return EditionSchema.self
         case .movie:
             return MovieSchema.self
@@ -104,14 +104,14 @@ extension ItemSchema {
             return AlbumSchema.self
         case .podcast:
             return PodcastSchema.self
+        case .podcastEpisode:
+            return PodcastEpisodeSchema.self
         case .game:
             return GameSchema.self
         case .performance:
             return PerformanceSchema.self
         case .performanceProduction:
             return PerformanceProductionSchema.self
-        default:
-            return ItemSchema.self
         }
     }
 }
@@ -119,7 +119,7 @@ extension ItemSchema {
 // MARK: - Edition Schema
 struct EditionSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -220,7 +220,7 @@ extension EditionSchema {
 // MARK: - Movie Schema
 struct MovieSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -309,7 +309,7 @@ extension MovieSchema {
 // MARK: - TV Show Schema
 struct TVShowSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -415,7 +415,7 @@ extension TVShowSchema {
 // MARK: - TV Season Schema
 //struct TVSeasonSchema: ItemProtocol {
 //    let id: String
-//    let type: String
+//    let type: ItemType
 //    let uuid: String
 //    let url: String
 //    let apiUrl: String
@@ -452,7 +452,7 @@ extension TVShowSchema {
 // MARK: - TV Episode Schema
 //struct TVEpisodeSchema: ItemProtocol {
 //    let id: String
-//    let type: String
+//    let type: ItemType
 //    let uuid: String
 //    let url: String
 //    let apiUrl: String
@@ -476,7 +476,7 @@ extension TVShowSchema {
 // MARK: - Album Schema
 struct AlbumSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -566,7 +566,7 @@ extension AlbumSchema {
 // MARK: - Podcast Schema
 struct PodcastSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -646,7 +646,7 @@ extension PodcastSchema {
 
 struct PodcastEpisodeSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -701,7 +701,7 @@ extension PodcastEpisodeSchema {
 // MARK: - Game Schema
 struct GameSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -782,7 +782,7 @@ extension GameSchema {
 // MARK: - Performance Schema
 struct PerformanceSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -877,7 +877,7 @@ extension PerformanceSchema {
 // MARK: - Performance Production Schema
 struct PerformanceProductionSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String

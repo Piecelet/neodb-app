@@ -17,7 +17,6 @@
 		2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 2446C0C82D41712F00504129 /* SwiftSoup */; };
 		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
-		2477BBEE2D4D1F4400E39E1A /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 2477BBED2D4D1F4400E39E1A /* SwiftDate */; };
 		24895F532D4BDCEA008EDD4C /* Perception in Frameworks */ = {isa = PBXBuildFile; productRef = 24895F522D4BDCEA008EDD4C /* Perception */; };
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
@@ -96,7 +95,6 @@
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
 				24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */,
 				2405C5E32D42757100457DF5 /* WebView in Frameworks */,
-				2477BBEE2D4D1F4400E39E1A /* SwiftDate in Frameworks */,
 				24BABF592D40309800785306 /* WishKit in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
@@ -189,7 +187,6 @@
 				2405C5E22D42757100457DF5 /* WebView */,
 				24ECD3C32D464AC100E24D7D /* RevenueCat */,
 				24895F522D4BDCEA008EDD4C /* Perception */,
-				2477BBED2D4D1F4400E39E1A /* SwiftDate */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -288,7 +285,6 @@
 				2405C5E12D42757100457DF5 /* XCRemoteSwiftPackageReference "SwiftUI-WebView" */,
 				24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */,
 				24895F512D4BDCEA008EDD4C /* XCRemoteSwiftPackageReference "swift-perception" */,
-				2477BBEC2D4D1F4400E39E1A /* XCRemoteSwiftPackageReference "SwiftDate" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -777,14 +773,6 @@
 				minimumVersion = 24.0.0;
 			};
 		};
-		2477BBEC2D4D1F4400E39E1A /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/malcommac/SwiftDate";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 7.0.0;
-			};
-		};
 		24895F512D4BDCEA008EDD4C /* XCRemoteSwiftPackageReference "swift-perception" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-perception";
@@ -871,11 +859,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */;
 			productName = KeychainSwift;
-		};
-		2477BBED2D4D1F4400E39E1A /* SwiftDate */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2477BBEC2D4D1F4400E39E1A /* XCRemoteSwiftPackageReference "SwiftDate" */;
-			productName = SwiftDate;
 		};
 		24895F522D4BDCEA008EDD4C /* Perception */ = {
 			isa = XCSwiftPackageProductDependency;

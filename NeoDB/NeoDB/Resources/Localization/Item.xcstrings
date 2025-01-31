@@ -2836,6 +2836,12 @@
         }
       }
     },
+    "metadata_podcast_episode_link_label" : {
+      "comment" : "Podcast Episode Link label"
+    },
+    "metadata_podcast_episode_pub_date_label" : {
+      "comment" : "Podcast Episode Pub Date label"
+    },
     "metadata_podcast_genre_label" : {
       "comment" : "Podcast Genre label",
       "localizations" : {

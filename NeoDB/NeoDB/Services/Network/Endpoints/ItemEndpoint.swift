@@ -10,38 +10,38 @@ import Foundation
 enum ItemEndpoint {
     case book(uuid: String)
     case movie(uuid: String)
-    case tv(uuid: String, isSeason: Bool? = nil, isEpisode: Bool? = nil)
-    case podcast(uuid: String)
+    case tv(uuid: String, isSeason: Bool = false, isEpisode: Bool = false)
+    case podcast(uuid: String, isEpisode: Bool = false)
     case album(uuid: String)
     case game(uuid: String)
-    case performance(uuid: String, isProduction: Bool? = nil)
+    case performance(uuid: String, isProduction: Bool = false)
     case post(uuid: String, types: [ItemPostType])
     
     static func make(id: String, category: ItemCategory) -> ItemEndpoint {
         let uuid = id.components(separatedBy: "/").last ?? id
         switch category {
-        case .book:
+        case .book, .fanfic, .exhibition, .collection:
             return .book(uuid: uuid)
         case .movie:
             return .movie(uuid: uuid)
         case .tv:
-            return .tv(uuid: uuid, isSeason: nil, isEpisode: nil)
+            return .tv(uuid: uuid, isSeason: false, isEpisode: false)
         case .tvSeason:
-            return .tv(uuid: uuid, isSeason: true, isEpisode: nil)
+            return .tv(uuid: uuid, isSeason: true, isEpisode: false)
         case .tvEpisode:
-            return .tv(uuid: uuid, isSeason: nil, isEpisode: true)
+            return .tv(uuid: uuid, isSeason: false, isEpisode: true)
         case .music:
             return .album(uuid: uuid)
         case .game:
             return .game(uuid: uuid)
         case .podcast:
-            return .podcast(uuid: uuid)
+            return .podcast(uuid: uuid, isEpisode: false)
+        case .podcastEpisode:
+            return .podcast(uuid: uuid, isEpisode: true)
         case .performance:
-            return .performance(uuid: uuid, isProduction: nil)
+            return .performance(uuid: uuid, isProduction: false)
         case .performanceProduction:
             return .performance(uuid: uuid, isProduction: true)
-        default:
-            return .book(uuid: uuid)
         }
     }
 }
@@ -54,21 +54,25 @@ extension ItemEndpoint: NetworkEndpoint {
         case .movie(let uuid):
             return "/movie/\(uuid)"
         case .tv(let uuid, let isSeason, let isEpisode):
-            if isSeason != nil && isSeason! {
+            if isSeason {
                 return "/tv/season/\(uuid)"
-            } else if isEpisode != nil && isEpisode! {
+            } else if isEpisode {
                 return "/tv/episode/\(uuid)"
             } else {
                 return "/tv/\(uuid)"
             }
-        case .podcast(let uuid):
-            return "/podcast/\(uuid)"
+        case .podcast(let uuid, let isEpisode):
+            if isEpisode {
+                return "/podcast/episode/\(uuid)"
+            } else {
+                return "/podcast/\(uuid)"
+            }
         case .album(let uuid):
             return "/album/\(uuid)"
         case .game(let uuid):
             return "/game/\(uuid)"
         case .performance(let uuid, let isProduction):
-            if isProduction != nil && isProduction! {
+            if isProduction {
                 return "/performance/production/\(uuid)"
             } else {
                 return "/performance/\(uuid)"

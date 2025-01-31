@@ -17,6 +17,7 @@ enum ItemCategory: String, Codable, CaseIterable {
     case music
     case game
     case podcast
+    case podcastEpisode = "podcastepisode"
     case performance
     case performanceProduction
     case fanfic
@@ -40,6 +41,8 @@ enum ItemCategory: String, Codable, CaseIterable {
             return "tv"
         case .performanceProduction:
             return "performance"
+        case .podcastEpisode:
+            return "podcast"
         default:
             return self.rawValue
         }
@@ -158,7 +161,7 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .tvEpisode: return .sfSymbol(.tv)
         case .music: return .sfSymbol(.musicNote)
         case .game: return .systemSymbol("gamecontroller")
-        case .podcast: return .custom("custom.podcast")
+        case .podcast, .podcastEpisode: return .custom("custom.podcast")
         case .performance: return .sfSymbol(.theatermasks)
         case .performanceProduction: return .sfSymbol(.theatermasks)
         case .fanfic: return .sfSymbol(.book)
@@ -174,7 +177,7 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .tv, .tvSeason, .tvEpisode: return .sfSymbol(.tvFill)
         case .music: return .sfSymbol(.musicNote)
         case .game: return .systemSymbol("gamecontroller.fill")
-        case .podcast: return .custom("custom.podcast")
+        case .podcast, .podcastEpisode: return .custom("custom.podcast")
         case .performance, .performanceProduction: return .sfSymbol(.theatermasksFill)
         case .fanfic: return .sfSymbol(.bookFill)
         case .exhibition: return .sfSymbol(.theatermasksFill)
@@ -194,7 +197,7 @@ enum ItemCategory: String, Codable, CaseIterable {
             return Color(red: 211/255, green: 82/255, blue: 73/255)   // 柔和紅色
         case .game: 
             return Color(red: 215/255, green: 153/255, blue: 33/255)  // 深金黃色
-        case .podcast: 
+        case .podcast, .podcastEpisode: 
             return Color(red: 156/255, green: 85/255, blue: 191/255)  // 紫色
         case .performance, .performanceProduction: 
             return Color(red: 86/255, green: 112/255, blue: 154/255)  // 深藍色
@@ -216,7 +219,7 @@ enum ItemCategory: String, Codable, CaseIterable {
         case .tvEpisode: return String(localized: "category_tv", table: "Item")
         case .music: return String(localized: "category_music", table: "Item")
         case .game: return String(localized: "category_games", table: "Item")
-        case .podcast: return String(localized: "category_podcasts", table: "Item")
+        case .podcast, .podcastEpisode: return String(localized: "category_podcasts", table: "Item")
         case .performance: return String(localized: "category_performances", table: "Item")
         case .performanceProduction: return String(localized: "category_performances", table: "Item")
         case .fanfic: return String(localized: "category_books", table: "Item")
@@ -227,7 +230,7 @@ enum ItemCategory: String, Codable, CaseIterable {
     
     var placeholderRatio: CGFloat {
         switch self {
-        case .music, .podcast: return 1/1
+        case .music, .podcast, .podcastEpisode: return 1/1
         default: return 3/4
         }
     }
@@ -236,6 +239,24 @@ enum ItemCategory: String, Codable, CaseIterable {
         switch self {
         case .book, .tv, .tvSeason, .tvEpisode, .movie: return 3/4
         default: return nil
+        }
+    }
+}
+
+extension ItemCategory {
+    var type: ItemType {
+        switch self {
+        case .book, .fanfic, .exhibition, .collection: return .book
+        case .movie: return .movie
+        case .tv: return .tv
+        case .tvSeason: return .tvSeason
+        case .tvEpisode: return .tvEpisode
+        case .music: return .music
+        case .podcast: return .podcast
+        case .podcastEpisode: return .podcastEpisode
+        case .game: return .game
+        case .performance: return .performance
+        case .performanceProduction: return .performanceProduction
         }
     }
 }

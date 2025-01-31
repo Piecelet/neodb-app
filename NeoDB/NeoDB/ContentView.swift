@@ -129,7 +129,7 @@ struct ContentView: View {
         case .itemDetailWithItem(let item):
             ItemView(
                 id: item.id,
-                category: item.category,
+                category: item.type.category,
                 item: item
             )
         case .shelfDetail(let type):
