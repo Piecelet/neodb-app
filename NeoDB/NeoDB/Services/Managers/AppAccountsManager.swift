@@ -80,37 +80,55 @@ class AppAccountsManager: ObservableObject {
     }
 
     func add(account: AppAccount) {
-        do {
-            // 检查是否已存在相同实例的账号
-            if let existingAccount = availableAccounts.first(where: { 
-                $0.instance == account.instance && 
-                $0.oauthToken?.accessToken == account.oauthToken?.accessToken 
-            }) {
-                // 如果存在，切换到该账号
-                switchAccount(existingAccount)
-                return
-            }
-            
-            // 删除所有匿名账户
-            AppAccount.deleteAllAnonymous()
-            
-            try account.save()
-            
-            withAnimation {
-                // 重新加载账户列表，因为可能有匿名账户被删除
-                if let accounts = try? AppAccount.retrieveAll() {
-                    availableAccounts = accounts
+        // 删除所有匿名账户
+        AppAccount.deleteAllAnonymous()
+        
+        Task {
+            do {
+                // 获取新账户的用户信息
+                let newUser = try await currentClient.fetch(UserEndpoint.me, type: User.self)
+                
+                // 检查是否已存在相同实例和用户名的账号
+                for existingAccount in availableAccounts {
+                    if existingAccount.instance == account.instance {
+                        // 获取已存在账户的用户信息
+                        let client = NetworkClient(
+                            instance: existingAccount.instance,
+                            oauthToken: existingAccount.oauthToken
+                        )
+                        if let existingUser = try? await client.fetch(UserEndpoint.me, type: User.self),
+                           existingUser.username == newUser.username {
+                            // 如果存在相同用户名的账号，切换到该账号
+                            await MainActor.run {
+                                switchAccount(existingAccount)
+                            }
+                            return
+                        }
+                    }
                 }
-                // 添加新账户到列表末尾
-                if !availableAccounts.contains(where: { $0.id == account.id }) {
-                    availableAccounts.append(account)
+                
+                try account.save()
+                
+                await MainActor.run {
+                    withAnimation {
+                        // 重新加载账户列表，因为可能有匿名账户被删除
+                        if let accounts = try? AppAccount.retrieveAll() {
+                            availableAccounts = accounts
+                        }
+                        // 添加新账户到列表末尾
+                        if !availableAccounts.contains(where: { $0.id == account.id }) {
+                            availableAccounts.append(account)
+                        }
+                        currentAccount = account
+                        isAuthenticated = account.oauthToken != nil
+                    }
                 }
-                currentAccount = account
-                isAuthenticated = account.oauthToken != nil
+            } catch {
+                await MainActor.run {
+                    logger.error("Failed to add account: \(error.localizedDescription)")
+                    self.error = error
+                }
             }
-        } catch {
-            logger.error("Failed to add account: \(error.localizedDescription)")
-            self.error = error
         }
     }
 
