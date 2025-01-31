@@ -130,5 +130,10 @@ struct PackageListView: View {
             }
         }
         .padding(.horizontal)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

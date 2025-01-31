@@ -30,7 +30,7 @@ struct NeoDBApp: App {
                             )
                         )
                 } else {
-                    LoginView()
+                    WelcomeView()
                 }
             }
             .environmentObject(accountsManager)

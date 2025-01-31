@@ -11,38 +11,14 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
-    @Environment(\.openURL) private var openURL
     @Environment(\.dismiss) private var dismiss
     
     // Animation states
-    @State private var logoScale = 0.5
-    @State private var contentOpacity = 0.0
-    @State private var titleOffset = CGFloat(50)
     @State private var buttonScale = 1.0
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Image("piecelet-symbol")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 120, height: 120)
-                    .scaleEffect(logoScale)
-                    .animation(.spring(response: 0.6, dampingFraction: 0.6), value: logoScale)
-                
-                Text(String(localized: "login_title_welcome", table: "Settings"))
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .offset(y: titleOffset)
-                    .opacity(contentOpacity)
-                
-                Text(String(localized: "login_description", table: "Settings"))
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .opacity(contentOpacity)
-                
                 VStack(alignment: .leading, spacing: 8) {
                     Text(String(localized: "login_instance_title", table: "Settings"))
                         .font(.headline)
@@ -64,7 +40,6 @@ struct LoginView: View {
                     .cornerRadius(10)
                 }
                 .padding(.horizontal)
-                .opacity(contentOpacity)
                 
                 VStack(spacing: 12) {
                     Button(action: {
@@ -117,27 +92,7 @@ struct LoginView: View {
                     }
                 }
                 .padding(.horizontal)
-                .opacity(contentOpacity)
-                
-                Text(String(localized: "login_footer_description", table: "Settings"))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .opacity(contentOpacity)
-                
-                HStack(spacing: 16) {
-                    Button(String(localized: "store_terms", table: "Settings")) {
-                        openURL(StoreConfig.URLs.termsOfService)
-                    }
-                    Button(String(localized: "store_privacy", table: "Settings")) {
-                        openURL(StoreConfig.URLs.privacyPolicy)
-                    }
-                }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
             }
-            .padding()
             .alert(
                 "Error", isPresented: $viewModel.showError,
                 actions: {
@@ -159,16 +114,6 @@ struct LoginView: View {
             }
             .task {
                 viewModel.accountsManager = accountsManager
-                
-                // Trigger animations
-                withAnimation(.easeOut(duration: 0.6)) {
-                    logoScale = 1.0
-                }
-                
-                withAnimation(.easeOut(duration: 0.6).delay(0.3)) {
-                    contentOpacity = 1.0
-                    titleOffset = 0
-                }
             }
             .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
                 WebAuthenticationSession(
@@ -186,10 +131,10 @@ struct LoginView: View {
                     viewModel.isAuthenticating = false
                 }
             }
+            .enableInjection()
         }
-        .enableInjection()
     }
-    
+
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif

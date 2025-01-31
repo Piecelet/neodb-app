@@ -155,50 +155,6 @@
         }
       }
     },
-    "about_policy_privacy" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fortrolighedspolitik"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Privacy Policy"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐私政策"
-          }
-        }
-      }
-    },
-    "about_policy_terms" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Servicevilkår"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terms of Use"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用条款"
-          }
-        }
-      }
-    },
     "about_policy_title" : {
       "localizations" : {
         "da" : {
@@ -804,29 +760,8 @@
         }
       }
     },
-    "login_description" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hold styr på og del dine bøger, film, musik og mere"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Track and share your books, movies, music, and more"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记录和分享你的书籍、电影、音乐等"
-          }
-        }
-      }
-    },
     "login_footer_description" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -888,28 +823,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "实例"
-          }
-        }
-      }
-    },
-    "login_title_welcome" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Velkommen til Piecelet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome to Piecelet"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "欢迎使用 Piecelet"
           }
         }
       }
@@ -1284,6 +1197,50 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择 NeoDB 实例"
+          }
+        }
+      }
+    },
+    "policy_privacy_policy" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortrolighedspolitik"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        }
+      }
+    },
+    "policy_terms_of_use" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Servicevilkår"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用条款"
           }
         }
       }
@@ -2353,26 +2310,7 @@
       }
     },
     "store_privacy" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fortrolighedspolitik"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Privacy Policy"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐私政策"
-          }
-        }
-      }
+
     },
     "store_purchase_onetime" : {
       "extractionState" : "stale",
@@ -2398,26 +2336,7 @@
       }
     },
     "store_terms" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Servicevilkår"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terms of Use"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "使用条款"
-          }
-        }
-      }
+
     },
     "store_title" : {
       "localizations" : {
@@ -2437,6 +2356,82 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Piecelet+"
+          }
+        }
+      }
+    },
+    "welcome_description" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold styr på og del dine bøger, film, musik og mere."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track and share your books, movies, music, and more."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录和分享你的书籍、电影、音乐等。"
+          }
+        }
+      }
+    },
+    "welcome_get_started" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Started"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让我们开始吧"
+          }
+        }
+      }
+    },
+    "welcome_present_by" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A @lcandy2 project."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 @lcandy2 呈现。"
+          }
+        }
+      }
+    },
+    "welcome_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velkommen til Piecelet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to Piecelet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用 Piecelet"
           }
         }
       }
