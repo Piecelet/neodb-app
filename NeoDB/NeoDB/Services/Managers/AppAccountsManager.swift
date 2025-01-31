@@ -91,10 +91,20 @@ class AppAccountsManager: ObservableObject {
                 return
             }
             
+            // 删除所有匿名账户
+            AppAccount.deleteAllAnonymous()
+            
             try account.save()
             
             withAnimation {
-                availableAccounts.append(account)
+                // 重新加载账户列表，因为可能有匿名账户被删除
+                if let accounts = try? AppAccount.retrieveAll() {
+                    availableAccounts = accounts
+                }
+                // 添加新账户到列表末尾
+                if !availableAccounts.contains(where: { $0.id == account.id }) {
+                    availableAccounts.append(account)
+                }
                 currentAccount = account
                 isAuthenticated = account.oauthToken != nil
             }

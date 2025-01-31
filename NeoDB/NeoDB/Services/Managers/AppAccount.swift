@@ -105,4 +105,15 @@ struct AppAccount: Codable, Identifiable {
         
         logger.debug("Deleted all accounts")
     }
+
+    static func deleteAllAnonymous() {
+        let keys = getKeys().filter { $0.contains("anonymous") }
+        logger.debug("Deleting all anonymous accounts (\(keys.count) keys)")
+        
+        for key in keys {
+            Self.keychain.delete(key)
+        }
+        
+        logger.debug("Deleted all anonymous accounts")
+    }
 }
