@@ -676,15 +676,23 @@ extension PodcastEpisodeSchema {
     var keyMetadata: [String] {
         var metadata: [String] = []
 
-//        if let pubDate = pubDate {
-//            metadata.append(pubDate.formattedDateString)
-//        }
+       if let pubDate = pubDate {
+           metadata.append(pubDate.formatted(.dateOnly))
+       }
 
         return metadata
     }
 
     var allMetadata: [(String, String)] {
         var metadata: [(String, String)] = []
+
+        if let pubDate = pubDate {
+            metadata.append((String(localized: "metadata_podcast_episode_pub_date_label", table: "Item", comment: "Podcast Episode Pub Date label"), pubDate.formatted(.dateOnly)))
+        }
+
+        if let link = link {
+            metadata.append((String(localized: "metadata_podcast_episode_link_label", table: "Item", comment: "Podcast Episode Link label"), link))
+        }
 
         return metadata
     }
