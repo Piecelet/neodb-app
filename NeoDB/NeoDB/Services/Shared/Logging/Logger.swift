@@ -105,6 +105,8 @@ extension Logger {
         
         static let developer = Logger(
             subsystem: subsystem, category: "view.developer")
+        static let store = Logger(
+            subsystem: subsystem, category: "view.store")
     }
 
     // MARK: - User Actions
@@ -118,6 +120,8 @@ extension Logger {
 
     // MARK: - Managers
     enum managers {
+        static let store = Logger(
+            subsystem: subsystem, category: "manager.store")
         static let account = Logger(
             subsystem: subsystem, category: "manager.account")
         static let client = Logger(

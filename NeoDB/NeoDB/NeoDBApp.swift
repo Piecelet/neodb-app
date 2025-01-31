@@ -7,54 +7,61 @@
 
 import SwiftUI
 import WhatsNewKit
+import RevenueCat
 
 @main
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
-    @StateObject private var storeManager = StoreManager()
+    @StateObject private var storeManager = StoreManager() // 全局唯一的 StoreManager
     @StateObject private var router = Router()
-    
+
     var body: some Scene {
         WindowGroup {
             Group {
                 if accountsManager.isAuthenticated {
                     ContentView()
-                        .environmentObject(self.router)
-                        .environment(
-                            \.whatsNew,
-                            WhatsNewEnvironment(
-                                versionStore: UserDefaultsWhatsNewVersionStore(),
-                                whatsNewCollection: self
-                            )
+                        .environmentObject(router)
+                        .environment(\.whatsNew,
+                                     WhatsNewEnvironment(
+                                        versionStore: UserDefaultsWhatsNewVersionStore(),
+                                        whatsNewCollection: self
+                                     )
                         )
                 } else {
                     LoginView()
                 }
             }
-            .environmentObject(self.accountsManager)
-            .environmentObject(self.storeManager)
+            .environmentObject(accountsManager)
+            .environmentObject(storeManager)
             .onOpenURL { url in
-                // First try to handle OAuth callback
                 if url.scheme == "neodb" && url.host == "oauth" {
                     Task {
                         do {
-                            try await accountsManager.handleCallback(url: url, ignoreAuthenticationDuration: true)
+                            try await accountsManager.handleCallback(
+                                url: url,
+                                ignoreAuthenticationDuration: true
+                            )
                         } catch {
                             print("Authentication error: \(error)")
                         }
                     }
                     return
                 }
-                
-                // Then try to handle deep links
                 if !router.handleURL(url) {
-                    // If the router didn't handle the URL, open it in the default browser
                     UIApplication.shared.open(url)
+                }
+            }
+            // 使用 Swift 并发在全局监听 RevenueCat 的 customerInfoStream，随时更新用户订阅状态
+            .task {
+                for await customerInfo in Purchases.shared.customerInfoStream {
+                    storeManager.customerInfo = customerInfo
+                    storeManager.appUserID = Purchases.shared.appUserID
                 }
             }
         }
     }
 }
+
 
 #if canImport(HotSwiftUI)
 @_exported import HotSwiftUI
