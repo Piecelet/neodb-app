@@ -15,6 +15,7 @@ enum ItemEndpoint {
     case album(uuid: String)
     case game(uuid: String)
     case performance(uuid: String, isProduction: Bool? = nil)
+    case post(uuid: String, types: [ItemPostType])
     
     static func make(id: String, category: ItemCategory) -> ItemEndpoint {
         let uuid = id.components(separatedBy: "/").last ?? id
@@ -72,6 +73,19 @@ extension ItemEndpoint: NetworkEndpoint {
             } else {
                 return "/performance/\(uuid)"
             }
+        case .post(let uuid, _):
+            return "/item/\(uuid)/posts)"
+        }
+    }
+
+    var queryItems: [URLQueryItem]? {
+        switch self {
+        case .post(_, let types):
+            return [
+                .init(name: "type", value: types.map { $0.rawValue }.joined(separator: ","))
+            ]
+        default:
+            return nil
         }
     }
 }
