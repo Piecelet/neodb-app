@@ -29,4 +29,11 @@ enum AppConfig {
         static let name = "Piecelet for NeoDB"
         static let website = "https://github.com/lcandy2/neodb-app"
     }
+
+    static let instances: [AppInstance] = [
+        AppInstance(name: "NeoDB", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文"], users: "19.7K"),
+        AppInstance(name: "Eggplant", host: "eggplant.place", description: "Reviews about book, film, music, podcast and game.", tags: ["English", "Beta"], users: "270"),
+        AppInstance(name: "ReviewDB", host: "reviewdb.app", description: "A community for book, film, music, podcast and game reviews.", tags: ["English", "Beta"], users: "58"),
+        AppInstance(name: "Minreol", host: "minreol.dk", description: "MinReol er et dansk fællesskab centreret om bøger, film, TV-serier, spil og podcasts.", tags: ["Danish"], users: "38"),
+    ]
 }

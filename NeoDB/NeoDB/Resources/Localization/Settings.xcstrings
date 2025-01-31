@@ -738,9 +738,6 @@
         }
       }
     },
-    "login_button_continue" : {
-
-    },
     "login_button_signin_with" : {
       "localizations" : {
         "da" : {
