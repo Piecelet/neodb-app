@@ -109,6 +109,7 @@ enum SheetDestination: Identifiable {
     case addToShelf(item: any ItemProtocol, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
     case editShelfItem(mark: MarkSchema, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
     case itemDetails(item: any ItemProtocol)
+    case login
 
     // Store
     case purchase
@@ -125,6 +126,8 @@ enum SheetDestination: Identifiable {
             return "itemDetails"
         case .purchase:
             return "purchase"
+        case .login:
+            return "login"
         }
     }
 }

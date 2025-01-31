@@ -12,6 +12,7 @@ struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
     @Environment(\.openURL) private var openURL
+    @Environment(\.dismiss) private var dismiss
     
     // Animation states
     @State private var logoScale = 0.5

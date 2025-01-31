@@ -103,6 +103,9 @@ struct ContentView: View {
                     ItemDetailsSheet(item: item)
                 case .purchase:
                     PurchaseView(type: .sheet)
+                case .login:
+                    LoginView()
+                        .environmentObject(accountsManager)
                 }
             }
             .environmentObject(router)

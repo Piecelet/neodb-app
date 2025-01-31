@@ -30,6 +30,18 @@ class AppAccountsManager: ObservableObject {
                 instance: currentAccount.instance,
                 oauthToken: currentAccount.oauthToken
             )
+            isAuthenticated = currentAccount.oauthToken != nil
+            
+            // 发送账号切换通知
+            NotificationCenter.default.post(
+                name: .accountSwitched,
+                object: nil,
+                userInfo: ["accountId": currentAccount.id]
+            )
+            
+            // 如果切换到新账号，清除错误状态
+            error = nil
+            isAuthenticating = false
         }
     }
     @Published var availableAccounts: [AppAccount]
@@ -41,6 +53,7 @@ class AppAccountsManager: ObservableObject {
             logger.debug("shouldShowPurchase changed to \(shouldShowPurchase)")
         }
     }
+    @Published var error: Error?
 
     init() {
         var defaultAccount = AppAccount(
@@ -68,12 +81,26 @@ class AppAccountsManager: ObservableObject {
 
     func add(account: AppAccount) {
         do {
+            // 检查是否已存在相同实例的账号
+            if let existingAccount = availableAccounts.first(where: { 
+                $0.instance == account.instance && 
+                $0.oauthToken?.accessToken == account.oauthToken?.accessToken 
+            }) {
+                // 如果存在，切换到该账号
+                switchAccount(existingAccount)
+                return
+            }
+            
             try account.save()
-            availableAccounts.append(account)
-            currentAccount = account
-            isAuthenticated = account.oauthToken != nil
+            
+            withAnimation {
+                availableAccounts.append(account)
+                currentAccount = account
+                isAuthenticated = account.oauthToken != nil
+            }
         } catch {
             logger.error("Failed to add account: \(error.localizedDescription)")
+            self.error = error
         }
     }
 
@@ -210,6 +237,29 @@ class AppAccountsManager: ObservableObject {
             case .cancelled:
                 throw AccountError.tokenRefreshFailed("Token refresh cancelled")
             }
+        }
+    }
+
+    func switchAccount(_ account: AppAccount) {
+        guard account.id != currentAccount.id else { return }
+        
+        withAnimation {
+            currentAccount = account
+        }
+        
+        // 预加载账号数据
+        Task {
+            await preloadAccountData()
+        }
+    }
+    
+    private func preloadAccountData() async {
+        guard isAuthenticated else { return }
+        
+        do {
+            _ = try await currentClient.fetch(UserEndpoint.me, type: User.self)
+        } catch {
+            self.error = error
         }
     }
 }

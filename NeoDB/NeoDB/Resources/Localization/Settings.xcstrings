@@ -21,12 +21,6 @@
             "value" : "博客"
           }
         }
-      },
-      "zh-Hans" : {
-        "stringUnit" : {
-          "state" : "translated",
-          "value" : "博客"
-        }
       }
     },
     "about_developer_bluesky" : {

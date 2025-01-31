@@ -170,6 +170,84 @@ struct AvatarPlaceholderView: View {
     #endif
 }
 
+struct AccountRow: View {
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    let account: AppAccount
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(account.instance)
+                    .font(.headline)
+                if let token = account.oauthToken {
+                    Text("Authenticated")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            
+            Spacer()
+            
+            if account.id == accountsManager.currentAccount.id {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.tint)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            switchToAccount(account)
+        }
+        .swipeActions(edge: .trailing) {
+            if account.id != accountsManager.currentAccount.id {
+                Button(role: .destructive) {
+                    deleteAccount(account)
+                } label: {
+                    Label("Remove", systemImage: "trash")
+                }
+            }
+        }
+    }
+    
+    private func switchToAccount(_ account: AppAccount) {
+        withAnimation {
+            accountsManager.currentAccount = account
+        }
+    }
+    
+    private func deleteAccount(_ account: AppAccount) {
+        withAnimation {
+            accountsManager.delete(account: account)
+        }
+    }
+}
+
+struct AccountManagementSection: View {
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var router: Router
+    
+    var body: some View {
+        Section {
+            ForEach(accountsManager.availableAccounts) { account in
+                AccountRow(account: account)
+            }
+            
+            Button(action: addAccount) {
+                Label("Add Account", systemImage: "person.badge.plus")
+            }
+        } header: {
+            Text("Accounts")
+        } footer: {
+            if accountsManager.availableAccounts.count > 1 {
+                Text("Tap an account to switch to it. Swipe left to remove.")
+            }
+        }
+    }
+    
+    private func addAccount() {
+        router.presentSheet(.login)
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = SettingsViewModel()
@@ -232,6 +310,7 @@ struct SettingsView: View {
     private var profileContent: some View {
         List {
             profileHeaderSection
+            accountManagementSection
             accountInformationSection
             purchaseSection
             appSection
@@ -267,6 +346,10 @@ struct SettingsView: View {
                 avatarSize: avatarSize
             )
         }
+    }
+
+    private var accountManagementSection: some View {
+        AccountManagementSection()
     }
 
     private var accountInformationSection: some View {
