@@ -5,9 +5,9 @@
 //  Created by citron on 1/26/25.
 //
 
+import ButtonKit
 import RevenueCat
 import SwiftUI
-import ButtonKit
 
 enum PurchaseViewType {
     case view
@@ -19,6 +19,8 @@ struct PurchaseView: View {
     @StateObject private var viewModel = PurchaseViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
+
+    @State private var showRedeemSheet = false
 
     var type: PurchaseViewType = .view
 
@@ -52,7 +54,7 @@ struct PurchaseView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
                 }
-                
+
                 // Feature List
                 VStack(spacing: 16) {
                     ForEach(StoreConfig.features) { feature in
@@ -60,20 +62,41 @@ struct PurchaseView: View {
                     }
                 }
                 .padding(.horizontal)
-                
-                HStack(spacing: 16) {
-                    Button(String(localized: "store_terms", table: "Settings"))
-                    {
-                        openURL(StoreConfig.URLs.termsOfService)
+
+                VStack(spacing: 16) {
+                    // 在此插入兑换按钮，放到条款与隐私按钮之前
+                    Button {
+                        showRedeemSheet = true
+                    } label: {
+                        Text("store_button_redeem", tableName: "Settings")
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(background(.gray.opacity(0.1)))
+                            .foregroundStyle(.secondary)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 12))
                     }
-                    Button(
-                        String(localized: "store_privacy", table: "Settings")
-                    ) {
-                        openURL(StoreConfig.URLs.privacyPolicy)
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+                    .offerCodeRedemption(isPresented: $showRedeemSheet)
+                    .font(.headline)
+
+                    HStack(spacing: 16) {
+                        Button(
+                            String(localized: "store_terms", table: "Settings")
+                        ) {
+                            openURL(StoreConfig.URLs.termsOfService)
+                        }
+                        Button(
+                            String(
+                                localized: "store_privacy", table: "Settings")
+                        ) {
+                            openURL(StoreConfig.URLs.privacyPolicy)
+                        }
                     }
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
                 }
-                .font(.footnote)
-                .foregroundStyle(.secondary)
             }
             .padding(.top, type == .view ? 0 : 32)
             .padding(.bottom, 32)
@@ -95,9 +118,9 @@ struct PurchaseView: View {
                         await viewModel.restorePurchases()
                     }
                 }
-                .asyncButtonStyle(.overlay)          // 在按钮本身覆盖显示加载动画
-                .throwableButtonStyle(.none)         // 不需要抛错时摇晃
-                .disabledWhenLoading()               // 加载时禁用二次点击
+                .asyncButtonStyle(.overlay)  // 在按钮本身覆盖显示加载动画
+                .throwableButtonStyle(.none)  // 不需要抛错时摇晃
+                .disabledWhenLoading()  // 加载时禁用二次点击
             }
         }
         .task {
@@ -118,7 +141,7 @@ struct PurchaseView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 
     private func featureRow(feature: StoreConfig.Feature) -> some View {

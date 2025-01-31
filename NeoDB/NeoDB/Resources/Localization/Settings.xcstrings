@@ -181,20 +181,20 @@
       "localizations" : {
         "da" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Servicevilkår"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Terms of Service"
+            "value" : "Terms of Use"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服务条款"
+            "value" : "使用条款"
           }
         }
       }
@@ -1410,6 +1410,22 @@
         }
       }
     },
+    "store_button_redeem" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reddem Code"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换优惠代码"
+          }
+        }
+      }
+    },
     "store_button_restore" : {
       "localizations" : {
         "da" : {
@@ -2081,7 +2097,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lifetime access"
+            "value" : "Lifetime"
           }
         },
         "zh-Hans" : {
@@ -2382,20 +2398,20 @@
       "localizations" : {
         "da" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Servicevilkår"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Terms of Service"
+            "value" : "Terms of Use"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "服务条款"
+            "value" : "使用条款"
           }
         }
       }

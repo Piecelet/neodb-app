@@ -8,6 +8,7 @@
 
 import SwiftUI
 import RevenueCat
+import Perception
 
 @MainActor
 class PurchaseViewModel: ObservableObject {

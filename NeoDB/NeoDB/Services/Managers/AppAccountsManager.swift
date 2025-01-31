@@ -85,24 +85,26 @@ class AppAccountsManager: ObservableObject {
         
         Task {
             do {
-                // 获取新账户的用户信息
-                let newUser = try await currentClient.fetch(UserEndpoint.me, type: User.self)
-                
-                // 检查是否已存在相同实例和用户名的账号
-                for existingAccount in availableAccounts {
-                    if existingAccount.instance == account.instance {
-                        // 获取已存在账户的用户信息
-                        let client = NetworkClient(
-                            instance: existingAccount.instance,
-                            oauthToken: existingAccount.oauthToken
-                        )
-                        if let existingUser = try? await client.fetch(UserEndpoint.me, type: User.self),
-                           existingUser.username == newUser.username {
-                            // 如果存在相同用户名的账号，切换到该账号
-                            await MainActor.run {
-                                switchAccount(existingAccount)
+                // 如果是已授权账户，尝试获取用户信息并检查重复
+                if account.oauthToken != nil {
+                    if let newUser = try? await currentClient.fetch(UserEndpoint.me, type: User.self) {
+                        // 检查是否已存在相同实例和用户名的账号
+                        for existingAccount in availableAccounts {
+                            if existingAccount.instance == account.instance {
+                                // 获取已存在账户的用户信息
+                                let client = NetworkClient(
+                                    instance: existingAccount.instance,
+                                    oauthToken: existingAccount.oauthToken
+                                )
+                                if let existingUser = try? await client.fetch(UserEndpoint.me, type: User.self),
+                                   existingUser.username == newUser.username {
+                                    // 如果存在相同用户名的账号，切换到该账号
+                                    await MainActor.run {
+                                        switchAccount(existingAccount)
+                                    }
+                                    return
+                                }
                             }
-                            return
                         }
                     }
                 }

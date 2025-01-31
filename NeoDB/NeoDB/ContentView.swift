@@ -10,6 +10,7 @@ import OSLog
 
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
+    @EnvironmentObject var storeManager: StoreManager
     @StateObject private var router = Router()
     @State private var isSearchActive = false
     private let logger = Logger.views.contentView
@@ -77,7 +78,7 @@ struct ContentView: View {
         .environmentObject(router)
         .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
             logger.debug("shouldShowPurchase changed to \(shouldShow)")
-            if shouldShow {
+            if shouldShow, !storeManager.isPlus {
                 router.presentSheet(.purchase)
             }
         }
