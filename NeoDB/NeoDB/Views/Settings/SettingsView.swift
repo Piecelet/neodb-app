@@ -179,7 +179,7 @@ struct AccountRow: View {
             VStack(alignment: .leading) {
                 Text(account.instance)
                     .font(.headline)
-                if let token = account.oauthToken {
+                if account.oauthToken != nil {
                     Text("Authenticated")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)

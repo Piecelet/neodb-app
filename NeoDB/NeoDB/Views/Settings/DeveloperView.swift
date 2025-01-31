@@ -18,6 +18,7 @@ class DeveloperViewModel: ObservableObject {
     @Published var clients: [AppClient] = []
     @Published var error: Error?
     @Published var showError = false
+    @Published var appStorageItems: [(key: String, value: String)] = []
     
     func loadData() {
         // Load accounts
@@ -35,6 +36,17 @@ class DeveloperViewModel: ObservableObject {
         clients = clientKeys.compactMap { key in
             try? AppClient.retrieve(for: key)
         }
+        
+        // Load AppStorage items
+        loadAppStorageItems()
+    }
+    
+    private func loadAppStorageItems() {
+        let defaults = UserDefaults.standard
+        appStorageItems = defaults.dictionaryRepresentation().compactMap { key, value in
+            guard let stringValue = value as? String else { return nil }
+            return (key: key, value: stringValue)
+        }.sorted(by: { $0.key < $1.key })
     }
     
     func deleteAccount(_ account: AppAccount) {
@@ -56,12 +68,24 @@ class DeveloperViewModel: ObservableObject {
         clients.forEach { $0.delete() }
         loadData()
     }
+    
+    func clearAllAppStorage() {
+        let defaults = UserDefaults.standard
+        let dictionary = defaults.dictionaryRepresentation()
+        dictionary.keys.forEach { key in
+            defaults.removeObject(forKey: key)
+        }
+        defaults.synchronize()
+        loadAppStorageItems()
+        logger.debug("Cleared all AppStorage items")
+    }
 }
 
 struct DeveloperView: View {
     @StateObject private var viewModel = DeveloperViewModel()
     @State private var showDeleteAllAccountsAlert = false
     @State private var showDeleteAllClientsAlert = false
+    @State private var showClearAppStorageAlert = false
     
     var body: some View {
         List {
@@ -140,6 +164,29 @@ struct DeveloperView: View {
             } header: {
                 Text("Clients (\(viewModel.clients.count))")
             }
+            
+            // AppStorage Section
+            Section {
+                ForEach(viewModel.appStorageItems, id: \.key) { item in
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(item.key)
+                            .font(.headline)
+                        Text(item.value)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                if !viewModel.appStorageItems.isEmpty {
+                    Button(role: .destructive) {
+                        showClearAppStorageAlert = true
+                    } label: {
+                        Label("Clear All AppStorage", systemImage: "trash")
+                    }
+                }
+            } header: {
+                Text("AppStorage (\(viewModel.appStorageItems.count))")
+            }
         }
         .navigationTitle("Developer")
         .task {
@@ -176,6 +223,18 @@ struct DeveloperView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This action cannot be undone.")
+        }
+        .confirmationDialog(
+            "Clear All AppStorage",
+            isPresented: $showClearAppStorageAlert,
+            titleVisibility: .visible
+        ) {
+            Button("Clear All", role: .destructive) {
+                viewModel.clearAllAppStorage()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This will clear all UserDefaults data. This action cannot be undone.")
         }
     }
 }
