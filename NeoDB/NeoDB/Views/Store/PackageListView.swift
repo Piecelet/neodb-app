@@ -10,7 +10,7 @@ import RevenueCat
 import SwiftUI
 
 // PackageListView - 新的套餐列表视图
-private struct PackageListView: View {
+struct PackageListView: View {
     let offering: Offering
     @Binding var showAllPlans: Bool
     @Binding var selectedPackage: Package?

@@ -2241,6 +2241,7 @@
       }
     },
     "store_period_month" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -2263,6 +2264,7 @@
       }
     },
     "store_period_year" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -2373,6 +2375,7 @@
       }
     },
     "store_purchase_onetime" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
