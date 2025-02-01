@@ -353,6 +353,22 @@
         }
       }
     },
+    "account_add" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Account"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加账户"
+          }
+        }
+      }
+    },
     "account_displayname" : {
       "comment" : "A placeholder of the display name of an account.",
       "localizations" : {
@@ -434,6 +450,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "账号"
+          }
+        }
+      }
+    },
+    "accounts_footer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap an account to switch to it. Swipe left to remove."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下来切换账户。向左滑动来移除。"
+          }
+        }
+      }
+    },
+    "accounts_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accounts"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理账户"
           }
         }
       }
@@ -650,6 +698,22 @@
         }
       }
     },
+    "developer_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开发者选项"
+          }
+        }
+      }
+    },
     "instance_alert_description" : {
       "comment" : "Description explaining why instance is not compatible and what to do next",
       "localizations" : {
@@ -836,6 +900,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "站点"
+          }
+        }
+      }
+    },
+    "loading_text" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载中…"
           }
         }
       }
@@ -1378,6 +1458,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用条款"
+          }
+        }
+      }
+    },
+    "profile_error_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't Load Profile"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法加载"
           }
         }
       }
@@ -2334,52 +2430,6 @@
         }
       }
     },
-    "store_period_month" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per måned"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per month"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 每月"
-          }
-        }
-      }
-    },
-    "store_period_year" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per år"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per year"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 每年"
-          }
-        }
-      }
-    },
     "store_plans_hide" : {
       "localizations" : {
         "da" : {
@@ -2445,35 +2495,6 @@
           }
         }
       }
-    },
-    "store_privacy" : {
-
-    },
-    "store_purchase_onetime" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Engangskøb"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time Purchase"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一次性购买"
-          }
-        }
-      }
-    },
-    "store_terms" : {
-
     },
     "store_title" : {
       "localizations" : {

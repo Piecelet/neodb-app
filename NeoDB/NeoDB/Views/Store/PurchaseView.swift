@@ -82,13 +82,13 @@ struct PurchaseView: View {
 
                     HStack(spacing: 16) {
                         Button(
-                            String(localized: "store_terms", table: "Settings")
+                            String(localized: "policy_terms_of_use", table: "Settings")
                         ) {
                             openURL(StoreConfig.URLs.termsOfService)
                         }
                         Button(
                             String(
-                                localized: "store_privacy", table: "Settings")
+                                localized: "policy_privacy_policy", table: "Settings")
                         ) {
                             openURL(StoreConfig.URLs.privacyPolicy)
                         }

@@ -73,7 +73,7 @@ enum StoreConfig {
             color: .cyan
         ),
         Feature(
-            icon: .sfSymbol(.person2),
+            icon: .sfSymbol(.personCropCircle),
             title: String(localized: "store_feature_accounts_title", table: "Settings"),
             description: String(localized: "store_feature_accounts_description", table: "Settings"),
             color: .blue

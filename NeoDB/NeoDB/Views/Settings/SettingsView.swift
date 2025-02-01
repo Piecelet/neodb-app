@@ -258,13 +258,14 @@ struct AccountManagementSection: View {
             }
             
             Button(action: addAccount) {
-                Label("Add Account", systemImage: "person.badge.plus")
+                Label(String(localized: "account_add", table: "Settings"), 
+                      systemImage: "person.badge.plus")
             }
         } header: {
-            Text("Accounts")
+            Text(String(localized: "accounts_title", table: "Settings"))
         } footer: {
             if accountsManager.availableAccounts.count > 1 {
-                Text("Tap an account to switch to it. Swipe left to remove.")
+                Text(String(localized: "accounts_footer", table: "Settings"))
             }
         }
         .enableInjection()
@@ -332,7 +333,7 @@ struct SettingsView: View {
 
     private func errorView(_ error: String) -> some View {
         EmptyStateView(
-            "Couldn't Load Profile",
+            String(localized: "profile_error_title", table: "Settings"),
             systemImage: "exclamationmark.triangle",
             description: Text(error)
         )
@@ -397,18 +398,18 @@ struct SettingsView: View {
                     }
                     .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 } header: {
-                    Text("account_title", tableName: "Settings")
+                    Text(String(localized: "account_title", table: "Settings"))
                 }
             } else if viewModel.user == nil {
                 Section {
                     LabeledContent {
-                        Text("loading...")
+                        Text(String(localized: "loading_text", table: "Settings"))
                     } label: {
-                        Text("account_external", tableName: "Settings")
+                        Text(String(localized: "account_external", table: "Settings"))
                     }
                     .redacted(reason: .placeholder)
                 } header: {
-                    Text("account_title", tableName: "Settings")
+                    Text(String(localized: "account_title", table: "Settings"))
                 }
             }
         }
@@ -454,7 +455,7 @@ struct SettingsView: View {
                 DeveloperView()
             } label: {
                 Label {
-                    Text("Developer")
+                    Text(String(localized: "developer_title", table: "Settings"))
                 } icon: {
                     Image(systemName: "hammer")
                 }
@@ -495,10 +496,26 @@ struct SettingsView: View {
                     dismiss()
                 }
             } label: {
-                Text("signout_button", tableName: "Settings")
+                Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)
             }
             .disabled(viewModel.user == nil)
         }
     }
+
+    #if DEBUG
+    private var developerSection: some View {
+        Section {
+            NavigationLink {
+                DeveloperView()
+            } label: {
+                Label {
+                    Text(String(localized: "developer_title", table: "Settings"))
+                } icon: {
+                    Image(systemName: "hammer")
+                }
+            }
+        }
+    }
+    #endif
 }
