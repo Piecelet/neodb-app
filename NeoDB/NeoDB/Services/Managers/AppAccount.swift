@@ -13,9 +13,21 @@ struct AppAccount: Codable, Identifiable, Hashable, Sendable {
     let instance: String
     var accountName: String?
     let oauthToken: OauthToken?
+    
+    // User information
+    var username: String?
+    var displayName: String?
+    var avatar: String?
 
     var id: String {
         key
+    }
+
+    var handle: String? {
+        if let username = username {
+            return "@\(username)@\(instance)"
+        }
+        return nil
     }
 
     private var key: String {

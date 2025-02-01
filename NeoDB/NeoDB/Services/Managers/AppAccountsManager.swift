@@ -16,7 +16,7 @@ class AppAccountsManager: ObservableObject {
 
     @AppStorage("latestCurrentAccountKey") static public
         var latestCurrentAccountKey: String = ""
-    
+
     @AppStorage("lastAuthenticatedAccountKey") static public
         var lastAuthenticatedAccountKey: String = ""
 
@@ -82,79 +82,89 @@ class AppAccountsManager: ObservableObject {
             oauthToken: defaultAccount.oauthToken
         )
         isAuthenticated = defaultAccount.oauthToken != nil
-        
+
         // 如果当前账户已验证，更新lastAuthenticatedAccountKey
         if isAuthenticated {
             Self.lastAuthenticatedAccountKey = currentAccount.id
         }
     }
 
+    // 获取并更新账户的用户信息
+    private func fetchAndUpdateUserInfo(for account: AppAccount) async throws
+        -> AppAccount
+    {
+        // 创建新的NetworkClient用于此次请求
+        let client = NetworkClient(
+            instance: account.instance,
+            oauthToken: account.oauthToken
+        )
+
+        // 获取用户信息
+        guard
+            let user = try? await client.fetch(
+                UserEndpoint.me,
+                type: User.self
+            )
+        else {
+            throw AccountError.invalidResponse
+        }
+
+        // 创建更新后的账户
+        var updatedAccount = account
+        updatedAccount.username = user.username
+        updatedAccount.displayName = user.displayName
+        updatedAccount.avatar = user.avatar.absoluteString
+
+        return updatedAccount
+    }
+
     func add(account: AppAccount) {
         // 删除所有匿名账户
         AppAccount.deleteAllAnonymous()
 
-        Task {
+        // 如果是已授权账户
+        if account.oauthToken != nil {
+            withAnimation {
+                // 检查是否存在相同handle的账号
+                if let existingIndex = availableAccounts.firstIndex(where: {
+                    $0.handle == account.handle
+                }) {
+                    // 删除旧账号
+                    let oldAccount = availableAccounts[existingIndex]
+                    logger.debug("Removing existing account with handle: \(String(describing: oldAccount.handle))")
+                    oldAccount.delete()
+                    availableAccounts.remove(at: existingIndex)
+                }
+
+                // 保存并添加新账号
+                do {
+                    try account.save()
+                    logger.debug("Successfully saved account with handle: \(String(describing: account.handle))")
+                } catch {
+                    logger.error("Failed to save account: \(error.localizedDescription)")
+                }
+                availableAccounts.append(account)
+                currentAccount = account
+                isAuthenticated = true
+
+                // 更新lastAuthenticatedAccountKey
+                Self.lastAuthenticatedAccountKey = account.id
+                logger.debug("Updated lastAuthenticatedAccountKey to: \(account.id)")
+            }
+        } else {
+            // 对于未验证的账号，直接保存
             do {
-                // 如果是已授权账户，尝试获取用户信息并检查重复
-                if account.oauthToken != nil {
-                    if let newUser = try? await currentClient.fetch(
-                        UserEndpoint.me, type: User.self)
-                    {
-                        // 检查是否已存在相同实例和用户名的账号
-                        for existingAccount in availableAccounts {
-                            if existingAccount.instance == account.instance {
-                                // 获取已存在账户的用户信息
-                                let client = NetworkClient(
-                                    instance: existingAccount.instance,
-                                    oauthToken: existingAccount.oauthToken
-                                )
-                                if let existingUser = try? await client.fetch(
-                                    UserEndpoint.me, type: User.self),
-                                    existingUser.username == newUser.username
-                                {
-                                    // 如果存在相同用户名的账号，切换到该账号
-                                    await MainActor.run {
-                                        switchAccount(existingAccount)
-                                        // 如果账号已验证，更新lastAuthenticatedAccountKey
-                                        if existingAccount.oauthToken != nil {
-                                            Self.lastAuthenticatedAccountKey = existingAccount.id
-                                        }
-                                    }
-                                    return
-                                }
-                            }
-                        }
-                    }
-                }
-
                 try account.save()
-
-                await MainActor.run {
-                    withAnimation {
-                        if let accounts = try? AppAccount.retrieveAll() {
-                            availableAccounts = accounts
-                        }
-                        // 添加新账户到列表末尾
-                        if !availableAccounts.contains(where: {
-                            $0.id == account.id
-                        }) {
-                            availableAccounts.append(account)
-                        }
-                        currentAccount = account
-                        isAuthenticated = account.oauthToken != nil
-                        
-                        // 如果新账号已验证，更新lastAuthenticatedAccountKey
-                        if isAuthenticated {
-                            Self.lastAuthenticatedAccountKey = account.id
-                        }
-                    }
-                }
+                logger.debug("Saved anonymous account for instance: \(account.instance)")
             } catch {
-                await MainActor.run {
-                    logger.error(
-                        "Failed to add account: \(error.localizedDescription)")
-                    self.error = error
+                logger.error("Failed to save anonymous account: \(error.localizedDescription)")
+            }
+            withAnimation {
+                if !availableAccounts.contains(where: { $0.id == account.id }) {
+                    availableAccounts.append(account)
                 }
+                currentAccount = account
+                isAuthenticated = false
             }
         }
     }
@@ -163,7 +173,9 @@ class AppAccountsManager: ObservableObject {
         Task {
             let client = try await AppClient.get(for: currentAccount.instance)
             oauthClient = client
-            logger.debug("Client: \(String(describing: oauthClient)), token: \(String(describing: account.oauthToken?.accessToken))")
+            logger.debug(
+                "Client: \(String(describing: oauthClient)), token: \(String(describing: account.oauthToken?.accessToken))"
+            )
             if let client = oauthClient,
                 let token = account.oauthToken?.accessToken
             {
@@ -258,12 +270,17 @@ class AppAccountsManager: ObservableObject {
                 instance: state
             )
 
-            logger.debug(
-                "Authentication successful, hasShownPurchaseView: \(hasShownPurchaseView)"
-            )
+            // 创建新账户
             let account = AppAccount(instance: state, oauthToken: token)
-            add(account: account)
-            isAuthenticated = true
+            logger.debug("Created new account for instance: \(state)")
+
+            // 获取用户信息并更新账户
+            let updatedAccount = try await fetchAndUpdateUserInfo(for: account)
+            logger.debug("Updated account info - handle: \(String(describing: updatedAccount.handle))")
+
+            // 添加更新后的账户
+            add(account: updatedAccount)
+
             logger.debug(
                 "After adding account, shouldShowPurchase: \(shouldShowPurchase)"
             )
@@ -282,6 +299,7 @@ class AppAccountsManager: ObservableObject {
         }
 
         isAuthenticating = false
+        logger.debug("Authentication process completed, isAuthenticating set to false")
         oauthClient = nil
     }
 
@@ -349,10 +367,14 @@ class AppAccountsManager: ObservableObject {
 
     // 恢复到上一个已验证的账号
     func restoreLastAuthenticatedAccount() {
-        guard let lastAccount = availableAccounts.first(where: { $0.id == Self.lastAuthenticatedAccountKey }) else {
+        guard
+            let lastAccount = availableAccounts.first(where: {
+                $0.id == Self.lastAuthenticatedAccountKey
+            })
+        else {
             return
         }
-        
+
         // 只有当上一个账号是已验证的才进行恢复
         if lastAccount.oauthToken != nil {
             switchAccount(lastAccount)
