@@ -31,21 +31,12 @@ class AppAccountsManager: ObservableObject {
                 oauthToken: currentAccount.oauthToken
             )
             isAuthenticated = currentAccount.oauthToken != nil
-            
-            // 增加切换计数
-            if currentAccount.oauthToken != nil {
-                accountSwitchCount += 1
-                logger.debug("Account switched, new switch count: \(accountSwitchCount)")
-            }
 
             // 如果切换到新账号，清除错误状态
             error = nil
             isAuthenticating = false
         }
     }
-    
-    // 用于触发全局重新加载的计数器
-    @Published var accountSwitchCount: Int = 0
     
     @Published var availableAccounts: [AppAccount]
     @Published var currentClient: NetworkClient

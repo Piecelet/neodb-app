@@ -29,7 +29,7 @@ struct NeoDBApp: App {
                                 whatsNewCollection: self
                             )
                         )
-                        .id(accountsManager.accountSwitchCount)
+                        .id(accountsManager.currentAccount.id)
                 } else {
                     WelcomeView()
                 }
