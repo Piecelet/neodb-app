@@ -2837,10 +2837,38 @@
       }
     },
     "metadata_podcast_episode_link_label" : {
-      "comment" : "Podcast Episode Link label"
+      "comment" : "Podcast Episode Link label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接"
+          }
+        }
+      }
     },
     "metadata_podcast_episode_pub_date_label" : {
-      "comment" : "Podcast Episode Pub Date label"
+      "comment" : "Podcast Episode Pub Date label",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publish Date"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发布日期"
+          }
+        }
+      }
     },
     "metadata_podcast_genre_label" : {
       "comment" : "Podcast Genre label",

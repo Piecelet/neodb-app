@@ -75,7 +75,7 @@ struct LibraryView: View {
             TopTabBarView(
                 items: ShelfType.allCases,
                 selection: $viewModel.selectedShelfType
-            ) { $0.displayName }
+            ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
         }
     }
 
