@@ -31,24 +31,26 @@ class AppAccountsManager: ObservableObject {
                 oauthToken: currentAccount.oauthToken
             )
             isAuthenticated = currentAccount.oauthToken != nil
-
-            // 发送账号切换通知
-            NotificationCenter.default.post(
-                name: .accountSwitched,
-                object: nil,
-                userInfo: ["accountId": currentAccount.id]
-            )
+            
+            // 增加切换计数
+            if currentAccount.oauthToken != nil {
+                accountSwitchCount += 1
+                logger.debug("Account switched, new switch count: \(accountSwitchCount)")
+            }
 
             // 如果切换到新账号，清除错误状态
             error = nil
             isAuthenticating = false
         }
     }
+    
+    // 用于触发全局重新加载的计数器
+    @Published var accountSwitchCount: Int = 0
+    
     @Published var availableAccounts: [AppAccount]
     @Published var currentClient: NetworkClient
     @Published var isAuthenticated: Bool = false
     @Published var isAuthenticating: Bool = false
-    @Published var isRefreshing: Bool = false
     @Published var shouldShowPurchase = false {
         didSet {
             logger.debug("shouldShowPurchase changed to \(shouldShowPurchase)")
@@ -58,7 +60,7 @@ class AppAccountsManager: ObservableObject {
 
     // 检查是否至少有一个账号已验证
     var isAppAuthenticated: Bool {
-        availableAccounts.contains { $0.oauthToken != nil } && !isRefreshing
+        availableAccounts.contains { $0.oauthToken != nil }
     }
 
     init() {
