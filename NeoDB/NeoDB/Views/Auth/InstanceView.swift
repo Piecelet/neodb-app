@@ -52,7 +52,7 @@ struct InstanceView: View {
                     Section {
                         if instanceViewModel.isCompatible {
                             NavigationLink {
-                                LoginView()
+                                LoginView(instance: instance, instanceAddress: searchText)
                                     .onAppear {
                                         viewModel.updateInstance(searchText)
                                     }
@@ -83,7 +83,7 @@ struct InstanceView: View {
                             ? instances : filteredInstances, id: \.host
                     ) { instance in
                         NavigationLink {
-                            LoginView()
+                            LoginView(instanceAddress: instance.host)
                                 .onAppear {
                                     viewModel.updateInstance(instance.host)
                                 }

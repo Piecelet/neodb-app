@@ -829,13 +829,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Select Instance"
+            "value" : "Instance"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "选择站点"
+            "state" : "translated",
+            "value" : "站点"
           }
         }
       }
@@ -851,36 +851,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with %@"
+            "value" : "Sign In with %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 %@ 登录"
-          }
-        }
-      }
-    },
-    "login_footer_description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet er en open-source klient til NeoDB lavet af citron."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet is an open sourced third-party client for NeoDB made by citron."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet 是由 citron 开发的开源 NeoDB 第三方客户端。"
           }
         }
       }
@@ -907,30 +884,53 @@
         }
       }
     },
-    "login_instance_title" : {
+    "login_instance_rules_title" : {
       "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Server"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instance"
+            "value" : "Rules"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "实例"
+            "value" : "规定"
+          }
+        }
+      }
+    },
+    "login_instance_terms_notice" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Service & Privacy Policy applied."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务条款和隐私政策适用。"
           }
         }
       }
     },
     "login_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录"
+          }
+        }
+      }
     },
     "mastodon_instance_continue" : {
       "localizations" : {

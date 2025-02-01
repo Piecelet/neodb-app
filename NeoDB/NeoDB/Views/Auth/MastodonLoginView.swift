@@ -195,7 +195,7 @@ struct MastodonInstanceView: View {
                             )
                             .padding(.top, 4)
                             .foregroundStyle(.accent)
-                            Text(rule.text)
+                            Text(rule.text.asSafeMarkdownAttributedString)
                                 .font(.subheadline)
                                 .padding(.vertical, 4)
                         }
