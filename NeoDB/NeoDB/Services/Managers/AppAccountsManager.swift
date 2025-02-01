@@ -24,8 +24,10 @@ class AppAccountsManager: ObservableObject {
 
     @Published var currentAccount: AppAccount {
         didSet {
-            Self.lastAuthenticatedAccountKey = Self.latestCurrentAccountKey
             Self.latestCurrentAccountKey = currentAccount.id
+            if currentAccount.oauthToken != nil {
+                Self.lastAuthenticatedAccountKey = currentAccount.id
+            }
             currentClient = NetworkClient(
                 instance: currentAccount.instance,
                 oauthToken: currentAccount.oauthToken
@@ -37,7 +39,7 @@ class AppAccountsManager: ObservableObject {
             isAuthenticating = false
         }
     }
-    
+
     @Published var availableAccounts: [AppAccount]
     @Published var currentClient: NetworkClient
     @Published var isAuthenticated: Bool = false
@@ -52,6 +54,17 @@ class AppAccountsManager: ObservableObject {
     // 检查是否至少有一个账号已验证
     var isAppAuthenticated: Bool {
         availableAccounts.contains { $0.oauthToken != nil }
+    }
+
+    var appId: String {
+        if isAppAuthenticated {
+            if currentAccount.oauthToken != nil {
+                return currentAccount.id
+            } else {
+                return Self.lastAuthenticatedAccountKey
+            }
+        }
+        return "anonymous"
     }
 
     init() {
@@ -404,8 +417,8 @@ class AppAccountsManager: ObservableObject {
         logger.debug("Last authenticated account key: \(Self.lastAuthenticatedAccountKey)")
         logger.debug("Available accounts: \(availableAccounts.map { $0.id })")
         
-        guard !Self.lastAuthenticatedAccountKey.isEmpty else {
-            logger.debug("No last authenticated account key found")
+        guard !Self.lastAuthenticatedAccountKey.isEmpty || Self.lastAuthenticatedAccountKey == currentAccount.id else {
+            logger.debug("No last authenticated account key found or current account is the last authenticated account")
             return
         }
         
