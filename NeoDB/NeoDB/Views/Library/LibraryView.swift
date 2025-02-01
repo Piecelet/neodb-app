@@ -78,6 +78,7 @@ struct LibraryView: View {
                 selection: $viewModel.selectedShelfType
             ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
         }
+        .padding(.bottom, -12)
     }
 
     private var categoryFilter: some View {
