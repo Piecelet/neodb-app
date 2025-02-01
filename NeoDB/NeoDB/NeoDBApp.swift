@@ -18,7 +18,7 @@ struct NeoDBApp: App {
     var body: some Scene {
         WindowGroup {
             Group {
-                if accountsManager.isAuthenticated {
+                if accountsManager.isAppAuthenticated {
                     ContentView()
                         .environmentObject(router)
                         .environment(

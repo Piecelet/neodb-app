@@ -16,17 +16,15 @@ class AppAccountsManager: ObservableObject {
 
     @AppStorage("latestCurrentAccountKey") static public
         var latestCurrentAccountKey: String = ""
+    
+    @AppStorage("lastAuthenticatedAccountKey") static public
+        var lastAuthenticatedAccountKey: String = ""
 
     @AppStorage("hasShownPurchaseView") private var hasShownPurchaseView = false
-    {
-        didSet {
-            logger.debug(
-                "hasShownPurchaseView changed to \(hasShownPurchaseView)")
-        }
-    }
 
     @Published var currentAccount: AppAccount {
         didSet {
+            Self.lastAuthenticatedAccountKey = Self.latestCurrentAccountKey
             Self.latestCurrentAccountKey = currentAccount.id
             currentClient = NetworkClient(
                 instance: currentAccount.instance,
@@ -57,6 +55,11 @@ class AppAccountsManager: ObservableObject {
     }
     @Published var error: Error?
 
+    // 检查是否至少有一个账号已验证
+    var isAppAuthenticated: Bool {
+        availableAccounts.contains { $0.oauthToken != nil }
+    }
+
     init() {
         var defaultAccount = AppAccount(
             instance: AppConfig.defaultInstance, oauthToken: nil)
@@ -79,6 +82,11 @@ class AppAccountsManager: ObservableObject {
             oauthToken: defaultAccount.oauthToken
         )
         isAuthenticated = defaultAccount.oauthToken != nil
+        
+        // 如果当前账户已验证，更新lastAuthenticatedAccountKey
+        if isAuthenticated {
+            Self.lastAuthenticatedAccountKey = currentAccount.id
+        }
     }
 
     func add(account: AppAccount) {
@@ -107,6 +115,10 @@ class AppAccountsManager: ObservableObject {
                                     // 如果存在相同用户名的账号，切换到该账号
                                     await MainActor.run {
                                         switchAccount(existingAccount)
+                                        // 如果账号已验证，更新lastAuthenticatedAccountKey
+                                        if existingAccount.oauthToken != nil {
+                                            Self.lastAuthenticatedAccountKey = existingAccount.id
+                                        }
                                     }
                                     return
                                 }
@@ -119,7 +131,6 @@ class AppAccountsManager: ObservableObject {
 
                 await MainActor.run {
                     withAnimation {
-                        // 重新加载账户列表，因为可能有匿名账户被删除
                         if let accounts = try? AppAccount.retrieveAll() {
                             availableAccounts = accounts
                         }
@@ -131,6 +142,11 @@ class AppAccountsManager: ObservableObject {
                         }
                         currentAccount = account
                         isAuthenticated = account.oauthToken != nil
+                        
+                        // 如果新账号已验证，更新lastAuthenticatedAccountKey
+                        if isAuthenticated {
+                            Self.lastAuthenticatedAccountKey = account.id
+                        }
                     }
                 }
             } catch {
@@ -328,6 +344,18 @@ class AppAccountsManager: ObservableObject {
             _ = try await currentClient.fetch(UserEndpoint.me, type: User.self)
         } catch {
             self.error = error
+        }
+    }
+
+    // 恢复到上一个已验证的账号
+    func restoreLastAuthenticatedAccount() {
+        guard let lastAccount = availableAccounts.first(where: { $0.id == Self.lastAuthenticatedAccountKey }) else {
+            return
+        }
+        
+        // 只有当上一个账号是已验证的才进行恢复
+        if lastAccount.oauthToken != nil {
+            switchAccount(lastAccount)
         }
     }
 }
