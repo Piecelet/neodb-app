@@ -22,9 +22,10 @@ struct LibraryView: View {
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)
             TabView(selection: $viewModel.selectedShelfType) {
                 ForEach(ShelfType.allCases, id: \.self) { type in
-                    Group {
+                    List {
                         shelfContentView(for: type)
                     }
+                    .listStyle(.plain)
                     .refreshable {
                         await viewModel.loadShelfItems(
                             type: type, refresh: true)
@@ -83,65 +84,6 @@ struct LibraryView: View {
         ItemCategoryBarView(activeTab: $viewModel.selectedCategory)
     }
 
-    // MARK: - Shelf Content View
-    @ViewBuilder
-    private func shelfContentView(for type: ShelfType) -> some View {
-        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-
-        if state.items.isEmpty {
-            if let error = state.error {
-                EmptyStateView(
-                    String(localized: "library_error_title", table: "Library"),
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(state.detailedError ?? error)
-                )
-            } else if !state.isLoading && !state.isRefreshing {
-                EmptyStateView(
-                    String(localized: "library_empty_title", table: "Library"),
-                    systemImage: "books.vertical",
-                    description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .padding()
-            }
-        } else {
-            ScrollView {
-                shelfItemsList(for: type)
-            }
-        }
-    }
-
-    private func shelfItemsList(for type: ShelfType) -> some View {
-        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-
-        return LazyVStack(spacing: 12) {
-            ForEach(state.items) { mark in
-                Button {
-                    router.navigate(to: .itemDetailWithItem(item: mark.item))
-                } label: {
-                    shelfItemView(mark: mark)
-                        .onAppear {
-                            if mark.id == state.items.last?.id {
-                                Task {
-                                    await viewModel.loadNextPage(type: type)
-                                }
-                            }
-                        }
-                }
-                .buttonStyle(.plain)
-            }
-
-            if state.isLoading && !state.isRefreshing {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .padding()
-            }
-        }
-        .padding()
-    }
-
     // MARK: - Item View Components
     private func shelfItemView(mark: MarkSchema) -> some View {
         HStack(alignment: .top, spacing: 12) {
@@ -152,7 +94,6 @@ struct LibraryView: View {
             chevronIcon
                 .padding(.top, 4)
         }
-        .padding(.vertical, 4)
         .contentShape(Rectangle())
     }
 
@@ -177,6 +118,69 @@ struct LibraryView: View {
         Image(systemSymbol: .chevronRight)
             .foregroundStyle(.secondary)
             .font(.caption)
+    }
+
+    // MARK: - Shelf Content View
+    @ViewBuilder
+    private func shelfContentView(for type: ShelfType) -> some View {
+        if let state = viewModel.shelfStates[type] {
+            if state.items.isEmpty {
+                emptyStateView(for: state, type: type)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+            } else {
+                shelfItemsList(for: state, type: type)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
+        if let error = state.error {
+            EmptyStateView(
+                String(localized: "library_error_title", table: "Library"),
+                systemImage: "exclamationmark.triangle",
+                description: Text(state.detailedError ?? error)
+            )
+        } else if !state.isLoading && !state.isRefreshing {
+            EmptyStateView(
+                String(localized: "library_empty_title", table: "Library"),
+                systemImage: "books.vertical",
+                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
+            )
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding()
+                .id(UUID())
+        }
+    }
+    
+    @ViewBuilder
+    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType) -> some View {
+        ForEach(state.items) { mark in
+            Button {
+                router.navigate(to: .itemDetailWithItem(item: mark.item))
+            } label: {
+                shelfItemView(mark: mark)
+                    .onAppear {
+                        if mark.id == state.items.last?.id {
+                            Task {
+                                await viewModel.loadNextPage(type: type)
+                            }
+                        }
+                    }
+            }
+            .buttonStyle(.plain)
+        }
+        
+        if state.isLoading && !state.isRefreshing {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding()
+                .listRowInsets(EdgeInsets())
+        }
     }
 }
 
