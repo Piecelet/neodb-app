@@ -165,7 +165,7 @@ struct ContentView: View {
         case .itemDetailWithItem(let item):
             ItemView(
                 id: item.id,
-                category: item.type.category,
+                category: item.type.category ?? item.category,
                 item: item
             )
         case .shelfDetail(let type):
