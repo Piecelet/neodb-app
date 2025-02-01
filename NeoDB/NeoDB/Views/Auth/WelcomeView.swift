@@ -60,11 +60,11 @@ struct WelcomeView: View {
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
-                .onTapGesture {
+                .simultaneousGesture(TapGesture().onEnded {
                     Task {
-                        HapticFeedback.impact(.light)
+                        HapticFeedback.impact()
                     }
-                }
+                })
                 .opacity(contentOpacity)
 
                 HStack(spacing: 16) {

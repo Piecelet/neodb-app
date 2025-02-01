@@ -24,6 +24,50 @@ struct LoginView: View {
         self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
     }
 
+    private var signInButton: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                buttonScale = 0.95
+            }
+
+            // Reset scale after brief delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                    buttonScale = 1.0
+                }
+            }
+
+            Task {
+                await viewModel.authenticate()
+                accountsManager.isAuthenticating = true
+            }
+        }) {
+            HStack {
+                if accountsManager.isAuthenticating {
+                    ProgressView()
+                        .tint(.white)
+                } else {
+                    Image(systemName: "person.fill")
+                    Text(
+                        String(
+                            format: String(
+                                localized: "login_button_signin_with",
+                                table: "Settings"),
+                            accountsManager.currentAccount.instance))
+                }
+            }
+            .fontWeight(.medium)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .buttonStyle(.borderedProminent)
+            .background(Color.accentColor)
+            .foregroundColor(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .scaleEffect(buttonScale)
+        .disabled(accountsManager.isAuthenticating)
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -48,16 +92,23 @@ struct LoginView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         if let rules = instance.rules, !rules.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(String(localized: "login_instance_rules_title", table: "Settings"))
-                                    .font(.headline)
-                                
+                                Text(
+                                    String(
+                                        localized: "login_instance_rules_title",
+                                        table: "Settings")
+                                )
+                                .font(.headline)
+
                                 ForEach(rules) { rule in
                                     HStack(alignment: .top, spacing: 8) {
                                         Text("•")
                                             .foregroundColor(.secondary)
-                                        Text(rule.text.asSafeMarkdownAttributedString)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
+                                        Text(
+                                            rule.text
+                                                .asSafeMarkdownAttributedString
+                                        )
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
                                     }
                                 }
                             }
@@ -70,65 +121,39 @@ struct LoginView: View {
             .padding(.vertical)
         }
         .safeAreaInset(edge: .bottom) {
-                VStack(spacing: 12) {
-                    Button(action: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                            buttonScale = 0.95
-                        }
+            VStack(spacing: 12) {
+                signInButton
 
-                        // Reset scale after brief delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                                buttonScale = 1.0
-                            }
-                        }
-
-                        Task {
-                            await viewModel.authenticate()
-                            accountsManager.isAuthenticating = true
-                        }
-                    }) {
-                        HStack {
-                            if accountsManager.isAuthenticating {
-                                ProgressView()
-                                    .tint(.white)
-                            } else {
-                                Image(systemName: "person.fill")
-                                Text(String(format: String(localized: "login_button_signin_with", table: "Settings"), accountsManager.currentAccount.instance))
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                Button {
+                    showMastodonLogin = true
+                } label: {
+                    HStack {
+                        Image(symbol: .custom("custom.mastodon.fill"))
+                        Text(
+                            String(
+                                localized: "mastodon_login_title",
+                                table: "Settings"))
                     }
-                    .scaleEffect(buttonScale)
-                    .disabled(accountsManager.isAuthenticating)
-
-                    Button {
-                        showMastodonLogin = true
-                    } label: {
-                        HStack {
-                            Image(symbol: .custom("custom.mastodon.fill"))
-                            Text(String(localized: "mastodon_login_title", table: "Settings"))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color(.systemGray6))
-                        .foregroundColor(.mastodonPrimary)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                    }
-                    
-                    Text(String(localized: "login_instance_terms_notice", table: "Settings"))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .foregroundColor(.mastodonPrimary)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
+
+                Text(
+                    String(
+                        localized: "login_instance_terms_notice",
+                        table: "Settings")
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
                 .padding(.horizontal)
-                .padding(.top)
-                .background(.bar)
+            }
+            .padding(.horizontal)
+            .padding(.top)
+            .background(.bar)
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
@@ -151,8 +176,10 @@ struct LoginView: View {
             WebAuthenticationSession(
                 url: viewModel.authUrl!,
                 callbackURLScheme: AppConfig.OAuth.redirectUri
-                    .addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)
-                    ?? AppConfig.OAuth.redirectUri.replacingOccurrences(of: "://", with: "")
+                    .addingPercentEncoding(
+                        withAllowedCharacters: .urlHostAllowed)
+                    ?? AppConfig.OAuth.redirectUri.replacingOccurrences(
+                        of: "://", with: "")
             ) { callbackURL, error in
                 if let url = callbackURL {
                     Task {
@@ -165,8 +192,61 @@ struct LoginView: View {
         }
         .sheet(isPresented: $showMastodonLogin) {
             NavigationStack {
-                MastodonLoginView()
+                VStack(spacing: 0) {
+                    HStack {
+                        Text("mastodon_login_title", tableName: "Settings")
+                            .font(.headline)
+                        Spacer()
+                        Button(action: { showMastodonLogin = false }) {
+                            Image(systemSymbol: .xmarkCircleFill)
+                                .font(.title2)
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding()
+
+                    Spacer()
+
+                    VStack(spacing: 16) {
+                        Image(symbol: .custom("custom.fediverse"))
+                            .font(.system(size: 60))
+                            .foregroundStyle(Color(.systemGray))
+
+                        VStack(spacing: 8) {
+                            Text("mastodon_guide_title", tableName: "Settings")
+                                .font(.headline)
+                                .multilineTextAlignment(.center)
+                            Text(
+                                String(
+                                    format: String(
+                                        localized: "mastodon_guide_subtitle",
+                                        table: "Settings"),
+                                    String(
+                                        format: String(
+                                            localized:
+                                                "login_button_signin_with",
+                                            table: "Settings"),
+                                        accountsManager.currentAccount.instance)
+                                )
+                            )
+                            .font(.subheadline)
+                            .multilineTextAlignment(.center)
+                        }
+                        Image("mastodon.instruction")
+                            .resizable()
+                            .scaledToFit()
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .padding(.horizontal)
+
+                    Spacer()
+
+                    signInButton
+                        .padding()
+                }
+                .background(.ultraThinMaterial)
             }
+            .presentationDetents([.fraction(0.85)])
             .presentationDragIndicator(.visible)
         }
         .enableInjection()

@@ -8,6 +8,7 @@
 import SwiftUI
 import WebView
 
+@available(*, deprecated, message: "Lots of bugs, user should use LoginView instead.")
 struct MastodonLoginView: View {
     @StateObject private var viewModel = MastodonLoginViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager

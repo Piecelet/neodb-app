@@ -932,6 +932,38 @@
         }
       }
     },
+    "mastodon_guide_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To sign in with Mastodon, tap %@. On the opened website, tap the fediverse symbol and enter your mastodon instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要使用 Mastodon 登录，请按下「%@」。在打开的网站中，点击联邦宇宙图标并输入你的 Mastodon 站点地址。"
+          }
+        }
+      }
+    },
+    "mastodon_guide_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the fediverse symbol"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轻点联邦宇宙图标"
+          }
+        }
+      }
+    },
     "mastodon_instance_continue" : {
       "localizations" : {
         "da" : {
