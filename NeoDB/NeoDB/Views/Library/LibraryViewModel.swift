@@ -28,7 +28,15 @@ final class LibraryViewModel: ObservableObject {
     private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
     
     // MARK: - Published Properties
-    @Published var selectedShelfType: ShelfType = .wishlist 
+    @Published var selectedShelfType: ShelfType = .wishlist {
+        didSet {
+            if oldValue != selectedShelfType {
+                Task {
+                    await loadShelfItems(type: selectedShelfType, refresh: true)
+                }
+            }
+        }
+    }
     @Published var selectedCategory: ItemCategory.shelfAvailable = .allItems {
         didSet {
             if oldValue != selectedCategory {
@@ -137,14 +145,6 @@ final class LibraryViewModel: ObservableObject {
             loadTasks.removeAll()
 
             await loadShelfItems(type: selectedShelfType, refresh: refresh)
-            
-            await withTaskGroup(of: Void.self) { group in
-                for type in ShelfType.allCases where type != selectedShelfType {
-                    group.addTask {
-                        await self.loadShelfItems(type: type, refresh: refresh)
-                    }
-                }
-            }
         }
     }
     
