@@ -173,17 +173,38 @@ struct AvatarPlaceholderView: View {
 struct AccountRow: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     let account: AppAccount
+    private let avatarSize: CGFloat = 40
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
+            if let avatarURL = account.avatar.flatMap(URL.init) {
+                KFImage(avatarURL)
+                    .placeholder {
+                        AvatarPlaceholderView(
+                            isLoading: false,
+                            size: avatarSize
+                        )
+                    }
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: avatarSize, height: avatarSize)
+                    .clipShape(Circle())
+                    .saturation(account.id == accountsManager.currentAccount.id ? 1 : 0)
+                    .opacity(account.id == accountsManager.currentAccount.id ? 1 : 0.6)
+            } else {
+                AvatarPlaceholderView(
+                    isLoading: false,
+                    size: avatarSize
+                )
+                .opacity(account.id == accountsManager.currentAccount.id ? 1 : 0.6)
+            }
+            
             VStack(alignment: .leading) {
-                Text(account.instance)
+                Text(account.displayName ?? account.instance)
                     .font(.headline)
-                if account.oauthToken != nil {
-                    Text("Authenticated")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
+                Text(account.handle ?? "Unauthenticated")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
             
             Spacer()

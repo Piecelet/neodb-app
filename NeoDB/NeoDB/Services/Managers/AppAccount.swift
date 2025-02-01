@@ -11,7 +11,6 @@ import OSLog
 
 struct AppAccount: Codable, Identifiable, Hashable, Sendable {
     let instance: String
-    var accountName: String?
     let oauthToken: OauthToken?
     
     // User information
