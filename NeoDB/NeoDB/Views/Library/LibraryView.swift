@@ -20,17 +20,19 @@ struct LibraryView: View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)
-            TabView(selection: $viewModel.selectedShelfType) {
-                ForEach(ShelfType.allCases, id: \.self) { type in
-                    List {
-                        shelfContentView(for: type)
+            GeometryReader { geometry in
+                TabView(selection: $viewModel.selectedShelfType) {
+                    ForEach(ShelfType.allCases, id: \.self) { type in
+                        List {
+                            shelfContentView(for: type, geometry: geometry)
+                        }
+                        .listStyle(.plain)
+                        .refreshable {
+                            await viewModel.loadShelfItems(
+                                type: type, refresh: true)
+                        }
+                        .tag(type)
                     }
-                    .listStyle(.plain)
-                    .refreshable {
-                        await viewModel.loadShelfItems(
-                            type: type, refresh: true)
-                    }
-                    .tag(type)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -123,13 +125,14 @@ struct LibraryView: View {
 
     // MARK: - Shelf Content View
     @ViewBuilder
-    private func shelfContentView(for type: ShelfType) -> some View {
+    private func shelfContentView(for type: ShelfType, geometry: GeometryProxy? = nil) -> some View {
         if let state = viewModel.shelfStates[type] {
             if state.items.isEmpty {
                 emptyStateView(for: state, type: type)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
             } else {
                 shelfItemsList(for: state, type: type)
             }
@@ -155,6 +158,7 @@ struct LibraryView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .id(UUID())
+                .padding(.top, 60)
         }
     }
     

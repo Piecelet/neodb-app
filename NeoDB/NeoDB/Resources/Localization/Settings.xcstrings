@@ -760,7 +760,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "不可用"
+            "value" : "站点不可用"
           }
         }
       }

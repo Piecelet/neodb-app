@@ -111,6 +111,7 @@ struct InstanceView: View {
                         HStack {
                             Spacer()
                             ProgressView()
+                                .id(UUID())
                             Spacer()
                         }
                         .listRowBackground(Color.clear)
