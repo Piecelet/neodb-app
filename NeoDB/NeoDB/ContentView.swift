@@ -124,6 +124,8 @@ struct ContentView: View {
                     ItemDetailsSheet(item: item)
                 case .purchase:
                     PurchaseView(type: .sheet)
+                case .purchaseWithFeature(let feature):
+                    PurchaseView(type: .sheet, scrollToFeature: feature)
                 case .login:
                     NavigationStack {
                         InstanceView()
@@ -190,6 +192,8 @@ struct ContentView: View {
             GalleryCategoryView(gallery: gallery)
         case .purchase:
             PurchaseView()
+        case .purchaseWithFeature(let feature):
+            PurchaseView(scrollToFeature: feature)
         }
     }
 }

@@ -65,6 +65,13 @@ enum StoreConfig {
         
         var feature: Feature {
             switch self {
+            case .multipleAccounts:
+                return Feature(
+                    icon: .sfSymbol(.personCropCircle),
+                    title: String(localized: "store_feature_accounts_title", table: "Settings"),
+                    description: String(localized: "store_feature_accounts_description", table: "Settings"),
+                    color: .blue
+                )
             case .smooth:
                 return Feature(
                     icon: .sfSymbol(.sparkles),
@@ -88,13 +95,6 @@ enum StoreConfig {
                     description: String(localized: "store_feature_discovery_description", table: "Settings"),
                     isFree: true,
                     color: .cyan
-                )
-            case .multipleAccounts:
-                return Feature(
-                    icon: .sfSymbol(.personCropCircle),
-                    title: String(localized: "store_feature_accounts_title", table: "Settings"),
-                    description: String(localized: "store_feature_accounts_description", table: "Settings"),
-                    color: .blue
                 )
             case .supportDev:
                 return Feature(

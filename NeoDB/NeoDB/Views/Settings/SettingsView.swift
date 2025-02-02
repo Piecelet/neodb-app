@@ -250,6 +250,7 @@ struct AccountRow: View {
 struct AccountManagementSection: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var storeManager: StoreManager
     
     var body: some View {
         Section {
@@ -276,7 +277,11 @@ struct AccountManagementSection: View {
     #endif
     
     private func addAccount() {
-        router.presentSheet(.login)
+        if !storeManager.isPlus {
+            router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
+        } else {
+            router.presentSheet(.login)
+        }
     }
 }
 

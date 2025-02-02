@@ -31,6 +31,7 @@ enum RouterDestination: Hashable {
 
     // Store
     case purchase
+    case purchaseWithFeature(feature: StoreConfig.Features)
     
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -73,6 +74,9 @@ enum RouterDestination: Hashable {
             hasher.combine(gallery.id)
         case .purchase:
             hasher.combine(12)
+        case .purchaseWithFeature(let feature):
+            hasher.combine(13)
+            hasher.combine(feature)
         }
     }
     
@@ -119,6 +123,7 @@ enum SheetDestination: Identifiable {
 
     // Store
     case purchase
+    case purchaseWithFeature(feature: StoreConfig.Features)
     
     var id: String {
         switch self {
@@ -132,6 +137,8 @@ enum SheetDestination: Identifiable {
             return "itemDetails"
         case .purchase:
             return "purchase"
+        case .purchaseWithFeature:
+            return "purchaseWithFeature"
         case .login:
             return "login"
         }

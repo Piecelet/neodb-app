@@ -1610,7 +1610,7 @@
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "needs_review",
+            "state" : "translated",
             "value" : "兑换优惠代码"
           }
         }

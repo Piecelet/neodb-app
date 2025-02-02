@@ -61,13 +61,9 @@ struct PurchaseView: View {
 
                     // Feature List
                     VStack(spacing: 16) {
-                        ForEach(StoreConfig.features) { feature in
-                            if let featureCase = StoreConfig.Features.allCases.first(where: { $0.feature.id == feature.id }) {
-                                featureRow(feature: feature)
-                                    .id(featureCase)
-                            } else {
-                                featureRow(feature: feature)
-                            }
+                        ForEach(StoreConfig.Features.allCases, id: \.self) { featureCase in
+                            featureRow(feature: featureCase.feature, highlight: scrollToFeature == featureCase)
+                                .id(featureCase)
                         }
                     }
                     .padding(.horizontal)
@@ -110,6 +106,8 @@ struct PurchaseView: View {
             }
             .task {
                 if let feature = scrollToFeature {
+                    // Add a small delay to ensure the view is loaded
+                    try? await Task.sleep(for: .milliseconds(300))
                     withAnimation {
                         proxy.scrollTo(feature, anchor: .center)
                     }
@@ -159,7 +157,7 @@ struct PurchaseView: View {
         @ObserveInjection var forceRedraw
     #endif
 
-    private func featureRow(feature: StoreConfig.Feature) -> some View {
+    private func featureRow(feature: StoreConfig.Feature, highlight: Bool = false) -> some View {
         HStack(alignment: .top, spacing: 16) {
             Image(symbol: feature.icon)
                 .font(.title2)
@@ -204,6 +202,10 @@ struct PurchaseView: View {
         .padding()
         .background(.grayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(highlight ? .orange.opacity(0.5) : .clear, lineWidth: 2)
+        )
         .opacity(feature.isComingSoon ? 0.8 : 1)
     }
 }
