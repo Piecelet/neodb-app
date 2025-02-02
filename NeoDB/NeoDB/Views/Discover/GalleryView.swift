@@ -19,7 +19,7 @@ struct GalleryView: View {
     }
 
     var body: some View {
-        ForEach(galleryItems) { gallery in
+        ForEach(Array(galleryItems.enumerated()), id: \.element.id) { index, gallery in
             Section {
                 VStack(alignment: .leading) {
                     Button {
@@ -58,6 +58,7 @@ struct GalleryView: View {
                         .padding(.horizontal)
                     }
                 }
+                .padding(.top, index == 0 ? 20 : nil)
                 .listRowInsets(.horizontal(0))
             }
             .listRowSeparator(.hidden)
