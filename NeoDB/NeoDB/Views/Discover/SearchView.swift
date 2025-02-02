@@ -36,6 +36,8 @@ struct SearchView: View {
     private var searchContent: some View {
         List {
             if viewModel.searchText.isEmpty {
+                SearchURLView(viewModel: viewModel)
+                
                 if !viewModel.recentSearches.isEmpty {
                     recentSearchesSection
                 }

@@ -45,6 +45,9 @@
         }
       }
     },
+    "discover_search_invalid_url" : {
+
+    },
     "discover_search_no_results_description" : {
       "localizations" : {
         "da" : {
@@ -88,6 +91,9 @@
           }
         }
       }
+    },
+    "discover_search_paste_url" : {
+
     },
     "discover_search_prompt" : {
       "localizations" : {
@@ -176,6 +182,12 @@
           }
         }
       }
+    },
+    "discover_search_url_input_placeholder" : {
+
+    },
+    "discover_search_url_section" : {
+
     }
   },
   "version" : "1.0"

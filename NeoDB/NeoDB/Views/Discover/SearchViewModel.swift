@@ -7,6 +7,7 @@
 
 import Foundation
 import OSLog
+import UIKit
 
 @MainActor
 class SearchViewModel: ObservableObject {
@@ -69,6 +70,10 @@ class SearchViewModel: ObservableObject {
     @Published var loadingStartTime: Date?
     @Published var showLoading = false
     @Published var isConfirmedSearch = false
+    @Published var isShowingURLInput = false
+    @Published var urlInput = ""
+    @Published var isLoadingURL = false
+    @Published var urlError: Error?
     
     var accountsManager: AppAccountsManager?
 
@@ -323,5 +328,32 @@ class SearchViewModel: ObservableObject {
         searchTask = nil
         galleryTask = nil
         searchDebounceTask = nil
+    }
+    
+    func fetchFromURL(_ urlString: String) async {
+        guard let url = URL(string: urlString) else {
+            urlError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: String(localized: "discover_search_invalid_url", table: "Discover")])
+            return
+        }
+        
+        isLoadingURL = true
+        urlError = nil
+        
+        do {
+            guard let accountsManager = accountsManager else { return }
+            let endpoint = CatalogEndpoint.fetch(url: url)
+            let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
+            
+            // Reset states
+            isLoadingURL = false
+            isShowingURLInput = false
+            urlInput = ""
+            
+            // Return the result
+            searchState = .results([result])
+        } catch {
+            urlError = error
+            isLoadingURL = false
+        }
     }
 } 
