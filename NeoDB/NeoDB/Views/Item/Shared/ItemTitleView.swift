@@ -13,11 +13,20 @@ enum ItemTitleMode {
 }
 
 enum ItemTitleSize {
-    case medium
-    case large
+    case small      // 最小尺寸，用于紧凑布局 (.caption)
+    case compact    // 紧凑尺寸 (.footnote)
+    case regular    // 小型标准尺寸 (.subheadline)
+    case medium     // 中等尺寸 (.headline)
+    case large      // 大尺寸 (.title2)
 
     var titleFont: Font {
         switch self {
+        case .small:
+            return .caption
+        case .compact:
+            return .system(size: 13)
+        case .regular:
+            return .subheadline
         case .medium:
             return .headline
         case .large:
@@ -27,16 +36,25 @@ enum ItemTitleSize {
 
     var titleWeight: Font.Weight {
         switch self {
-        case .medium:
+        case .small, .compact:
             return .regular
+        case .regular:
+            return .regular
+        case .medium:
+            return .medium
         case .large:
             return .bold
         }
     }
     
-
     var subtitleFont: Font {
         switch self {
+        case .small:
+            return .caption2
+        case .compact:
+            return .caption2
+        case .regular:
+            return .caption
         case .medium:
             return .subheadline
         case .large:
@@ -46,6 +64,10 @@ enum ItemTitleSize {
 
     var lineLimit: Int {
         switch self {
+        case .small:
+            return 1
+        case .compact, .regular:
+            return 2
         case .medium:
             return 2
         case .large:
@@ -58,6 +80,7 @@ struct ItemTitleView: View {
     let item: (any ItemProtocol)?
     let mode: ItemTitleMode
     let size: ItemTitleSize
+    var alignment: HorizontalAlignment = .leading
     
     var displayTitle: AttributedString {
         switch mode {
@@ -106,21 +129,39 @@ struct ItemTitleView: View {
                 Text(displayTitle)
                     .font(size.titleFont)
                     .lineLimit(size.lineLimit)
+                    .multilineTextAlignment(textAlignment)
+                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             case .titleAndSubtitle:
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: alignment, spacing: 2) {
                     Text(displayTitle)
                         .font(size.titleFont)
                         .lineLimit(size.lineLimit)
                         .fontWeight(size.titleWeight)
+                        .multilineTextAlignment(textAlignment)
                     if !originalTitle.isEmpty {
                         Text(originalTitle)
                             .font(size.subtitleFont)
                             .lineLimit(size.lineLimit)
+                            .multilineTextAlignment(textAlignment)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             }
         }
         .enableInjection()
+    }
+    
+    private var textAlignment: TextAlignment {
+        switch alignment {
+        case .leading:
+            return .leading
+        case .center:
+            return .center
+        case .trailing:
+            return .trailing
+        default:
+            return .leading
+        }
     }
 
     #if DEBUG
@@ -139,7 +180,15 @@ struct ItemTitleView: View {
         ItemTitleView(
             item: ItemSchema.preview,
             mode: .titleAndSubtitle,
-            size: .large
+            size: .large,
+            alignment: .center
+        )
+        
+        ItemTitleView(
+            item: ItemSchema.preview,
+            mode: .title,
+            size: .medium,
+            alignment: .trailing
         )
     }
     .padding()

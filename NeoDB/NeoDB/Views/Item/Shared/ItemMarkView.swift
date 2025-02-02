@@ -91,15 +91,15 @@ struct ItemMarkView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(size.padding)
+            .background(Color.grayBackground)
             .padding(.bottom, (showEditButton && mark.ratingGrade != nil && mark.commentText == nil) ? 20 : 0)
-            .background(Color(.systemGray5).opacity(0.5))
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .overlay(alignment: .bottomTrailing) {
             if showEditButton {
                 Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .ellipsis) {
                     router.presentSheet(.editShelfItem(mark: mark))
-                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                    HapticFeedback.impact()
                 }
                 .buttonStyle(.plain)
                 .accentColor(.gray)

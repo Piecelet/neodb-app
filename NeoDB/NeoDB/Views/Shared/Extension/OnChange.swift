@@ -50,7 +50,12 @@ private struct NativeChangeWithPreviousModifier<V: Equatable>: ViewModifier {
                 action(old, new)
                 storedValue = new
             }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 // MARK: - iOS 16- 自定义实现
@@ -88,5 +93,10 @@ private struct LegacyChangeWithPreviousModifier<V: Equatable>: ViewModifier {
                     hasInitialized = true
                 }
             }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

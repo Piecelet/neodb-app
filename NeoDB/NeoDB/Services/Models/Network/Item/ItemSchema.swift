@@ -13,7 +13,7 @@ extension ItemSchema {
     static var preview: ItemSchema {
         ItemSchema(
             id: "1",
-            type: "book",
+            type: .book,
             uuid: "1",
             url: "/book/1",
             apiUrl: "https://api.example.com/item/1",

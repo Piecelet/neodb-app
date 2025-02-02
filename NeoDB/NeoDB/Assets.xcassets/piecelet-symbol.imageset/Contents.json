@@ -1,21 +1,25 @@
 {
   "images" : [
     {
-      "filename" : "1024x1024 copy 2@1x.svg",
-      "idiom" : "universal",
-      "scale" : "1x"
+      "filename" : "Symbol Light@1x.png",
+      "idiom" : "universal"
     },
     {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "Symbol Dark@1x.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
   }
 }

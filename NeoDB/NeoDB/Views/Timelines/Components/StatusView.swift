@@ -167,7 +167,7 @@ struct StatusView: View {
             viewModel.accountsManager = accountsManager
             if !status.content.links.isEmpty {
                 for link in status.content.links {
-                    if let extractedItem = await NeoDBURL.parseItemURL(
+                    if let extractedItem = NeoDBURL.parseItemURL(
                         link.url, title: link.displayString)
                     {
                         item = extractedItem

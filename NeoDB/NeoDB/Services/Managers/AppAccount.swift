@@ -9,15 +9,24 @@ import Foundation
 import KeychainSwift
 import OSLog
 
-struct AppAccount: Codable, Identifiable {
-    private static let logger = Logger.managers.account
-    private static let keychain = KeychainSwift(keyPrefix: KeychainPrefixes.account)
-    
+struct AppAccount: Codable, Identifiable, Hashable, Sendable {
     let instance: String
     let oauthToken: OauthToken?
+    
+    // User information
+    var username: String?
+    var displayName: String?
+    var avatar: String?
 
     var id: String {
         key
+    }
+
+    var handle: String? {
+        if let username = username {
+            return "@\(username)@\(instance)"
+        }
+        return nil
     }
 
     private var key: String {
@@ -27,6 +36,12 @@ struct AppAccount: Codable, Identifiable {
             return "\(instance):anonymous:\(Date().timeIntervalSince1970)"
         }
     }
+
+}
+
+extension AppAccount {
+    private static let logger = Logger.managers.account
+    private static let keychain = KeychainSwift(keyPrefix: KeychainPrefixes.account)
 
     func save() throws {
         let encoder = JSONEncoder()
@@ -63,6 +78,7 @@ struct AppAccount: Codable, Identifiable {
         let keys = getKeys()
         var accounts: [AppAccount] = []
         var invalidKeys: [String] = []
+        var hasAuthenticatedAccount = false
         
         logger.debug("Found \(keys.count) keys in keychain")
         
@@ -71,6 +87,10 @@ struct AppAccount: Codable, Identifiable {
                 do {
                     let account = try decoder.decode(AppAccount.self, from: data)
                     accounts.append(account)
+                    // 检查是否有授权账户
+                    if account.oauthToken != nil {
+                        hasAuthenticatedAccount = true
+                    }
                     Self.logger.debug("Successfully decoded account")
                 } catch {
                     logger.error("Failed to decode account data for key: \(key)")
@@ -91,6 +111,14 @@ struct AppAccount: Codable, Identifiable {
             }
         }
         
+        // 如果有授权账户，清除所有匿名账户
+        if hasAuthenticatedAccount {
+            logger.debug("Found authenticated account, cleaning up anonymous accounts")
+            deleteAllAnonymous()
+            // 重新过滤账户列表，移除匿名账户
+            accounts = accounts.filter { $0.oauthToken != nil }
+        }
+        
         logger.debug("Retrieved \(accounts.count) valid account(s)")
         return accounts
     }
@@ -104,5 +132,16 @@ struct AppAccount: Codable, Identifiable {
         }
         
         logger.debug("Deleted all accounts")
+    }
+
+    static func deleteAllAnonymous() {
+        let keys = getKeys().filter { $0.contains("anonymous") }
+        logger.debug("Deleting all anonymous accounts (\(keys.count) keys)")
+        
+        for key in keys {
+            Self.keychain.delete(key)
+        }
+        
+        logger.debug("Deleted all anonymous accounts")
     }
 }

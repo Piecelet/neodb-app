@@ -1,5 +1,6 @@
 import Foundation
 import OSLog
+import Perception
 
 enum HTTPMethod: String {
     case get = "GET"
@@ -8,42 +9,144 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
     case invalidURL
     case unauthorized
     case invalidResponse
-    case httpError(Int)
+    case httpError(code: Int, message: String? = nil)
     case decodingError(Error)
+    case messageError(String)
     case networkError(Error)
     case cancelled
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .unauthorized:
+            return "Unauthorized"
+        case .invalidResponse:
+            return "Invalid response"
+        case .httpError(let code, let message):
+            if let message = message {
+                return "HTTP \(code): \(message)"
+            }
+            return "HTTP error: \(code)"
+        case .decodingError(let error):
+            return "Decoding error: \(error.localizedDescription)"
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
+        case .cancelled:
+            return "Request cancelled"
+        case .messageError(let message):
+            return message
+        }
+    }
+    
+    var failureReason: String? {
+        switch self {
+        case .decodingError(let error):
+            return error.localizedDescription
+        case .networkError(let error):
+            return error.localizedDescription
+        case .httpError(let code, let message):
+            if let message = message {
+                return "Server returned error: \(message)"
+            }
+            return "Server returned status code: \(code)"
+        case .messageError(let message):
+            return "Server returned error: \(message)"
+        default:
+            return nil
+        }
+    }
+    
+    var recoverySuggestion: String? {
+        switch self {
+        case .invalidURL:
+            return "Please check the URL is correct"
+        case .unauthorized:
+            return "Please try logging in again"
+        case .httpError(let code, _):
+            if code == 404 {
+                return "The requested resource was not found"
+            } else if code >= 500 {
+                return "Please try again later"
+            }
+            return nil
+        default:
+            return nil
+        }
+    }
 }
 
-@MainActor
-class NetworkClient {
-    /// Debug flag to control logging of network requests and responses
-    private static let isDebugRequestEnabled: Bool = true
-    private static let isDebugResponseEnabled: Bool = false
+// 可以参考 IceCubes 中的做法，利用 OSAllocatedUnfairLock<Critical>
+// 来集中管理可变状态，让整个类可以在多线程环境下既保持高并发性能，又避免数据竞争。
+// 此处同样通过 @unchecked Sendable 保证编译器不会阻止在并发上下文中使用 NetworkClient，
+// 但使用者仍需确保内部的线程安全操作正确。
+@Perceptible final class NetworkClient: @unchecked Sendable {
+
+    // 在这里按照 IceCubes 的思路，把所有的可变状态都放进 Critical 结构体里，通过锁访问。
+    // 这样做可以让你在高并发场景下仍然保持良好的性能和线程安全。
+    private let critical: OSAllocatedUnfairLock<Critical>
+
+    private struct Critical: Sendable {
+        var oauthToken: OauthToken?
+        var lastResponse: HTTPURLResponse?
+    }
 
     private let logger = Logger.network
     private let urlSession: URLSession
     private let instance: String
-    private var oauthToken: OauthToken?
-    private let decoder: JSONDecoder = JSONDecoder()
-    private let encoder: JSONEncoder = JSONEncoder()
+    private let decoder: JSONDecoder
+    private let encoder: JSONEncoder
+
+    // 为了演示保留 WebSocketTask 等操作，或者你可以像 IceCubes 一样将其提取到其他方法
+    // 并通过锁管理数据等。
     private let webSocketTask: URLSessionWebSocketTask?
-    private(set) var lastResponse: HTTPURLResponse?
+
+    // Debug 标志控制
+    private static let isDebugRequestEnabled: Bool = true
+    private static let isDebugResponseEnabled: Bool = false
+
+    // 如果需要给外部读取或设定 Token，最好写成对锁的 get/set
+    var currentToken: OauthToken? {
+        get {
+            critical.withLock { $0.oauthToken }
+        }
+        set {
+            critical.withLock { $0.oauthToken = newValue }
+        }
+    }
+
+    var lastResponse: HTTPURLResponse? {
+        get {
+            critical.withLock { $0.lastResponse }
+        }
+        set {
+            critical.withLock { $0.lastResponse = newValue }
+        }
+    }
 
     init(instance: String, oauthToken: OauthToken? = nil) {
         self.instance = instance
-        self.oauthToken = oauthToken
         self.urlSession = URLSession.shared
         self.webSocketTask = nil
 
-        // Configure decoder
-        self.decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.encoder.keyEncodingStrategy = .convertToSnakeCase
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        self.decoder = decoder
+
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        self.encoder = encoder
+
+        // 和 IceCubes 类似，初始化锁并设置初始状态
+        critical = .init(
+            initialState: Critical(oauthToken: oauthToken, lastResponse: nil))
     }
 
+    // 参照 IceCubes Client 中的思路，封装出类似的 makeURL 用法
     func makeURL(scheme: String = "https", endpoint: NetworkEndpoint) throws
         -> URL
     {
@@ -58,7 +161,6 @@ class NetworkClient {
             components.host = host
         }
 
-        // Handle path construction
         var path = endpoint.path
         switch endpoint.type {
         case .apiV1:
@@ -74,7 +176,6 @@ class NetworkClient {
         }
         components.path = path
 
-        // Filter out nil query items and only set if there are valid items
         if let queryItems = endpoint.queryItems?.compactMap({ item in
             item.value.map { URLQueryItem(name: item.name, value: $0) }
         }), !queryItems.isEmpty {
@@ -86,31 +187,30 @@ class NetworkClient {
                 "Failed to construct URL for endpoint: \(endpoint.path)")
             throw NetworkError.invalidURL
         }
-
         return url
     }
 
+    // 参考 IceCubes 做法生成 URLRequest
     private func makeRequest(for endpoint: NetworkEndpoint) throws -> URLRequest
     {
         let url = try makeURL(endpoint: endpoint)
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method.rawValue
 
-        // Handle request body and content type
         if let bodyJson = endpoint.bodyJson {
             request.setValue(
-                ContentType.json.headerValue,
-                forHTTPHeaderField: "Content-Type")
+                ContentType.json.headerValue, forHTTPHeaderField: "Content-Type"
+            )
             request.httpBody = try encoder.encode(bodyJson)
         } else if let bodyUrlEncoded = endpoint.bodyUrlEncoded {
             request.setValue(
                 ContentType.urlEncoded.headerValue,
                 forHTTPHeaderField: "Content-Type")
-            let body = bodyUrlEncoded.compactMap { item in
+            let items = bodyUrlEncoded.compactMap { item in
                 item.value.map { URLQueryItem(name: item.name, value: $0) }
             }
-            if !body.isEmpty {
-                request.httpBody = body.map { "\($0.name)=\($0.value ?? "")" }
+            if !items.isEmpty {
+                request.httpBody = items.map { "\($0.name)=\($0.value ?? "")" }
                     .joined(separator: "&")
                     .data(using: .utf8)
             }
@@ -120,7 +220,8 @@ class NetworkClient {
             request.setValue(value, forHTTPHeaderField: key)
         }
 
-        if let token = oauthToken?.accessToken {
+        // 通过锁安全读取当前 oauthToken
+        if let token = critical.withLock({ $0.oauthToken?.accessToken }) {
             request.setValue(
                 "Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
@@ -128,10 +229,7 @@ class NetworkClient {
         return request
     }
 
-    func setOauthToken(_ token: OauthToken?) {
-        self.oauthToken = token
-    }
-
+    // 通用的抓取数据方法，与 IceCubes 中的做法相似
     func fetch<T: Decodable>(_ endpoint: NetworkEndpoint, type: T.Type)
         async throws -> T
     {
@@ -147,7 +245,8 @@ class NetworkClient {
                 throw NetworkError.invalidResponse
             }
 
-            lastResponse = httpResponse  // Store the response
+            // 通过锁安全地更新内部状态
+            critical.withLock { $0.lastResponse = httpResponse }
 
             if httpResponse.statusCode == 401 {
                 logger.error("Unauthorized request")
@@ -156,34 +255,54 @@ class NetworkClient {
 
             guard (200...299).contains(httpResponse.statusCode) else {
                 logger.error("HTTP error: \(httpResponse.statusCode)")
-                throw NetworkError.httpError(httpResponse.statusCode)
+                
+                // Try to decode error message for HTTP errors
+                do {
+                    logger.debug("Attempting to decode error message for HTTP \(httpResponse.statusCode)")
+                    let messageResult = try decoder.decode(MessageSchema.self, from: data)
+                    logger.error("Received error message from server: \(messageResult.message)")
+                    throw NetworkError.httpError(code: httpResponse.statusCode, message: messageResult.message)
+                } catch let messageError as NetworkError {
+                    throw messageError
+                } catch {
+                    logger.error("Failed to decode error message, using default HTTP error")
+                    throw NetworkError.httpError(code: httpResponse.statusCode, message: nil)
+                }
             }
 
-            logger.debug("Attempting to decode response data")
+            // 如果像 IceCubes 一样需要某些特殊类型（如 HTMLPage），可以保留此处逻辑
             if T.self == HTMLPage.self {
-                logger.debug("Processing HTML response")
                 guard let htmlString = String(data: data, encoding: .utf8)
                 else {
                     logger.error("Failed to decode HTML string from data")
                     throw NetworkError.decodingError(
                         NSError(domain: "", code: -1))
                 }
-                logger.debug(
-                    "Successfully decoded HTML string, length: \(htmlString.count)"
-                )
-                logger.debug("Creating HTMLPage instance")
                 return HTMLPage(stringValue: htmlString) as! T
             }
 
-            logger.debug(
-                "Attempting to decode JSON response for type: \(String(describing: T.self))"
-            )
             do {
                 let result = try decoder.decode(type, from: data)
                 return result
-            } catch {
-                logDecodingError(error, data: data)
-                throw NetworkError.decodingError(error)
+            } catch let decodingError {
+                logDecodingError(decodingError, data: data)
+                logger.error("First decoding attempt failed for type \(T.self): \(decodingError.localizedDescription)")
+                
+                // Try to decode as MessageSchema
+                do {
+                    logger.debug("Attempting to decode as MessageSchema")
+                    let messageResult = try decoder.decode(MessageSchema.self, from: data)
+                    logger.error("Received error message from server: \(messageResult.message)")
+                    throw NetworkError.messageError(messageResult.message)
+                } catch let messageError {
+                    if messageError is NetworkError {
+                        throw messageError
+                    }
+                    // If MessageSchema decoding also fails, log and throw the original error
+                    logger.error("MessageSchema decoding also failed: \(messageError.localizedDescription)")
+                    logger.error("Falling back to original decoding error")
+                    throw NetworkError.decodingError(decodingError)
+                }
             }
         } catch let error as NetworkError {
             throw error
@@ -200,10 +319,10 @@ class NetworkClient {
         }
     }
 
+    // 发送普通请求，不需要返回值，只要判断 HTTP 状态即可
     func send(_ endpoint: NetworkEndpoint) async throws {
         let request = try makeRequest(for: endpoint)
         logger.debug("Sending request to: \(endpoint.path)")
-
         let (_, response) = try await urlSession.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -211,29 +330,30 @@ class NetworkClient {
             throw NetworkError.invalidResponse
         }
 
+        critical.withLock { $0.lastResponse = httpResponse }
+
         guard httpResponse.statusCode == 200 else {
             if httpResponse.statusCode == 401 {
                 logger.error("Unauthorized request")
                 throw NetworkError.unauthorized
             }
             logger.error("HTTP error: \(httpResponse.statusCode)")
-            throw NetworkError.httpError(httpResponse.statusCode)
+            throw NetworkError.httpError(code: httpResponse.statusCode, message: nil)
         }
     }
 
+    // 根据 IceCubes 的思路，使用 wss 协议生成 WebSocketTask，若想通过锁安全记录一些连接状态，
+    // 也可将相关字段放进 Critical 内管理。
     func makeWebSocketTask(endpoint: NetworkEndpoint) throws
         -> URLSessionWebSocketTask
     {
         let url = try makeURL(scheme: "wss", endpoint: endpoint)
         var request = URLRequest(url: url)
 
-        // Add authorization if available
-        if let token = oauthToken?.accessToken {
+        if let token = critical.withLock({ $0.oauthToken?.accessToken }) {
             request.setValue(
                 "Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-
-        // Add any additional headers from the endpoint
         endpoint.headers?.forEach { key, value in
             request.setValue(value, forHTTPHeaderField: key)
         }
@@ -242,20 +362,16 @@ class NetworkClient {
         return urlSession.webSocketTask(with: request)
     }
 
-    // MARK: - Debug Logging
-
+    // Debug 日志输出，可以根据自己的需求直接复用 IceCubes 中更通用的方式
     private func logRequest(_ request: URLRequest) {
         if !Self.isDebugRequestEnabled { return }
         let loggerRequest = Logger.networkRequest
-
         loggerRequest.debug(
             "🌐 REQUEST [\(request.httpMethod ?? "Unknown")] \(request.url?.absoluteString ?? "")"
         )
-
         if let headers = request.allHTTPHeaderFields {
             loggerRequest.debug("Headers: \(headers)")
         }
-
         if let body = request.httpBody,
             let bodyString = String(data: body, encoding: .utf8)
         {
@@ -266,17 +382,13 @@ class NetworkClient {
     private func logResponse(_ response: URLResponse, data: Data) {
         if !Self.isDebugResponseEnabled { return }
         let loggerResponse = Logger.networkResponse
-
         guard let httpResponse = response as? HTTPURLResponse else { return }
-
         loggerResponse.debug(
             "📥 RESPONSE [\(httpResponse.statusCode)] \(httpResponse.url?.absoluteString ?? "")"
         )
-
         if let headers = httpResponse.allHeaderFields as? [String: String] {
             loggerResponse.debug("Headers: \(headers)")
         }
-
         if let bodyString = String(data: data, encoding: .utf8) {
             loggerResponse.debug("Body: \(bodyString)")
         }
@@ -308,12 +420,11 @@ class NetworkClient {
     }
 }
 
-// MARK: - URLRequest Extension
+// 扩展以在调试输出中安全地隐藏敏感信息
 extension URLRequest {
-    fileprivate var allHTTPHeaders: [String: String]? {
+    fileprivate var allHTTPHeaderFieldsSafe: [String: String]? {
         allHTTPHeaderFields?.reduce(into: [String: String]()) {
             result, header in
-            // 敏感信息处理
             if header.key.lowercased() == "authorization" {
                 result[header.key] = "Bearer [REDACTED]"
             } else {

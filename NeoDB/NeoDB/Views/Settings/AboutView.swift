@@ -154,7 +154,7 @@ struct AboutView: View {
                 
                 Link(destination: StoreConfig.URLs.privacyPolicy) {
                     HStack {
-                        Label(String(localized: "about_policy_privacy", table: "Settings"), systemImage: "link")
+                        Label(String(localized: "policy_privacy_policy", table: "Settings"), systemImage: "link")
                         Spacer()
                         Text("piecelet.app/privacy")
                             .foregroundStyle(.secondary)
@@ -163,7 +163,7 @@ struct AboutView: View {
                 
                 Link(destination: StoreConfig.URLs.termsOfService) {
                     HStack {
-                        Label(String(localized: "about_policy_terms", table: "Settings"), systemImage: "link")
+                        Label(String(localized: "policy_terms_of_use", table: "Settings"), systemImage: "link")
                         Spacer()
                         Text("piecelet.app/terms")
                             .foregroundStyle(.secondary)

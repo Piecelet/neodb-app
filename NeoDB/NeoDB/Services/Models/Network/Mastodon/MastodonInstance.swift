@@ -7,48 +7,48 @@
 
 import Foundation
 
-public struct MastodonInstance: Codable, Sendable {
-    public struct Stats: Codable, Sendable {
-        public let userCount: Int
-        public let statusCount: Int
-        public let domainCount: Int
+struct MastodonInstance: Codable, Sendable {
+    struct Stats: Codable, Sendable {
+        let userCount: Int
+        let statusCount: Int
+        let domainCount: Int
     }
 
-    public struct Configuration: Codable, Sendable {
-        public struct Statuses: Codable, Sendable {
-            public let maxCharacters: Int
-            public let maxMediaAttachments: Int
+    struct Configuration: Codable, Sendable {
+        struct Statuses: Codable, Sendable {
+            let maxCharacters: Int
+            let maxMediaAttachments: Int
         }
 
-        public struct Polls: Codable, Sendable {
-            public let maxOptions: Int
-            public let maxCharactersPerOption: Int
-            public let minExpiration: Int
-            public let maxExpiration: Int
+        struct Polls: Codable, Sendable {
+            let maxOptions: Int
+            let maxCharactersPerOption: Int
+            let minExpiration: Int
+            let maxExpiration: Int
         }
 
-        public let statuses: Statuses
-        public let polls: Polls
+        let statuses: Statuses
+        let polls: Polls
     }
 
-    public struct Rule: Codable, Identifiable, Sendable {
-        public let id: String
-        public let text: String
+    struct Rule: Codable, Identifiable, Sendable {
+        let id: String
+        let text: HTMLString
     }
 
-    public struct URLs: Codable, Sendable {
-        public let streamingApi: URL?
+    struct URLs: Codable, Sendable {
+        let streamingApi: URL?
     }
 
-    public let title: String
-    public let shortDescription: String
-    public let email: String
-    public let version: String
-    public let stats: Stats
-    public let languages: [String]?
-    public let registrations: Bool
-    public let thumbnail: URL?
-    public let configuration: Configuration?
-    public let rules: [Rule]?
-    public let urls: URLs?
+    let title: String
+    let shortDescription: String
+    let email: String
+    let version: String
+    let stats: Stats
+    let languages: [String]?
+    let registrations: Bool
+    let thumbnail: URL?
+    let configuration: Configuration?
+    let rules: [Rule]?
+    let urls: URLs?
 }

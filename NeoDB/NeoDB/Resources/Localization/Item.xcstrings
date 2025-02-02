@@ -2836,6 +2836,52 @@
         }
       }
     },
+    "metadata_podcast_episode_link_label" : {
+      "comment" : "Podcast Episode Link label",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "链接"
+          }
+        }
+      }
+    },
+    "metadata_podcast_episode_pub_date_label" : {
+      "comment" : "Podcast Episode Pub Date label",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udgivelsesdato"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Publish Date"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "发布日期"
+          }
+        }
+      }
+    },
     "metadata_podcast_genre_label" : {
       "comment" : "Podcast Genre label",
       "localizations" : {
@@ -4535,7 +4581,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已读过"
+            "value" : "读过"
           }
         }
       }
@@ -4558,7 +4604,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已看过"
+            "value" : "看过"
           }
         }
       }
@@ -4581,7 +4627,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已看过"
+            "value" : "看过"
           }
         }
       }
@@ -4604,7 +4650,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已读过"
+            "value" : "读过"
           }
         }
       }
@@ -4627,7 +4673,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已玩过"
+            "value" : "玩过"
           }
         }
       }
@@ -4650,7 +4696,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已看过"
+            "value" : "看过"
           }
         }
       }
@@ -4673,7 +4719,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已听过"
+            "value" : "听过"
           }
         }
       }
@@ -4696,7 +4742,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已看过"
+            "value" : "看过"
           }
         }
       }
@@ -4719,7 +4765,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已听过"
+            "value" : "听过"
           }
         }
       }
@@ -4742,7 +4788,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "已看过"
+            "value" : "看过"
           }
         }
       }

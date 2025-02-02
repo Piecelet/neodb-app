@@ -72,6 +72,8 @@ class StatusItemViewModel: ObservableObject {
             logger.error("No accountsManager available")
             return
         }
+
+        logger.debug("Loading item: \(item.uuid) \(item.category)")
         
         loadTask?.cancel()
         
@@ -103,7 +105,7 @@ class StatusItemViewModel: ObservableObject {
                 // Fetch from network
                 let endpoint = ItemEndpoint.make(id: item.uuid, category: item.category)
                 let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.make(category: item.category))
-                
+
                 if !Task.isCancelled {
                     logger.debug("Successfully loaded item: \(item.uuid)")
                     item = result

@@ -52,8 +52,9 @@ extension ServerDate {
     }
 
     public func formatted(_ style: FormatStyle = .dateAndTime) -> String {
-        guard let date = asDate else { return self }
-        
+        guard let date = asDate else {
+            return self
+        }
         switch style {
         case .dateOnly:
             return date.formatted(date: .abbreviated, time: .omitted)
@@ -62,15 +63,25 @@ extension ServerDate {
         }
     }
 
-    public var relativeFormatted: String {
-        guard let date = asDate else { return self }
+    public var shortDateFormatted: String {
+        guard let date = asDate else {
+            return self
+        }
+        return Self.createdAtShortDateFormatted.string(from: date)
+    }
 
-        let calendar = Calendar(identifier: .gregorian)
-        if calendar.numberOfDaysBetween(date, and: Date()) > 1 {
-            return Self.createdAtShortDateFormatted.string(from: date)
+    public var relativeFormatted: String {
+        guard let date = asDate else {
+            return self
+        }
+        let aDay: TimeInterval = 60 * 60 * 24
+        if Date().timeIntervalSince(date) >= aDay {
+            return Self.createdAtRelativeFormatter.localizedString(for: date, relativeTo: Date())
         } else {
-            return Self.createdAtRelativeFormatter.localizedString(
-                for: date, relativeTo: Date())
+            let secondsDiff = -date.timeIntervalSinceNow
+            return Duration.seconds(secondsDiff).formatted(
+                .units(width: .narrow, maximumUnitCount: 1)
+            )
         }
     }
 
@@ -86,7 +97,6 @@ extension Calendar {
         let fromDate = startOfDay(for: from)
         let toDate = startOfDay(for: to)
         let numberOfDays = dateComponents([.day], from: fromDate, to: toDate)
-
-        return numberOfDays.day!
+        return numberOfDays.day ?? 0
     }
 }

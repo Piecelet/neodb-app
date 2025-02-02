@@ -5,6 +5,7 @@
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
+import ColorfulX
 import Kingfisher
 import OSLog
 import SwiftUI
@@ -170,12 +171,136 @@ struct AvatarPlaceholderView: View {
     #endif
 }
 
+struct AccountRow: View {
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    let account: AppAccount
+    private let avatarSize: CGFloat = 40
+
+    var body: some View {
+        HStack(spacing: 12) {
+            if let avatarURL = account.avatar.flatMap(URL.init) {
+                KFImage(avatarURL)
+                    .placeholder {
+                        AvatarPlaceholderView(
+                            isLoading: false,
+                            size: avatarSize
+                        )
+                    }
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: avatarSize, height: avatarSize)
+                    .clipShape(Circle())
+                    .saturation(
+                        account.id == accountsManager.currentAccount.id ? 1 : 0
+                    )
+                    .opacity(
+                        account.id == accountsManager.currentAccount.id
+                            ? 1 : 0.6)
+            } else {
+                AvatarPlaceholderView(
+                    isLoading: false,
+                    size: avatarSize
+                )
+                .opacity(
+                    account.id == accountsManager.currentAccount.id ? 1 : 0.6)
+            }
+
+            VStack(alignment: .leading) {
+                Text(account.displayName ?? account.instance)
+                    .font(.headline)
+                Text(account.handle ?? "Unauthenticated")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            if account.id == accountsManager.currentAccount.id {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(.tint)
+            }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            switchToAccount(account)
+        }
+        .swipeActions(edge: .trailing) {
+            if account.id != accountsManager.currentAccount.id {
+                Button(role: .destructive) {
+                    deleteAccount(account)
+                } label: {
+                    Label("Remove", systemImage: "trash")
+                }
+            }
+        }
+        .enableInjection()
+    }
+
+    #if DEBUG
+        @ObserveInjection var forceRedraw
+    #endif
+
+    private func switchToAccount(_ account: AppAccount) {
+        withAnimation {
+            accountsManager.currentAccount = account
+        }
+    }
+
+    private func deleteAccount(_ account: AppAccount) {
+        withAnimation {
+            accountsManager.delete(account: account)
+        }
+    }
+}
+
+struct AccountManagementSection: View {
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var router: Router
+    @EnvironmentObject private var storeManager: StoreManager
+
+    var body: some View {
+        Section {
+            ForEach(accountsManager.availableAccounts) { account in
+                AccountRow(account: account)
+            }
+
+            Button(action: addAccount) {
+                Label(
+                    String(localized: "account_add", table: "Settings"),
+                    systemImage: "person.badge.plus")
+            }
+        } header: {
+            Text(String(localized: "accounts_title", table: "Settings"))
+        } footer: {
+            if accountsManager.availableAccounts.count > 1 {
+                Text(String(localized: "accounts_footer", table: "Settings"))
+            }
+        }
+        .enableInjection()
+    }
+
+    #if DEBUG
+        @ObserveInjection var forceRedraw
+    #endif
+
+    private func addAccount() {
+        if !storeManager.isPlus {
+            router.presentSheet(
+                .purchaseWithFeature(feature: .multipleAccounts))
+        } else {
+            router.presentSheet(.login)
+        }
+    }
+}
+
 struct SettingsView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     @Environment(\.refresh) private var refresh
     @EnvironmentObject private var router: Router
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var storeManager: StoreManager
 
     private let avatarSize: CGFloat = 60
 
@@ -223,7 +348,7 @@ struct SettingsView: View {
 
     private func errorView(_ error: String) -> some View {
         EmptyStateView(
-            "Couldn't Load Profile",
+            String(localized: "profile_error_title", table: "Settings"),
             systemImage: "exclamationmark.triangle",
             description: Text(error)
         )
@@ -232,8 +357,9 @@ struct SettingsView: View {
     private var profileContent: some View {
         List {
             profileHeaderSection
-            accountInformationSection
             purchaseSection
+            accountManagementSection
+            accountInformationSection
             appSection
             cacheManagementSection
             logoutSection
@@ -269,6 +395,10 @@ struct SettingsView: View {
         }
     }
 
+    private var accountManagementSection: some View {
+        AccountManagementSection()
+    }
+
     private var accountInformationSection: some View {
         Group {
             if let user = viewModel.user, !user.externalAccounts.isEmpty {
@@ -283,18 +413,23 @@ struct SettingsView: View {
                     }
                     .redacted(reason: viewModel.isLoading ? .placeholder : [])
                 } header: {
-                    Text("account_title", tableName: "Settings")
+                    Text(String(localized: "account_title", table: "Settings"))
                 }
             } else if viewModel.user == nil {
                 Section {
                     LabeledContent {
-                        Text("loading...")
+                        Text(
+                            String(localized: "loading_text", table: "Settings")
+                        )
                     } label: {
-                        Text("account_external", tableName: "Settings")
+                        Text(
+                            String(
+                                localized: "account_external", table: "Settings"
+                            ))
                     }
                     .redacted(reason: .placeholder)
                 } header: {
-                    Text("account_title", tableName: "Settings")
+                    Text(String(localized: "account_title", table: "Settings"))
                 }
             }
         }
@@ -302,15 +437,72 @@ struct SettingsView: View {
 
     private var purchaseSection: some View {
         Section {
-            NavigationLink {
-                PurchaseView()
-            } label: {
-                Label {
-                    Text("app_plus_purchase", tableName: "Settings")
-                } icon: {
-                    Image(systemName: "bubbles.and.sparkles")
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .top) {
+                    Label {
+                        Text("store_title", tableName: "Settings")
+                            .font(.headline)
+                    } icon: {
+                        Image(systemSymbol: .bubblesAndSparkles)
+                            .font(.title2)
+                    }
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.primary)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label {
+                            Text("store_title", tableName: "Settings")
+                                .font(.headline)
+                        } icon: {
+                            Image(systemSymbol: .bubblesAndSparkles)
+                                .font(.title2)
+                        }
+                        .labelStyle(.titleOnly)
+                        .foregroundStyle(.primary)
+                        if storeManager.isPlus {
+                            Text("store_description_plus", tableName: "Settings")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("store_description", tableName: "Settings")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
             }
+            .background(
+                ZStack {
+                    ColorfulView(
+                        color: .constant([
+                            .green.opacity(0.8),
+                            .mint,
+                            .teal,
+                        ])
+                    )
+                    .opacity(0.5)
+
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(colorScheme == .dark ? .black.opacity(0.7) : .white.opacity(0.9))
+                        .padding(2)
+                }
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay {
+                NavigationLink(destination: PurchaseView()) {
+                    EmptyView()
+                }
+                .opacity(0)
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
     }
 
@@ -335,6 +527,20 @@ struct SettingsView: View {
                     Image(systemName: "info.circle")
                 }
             }
+            #if DEBUG
+                NavigationLink {
+                    DeveloperView()
+                } label: {
+                    Label {
+                        Text(
+                            String(
+                                localized: "developer_title", table: "Settings")
+                        )
+                    } icon: {
+                        Image(systemName: "hammer")
+                    }
+                }
+            #endif
         } header: {
             Text("app_title", tableName: "Settings")
         }
@@ -370,10 +576,29 @@ struct SettingsView: View {
                     dismiss()
                 }
             } label: {
-                Text("signout_button", tableName: "Settings")
+                Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)
             }
             .disabled(viewModel.user == nil)
         }
     }
+
+    #if DEBUG
+        private var developerSection: some View {
+            Section {
+                NavigationLink {
+                    DeveloperView()
+                } label: {
+                    Label {
+                        Text(
+                            String(
+                                localized: "developer_title", table: "Settings")
+                        )
+                    } icon: {
+                        Image(systemName: "hammer")
+                    }
+                }
+            }
+        }
+    #endif
 }

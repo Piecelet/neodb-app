@@ -92,8 +92,13 @@ extension Logger {
             static let mark = Logger(subsystem: subsystem, category: "view.mark")
             static let starRating = Logger(subsystem: subsystem, category: "view.mark.starRating")
         }
-        static let search = Logger(
-            subsystem: subsystem, category: "view.search")
+
+        enum discover {
+            static let gallery = Logger(subsystem: subsystem, category: "view.discover.gallery")
+            static let search = Logger(subsystem: subsystem, category: "view.discover.search")
+            static let searchURL = Logger(subsystem: subsystem, category: "view.discover.searchURL")
+        }
+
         static let timelines = Logger(
             subsystem: subsystem, category: "view.timelines")
         enum status {
@@ -102,6 +107,11 @@ extension Logger {
             static let item = Logger(
                 subsystem: subsystem, category: "view.status.item")
         }
+        
+        static let developer = Logger(
+            subsystem: subsystem, category: "view.developer")
+        static let store = Logger(
+            subsystem: subsystem, category: "view.store")
     }
 
     // MARK: - User Actions
@@ -115,6 +125,8 @@ extension Logger {
 
     // MARK: - Managers
     enum managers {
+        static let store = Logger(
+            subsystem: subsystem, category: "manager.store")
         static let account = Logger(
             subsystem: subsystem, category: "manager.account")
         static let client = Logger(

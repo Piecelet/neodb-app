@@ -21,39 +21,31 @@ class StoreManager: ObservableObject {
 
     init() {
         configure()
+        // 可以在这里主动获取一次 customerInfo 以保证初始状态同步
+        Task {
+            await setCustomerInfo()
+        }
     }
 
     private func configure() {
         Purchases.logLevel = .error
         Purchases.proxyURL = StoreConfig.RevenueCat.proxyURL
+        // 使用带有 StoreKit 2 的最现代化方式
         Purchases.configure(
-            with:
-                Configuration
+            with: Configuration
                 .builder(withAPIKey: StoreConfig.RevenueCat.apiKey)
                 .with(storeKitVersion: .storeKit2)
                 .build()
         )
-        setCustomerInfo()
     }
 
-    func setCustomerInfo() {
-        Task {
-            do {
-                let customerInfo = try await Purchases.shared.customerInfo()
-                self.customerInfo = customerInfo
-                self.appUserID = Purchases.shared.appUserID
-            } catch {
-                print("Error setting customer info: \(error)")
-            }
-        }
-    }
-
-    func getCurrentCustomerInfo() async -> CustomerInfo? {
+    func setCustomerInfo() async {
         do {
-            return try await Purchases.shared.customerInfo()
+            let info = try await Purchases.shared.customerInfo()
+            self.customerInfo = info
+            self.appUserID = Purchases.shared.appUserID
         } catch {
-            print("Error fetching customer info: \(error)")
-            return nil
+            print("Error setting customer info: \(error)")
         }
     }
 
@@ -69,18 +61,16 @@ class StoreManager: ObservableObject {
     }
 
     func purchase(_ package: Package) async throws -> CustomerInfo {
+        // RevenueCat 提供的最简洁的 async/await 购买接口
         let result = try await Purchases.shared.purchase(package: package)
-        await MainActor.run {
-            self.customerInfo = result.customerInfo
-        }
+        // 购买后将最新的 customerInfo 写回本地
+        self.customerInfo = result.customerInfo
         return result.customerInfo
     }
 
     func restorePurchases() async throws -> CustomerInfo {
         let info = try await Purchases.shared.restorePurchases()
-        await MainActor.run {
-            self.customerInfo = info
-        }
+        self.customerInfo = info
         return info
     }
 }

@@ -12,6 +12,7 @@ import SwiftUI
 @MainActor
 class LoginViewModel: ObservableObject {
     private let logger = Logger.views.login
+    private var client: NetworkClient?
 
     @Published var errorMessage: String?
     @Published var showError = false
@@ -24,8 +25,26 @@ class LoginViewModel: ObservableObject {
     }
     @Published var showInstanceInput = false
     @Published var authUrl: URL?
+    @Published var instanceInfo: MastodonInstance?
+    @Published var isLoading = false
 
     var accountsManager: AppAccountsManager!
+
+    func loadInstanceInfo(instance: String? = nil) async {
+        isLoading = true
+        do {
+            let address = instance ?? accountsManager.currentAccount.instance
+            client = NetworkClient(instance: address)
+            guard let client = client else { return }
+            
+            let instance = try await client.fetch(InstanceEndpoint.instance(), type: MastodonInstance.self)
+            instanceInfo = instance
+        } catch {
+            errorMessage = error.localizedDescription
+            showError = true
+        }
+        isLoading = false
+    }
 
     func authenticate() async {
         do {
@@ -55,5 +74,10 @@ class LoginViewModel: ObservableObject {
         let account = AppAccount(instance: newInstance, oauthToken: nil)
         accountsManager.add(account: account)
         showInstanceInput = false
+        
+        // Load instance info after updating instance
+        Task {
+            await loadInstanceInfo(instance: newInstance)
+        }
     }
 }

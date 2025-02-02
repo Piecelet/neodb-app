@@ -21,12 +21,6 @@
             "value" : "博客"
           }
         }
-      },
-      "zh-Hans" : {
-        "stringUnit" : {
-          "state" : "translated",
-          "value" : "博客"
-        }
       }
     },
     "about_developer_bluesky" : {
@@ -157,50 +151,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "GitHub"
-          }
-        }
-      }
-    },
-    "about_policy_privacy" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fortrolighedspolitik"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Privacy Policy"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐私政策"
-          }
-        }
-      }
-    },
-    "about_policy_terms" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servicevilkår"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terms of Service"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务条款"
           }
         }
       }
@@ -403,6 +353,28 @@
         }
       }
     },
+    "account_add" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj konto"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Account"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "添加账户"
+          }
+        }
+      }
+    },
     "account_displayname" : {
       "comment" : "A placeholder of the display name of an account.",
       "localizations" : {
@@ -488,6 +460,50 @@
         }
       }
     },
+    "accounts_footer" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk på en konto for at skifte til den. Swipe til venstre for at fjerne."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap an account to switch to it. Swipe left to remove."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按下来切换账户。向左滑动来移除。"
+          }
+        }
+      }
+    },
+    "accounts_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konti"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accounts"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "管理账户"
+          }
+        }
+      }
+    },
     "app_about" : {
       "localizations" : {
         "da" : {
@@ -534,28 +550,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "功能请求与反馈"
-          }
-        }
-      }
-    },
-    "app_plus_purchase" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
           }
         }
       }
@@ -649,7 +643,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plads frigives når cachen tømmes. App’en downloader data igen når det er krævet."
+            "value" : "Plads frigives når cachen tømmes. App'en downloader data igen når det er krævet."
           }
         },
         "en" : {
@@ -700,6 +694,97 @@
         }
       }
     },
+    "developer_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udvikler"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Developer"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "开发者选项"
+          }
+        }
+      }
+    },
+    "instance_alert_description" : {
+      "comment" : "Description explaining why instance is not compatible and what to do next",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet er en app til NeoDB, vælg venligst en af NeoDB-serverne ovenfor. Du kan stadig bruge din Mastodon-konto til at logge ind, når du har valgt en NeoDB-server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet is an app for NeoDB, please choose one of the NeoDB instances above. You can still use your Mastodon account to sign in after selecting a NeoDB instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet 是 NeoDB 应用程序，请选择上述 NeoDB 站点之一。选择 NeoDB 站点后，你仍然可以使用你的 Mastodon 账号登录。"
+          }
+        }
+      }
+    },
+    "instance_alert_incompatible" : {
+      "comment" : "Message shown when instance is not compatible (includes %@ for instance name)",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ er ikke en NeoDB-server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is not a NeoDB instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 并不是一个 NeoDB 站点"
+          }
+        }
+      }
+    },
+    "instance_alert_title" : {
+      "comment" : "Title for incompatible instance alert",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikke tilgængelig"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not Available"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "站点不可用"
+          }
+        }
+      }
+    },
     "instance_choose_title" : {
       "localizations" : {
         "da" : {
@@ -739,7 +824,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "如果上面没有列出你的实例，请输入实例地址。"
+            "value" : "如果上面没有列出你的站点，请输入实例地址。"
           }
         }
       }
@@ -766,6 +851,52 @@
         }
       }
     },
+    "instance_search_empty" : {
+      "comment" : "Message shown when no search results are found",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen resultater fundet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No results found"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有更多结果"
+          }
+        }
+      }
+    },
+    "instance_search_prompt" : {
+      "comment" : "Placeholder text for instance search field",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navn på fællesskab eller URL..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Community Name or URL..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "社群名称或URL…"
+          }
+        }
+      }
+    },
     "instance_select_title" : {
       "localizations" : {
         "da" : {
@@ -788,6 +919,51 @@
         }
       }
     },
+    "instance_title" : {
+      "comment" : "Navigation title for instance selection view",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instance"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "站点"
+          }
+        }
+      }
+    },
+    "loading_text" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæser..."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading..."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "加载中…"
+          }
+        }
+      }
+    },
     "login_button_signin_with" : {
       "localizations" : {
         "da" : {
@@ -799,57 +975,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sign in with %@"
+            "value" : "Sign In with %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "使用 %@ 登录"
-          }
-        }
-      }
-    },
-    "login_description" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hold styr på og del dine bøger, film, musik og mere"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Track and share your books, movies, music, and more"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "记录和分享你的书籍、电影、音乐等"
-          }
-        }
-      }
-    },
-    "login_footer_description" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet er en open-source klient til NeoDB lavet af citron."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet is an open sourced third-party client for NeoDB made by citron."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet 是由 citron 开发的开源 NeoDB 第三方客户端。"
           }
         }
       }
@@ -876,46 +1008,112 @@
         }
       }
     },
-    "login_instance_title" : {
+    "login_instance_rules_title" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Server"
+            "value" : "Regler"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Instance"
+            "value" : "Rules"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "实例"
+            "value" : "规定"
           }
         }
       }
     },
-    "login_title_welcome" : {
+    "login_instance_terms_notice" : {
       "localizations" : {
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Velkommen til Piecelet"
+            "value" : "Servicevilkår og privatlivspolitik er gældende."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Welcome to Piecelet"
+            "value" : "Terms of Service & Privacy Policy applied."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "欢迎使用 Piecelet"
+            "value" : "服务条款和隐私政策适用。"
+          }
+        }
+      }
+    },
+    "login_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ind"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign In"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录"
+          }
+        }
+      }
+    },
+    "mastodon_guide_subtitle" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For at logge ind med Mastodon, tryk på %@. På den åbnede hjemmeside, tryk på fediverse-symbolet og indtast din mastodon-server."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To sign in with Mastodon, tap %@. On the opened website, tap the fediverse symbol and enter your mastodon instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "要使用 Mastodon 登录，请按下「%@」。在打开的网站中，点击联邦宇宙图标并输入你的 Mastodon 站点地址。"
+          }
+        }
+      }
+    },
+    "mastodon_guide_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk på fediverse-symbolet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap the fediverse symbol"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "轻点联邦宇宙图标"
           }
         }
       }
@@ -1294,6 +1492,72 @@
         }
       }
     },
+    "policy_privacy_policy" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fortrolighedspolitik"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隐私政策"
+          }
+        }
+      }
+    },
+    "policy_terms_of_use" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Betingelser for brug"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terms of Use"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用条款"
+          }
+        }
+      }
+    },
+    "profile_error_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke indlæse profil"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn't Load Profile"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法加载"
+          }
+        }
+      }
+    },
     "settings_title" : {
       "localizations" : {
         "da" : {
@@ -1416,6 +1680,28 @@
         }
       }
     },
+    "store_button_redeem" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indløs kode"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Redeem Code"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "兑换优惠代码"
+          }
+        }
+      }
+    },
     "store_button_restore" : {
       "localizations" : {
         "da" : {
@@ -1455,7 +1741,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "感谢支持"
+            "value" : "多谢支持"
           }
         }
       }
@@ -1544,6 +1830,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解锁更丰富的 NeoDB 体验"
+          }
+        }
+      }
+    },
+    "store_description_plus" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyd NeoDB-rejsen med eksklusive oplevelser."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enjoy the NeoDB journey with exclusive experiences."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尽情享受你的 NeoDB 旅途吧"
           }
         }
       }
@@ -2087,7 +2395,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lifetime access"
+            "value" : "Lifetime"
           }
         },
         "zh-Hans" : {
@@ -2230,50 +2538,6 @@
         }
       }
     },
-    "store_period_month" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per måned"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per month"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 每月"
-          }
-        }
-      }
-    },
-    "store_period_year" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per år"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ per year"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ 每年"
-          }
-        }
-      }
-    },
     "store_plans_hide" : {
       "localizations" : {
         "da" : {
@@ -2340,72 +2604,6 @@
         }
       }
     },
-    "store_privacy" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fortrolighedspolitik"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Privacy Policy"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "隐私政策"
-          }
-        }
-      }
-    },
-    "store_purchase_onetime" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Engangskøb"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "One-time Purchase"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "一次性购买"
-          }
-        }
-      }
-    },
-    "store_terms" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Servicevilkår"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terms of Service"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "服务条款"
-          }
-        }
-      }
-    },
     "store_title" : {
       "localizations" : {
         "da" : {
@@ -2424,6 +2622,94 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Piecelet+"
+          }
+        }
+      }
+    },
+    "welcome_description" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold styr på og del dine bøger, film, musik og mere."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Track and share your books, movies, music, and more."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "记录和分享你的书籍、电影、音乐等。"
+          }
+        }
+      }
+    },
+    "welcome_get_started" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kom i gang"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get Started"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "让我们开始吧"
+          }
+        }
+      }
+    },
+    "welcome_present_by" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et @lcandy2 projekt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A @lcandy2 project."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "由 @lcandy2 呈现。"
+          }
+        }
+      }
+    },
+    "welcome_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velkommen til Piecelet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to Piecelet"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "欢迎使用 Piecelet"
           }
         }
       }

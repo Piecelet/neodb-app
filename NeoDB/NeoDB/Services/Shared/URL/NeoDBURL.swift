@@ -18,8 +18,104 @@ class NeoDBURL {
         guard isDebugLoggingEnabled else { return }
         logger.debug("\(message)")
     }
+
+
+    static func parseItemURL(_ url: URL, title: String? = nil) -> (any ItemProtocol)? {
+        guard
+            let components = URLComponents(
+                url: url, resolvingAgainstBaseURL: true),
+            components.path.contains(neodbItemIdentifier)
+        else {
+            log("Not a NeoDB URL: \(url.absoluteString)")
+            return nil
+        }
+
+        // Remove leading slash and split path
+        let path = components.path.dropFirst()
+        let pathComponents = path.split(separator: "/").map(String.init)
+
+        // Verify we have ~neodb~/type/id format
+        guard pathComponents.count >= 3,
+            pathComponents[0] == neodbItemIdentifier
+        else {
+            log("Invalid NeoDB URL format: \(components.path)")
+            return nil
+        }
+
+        let type = pathComponents[1]
+        var uuid = pathComponents[2]
+
+        // Handle special cases for tv seasons and episodes
+        let category: ItemCategory
+        if type == "podcast" && pathComponents.count >= 4 {
+            if pathComponents[2] == "episode" {
+                category = .podcastEpisode
+                uuid = pathComponents[3]
+            } else {
+                category = .podcast
+                uuid = pathComponents[2]
+            }
+        } else if type == "tv" && pathComponents.count >= 4 {
+            switch pathComponents[2] {
+            case "season":
+                category = .tvSeason
+            case "episode":
+                category = .tvEpisode
+            default:
+                category = .tv
+            }
+            uuid = pathComponents[3]
+        } else if type == "album" {
+            category = .music
+        } else if type == "performance" && pathComponents[2] == "production" {
+            category = .performanceProduction
+            uuid = pathComponents[3]
+        } else if let itemCategory = ItemCategory(rawValue: type) {
+            category = itemCategory
+        } else {
+            log("Unknown item type: \(type), defaulting to book")
+            category = .book
+        }
+
+        log("Processing NeoDB URL - type: \(type), uuid: \(uuid)")
+
+        // Create item URL by removing ~neodb~
+        var itemComponents = components
+        itemComponents.path = itemComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "")
+
+        // Create API URL by replacing ~neodb~ with api
+        var apiComponents = components
+        apiComponents.path = apiComponents.path.replacingOccurrences(
+            of: "/\(neodbItemIdentifier)", with: "/api")
+
+        // Create a temporary ItemSchema
+        let urlItem = ItemSchema(
+            id: itemComponents.url?.absoluteString ?? url.absoluteString,
+            type: category.type,
+            uuid: uuid,
+            url: itemComponents.url?.absoluteString ?? url.absoluteString,
+            apiUrl: apiComponents.url?.absoluteString ?? url.absoluteString,
+            category: category,
+            parentUuid: nil,
+            displayTitle: title,
+            externalResources: nil,
+            title: title,
+            description: nil,
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: nil,
+            rating: nil,
+            ratingCount: nil,
+            brief: nil
+        )
+
+        log("Created ItemSchema for \(category.rawValue)")
+        return urlItem
+    }
     
-    static func parseItemURL(_ url: URL, title: String? = nil) async -> (any ItemProtocol)? {
+    @available(*, deprecated, message: "Use parseItemURL instead")
+    static func parseItemURLAsync(_ url: URL, title: String? = nil) async -> (any ItemProtocol)? {
         guard
             let components = URLComponents(
                 url: url, resolvingAgainstBaseURL: true),
@@ -85,7 +181,7 @@ class NeoDBURL {
         // Create a temporary ItemSchema
         let urlItem = ItemSchema(
             id: id,
-            type: type,
+            type: category.type,
             uuid: id,
             url: itemComponents.url?.absoluteString ?? url.absoluteString,
             apiUrl: apiComponents.url?.absoluteString ?? url.absoluteString,
@@ -107,6 +203,7 @@ class NeoDBURL {
         return urlItem
     }
 
+    @available(*, deprecated, message: "Don't need this anymore since the podcast episode URL has API.")
     static func parseItemPodcastURL(_ url: URL, title: String? = nil) async -> PodcastSchema? {
         guard
             let components = URLComponents(
@@ -165,7 +262,7 @@ class NeoDBURL {
 
         return PodcastSchema(
             id: url.absoluteString,
-            type: "Podcast",
+            type: .podcast,
             uuid: uuid,
             url: itemComponents.path,
             apiUrl: apiComponents.path,

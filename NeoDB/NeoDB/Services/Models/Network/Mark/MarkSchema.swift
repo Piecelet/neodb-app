@@ -10,11 +10,12 @@ import Foundation
 struct MarkSchema: Codable, Identifiable {
     let shelfType: ShelfType
     let visibility: MarkVisibility
+    let postId: Int?
     let item: ItemSchema
     let createdTime: ServerDate
     let commentText: String?
     let ratingGrade: Int?
     let tags: [String]
     
-    var id: String { "\(item.id)_\(createdTime)" }
+    var id: String { "\(item.id)_\(postId?.description ?? createdTime)" }
 }

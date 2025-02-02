@@ -11,9 +11,9 @@ private let metadataArraySeparator = " "
 private let metadataArraySeparatorHidden = " "
 
 // MARK: - Base Item Protocol
-protocol ItemProtocol: Codable, Equatable, Hashable, Identifiable {
+protocol ItemProtocol: Codable, Decodable, Equatable, Hashable, Identifiable {
     var id: String { get }
-    var type: String { get }
+    var type: ItemType { get }
     var uuid: String { get }
     var url: String { get }
     var apiUrl: String { get }
@@ -28,7 +28,8 @@ protocol ItemProtocol: Codable, Equatable, Hashable, Identifiable {
     var coverImageUrl: URL? { get }
     var rating: Double? { get }
     var ratingCount: Int? { get }
-    var brief: String { get }
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    var brief: String? { get }
 }
 
 // Default implementation for Hashable
@@ -59,7 +60,7 @@ extension ItemProtocol {
             coverImageUrl: self.coverImageUrl,
             rating: self.rating,
             ratingCount: self.ratingCount,
-            brief: self.brief
+            brief: nil
         )
     }
 }
@@ -67,7 +68,7 @@ extension ItemProtocol {
 // MARK: - Base Item Schema
 struct ItemSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -82,13 +83,14 @@ struct ItemSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
 }
 
 extension ItemSchema {
     static func make(category: ItemCategory) -> any ItemProtocol.Type {
         switch category {
-        case .book:
+        case .book, .fanfic, .exhibition, .collection:
             return EditionSchema.self
         case .movie:
             return MovieSchema.self
@@ -102,14 +104,14 @@ extension ItemSchema {
             return AlbumSchema.self
         case .podcast:
             return PodcastSchema.self
+        case .podcastEpisode:
+            return PodcastEpisodeSchema.self
         case .game:
             return GameSchema.self
         case .performance:
             return PerformanceSchema.self
         case .performanceProduction:
             return PerformanceProductionSchema.self
-        default:
-            return ItemSchema.self
         }
     }
 }
@@ -117,7 +119,7 @@ extension ItemSchema {
 // MARK: - Edition Schema
 struct EditionSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -132,7 +134,8 @@ struct EditionSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Edition
     let subtitle: String?
@@ -217,7 +220,7 @@ extension EditionSchema {
 // MARK: - Movie Schema
 struct MovieSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -232,7 +235,8 @@ struct MovieSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Movie
     let origTitle: String?
@@ -305,7 +309,7 @@ extension MovieSchema {
 // MARK: - TV Show Schema
 struct TVShowSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -320,7 +324,8 @@ struct TVShowSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to TV Show
     let seasonCount: Int?
@@ -410,7 +415,7 @@ extension TVShowSchema {
 // MARK: - TV Season Schema
 //struct TVSeasonSchema: ItemProtocol {
 //    let id: String
-//    let type: String
+//    let type: ItemType
 //    let uuid: String
 //    let url: String
 //    let apiUrl: String
@@ -447,7 +452,7 @@ extension TVShowSchema {
 // MARK: - TV Episode Schema
 //struct TVEpisodeSchema: ItemProtocol {
 //    let id: String
-//    let type: String
+//    let type: ItemType
 //    let uuid: String
 //    let url: String
 //    let apiUrl: String
@@ -471,7 +476,7 @@ extension TVShowSchema {
 // MARK: - Album Schema
 struct AlbumSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -486,7 +491,8 @@ struct AlbumSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Album
     let otherTitle: [String]
@@ -560,7 +566,7 @@ extension AlbumSchema {
 // MARK: - Podcast Schema
 struct PodcastSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -575,7 +581,8 @@ struct PodcastSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Podcast
     let host: [String]
@@ -637,10 +644,9 @@ extension PodcastSchema {
     }
 }
 
-// MARK: - Game Schema
-struct GameSchema: ItemProtocol {
+struct PodcastEpisodeSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -655,7 +661,63 @@ struct GameSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
+
+    // Additional properties specific to Podcast Episode
+    let guid: String?
+    let pubDate: ServerDate?
+    let mediaUrl: String?
+    let link: String?
+    let duration: Int?
+}
+
+extension PodcastEpisodeSchema {
+    var keyMetadata: [String] {
+        var metadata: [String] = []
+
+       if let pubDate = pubDate {
+           metadata.append(pubDate.formatted(.dateOnly))
+       }
+
+        return metadata
+    }
+
+    var allMetadata: [(String, String)] {
+        var metadata: [(String, String)] = []
+
+        if let pubDate = pubDate {
+            metadata.append((String(localized: "metadata_podcast_episode_pub_date_label", table: "Item", comment: "Podcast Episode Pub Date label"), pubDate.formatted(.dateOnly)))
+        }
+
+        if let link = link {
+            metadata.append((String(localized: "metadata_podcast_episode_link_label", table: "Item", comment: "Podcast Episode Link label"), link))
+        }
+
+        return metadata
+    }
+}
+
+// MARK: - Game Schema
+struct GameSchema: ItemProtocol {
+    let id: String
+    let type: ItemType
+    let uuid: String
+    let url: String
+    let apiUrl: String
+    let category: ItemCategory
+    let parentUuid: String?
+    let displayTitle: String?
+    let externalResources: [ItemExternalResourceSchema]?
+    let title: String?
+    let description: String?
+    let localizedTitle: [LocalizedTitleSchema]?
+    let localizedDescription: [LocalizedTitleSchema]?
+    let coverImageUrl: URL?
+    let rating: Double?
+    let ratingCount: Int?
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Game
     let genre: [String]
@@ -720,7 +782,7 @@ extension GameSchema {
 // MARK: - Performance Schema
 struct PerformanceSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -735,7 +797,8 @@ struct PerformanceSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Performance
     let origTitle: String?
@@ -814,7 +877,7 @@ extension PerformanceSchema {
 // MARK: - Performance Production Schema
 struct PerformanceProductionSchema: ItemProtocol {
     let id: String
-    let type: String
+    let type: ItemType
     let uuid: String
     let url: String
     let apiUrl: String
@@ -829,7 +892,8 @@ struct PerformanceProductionSchema: ItemProtocol {
     let coverImageUrl: URL?
     let rating: Double?
     let ratingCount: Int?
-    let brief: String
+    @available(*, deprecated, message: "Brief is deprecated, use description instead.")
+    let brief: String?
     
     // Additional properties specific to Performance Production
     let origTitle: String?

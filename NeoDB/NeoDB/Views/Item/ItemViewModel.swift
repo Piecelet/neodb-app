@@ -18,7 +18,7 @@ enum ItemState {
 @MainActor
 final class ItemViewModel: ObservableObject {
     // MARK: - Dependencies
-    private let logger = Logger.views.item
+    let logger = Logger.views.item
     private let cacheService = CacheService()
 
     // MARK: - Task Management
@@ -85,214 +85,6 @@ final class ItemViewModel: ObservableObject {
         return metadata
     }
 
-    var allMetadata: [String] {
-        guard let item else { return [] }
-
-        var metadata: [String] = []
-
-        switch item {
-        case let book as EditionSchema:
-            if !book.author.isEmpty {
-                metadata.append("Author: \(book.author.joined(separator: ", "))")
-            }
-            if !book.translator.isEmpty {
-                metadata.append("Translator: \(book.translator.joined(separator: ", "))")
-            }
-            if let subtitle = book.subtitle {
-                metadata.append("Subtitle: \(subtitle)")
-            }
-            if let origTitle = book.origTitle {
-                metadata.append("Original Title: \(origTitle)")
-            }
-            if !book.language.isEmpty {
-                metadata.append("Language: \(book.language.joined(separator: ", "))")
-            }
-            if let pubHouse = book.pubHouse {
-                metadata.append("Publisher: \(pubHouse)")
-            }
-            if let pubYear = book.pubYear {
-                metadata.append("Publication Year: \(pubYear)")
-            }
-            if let pubMonth = book.pubMonth {
-                metadata.append("Publication Month: \(pubMonth)")
-            }
-            if let binding = book.binding {
-                metadata.append("Binding: \(binding)")
-            }
-            if let price = book.price {
-                metadata.append("Price: \(price)")
-            }
-            if let pages = book.pages {
-                metadata.append("Pages: \(pages)")
-            }
-            if let series = book.series {
-                metadata.append("Series: \(series)")
-            }
-            if let imprint = book.imprint {
-                metadata.append("Imprint: \(imprint)")
-            }
-            if let isbn = book.isbn {
-                metadata.append("ISBN: \(isbn)")
-            }
-            
-        case let movie as MovieSchema:
-            if let origTitle = movie.origTitle {
-                metadata.append("Original Title: \(origTitle)")
-            }
-            if !movie.otherTitle.isEmpty {
-                metadata.append("Other Titles: \(movie.otherTitle.joined(separator: ", "))")
-            }
-            if !movie.director.isEmpty {
-                metadata.append("Director: \(movie.director.joined(separator: ", "))")
-            }
-            if !movie.playwright.isEmpty {
-                metadata.append("Playwright: \(movie.playwright.joined(separator: ", "))")
-            }
-            if !movie.actor.isEmpty {
-                metadata.append("Actors: \(movie.actor.joined(separator: ", "))")
-            }
-            if !movie.genre.isEmpty {
-                metadata.append("Genre: \(movie.genre.joined(separator: ", "))")
-            }
-            if !movie.language.isEmpty {
-                metadata.append("Language: \(movie.language.joined(separator: ", "))")
-            }
-            if !movie.area.isEmpty {
-                metadata.append("Area: \(movie.area.joined(separator: ", "))")
-            }
-            if let year = movie.year {
-                metadata.append("Year: \(year)")
-            }
-            if let site = movie.site {
-                metadata.append("Website: \(site)")
-            }
-            if let duration = movie.duration {
-                metadata.append("Duration: \(duration)")
-            }
-            if let imdb = movie.imdb {
-                metadata.append("IMDB: \(imdb)")
-            }
-            
-        case let tv as TVShowSchema:
-            if let origTitle = tv.origTitle {
-                metadata.append("Original Title: \(origTitle)")
-            }
-            if let otherTitle = tv.otherTitle, !otherTitle.isEmpty {
-                metadata.append("Other Titles: \(otherTitle.joined(separator: ", "))")
-            }
-            if let director = tv.director, !director.isEmpty {
-                metadata.append("Director: \(director.joined(separator: ", "))")
-            }
-            if let playwright = tv.playwright, !playwright.isEmpty {
-                metadata.append("Playwright: \(playwright.joined(separator: ", "))")
-            }
-            if let actor = tv.actor, !actor.isEmpty {
-                metadata.append("Actors: \(actor.joined(separator: ", "))")
-            }
-            if let genre = tv.genre, !genre.isEmpty {
-                metadata.append("Genre: \(genre.joined(separator: ", "))")
-            }
-            if let language = tv.language, !language.isEmpty {
-                metadata.append("Language: \(language.joined(separator: ", "))")
-            }
-            if let area = tv.area, !area.isEmpty {
-                metadata.append("Area: \(area.joined(separator: ", "))")
-            }
-            if let year = tv.year {
-                metadata.append("Year: \(year)")
-            }
-            if let site = tv.site {
-                metadata.append("Website: \(site)")
-            }
-            if let seasonCount = tv.seasonCount {
-                metadata.append("Seasons: \(seasonCount)")
-            }
-            if let episodeCount = tv.episodeCount {
-                metadata.append("Episodes: \(episodeCount)")
-            }
-            if let imdb = tv.imdb {
-                metadata.append("IMDB: \(imdb)")
-            }
-            
-        case let album as AlbumSchema:
-            if !album.otherTitle.isEmpty {
-                metadata.append("Other Titles: \(album.otherTitle.joined(separator: ", "))")
-            }
-            if !album.genre.isEmpty {
-                metadata.append("Genre: \(album.genre.joined(separator: ", "))")
-            }
-            if !album.artist.isEmpty {
-                metadata.append("Artists: \(album.artist.joined(separator: ", "))")
-            }
-            if !album.company.isEmpty {
-                metadata.append("Company: \(album.company.joined(separator: ", "))")
-            }
-            if let duration = album.duration {
-                metadata.append("Duration: \(duration) minutes")
-            }
-            if let releaseDate = album.releaseDate {
-                metadata.append("Release Date: \(releaseDate)")
-            }
-            if let trackList = album.trackList {
-                metadata.append("Track List: \(trackList)")
-            }
-            if let barcode = album.barcode {
-                metadata.append("Barcode: \(barcode)")
-            }
-            
-        case let game as GameSchema:
-            if !game.genre.isEmpty {
-                metadata.append("Genre: \(game.genre.joined(separator: ", "))")
-            }
-            if !game.developer.isEmpty {
-                metadata.append("Developer: \(game.developer.joined(separator: ", "))")
-            }
-            if !game.publisher.isEmpty {
-                metadata.append("Publisher: \(game.publisher.joined(separator: ", "))")
-            }
-            if !game.platform.isEmpty {
-                metadata.append("Platform: \(game.platform.joined(separator: ", "))")
-            }
-            if let releaseType = game.releaseType {
-                metadata.append("Release Type: \(releaseType)")
-            }
-            if let releaseDate = game.releaseDate {
-                metadata.append("Release Date: \(releaseDate)")
-            }
-            if let officialSite = game.officialSite {
-                metadata.append("Official Site: \(officialSite)")
-            }
-            
-        case let podcast as PodcastSchema:
-            if !podcast.host.isEmpty {
-                metadata.append("Host: \(podcast.host.joined(separator: ", "))")
-            }
-            if !podcast.genre.isEmpty {
-                metadata.append("Genre: \(podcast.genre.joined(separator: ", "))")
-            }
-            if !podcast.language.isEmpty {
-                metadata.append("Language: \(podcast.language.joined(separator: ", "))")
-            }
-            if let episodeCount = podcast.episodeCount {
-                metadata.append("Episodes: \(episodeCount)")
-            }
-            if let lastEpisodeDate = podcast.lastEpisodeDate {
-                metadata.append("Last Episode: \(lastEpisodeDate)")
-            }
-            if let rssUrl = podcast.rssUrl {
-                metadata.append("RSS URL: \(rssUrl)")
-            }
-            if let websiteUrl = podcast.websiteUrl {
-                metadata.append("Website: \(websiteUrl)")
-            }
-            
-        default:
-            break
-        }
-
-        return metadata.filter { !$0.isEmpty }
-    }
-
     var shareURL: URL? {
         guard let item,
             let accountsManager
@@ -315,6 +107,10 @@ final class ItemViewModel: ObservableObject {
         id: String, category: ItemCategory, refresh: Bool = false
     ) async {
         loadTask?.cancel()
+        
+
+        logger.debug("Loading item: \(id) \(category)") 
+
         
         loadTask = Task {
             guard let accountsManager else {
@@ -468,7 +264,7 @@ final class ItemViewModel: ObservableObject {
     private func handleMarkError(_ error: Error, itemId: String) async {
         if !Task.isCancelled {
             if let networkError = error as? NetworkError,
-                case .httpError(let statusCode) = networkError,
+                case .httpError(let statusCode, _) = networkError,
                 statusCode == 404
             {
                 // 404 means no mark exists, which is a normal case

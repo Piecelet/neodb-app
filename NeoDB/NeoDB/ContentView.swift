@@ -5,22 +5,25 @@
 //  Created by citron(https://github.com/lcandy2) on 12/14/24.
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
+    @EnvironmentObject var storeManager: StoreManager
     @StateObject private var router = Router()
     @State private var isSearchActive = false
     private let logger = Logger.views.contentView
 
     var body: some View {
-        TabView(selection: $router.selectedTab.onUpdate { oldTab, newTab in
-            // Only activate search when clicking search tab while already on search tab
-            if oldTab == .search && newTab == .search {
-                isSearchActive.toggle()
+        TabView(
+            selection: $router.selectedTab.onUpdate { oldTab, newTab in
+                // Only activate search when clicking search tab while already on search tab
+                if oldTab == .search && newTab == .search {
+                    isSearchActive.toggle()
+                }
             }
-        }) {
+        ) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
                 TimelinesView()
@@ -30,7 +33,10 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label(String(localized: "timelines_title_home", table: "Timelines"), systemImage: "house.fill")
+                Label(
+                    String(
+                        localized: "timelines_title_home", table: "Timelines"),
+                    systemImage: "house.fill")
             }
             .tag(TabSection.home)
 
@@ -43,7 +49,10 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label(String(localized: "discover_search_title", table: "Discover"), systemImage: "magnifyingglass")
+                Label(
+                    String(
+                        localized: "discover_search_title", table: "Discover"),
+                    systemImage: "magnifyingglass")
             }
             .tag(TabSection.search)
 
@@ -56,7 +65,9 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label(String(localized: "library_title", table: "Library"), systemImage: "books.vertical.fill")
+                Label(
+                    String(localized: "library_title", table: "Library"),
+                    systemImage: "books.vertical.fill")
             }
             .tag(TabSection.library)
 
@@ -69,7 +80,9 @@ struct ContentView: View {
                     }
             }
             .tabItem {
-                Label(String(localized: "settings_title", table: "Settings"), systemImage: "gear")
+                Label(
+                    String(localized: "settings_title", table: "Settings"),
+                    systemImage: "gear")
             }
             .tag(TabSection.profile)
         }
@@ -77,14 +90,16 @@ struct ContentView: View {
         .environmentObject(router)
         .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
             logger.debug("shouldShowPurchase changed to \(shouldShow)")
-            if shouldShow {
+            if shouldShow, !storeManager.isPlus {
                 router.presentSheet(.purchase)
             }
         }
-        .sheet(item: Binding(
-            get: { router.sheetStack.last },
-            set: { _, _ in router.dismissSheet() }
-        )) { sheet in
+        .sheet(
+            item: Binding(
+                get: { router.sheetStack.last },
+                set: { _, _ in router.dismissSheet() }
+            )
+        ) { sheet in
             Group {
                 switch sheet {
                 case .newStatus:
@@ -94,15 +109,39 @@ struct ContentView: View {
                 case .replyToStatus(let status):
                     StatusReplyView(status: status)
                 case .addToShelf(let item, let shelfType, let detentLevel):
-                    MarkView(item: item, shelfType: shelfType, detentLevel: detentLevel)
-                        .environmentObject(accountsManager)
+                    MarkView(
+                        item: item, shelfType: shelfType,
+                        detentLevel: detentLevel
+                    )
+                    .environmentObject(accountsManager)
                 case .editShelfItem(let mark, let shelfType, let detentLevel):
-                    MarkView(item: mark.item, mark: mark, shelfType: shelfType, detentLevel: detentLevel)
-                        .environmentObject(accountsManager)
+                    MarkView(
+                        item: mark.item, mark: mark, shelfType: shelfType,
+                        detentLevel: detentLevel
+                    )
+                    .environmentObject(accountsManager)
                 case .itemDetails(let item):
                     ItemDetailsSheet(item: item)
                 case .purchase:
                     PurchaseView(type: .sheet)
+                case .purchaseWithFeature(let feature):
+                    PurchaseView(type: .sheet, scrollToFeature: feature)
+                case .login:
+                    NavigationStack {
+                        InstanceView()
+                            .toolbar {
+                                ToolbarItem(placement: .topBarTrailing) {
+                                    Button(action: {
+                                        accountsManager.restoreLastAuthenticatedAccount()
+                                        router.dismissSheet()
+                                    }) {
+                                        Text("Done")
+                                    }
+                                }
+                            }
+                    }
+                    .interactiveDismissDisabled()
+                    .environmentObject(accountsManager)
                 }
             }
             .environmentObject(router)
@@ -110,11 +149,10 @@ struct ContentView: View {
         .whatsNewSheet()
         .enableInjection()
     }
-    
-    
-#if DEBUG
-    @ObserveInjection var forceRedraw
-#endif
+
+    #if DEBUG
+        @ObserveInjection var forceRedraw
+    #endif
 
     @ViewBuilder
     private func destinationView(for destination: RouterDestination)
@@ -129,7 +167,7 @@ struct ContentView: View {
         case .itemDetailWithItem(let item):
             ItemView(
                 id: item.id,
-                category: item.category,
+                category: item.type.category ?? item.category,
                 item: item
             )
         case .shelfDetail(let type):
@@ -150,8 +188,12 @@ struct ContentView: View {
             Text("Followers: \(id)")  // TODO: Implement FollowersView
         case .following(let id):
             Text("Following: \(id)")  // TODO: Implement FollowingView
+        case .galleryCategory(let gallery):
+            GalleryCategoryView(gallery: gallery)
         case .purchase:
             PurchaseView()
+        case .purchaseWithFeature(let feature):
+            PurchaseView(scrollToFeature: feature)
         }
     }
 }

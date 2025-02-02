@@ -20,16 +20,19 @@ struct LibraryView: View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)
-            TabView(selection: $viewModel.selectedShelfType) {
-                ForEach(ShelfType.allCases, id: \.self) { type in
-                    Group {
-                        shelfContentView(for: type)
+            GeometryReader { geometry in
+                TabView(selection: $viewModel.selectedShelfType) {
+                    ForEach(ShelfType.allCases, id: \.self) { type in
+                        List {
+                            shelfContentView(for: type, geometry: geometry)
+                        }
+                        .listStyle(.plain)
+                        .refreshable {
+                            await viewModel.loadShelfItems(
+                                type: type, refresh: true)
+                        }
+                        .tag(type)
                     }
-                    .refreshable {
-                        await viewModel.loadShelfItems(
-                            type: type, refresh: true)
-                    }
-                    .tag(type)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -75,62 +78,13 @@ struct LibraryView: View {
             TopTabBarView(
                 items: ShelfType.allCases,
                 selection: $viewModel.selectedShelfType
-            ) { $0.displayName }
+            ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
         }
+        .padding(.bottom, -12)
     }
 
     private var categoryFilter: some View {
         ItemCategoryBarView(activeTab: $viewModel.selectedCategory)
-    }
-
-    // MARK: - Shelf Content View
-    @ViewBuilder
-    private func shelfContentView(for type: ShelfType) -> some View {
-        let state = viewModel.shelfStates[type] ?? ShelfItemsState()
-
-        if state.items.isEmpty {
-            if let error = state.error {
-                EmptyStateView(
-                    String(localized: "library_error_title", table: "Library"),
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(state.detailedError ?? error)
-                )
-            } else if !state.isLoading && !state.isRefreshing {
-                EmptyStateView(
-                    String(localized: "library_empty_title", table: "Library"),
-                    systemImage: "books.vertical",
-                    description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
-                )
-            } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-                    .padding()
-            }
-        } else {
-            List {
-                ForEach(state.items) { mark in
-                    Button {
-                        router.navigate(to: .itemDetailWithItem(item: mark.item))
-                    } label: {
-                        shelfItemView(mark: mark)
-                            .onAppear {
-                                if mark.id == state.items.last?.id {
-                                    Task {
-                                        await viewModel.loadNextPage(type: type)
-                                    }
-                                }
-                            }
-                    }
-                    .buttonStyle(.plain)
-                }
-                if state.isLoading && !state.isRefreshing {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
-            }
-            .listStyle(.plain)
-        }
     }
 
     // MARK: - Item View Components
@@ -143,7 +97,6 @@ struct LibraryView: View {
             chevronIcon
                 .padding(.top, 4)
         }
-        .padding(.vertical, 4)
         .contentShape(Rectangle())
     }
 
@@ -168,6 +121,71 @@ struct LibraryView: View {
         Image(systemSymbol: .chevronRight)
             .foregroundStyle(.secondary)
             .font(.caption)
+    }
+
+    // MARK: - Shelf Content View
+    @ViewBuilder
+    private func shelfContentView(for type: ShelfType, geometry: GeometryProxy? = nil) -> some View {
+        if let state = viewModel.shelfStates[type] {
+            if state.items.isEmpty {
+                emptyStateView(for: state, type: type)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
+            } else {
+                shelfItemsList(for: state, type: type)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
+        if let error = state.error {
+            EmptyStateView(
+                String(localized: "library_error_title", table: "Library"),
+                systemImage: "exclamationmark.triangle",
+                description: Text(state.detailedError ?? error)
+            )
+        } else if !state.isLoading && !state.isRefreshing {
+            EmptyStateView(
+                String(localized: "library_empty_title", table: "Library"),
+                systemImage: "books.vertical",
+                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
+            )
+        } else {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding()
+                .id(UUID())
+                .padding(.top, 60)
+        }
+    }
+    
+    @ViewBuilder
+    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType) -> some View {
+        ForEach(state.items) { mark in
+            Button {
+                router.navigate(to: .itemDetailWithItem(item: mark.item))
+            } label: {
+                shelfItemView(mark: mark)
+                    .onAppear {
+                        if mark.id == state.items.last?.id {
+                            Task {
+                                await viewModel.loadNextPage(type: type)
+                            }
+                        }
+                    }
+            }
+            .buttonStyle(.plain)
+        }
+        
+        if state.isLoading && !state.isRefreshing {
+            ProgressView()
+                .frame(maxWidth: .infinity)
+                .padding()
+                .listRowInsets(EdgeInsets())
+        }
     }
 }
 

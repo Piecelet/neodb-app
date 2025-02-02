@@ -122,6 +122,8 @@ struct AppClient: Codable, Identifiable {
                 throw AccountError.registrationFailed("Unauthorized")
             case .cancelled:
                 throw AccountError.registrationFailed("Registration cancelled")
+            case .messageError(let message):
+                throw AccountError.registrationFailed(message)
             }
         }
     }

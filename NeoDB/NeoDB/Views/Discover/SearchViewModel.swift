@@ -7,10 +7,11 @@
 
 import Foundation
 import OSLog
+import UIKit
 
 @MainActor
 class SearchViewModel: ObservableObject {
-    private let logger = Logger.views.search
+    private let logger = Logger.views.discover.search
     private let cacheService = CacheService()
     private var searchTask: Task<Void, Never>?
     private var galleryTask: Task<Void, Never>?
@@ -69,6 +70,10 @@ class SearchViewModel: ObservableObject {
     @Published var loadingStartTime: Date?
     @Published var showLoading = false
     @Published var isConfirmedSearch = false
+    @Published var isShowingURLInput = false
+    @Published var urlInput = ""
+    @Published var isLoadingURL = false
+    @Published var urlError: Error?
     
     var accountsManager: AppAccountsManager?
 
@@ -323,5 +328,6 @@ class SearchViewModel: ObservableObject {
         searchTask = nil
         galleryTask = nil
         searchDebounceTask = nil
+        searchText = ""
     }
 } 

@@ -10,6 +10,7 @@ import Kingfisher
 
 struct SearchItemView: View {
     let item: any ItemProtocol
+    var showCategory: Bool = true
     
     var body: some View {
         HStack(spacing: 12) {
@@ -19,7 +20,7 @@ struct SearchItemView: View {
             VStack(alignment: .leading, spacing: 4) {
                 ItemTitleView(item: item, mode: .title, size: .medium)
 
-                ItemRatingView(item: item, size: .medium, showCategory: true)
+                ItemRatingView(item: item, size: .medium, showCategory: showCategory)
                 
                 ItemDescriptionView(item: item, mode:.brief , size: .medium)
             }
