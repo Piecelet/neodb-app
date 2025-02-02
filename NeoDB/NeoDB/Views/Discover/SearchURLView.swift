@@ -100,26 +100,30 @@ struct SearchURLView: View {
                                 .background(.white)
                                 .clipShape(RoundedRectangle(cornerRadius: 12))
                             
-                            Button {
-                                Task {
-                                    await viewModel.fetchFromURL(viewModel.urlInput)
+                            if viewModel.urlInput.isEmpty {
+                                PasteButton(payloadType: String.self) { strings in
+                                    guard let urlString = strings.first else { return }
+                                    Task { @MainActor in
+                                        viewModel.urlInput = urlString
+                                        await viewModel.fetchFromURL(urlString)
+                                    }
                                 }
-                            } label: {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .font(.title3)
-                                    .foregroundColor(viewModel.urlInput.isEmpty ? .secondary : .blue)
+                                .buttonBorderShape(.capsule)
+                                .labelStyle(.iconOnly)
+                                .padding(.trailing)
+                            } else {
+                                Button {
+                                    Task {
+                                        await viewModel.fetchFromURL(viewModel.urlInput)
+                                    }
+                                } label: {
+                                    Label("Get Item by URL", systemSymbol: .arrowRightCircleFill)
+                                        .labelStyle(.iconOnly)
+                                        .font(.title)
+                                }
+                                .buttonBorderShape(.capsule)
+                                .padding(.trailing)
                             }
-                            .disabled(viewModel.urlInput.isEmpty)
-                            .padding(.trailing)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    
-                    PasteButton(payloadType: String.self) { strings in
-                        guard let urlString = strings.first else { return }
-                        Task { @MainActor in
-                            viewModel.urlInput = urlString
-                            await viewModel.fetchFromURL(urlString)
                         }
                     }
                     .frame(maxWidth: .infinity)
