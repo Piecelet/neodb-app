@@ -92,23 +92,26 @@ struct SearchURLView: View {
                     }
                     
                     HStack(spacing: 8) {
-                        TextField("Enter URL", text: $viewModel.urlInput)
-                            .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
-                            .padding()
-                            .background(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                        
-                        Button {
-                            Task {
-                                await viewModel.fetchFromURL(viewModel.urlInput)
+                        ZStack(alignment: .trailing) {
+                            TextField("Enter URL", text: $viewModel.urlInput)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                                .padding()
+                                .background(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            
+                            Button {
+                                Task {
+                                    await viewModel.fetchFromURL(viewModel.urlInput)
+                                }
+                            } label: {
+                                Image(systemName: "arrow.right.circle.fill")
+                                    .font(.title3)
+                                    .foregroundColor(viewModel.urlInput.isEmpty ? .secondary : .blue)
                             }
-                        } label: {
-                            Image(systemName: "arrow.right.circle.fill")
-                                .font(.title3)
-                                .foregroundColor(viewModel.urlInput.isEmpty ? .secondary : .blue)
+                            .disabled(viewModel.urlInput.isEmpty)
+                            .padding(.trailing)
                         }
-                        .disabled(viewModel.urlInput.isEmpty)
                     }
                     .frame(maxWidth: .infinity)
                     
