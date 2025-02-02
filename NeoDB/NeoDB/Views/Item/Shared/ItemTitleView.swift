@@ -13,11 +13,20 @@ enum ItemTitleMode {
 }
 
 enum ItemTitleSize {
-    case medium
-    case large
+    case small      // 最小尺寸，用于紧凑布局 (.caption)
+    case compact    // 紧凑尺寸 (.footnote)
+    case regular    // 小型标准尺寸 (.subheadline)
+    case medium     // 中等尺寸 (.headline)
+    case large      // 大尺寸 (.title2)
 
     var titleFont: Font {
         switch self {
+        case .small:
+            return .caption
+        case .compact:
+            return .system(size: 13)
+        case .regular:
+            return .subheadline
         case .medium:
             return .headline
         case .large:
@@ -27,16 +36,25 @@ enum ItemTitleSize {
 
     var titleWeight: Font.Weight {
         switch self {
-        case .medium:
+        case .small, .compact:
             return .regular
+        case .regular:
+            return .regular
+        case .medium:
+            return .medium
         case .large:
             return .bold
         }
     }
     
-
     var subtitleFont: Font {
         switch self {
+        case .small:
+            return .caption2
+        case .compact:
+            return .caption2
+        case .regular:
+            return .caption
         case .medium:
             return .subheadline
         case .large:
@@ -46,6 +64,10 @@ enum ItemTitleSize {
 
     var lineLimit: Int {
         switch self {
+        case .small:
+            return 1
+        case .compact, .regular:
+            return 2
         case .medium:
             return 2
         case .large:

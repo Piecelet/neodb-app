@@ -33,17 +33,11 @@ struct GalleryView: View {
                                     router.navigate(
                                         to: .itemDetailWithItem(item: item))
                                 } label: {
-                                    VStack(alignment: .leading) {
+                                    VStack(alignment: .leading, spacing: 8) {
                                         ItemCoverView(item: item, size: .large, alignment: .fixed)
 
-                                        ItemTitleView(item: item, mode: .title, size: .medium, alignment: .center)
-                                            
-                                        
-                                        Text(item.displayTitle ?? "")
-                                            .font(.caption)
-                                            .foregroundStyle(.primary)
-                                            .lineLimit(2)
-                                            .frame(width: 100)
+                                        ItemTitleView(item: item, mode: .title, size: .compact, alignment: .center)
+                                            .frame(width: ItemCoverSize.large.height * AppConfig.defaultItemCoverRatio)
                                     }
                                 }
                                 .buttonStyle(.plain)
