@@ -102,7 +102,7 @@ struct SearchView: View {
                         .background(
                             viewModel.selectedCategory == category ?
                             category.color.opacity(0.2) :
-                            Color(.systemGray6)
+                            Color.grayBackground
                         )
                         .foregroundStyle(
                             viewModel.selectedCategory == category ?

@@ -63,10 +63,55 @@ struct SearchURLView: View {
 
     var body: some View {
         Section {
-            GroupBox(
-                label: Label("Import from URL", systemImage: "link")
-            ) {
-                VStack(alignment: .leading, spacing: 20) {
+            GroupBox {
+                VStack(alignment: .center, spacing: 16) {
+                    Label("Search from everywhere", systemImage: "link")
+                        .labelStyle(.titleOnly)
+                    
+                    HStack(spacing: 4) {
+                        Image("discover.searchURL.douban")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                        Image("discover.searchURL.books")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                        Image("discover.searchURL.movies")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                        Image("discover.searchURL.music")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                        Image("discover.searchURL.games")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 40)
+                    }
+                    
+                    HStack(spacing: 8) {
+                        TextField("Enter URL", text: $viewModel.urlInput)
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .padding()
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        
+                        Button {
+                            Task {
+                                await viewModel.fetchFromURL(viewModel.urlInput)
+                            }
+                        } label: {
+                            Image(systemName: "arrow.right.circle.fill")
+                                .font(.title3)
+                                .foregroundColor(viewModel.urlInput.isEmpty ? .secondary : .blue)
+                        }
+                        .disabled(viewModel.urlInput.isEmpty)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
                     PasteButton(payloadType: String.self) { strings in
                         guard let urlString = strings.first else { return }
                         Task { @MainActor in
@@ -74,61 +119,23 @@ struct SearchURLView: View {
                             await viewModel.fetchFromURL(urlString)
                         }
                     }
-
-                    if viewModel.isShowingURLInput {
-                        VStack(spacing: 12) {
-                            HStack {
-                                TextField(
-                                    "Enter URL manually",
-                                    text: $viewModel.urlInput
-                                )
-                                .textFieldStyle(.roundedBorder)
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                                .frame(minHeight: 40)
-
-                                Button {
-                                    Task {
-                                        await viewModel.fetchFromURL(
-                                            viewModel.urlInput)
-                                    }
-                                } label: {
-                                    Image(systemName: "arrow.right.circle.fill")
-                                        .font(.system(size: 24))
-                                }
-                                .buttonStyle(.plain)
-                                .disabled(viewModel.urlInput.isEmpty)
-                            }
-
-                            if viewModel.isLoadingURL {
-                                ProgressView()
-                            }
-
-                            if let error = viewModel.urlError {
-                                Text(error.localizedDescription)
-                                    .font(.caption)
-                                    .foregroundColor(.red)
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 10)
-                    } else {
-                        Button {
-                            withAnimation {
-                                viewModel.isShowingURLInput = true
-                            }
-                        } label: {
-                            Text("Manually Enter URL")
-                                .font(.headline)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 10)
+                    .frame(maxWidth: .infinity)
+                    
+                    if viewModel.isLoadingURL {
+                        ProgressView()
                     }
-
-                    Spacer(minLength: 0)
+                    
+                    if let error = viewModel.urlError {
+                        Text(error.localizedDescription)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
                 }
+                .padding(.vertical, 8)
             }
-//            .backgroundStyle(Color())
+            .frame(maxWidth: .infinity)
+            .cornerRadius(12)
+            .backgroundStyle(Color.grayBackground)
             .listRowSeparator(.hidden)
         }
         .task {

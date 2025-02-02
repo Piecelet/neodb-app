@@ -91,7 +91,7 @@ struct ItemMarkView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(size.padding)
-            .background(Color(.systemGray5).opacity(0.5))
+            .background(Color.grayBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .overlay(alignment: .bottomTrailing) {
