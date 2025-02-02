@@ -65,73 +65,97 @@ struct SearchURLView: View {
         Section {
             GroupBox {
                 VStack(alignment: .center, spacing: 16) {
-                    Label("Search from everywhere", systemImage: "link")
-                        .labelStyle(.titleOnly)
-                    
-                    HStack(spacing: 4) {
-                        Image("discover.searchURL.douban")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40)
-                        Image("discover.searchURL.books")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40)
-                        Image("discover.searchURL.movies")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40)
-                        Image("discover.searchURL.music")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40)
-                        Image("discover.searchURL.games")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 40)
+
+                    VStack(alignment: .center, spacing: 12) {
+                        Label("Search from everywhere", systemImage: "link")
+                            .font(.headline)
+                            .labelStyle(.titleOnly)
+
+                        HStack(spacing: 4) {
+                            Image("discover.searchURL.douban")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40)
+                            Image("discover.searchURL.books")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40)
+                            Image("discover.searchURL.movies")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40)
+                            Image("discover.searchURL.music")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40)
+                            Image("discover.searchURL.games")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40)
+                        }
                     }
-                    
+
                     HStack(spacing: 8) {
                         ZStack(alignment: .trailing) {
-                            TextField("Enter URL", text: $viewModel.urlInput)
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                                .padding()
-                                .background(.white)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
-                            
-                            if viewModel.urlInput.isEmpty {
-                                PasteButton(payloadType: String.self) { strings in
-                                    guard let urlString = strings.first else { return }
-                                    Task { @MainActor in
-                                        viewModel.urlInput = urlString
-                                        await viewModel.fetchFromURL(urlString)
+                            TextField(
+                                "Enter URL", text: $viewModel.urlInput
+                            )
+                            .autocorrectionDisabled()
+                            .textInputAutocapitalization(.never)
+                            .frame(maxWidth: .infinity, minHeight: 60)
+                            .padding(.horizontal)
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                            Group {
+                                if viewModel.urlInput.isEmpty {
+                                    PasteButton(payloadType: String.self) {
+                                        strings in
+                                        guard let urlString = strings.first
+                                        else { return }
+                                        Task { @MainActor in
+                                            viewModel.urlInput = urlString
+                                            await viewModel.fetchFromURL(
+                                                urlString)
+                                        }
                                     }
-                                }
-                                .buttonBorderShape(.capsule)
-                                .labelStyle(.iconOnly)
-                                .padding(.trailing)
-                            } else {
-                                Button {
-                                    Task {
-                                        await viewModel.fetchFromURL(viewModel.urlInput)
+                                    .buttonBorderShape(.capsule)
+                                    .labelStyle(.iconOnly)
+                                } else {
+                                    Button {
+                                        Task {
+                                            await viewModel.fetchFromURL(
+                                                viewModel.urlInput)
+                                        }
+                                    } label: {
+                                        Group {
+                                            if viewModel.isLoadingURL {
+                                                ProgressView()
+                                                    .tint(.white)
+                                                    .controlSize(.small)
+                                            } else {
+                                                Label(
+                                                    "Get Item by URL",
+                                                    systemSymbol: .arrowRight
+                                                )
+                                                .labelStyle(.iconOnly)
+                                            }
+                                        }
+                                        .font(.headline)
+                                        .frame(height: 20)
                                     }
-                                } label: {
-                                    Label("Get Item by URL", systemSymbol: .arrowRightCircleFill)
-                                        .labelStyle(.iconOnly)
-                                        .font(.title)
+                                    .buttonStyle(.borderedProminent)
+                                    .buttonBorderShape(.capsule)
                                 }
-                                .buttonBorderShape(.capsule)
-                                .padding(.trailing)
                             }
+                            .padding(.trailing)
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    
+
                     if viewModel.isLoadingURL {
                         ProgressView()
                     }
-                    
+
                     if let error = viewModel.urlError {
                         Text(error.localizedDescription)
                             .font(.caption)
