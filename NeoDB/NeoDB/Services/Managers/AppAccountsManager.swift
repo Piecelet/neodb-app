@@ -384,6 +384,8 @@ class AppAccountsManager: ObservableObject {
                 throw AccountError.tokenRefreshFailed("Unauthorized")
             case .cancelled:
                 throw AccountError.tokenRefreshFailed("Token refresh cancelled")
+            case .messageError(let message):
+                throw AccountError.tokenRefreshFailed(message)
             }
         }
     }

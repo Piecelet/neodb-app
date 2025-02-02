@@ -108,7 +108,11 @@ struct SearchURLView: View {
                         .frame(maxWidth: .infinity, minHeight: 60)
                         .padding(.horizontal)
                         .padding(.trailing, 50)
-                        .background(colorScheme == .light ? AnyShapeStyle(Color.white) : AnyShapeStyle(.ultraThinMaterial))
+                        .background(
+                            colorScheme == .light
+                                ? AnyShapeStyle(Color.white)
+                                : AnyShapeStyle(.ultraThinMaterial)
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 12))
 
                         Group {

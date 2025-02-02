@@ -9,14 +9,75 @@ enum HTTPMethod: String {
     case delete = "DELETE"
 }
 
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
     case invalidURL
     case unauthorized
     case invalidResponse
-    case httpError(Int)
+    case httpError(code: Int, message: String? = nil)
     case decodingError(Error)
+    case messageError(String)
     case networkError(Error)
     case cancelled
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .unauthorized:
+            return "Unauthorized"
+        case .invalidResponse:
+            return "Invalid response"
+        case .httpError(let code, let message):
+            if let message = message {
+                return "HTTP \(code): \(message)"
+            }
+            return "HTTP error: \(code)"
+        case .decodingError(let error):
+            return "Decoding error: \(error.localizedDescription)"
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
+        case .cancelled:
+            return "Request cancelled"
+        case .messageError(let message):
+            return message
+        }
+    }
+    
+    var failureReason: String? {
+        switch self {
+        case .decodingError(let error):
+            return error.localizedDescription
+        case .networkError(let error):
+            return error.localizedDescription
+        case .httpError(let code, let message):
+            if let message = message {
+                return "Server returned error: \(message)"
+            }
+            return "Server returned status code: \(code)"
+        case .messageError(let message):
+            return "Server returned error: \(message)"
+        default:
+            return nil
+        }
+    }
+    
+    var recoverySuggestion: String? {
+        switch self {
+        case .invalidURL:
+            return "Please check the URL is correct"
+        case .unauthorized:
+            return "Please try logging in again"
+        case .httpError(let code, _):
+            if code == 404 {
+                return "The requested resource was not found"
+            } else if code >= 500 {
+                return "Please try again later"
+            }
+            return nil
+        default:
+            return nil
+        }
+    }
 }
 
 // 可以参考 IceCubes 中的做法，利用 OSAllocatedUnfairLock<Critical>
@@ -194,7 +255,19 @@ enum NetworkError: Error {
 
             guard (200...299).contains(httpResponse.statusCode) else {
                 logger.error("HTTP error: \(httpResponse.statusCode)")
-                throw NetworkError.httpError(httpResponse.statusCode)
+                
+                // Try to decode error message for HTTP errors
+                do {
+                    logger.debug("Attempting to decode error message for HTTP \(httpResponse.statusCode)")
+                    let messageResult = try decoder.decode(MessageSchema.self, from: data)
+                    logger.error("Received error message from server: \(messageResult.message)")
+                    throw NetworkError.httpError(code: httpResponse.statusCode, message: messageResult.message)
+                } catch let messageError as NetworkError {
+                    throw messageError
+                } catch {
+                    logger.error("Failed to decode error message, using default HTTP error")
+                    throw NetworkError.httpError(code: httpResponse.statusCode, message: nil)
+                }
             }
 
             // 如果像 IceCubes 一样需要某些特殊类型（如 HTMLPage），可以保留此处逻辑
@@ -211,15 +284,24 @@ enum NetworkError: Error {
             do {
                 let result = try decoder.decode(type, from: data)
                 return result
-            } catch {
-                logDecodingError(error, data: data)
+            } catch let decodingError {
+                logDecodingError(decodingError, data: data)
+                logger.error("First decoding attempt failed for type \(T.self): \(decodingError.localizedDescription)")
+                
                 // Try to decode as MessageSchema
                 do {
+                    logger.debug("Attempting to decode as MessageSchema")
                     let messageResult = try decoder.decode(MessageSchema.self, from: data)
-                    throw NetworkError.networkError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: messageResult.message]))
-                } catch {
-                    // If MessageSchema decoding also fails, throw the original decoding error
-                    throw NetworkError.decodingError(error)
+                    logger.error("Received error message from server: \(messageResult.message)")
+                    throw NetworkError.messageError(messageResult.message)
+                } catch let messageError {
+                    if messageError is NetworkError {
+                        throw messageError
+                    }
+                    // If MessageSchema decoding also fails, log and throw the original error
+                    logger.error("MessageSchema decoding also failed: \(messageError.localizedDescription)")
+                    logger.error("Falling back to original decoding error")
+                    throw NetworkError.decodingError(decodingError)
                 }
             }
         } catch let error as NetworkError {
@@ -256,7 +338,7 @@ enum NetworkError: Error {
                 throw NetworkError.unauthorized
             }
             logger.error("HTTP error: \(httpResponse.statusCode)")
-            throw NetworkError.httpError(httpResponse.statusCode)
+            throw NetworkError.httpError(code: httpResponse.statusCode, message: nil)
         }
     }
 

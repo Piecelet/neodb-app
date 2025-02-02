@@ -264,7 +264,7 @@ final class ItemViewModel: ObservableObject {
     private func handleMarkError(_ error: Error, itemId: String) async {
         if !Task.isCancelled {
             if let networkError = error as? NetworkError,
-                case .httpError(let statusCode) = networkError,
+                case .httpError(let statusCode, _) = networkError,
                 statusCode == 404
             {
                 // 404 means no mark exists, which is a normal case
