@@ -58,6 +58,7 @@ struct ItemTitleView: View {
     let item: (any ItemProtocol)?
     let mode: ItemTitleMode
     let size: ItemTitleSize
+    var alignment: HorizontalAlignment = .leading
     
     var displayTitle: AttributedString {
         switch mode {
@@ -106,21 +107,39 @@ struct ItemTitleView: View {
                 Text(displayTitle)
                     .font(size.titleFont)
                     .lineLimit(size.lineLimit)
+                    .multilineTextAlignment(textAlignment)
+                    .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             case .titleAndSubtitle:
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: alignment, spacing: 2) {
                     Text(displayTitle)
                         .font(size.titleFont)
                         .lineLimit(size.lineLimit)
                         .fontWeight(size.titleWeight)
+                        .multilineTextAlignment(textAlignment)
                     if !originalTitle.isEmpty {
                         Text(originalTitle)
                             .font(size.subtitleFont)
                             .lineLimit(size.lineLimit)
+                            .multilineTextAlignment(textAlignment)
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: Alignment(horizontal: alignment, vertical: .center))
             }
         }
         .enableInjection()
+    }
+    
+    private var textAlignment: TextAlignment {
+        switch alignment {
+        case .leading:
+            return .leading
+        case .center:
+            return .center
+        case .trailing:
+            return .trailing
+        default:
+            return .leading
+        }
     }
 
     #if DEBUG
@@ -139,7 +158,15 @@ struct ItemTitleView: View {
         ItemTitleView(
             item: ItemSchema.preview,
             mode: .titleAndSubtitle,
-            size: .large
+            size: .large,
+            alignment: .center
+        )
+        
+        ItemTitleView(
+            item: ItemSchema.preview,
+            mode: .title,
+            size: .medium,
+            alignment: .trailing
         )
     }
     .padding()

@@ -80,6 +80,7 @@ struct SearchURLView: View {
             .background(Color(.systemGray6))
             .cornerRadius(20)
         }
+        .listRowSeparator(.hidden)
         .onChange(of: viewModel.searchState) { state in
             if case .results(let items) = state, let item = items.first {
                 HapticFeedback.selection()

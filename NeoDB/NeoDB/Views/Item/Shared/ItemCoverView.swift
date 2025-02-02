@@ -55,8 +55,9 @@ enum ItemCoverSize {
 }
 
 enum ItemCoverAlignment {
-    case horizontal
-    case vertical
+    case horizontal  // 固定宽度，高度自适应
+    case vertical   // 固定高度，宽度自适应
+    case fixed      // 固定宽高，使用placeholderRatio
 }
 
 struct ItemCoverView: View {
@@ -64,6 +65,19 @@ struct ItemCoverView: View {
     let size: ItemCoverSize
     var alignment: ItemCoverAlignment = .horizontal
     var showSkeleton: Bool = false
+    
+    private var frameSize: (width: CGFloat?, height: CGFloat?) {
+        switch alignment {
+        case .horizontal:
+            return (width: size.height * AppConfig.defaultItemCoverRatio, height: nil)
+        case .vertical:
+            return (width: nil, height: size.height)
+        case .fixed:
+            let resizedWidth = size.height * AppConfig.defaultItemCoverRatio
+            let ratio = item?.category.placeholderRatio ?? AppConfig.defaultItemCoverRatio
+            return (width: resizedWidth, height: resizedWidth / ratio)
+        }
+    }
 
     var body: some View {
         Group {
@@ -73,14 +87,17 @@ struct ItemCoverView: View {
                         placeholderView
                     }
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .aspectRatio(contentMode: alignment == .fixed ? .fill : .fit)
                     .clipShape(
                         RoundedRectangle(cornerRadius: size.cornerRadius)
                     )
                     .frame(
-                        maxWidth: alignment == .horizontal ? size.height * AppConfig.defaultItemCoverRatio : nil,
-                        maxHeight: alignment == .vertical ? size.height : nil,
-                        alignment: size == .large ? .topLeading : .center
+                        width: frameSize.width,
+                        height: frameSize.height
+                    )
+                    .clipped()
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: size.cornerRadius)
                     )
                     .overlay {
                         if showSkeleton {
@@ -104,14 +121,13 @@ struct ItemCoverView: View {
     private var placeholderView: some View {
         Rectangle()
             .fill(Color.gray.opacity(0.2))
-            .aspectRatio(item?.category.placeholderRatio, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
+            .aspectRatio(item?.category.placeholderRatio, contentMode: .fill)
             .frame(
-                width: alignment == .horizontal ? size.height * AppConfig.defaultItemCoverRatio : nil,
-                height: alignment == .vertical ? size.height : nil,
-                alignment: .topLeading
+                width: frameSize.width,
+                height: frameSize.height
             )
-            .fixedSize(horizontal: false, vertical: false)
+            .clipped()
+            .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
             .overlay {
                 if let item = item {
                     Image(symbol: item.category.symbolImageFill)

@@ -17,23 +17,28 @@ struct GalleryView: View {
         ForEach(viewModel.galleryItems) { gallery in
             Section {
                 VStack(alignment: .leading) {
-                    HStack(alignment: .bottom) {
+                    HStack(alignment: .center, spacing: 4) {
                         Text(gallery.displayTitle)
-                            .font(.headline)
+                            .font(.system(size: 20))
                         Image(systemSymbol: .chevronRight)
+                            .font(.subheadline)
                             .foregroundStyle(.secondary)
                     }
+                    .fontWeight(.bold)
                     ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(spacing: 12) {
+                        LazyHStack(alignment: .top, spacing: 12) {
                             ForEach(gallery.items, id: \.uuid) { item in
                                 Button {
                                     HapticFeedback.selection()
                                     router.navigate(
                                         to: .itemDetailWithItem(item: item))
                                 } label: {
-                                    VStack(alignment: .leading, spacing: 0) {
-                                        ItemCoverView(item: item, size: .large, alignment: .vertical)
+                                    VStack(alignment: .leading) {
+                                        ItemCoverView(item: item, size: .large, alignment: .fixed)
 
+                                        ItemTitleView(item: item, mode: .title, size: .medium, alignment: .center)
+                                            
+                                        
                                         Text(item.displayTitle ?? "")
                                             .font(.caption)
                                             .foregroundStyle(.primary)
@@ -46,8 +51,6 @@ struct GalleryView: View {
                         }
                     }
                 }
-                .padding(.horizontal)
-                .listRowInsets(EdgeInsets())
             }
             .listRowSeparator(.hidden)
         }
