@@ -10,11 +10,16 @@ import Kingfisher
 import SwiftUI
 
 struct GalleryView: View {
-    @ObservedObject var viewModel: SearchViewModel
+    let galleryItems: [GalleryResult]
     @EnvironmentObject private var router: Router
+    
+    private let coverSize: ItemCoverSize = .large
+    private var coverWidth: CGFloat {
+        coverSize.height * AppConfig.defaultItemCoverRatio
+    }
 
     var body: some View {
-        ForEach(viewModel.galleryItems) { gallery in
+        ForEach(galleryItems) { gallery in
             Section {
                 VStack(alignment: .leading) {
                     Button {
@@ -41,10 +46,10 @@ struct GalleryView: View {
                                     router.navigate(to: .itemDetailWithItem(item: item))
                                 } label: {
                                     VStack(alignment: .leading, spacing: 8) {
-                                        ItemCoverView(item: item, size: .large, alignment: .fixed)
+                                        ItemCoverView(item: item, size: coverSize, alignment: .fixed)
 
                                         ItemTitleView(item: item, mode: .title, size: .compact, alignment: .center)
-                                            .frame(width: ItemCoverSize.large.height * AppConfig.defaultItemCoverRatio)
+                                            .frame(width: coverWidth)
                                     }
                                 }
                                 .buttonStyle(.plain)
@@ -61,13 +66,18 @@ struct GalleryView: View {
     }
 
     #if DEBUG
-        @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
     #endif
 }
 
 #Preview {
     List {
-        GalleryView(viewModel: SearchViewModel())
-            .environmentObject(Router())
+        GalleryView(galleryItems: [
+            GalleryResult(
+                name: "Preview Gallery",
+                items: [ItemSchema.preview]
+            )
+        ])
+        .environmentObject(Router())
     }
 }

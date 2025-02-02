@@ -7,9 +7,51 @@
 //
 
 import SwiftUI
+import OSLog
+
+@MainActor
+class SearchURLViewModel: ObservableObject {
+    private let logger = Logger.views.discover.searchURL
+    
+    @Published var urlInput = ""
+    @Published var isShowingURLInput = false
+    @Published var isLoadingURL = false
+    @Published var urlError: Error?
+    @Published private(set) var item: ItemSchema?
+    
+    var accountsManager: AppAccountsManager?
+    
+    func fetchFromURL(_ urlString: String) async {
+        guard let url = URL(string: urlString) else {
+            urlError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: String(localized: "discover_search_invalid_url", table: "Discover")])
+            return
+        }
+        
+        isLoadingURL = true
+        urlError = nil
+        
+        do {
+            guard let accountsManager = accountsManager else { return }
+            let endpoint = CatalogEndpoint.fetch(url: url)
+            let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
+            
+            // Reset states
+            isLoadingURL = false
+            isShowingURLInput = false
+            urlInput = ""
+            
+            // Set the result
+            item = result
+        } catch {
+            urlError = error
+            isLoadingURL = false
+        }
+    }
+}
 
 struct SearchURLView: View {
-    @ObservedObject var viewModel: SearchViewModel
+    @StateObject private var viewModel = SearchURLViewModel()
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
     
     var body: some View {
@@ -45,7 +87,7 @@ struct SearchURLView: View {
                                 Image(systemName: "arrow.right.circle.fill")
                                     .font(.system(size: 24))
                             }
-//                            .buttonStyle(PrimaryButtonStyle())
+                            .buttonStyle(.plain)
                             .disabled(viewModel.urlInput.isEmpty)
                         }
                         
@@ -81,8 +123,11 @@ struct SearchURLView: View {
             .cornerRadius(20)
         }
         .listRowSeparator(.hidden)
-        .onChange(of: viewModel.searchState) { state in
-            if case .results(let items) = state, let item = items.first {
+        .onAppear {
+            viewModel.accountsManager = accountsManager
+        }
+        .onChange(of: viewModel.item) { item in
+            if let item = item {
                 HapticFeedback.selection()
                 router.navigate(to: .itemDetailWithItem(item: item))
             }
@@ -97,7 +142,8 @@ struct SearchURLView: View {
 
 #Preview {
     List {
-        SearchURLView(viewModel: SearchViewModel())
+        SearchURLView()
             .environmentObject(Router())
+            .environmentObject(AppAccountsManager())
     }
 }

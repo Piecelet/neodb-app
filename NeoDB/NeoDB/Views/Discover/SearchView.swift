@@ -42,12 +42,12 @@ struct SearchView: View {
     private var searchContent: some View {
         List {
             if viewModel.searchText.isEmpty {
-                SearchURLView(viewModel: viewModel)
+                SearchURLView()
                 
                 if !viewModel.recentSearches.isEmpty {
                     recentSearchesSection
                 }
-                GalleryView(viewModel: viewModel)
+                GalleryView(galleryItems: viewModel.galleryItems)
             } else {
                 if !viewModel.searchText.isEmpty && viewModel.searchText.count >= viewModel.minSearchLength {
                     categoryFilterSection
