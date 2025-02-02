@@ -21,84 +21,100 @@ struct PurchaseView: View {
     @Environment(\.openURL) private var openURL
 
     @State private var showRedeemSheet = false
+    
+    let type: PurchaseViewType
+    let scrollToFeature: StoreConfig.Features?
+    @Namespace private var featureSpace
 
-    var type: PurchaseViewType = .view
-
-    init(type: PurchaseViewType = .view) {
+    init(type: PurchaseViewType = .view, scrollToFeature: StoreConfig.Features? = nil) {
         self.type = type
+        self.scrollToFeature = scrollToFeature
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // 头部 Logo 与描述
-                VStack(spacing: 8) {
-                    VStack(spacing: 0) {
-                        Image("piecelet-symbol")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 120, height: 120)
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 24) {
+                    // 头部 Logo 与描述
+                    VStack(spacing: 8) {
+                        VStack(spacing: 0) {
+                            Image("piecelet-symbol")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 120, height: 120)
+                            Text(
+                                String(localized: "store_title", table: "Settings")
+                            )
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .padding(.leading, 8)
+                        }
                         Text(
-                            String(localized: "store_title", table: "Settings")
-                        )
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .padding(.leading, 8)
-                    }
-                    Text(
-                        String(
-                            localized: "store_description", table: "Settings")
-                    )
-                    .font(.headline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                }
-
-                // Feature List
-                VStack(spacing: 16) {
-                    ForEach(StoreConfig.features) { feature in
-                        featureRow(feature: feature)
-                    }
-                }
-                .padding(.horizontal)
-
-                VStack(spacing: 16) {
-                    // 在此插入兑换按钮，放到条款与隐私按钮之前
-                    Button {
-                        Purchases.shared.presentCodeRedemptionSheet()
-                    } label: {
-                        Text("store_button_redeem", tableName: "Settings")
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(.gray.opacity(0.1))
-                            .foregroundStyle(.secondary)
-                            .clipShape(
-                                RoundedRectangle(cornerRadius: 12))
-                    }
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal)
-                    .font(.headline)
-
-                    HStack(spacing: 16) {
-                        Button(
-                            String(localized: "policy_terms_of_use", table: "Settings")
-                        ) {
-                            openURL(StoreConfig.URLs.termsOfService)
-                        }
-                        Button(
                             String(
-                                localized: "policy_privacy_policy", table: "Settings")
-                        ) {
-                            openURL(StoreConfig.URLs.privacyPolicy)
+                                localized: "store_description", table: "Settings")
+                        )
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    }
+
+                    // Feature List
+                    VStack(spacing: 16) {
+                        ForEach(StoreConfig.features) { feature in
+                            if let featureCase = StoreConfig.Features.allCases.first(where: { $0.feature.id == feature.id }) {
+                                featureRow(feature: feature)
+                                    .id(featureCase)
+                            } else {
+                                featureRow(feature: feature)
+                            }
                         }
                     }
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                    .padding(.horizontal)
+
+                    VStack(spacing: 16) {
+                        // 在此插入兑换按钮，放到条款与隐私按钮之前
+                        Button {
+                            Purchases.shared.presentCodeRedemptionSheet()
+                        } label: {
+                            Text("store_button_redeem", tableName: "Settings")
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(.grayBackground)
+                                .clipShape(
+                                    RoundedRectangle(cornerRadius: 12))
+                        }
+                        .foregroundStyle(.primary)
+                        .padding(.horizontal)
+                        .font(.headline)
+
+                        HStack(spacing: 16) {
+                            Button(
+                                String(localized: "policy_terms_of_use", table: "Settings")
+                            ) {
+                                openURL(StoreConfig.URLs.termsOfService)
+                            }
+                            Button(
+                                String(
+                                    localized: "policy_privacy_policy", table: "Settings")
+                            ) {
+                                openURL(StoreConfig.URLs.privacyPolicy)
+                            }
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.top, type == .view ? 0 : 32)
+                .padding(.bottom, 32)
+            }
+            .task {
+                if let feature = scrollToFeature {
+                    withAnimation {
+                        proxy.scrollTo(feature, anchor: .center)
+                    }
                 }
             }
-            .padding(.top, type == .view ? 0 : 32)
-            .padding(.bottom, 32)
         }
         .navigationTitle(String(localized: "store_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
@@ -186,7 +202,7 @@ struct PurchaseView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(.gray.opacity(0.1))
+        .background(.grayBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .opacity(feature.isComingSoon ? 0.8 : 1)
     }

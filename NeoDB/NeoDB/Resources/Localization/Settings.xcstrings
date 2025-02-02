@@ -1605,12 +1605,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Reddem Code"
+            "value" : "Redeem Code"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "兑换优惠代码"
           }
         }
