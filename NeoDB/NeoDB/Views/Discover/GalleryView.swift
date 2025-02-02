@@ -30,6 +30,7 @@ struct GalleryView: View {
                         }
                         .fontWeight(.bold)
                     }
+                    .padding(.horizontal)
                     .buttonStyle(.plain)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -49,8 +50,10 @@ struct GalleryView: View {
                                 .buttonStyle(.plain)
                             }
                         }
+                        .padding(.horizontal)
                     }
                 }
+                .listRowInsets(.horizontal(0))
             }
             .listRowSeparator(.hidden)
         }

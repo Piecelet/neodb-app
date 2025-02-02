@@ -57,6 +57,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Views/Shared/Extension/Untitled.swift,
 			);
 			target = 24CEACEE2D0DA6200083D4BA /* NeoDB */;
 		};
