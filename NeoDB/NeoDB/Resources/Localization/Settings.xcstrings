@@ -536,28 +536,6 @@
         }
       }
     },
-    "app_plus_purchase" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Piecelet+"
-          }
-        }
-      }
-    },
     "app_title" : {
       "localizations" : {
         "da" : {
@@ -1444,8 +1422,8 @@
       "localizations" : {
         "da" : {
           "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Servicevilkår"
+            "state" : "translated",
+            "value" : "Betingelser for brug"
           }
         },
         "en" : {
@@ -1655,7 +1633,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "感谢支持"
+            "value" : "多谢支持"
           }
         }
       }
@@ -1744,6 +1722,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "解锁更丰富的 NeoDB 体验"
+          }
+        }
+      }
+    },
+    "store_description_plus" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enjoy the NeoDB journey with exclusive experiences."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尽情享受你的 NeoDB 旅途吧"
           }
         }
       }

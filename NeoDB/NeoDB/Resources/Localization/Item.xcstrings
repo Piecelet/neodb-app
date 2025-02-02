@@ -2839,6 +2839,12 @@
     "metadata_podcast_episode_link_label" : {
       "comment" : "Podcast Episode Link label",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Link"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2856,6 +2862,12 @@
     "metadata_podcast_episode_pub_date_label" : {
       "comment" : "Podcast Episode Pub Date label",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udgivelsesdato"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

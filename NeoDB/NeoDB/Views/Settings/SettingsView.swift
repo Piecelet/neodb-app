@@ -5,11 +5,11 @@
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
+import ColorfulX
 import Kingfisher
 import OSLog
 import SwiftUI
 import WishKit
-import ColorfulX
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -175,7 +175,7 @@ struct AccountRow: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     let account: AppAccount
     private let avatarSize: CGFloat = 40
-    
+
     var body: some View {
         HStack(spacing: 12) {
             if let avatarURL = account.avatar.flatMap(URL.init) {
@@ -190,16 +190,21 @@ struct AccountRow: View {
                     .aspectRatio(contentMode: .fill)
                     .frame(width: avatarSize, height: avatarSize)
                     .clipShape(Circle())
-                    .saturation(account.id == accountsManager.currentAccount.id ? 1 : 0)
-                    .opacity(account.id == accountsManager.currentAccount.id ? 1 : 0.6)
+                    .saturation(
+                        account.id == accountsManager.currentAccount.id ? 1 : 0
+                    )
+                    .opacity(
+                        account.id == accountsManager.currentAccount.id
+                            ? 1 : 0.6)
             } else {
                 AvatarPlaceholderView(
                     isLoading: false,
                     size: avatarSize
                 )
-                .opacity(account.id == accountsManager.currentAccount.id ? 1 : 0.6)
+                .opacity(
+                    account.id == accountsManager.currentAccount.id ? 1 : 0.6)
             }
-            
+
             VStack(alignment: .leading) {
                 Text(account.displayName ?? account.instance)
                     .font(.headline)
@@ -207,9 +212,9 @@ struct AccountRow: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
-            
+
             if account.id == accountsManager.currentAccount.id {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.tint)
@@ -232,15 +237,15 @@ struct AccountRow: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-    
+
     private func switchToAccount(_ account: AppAccount) {
         withAnimation {
             accountsManager.currentAccount = account
         }
     }
-    
+
     private func deleteAccount(_ account: AppAccount) {
         withAnimation {
             accountsManager.delete(account: account)
@@ -252,16 +257,17 @@ struct AccountManagementSection: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var storeManager: StoreManager
-    
+
     var body: some View {
         Section {
             ForEach(accountsManager.availableAccounts) { account in
                 AccountRow(account: account)
             }
-            
+
             Button(action: addAccount) {
-                Label(String(localized: "account_add", table: "Settings"), 
-                      systemImage: "person.badge.plus")
+                Label(
+                    String(localized: "account_add", table: "Settings"),
+                    systemImage: "person.badge.plus")
             }
         } header: {
             Text(String(localized: "accounts_title", table: "Settings"))
@@ -274,12 +280,13 @@ struct AccountManagementSection: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-    
+
     private func addAccount() {
         if !storeManager.isPlus {
-            router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
+            router.presentSheet(
+                .purchaseWithFeature(feature: .multipleAccounts))
         } else {
             router.presentSheet(.login)
         }
@@ -292,6 +299,8 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.refresh) private var refresh
     @EnvironmentObject private var router: Router
+    @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var storeManager: StoreManager
 
     private let avatarSize: CGFloat = 60
 
@@ -409,9 +418,14 @@ struct SettingsView: View {
             } else if viewModel.user == nil {
                 Section {
                     LabeledContent {
-                        Text(String(localized: "loading_text", table: "Settings"))
+                        Text(
+                            String(localized: "loading_text", table: "Settings")
+                        )
                     } label: {
-                        Text(String(localized: "account_external", table: "Settings"))
+                        Text(
+                            String(
+                                localized: "account_external", table: "Settings"
+                            ))
                     }
                     .redacted(reason: .placeholder)
                 } header: {
@@ -424,38 +438,61 @@ struct SettingsView: View {
     private var purchaseSection: some View {
         Section {
             VStack(alignment: .leading, spacing: 8) {
-                HStack {
+                HStack(alignment: .top) {
                     Label {
-                        Text("app_plus_purchase", tableName: "Settings")
+                        Text("store_title", tableName: "Settings")
                             .font(.headline)
                     } icon: {
-                        Image(systemName: "bubbles.and.sparkles")
+                        Image(systemSymbol: .bubblesAndSparkles)
                             .font(.title2)
                     }
-                    .foregroundStyle(.white)
-                    
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.primary)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Label {
+                            Text("store_title", tableName: "Settings")
+                                .font(.headline)
+                        } icon: {
+                            Image(systemSymbol: .bubblesAndSparkles)
+                                .font(.title2)
+                        }
+                        .labelStyle(.titleOnly)
+                        .foregroundStyle(.primary)
+                        if storeManager.isPlus {
+                            Text("store_description_plus", tableName: "Settings")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("store_description", tableName: "Settings")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                     Spacer()
-                    
+
                     Image(systemName: "chevron.right")
                         .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.secondary)
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 12)
-                
-                Text("store_description", tableName: "Settings")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.8))
-                    .padding(.horizontal)
-                    .padding(.bottom, 12)
             }
             .background(
-                ColorfulView(color: .constant([
-                    .teal,
-                    .cyan,
-                    .mint.opacity(0.8)
-                ]))
-                    .opacity(0.9)
+                ZStack {
+                    ColorfulView(
+                        color: .constant([
+                            .green.opacity(0.8),
+                            .mint,
+                            .teal,
+                        ])
+                    )
+                    .opacity(0.5)
+
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(colorScheme == .dark ? .black.opacity(0.7) : .white.opacity(0.9))
+                        .padding(2)
+                }
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay {
@@ -491,15 +528,18 @@ struct SettingsView: View {
                 }
             }
             #if DEBUG
-            NavigationLink {
-                DeveloperView()
-            } label: {
-                Label {
-                    Text(String(localized: "developer_title", table: "Settings"))
-                } icon: {
-                    Image(systemName: "hammer")
+                NavigationLink {
+                    DeveloperView()
+                } label: {
+                    Label {
+                        Text(
+                            String(
+                                localized: "developer_title", table: "Settings")
+                        )
+                    } icon: {
+                        Image(systemName: "hammer")
+                    }
                 }
-            }
             #endif
         } header: {
             Text("app_title", tableName: "Settings")
@@ -544,18 +584,21 @@ struct SettingsView: View {
     }
 
     #if DEBUG
-    private var developerSection: some View {
-        Section {
-            NavigationLink {
-                DeveloperView()
-            } label: {
-                Label {
-                    Text(String(localized: "developer_title", table: "Settings"))
-                } icon: {
-                    Image(systemName: "hammer")
+        private var developerSection: some View {
+            Section {
+                NavigationLink {
+                    DeveloperView()
+                } label: {
+                    Label {
+                        Text(
+                            String(
+                                localized: "developer_title", table: "Settings")
+                        )
+                    } icon: {
+                        Image(systemName: "hammer")
+                    }
                 }
             }
         }
-    }
     #endif
 }

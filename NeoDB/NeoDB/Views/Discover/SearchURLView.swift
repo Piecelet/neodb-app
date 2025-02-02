@@ -28,7 +28,7 @@ class SearchURLViewModel: ObservableObject {
                 domain: "", code: -1,
                 userInfo: [
                     NSLocalizedDescriptionKey: String(
-                        localized: "discover_search_invalid_url",
+                        localized: "discover_search_url_invalid_url",
                         table: "Discover")
                 ])
             return
@@ -70,7 +70,7 @@ struct SearchURLView: View {
             VStack(alignment: .center, spacing: 16) {
 
                 VStack(alignment: .center, spacing: 12) {
-                    Label("Search from everywhere", systemImage: "link")
+                    Label(String(localized: "discover_search_url_title", table: "Discover"), systemImage: "link")
                         .font(.headline)
                         .labelStyle(.titleOnly)
 
@@ -101,7 +101,8 @@ struct SearchURLView: View {
                 HStack(spacing: 8) {
                     ZStack(alignment: .trailing) {
                         TextField(
-                            "Enter URL", text: $viewModel.urlInput
+                            String(localized: "discover_search_url_input_placeholder", table: "Discover"),
+                            text: $viewModel.urlInput
                         )
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(.never)
@@ -143,7 +144,7 @@ struct SearchURLView: View {
                                                 .controlSize(.small)
                                         } else {
                                             Label(
-                                                "Get Item by URL",
+                                                String(localized: "discover_search_url_submit_button", table: "Discover"),
                                                 systemSymbol: .arrowRight
                                             )
                                             .labelStyle(.iconOnly)
@@ -163,10 +164,7 @@ struct SearchURLView: View {
 
                 if !viewModel.urlInput.isEmpty && !viewModel.isLoadingURL {
                     Button(
-                        String(
-                            localized: "rating_star_clear_button",
-                            table: "Item",
-                            comment: "Rating - Button to clear star rating"),
+                        String(localized: "discover_search_url_clear_button", table: "Discover"),
                         systemSymbol: .xmark
                     ) {
                         withAnimation(.spring(duration: 0.3)) {

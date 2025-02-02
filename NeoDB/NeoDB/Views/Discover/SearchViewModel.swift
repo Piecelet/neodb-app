@@ -330,31 +330,4 @@ class SearchViewModel: ObservableObject {
         searchDebounceTask = nil
         searchText = ""
     }
-    
-    func fetchFromURL(_ urlString: String) async {
-        guard let url = URL(string: urlString) else {
-            urlError = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: String(localized: "discover_search_invalid_url", table: "Discover")])
-            return
-        }
-        
-        isLoadingURL = true
-        urlError = nil
-        
-        do {
-            guard let accountsManager = accountsManager else { return }
-            let endpoint = CatalogEndpoint.fetch(url: url)
-            let result = try await accountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
-            
-            // Reset states
-            isLoadingURL = false
-            isShowingURLInput = false
-            urlInput = ""
-            
-            // Return the result
-            searchState = .results([result])
-        } catch {
-            urlError = error
-            isLoadingURL = false
-        }
-    }
 } 
