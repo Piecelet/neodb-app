@@ -9,6 +9,7 @@ import Kingfisher
 import OSLog
 import SwiftUI
 import WishKit
+import ColorfulX
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -347,9 +348,9 @@ struct SettingsView: View {
     private var profileContent: some View {
         List {
             profileHeaderSection
+            purchaseSection
             accountManagementSection
             accountInformationSection
-            purchaseSection
             appSection
             cacheManagementSection
             logoutSection
@@ -422,15 +423,49 @@ struct SettingsView: View {
 
     private var purchaseSection: some View {
         Section {
-            NavigationLink {
-                PurchaseView()
-            } label: {
-                Label {
-                    Text("app_plus_purchase", tableName: "Settings")
-                } icon: {
-                    Image(systemName: "bubbles.and.sparkles")
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Label {
+                        Text("app_plus_purchase", tableName: "Settings")
+                            .font(.headline)
+                    } icon: {
+                        Image(systemName: "bubbles.and.sparkles")
+                            .font(.title2)
+                    }
+                    .foregroundStyle(.white)
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.7))
                 }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                
+                Text("store_description", tableName: "Settings")
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.8))
+                    .padding(.horizontal)
+                    .padding(.bottom, 12)
             }
+            .background(
+                ColorfulView(color: .constant([
+                    .teal,
+                    .cyan,
+                    .mint.opacity(0.8)
+                ]))
+                    .opacity(0.9)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .overlay {
+                NavigationLink(destination: PurchaseView()) {
+                    EmptyView()
+                }
+                .opacity(0)
+            }
+            .listRowInsets(EdgeInsets())
+            .listRowBackground(Color.clear)
         }
     }
 
