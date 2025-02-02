@@ -26,6 +26,9 @@ enum RouterDestination: Hashable {
     case followers(id: String)
     case following(id: String)
 
+    // Discover
+    case galleryCategory(gallery: GalleryResult)
+
     // Store
     case purchase
     
@@ -65,8 +68,11 @@ enum RouterDestination: Hashable {
         case .following(let id):
             hasher.combine(10)
             hasher.combine(id)
-        case .purchase:
+        case .galleryCategory(let gallery):
             hasher.combine(11)
+            hasher.combine(gallery.id)
+        case .purchase:
+            hasher.combine(12)
         }
     }
     

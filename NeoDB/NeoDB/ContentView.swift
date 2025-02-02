@@ -186,6 +186,8 @@ struct ContentView: View {
             Text("Followers: \(id)")  // TODO: Implement FollowersView
         case .following(let id):
             Text("Following: \(id)")  // TODO: Implement FollowingView
+        case .galleryCategory(let gallery):
+            GalleryCategoryView(gallery: gallery)
         case .purchase:
             PurchaseView()
         }

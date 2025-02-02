@@ -17,21 +17,27 @@ struct GalleryView: View {
         ForEach(viewModel.galleryItems) { gallery in
             Section {
                 VStack(alignment: .leading) {
-                    HStack(alignment: .center, spacing: 4) {
-                        Text(gallery.displayTitle)
-                            .font(.system(size: 20))
-                        Image(systemSymbol: .chevronRight)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                    Button {
+                        router.navigate(to: .galleryCategory(gallery: gallery))
+                    } label: {
+                        HStack(alignment: .center, spacing: 4) {
+                            Text(gallery.displayTitle)
+                                .font(.system(size: 20))
+                                .foregroundStyle(.primary)
+                            Image(systemSymbol: .chevronRight)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        .fontWeight(.bold)
                     }
-                    .fontWeight(.bold)
+                    .buttonStyle(.plain)
+                    
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(alignment: .top, spacing: 12) {
                             ForEach(gallery.items, id: \.uuid) { item in
                                 Button {
                                     HapticFeedback.selection()
-                                    router.navigate(
-                                        to: .itemDetailWithItem(item: item))
+                                    router.navigate(to: .itemDetailWithItem(item: item))
                                 } label: {
                                     VStack(alignment: .leading, spacing: 8) {
                                         ItemCoverView(item: item, size: .large, alignment: .fixed)
