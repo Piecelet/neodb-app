@@ -3,6 +3,16 @@
     {
       "filename" : "Music.png",
       "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "Music Dark.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

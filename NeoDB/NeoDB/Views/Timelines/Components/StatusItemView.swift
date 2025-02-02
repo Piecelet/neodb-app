@@ -69,7 +69,7 @@ struct StatusItemView: View {
             .frame(maxWidth: .infinity)
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
-            .background(Color(.gray).opacity(0.1))
+            .background(Color.grayBackground)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .buttonStyle(.plain)

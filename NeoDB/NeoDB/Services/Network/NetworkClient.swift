@@ -213,7 +213,14 @@ enum NetworkError: Error {
                 return result
             } catch {
                 logDecodingError(error, data: data)
-                throw NetworkError.decodingError(error)
+                // Try to decode as MessageSchema
+                do {
+                    let messageResult = try decoder.decode(MessageSchema.self, from: data)
+                    throw NetworkError.networkError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: messageResult.message]))
+                } catch {
+                    // If MessageSchema decoding also fails, throw the original decoding error
+                    throw NetworkError.decodingError(error)
+                }
             }
         } catch let error as NetworkError {
             throw error

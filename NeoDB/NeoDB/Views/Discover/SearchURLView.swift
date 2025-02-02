@@ -63,6 +63,7 @@ struct SearchURLView: View {
     @StateObject private var viewModel = SearchURLViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         Section {
@@ -107,7 +108,7 @@ struct SearchURLView: View {
                         .frame(maxWidth: .infinity, minHeight: 60)
                         .padding(.horizontal)
                         .padding(.trailing, 50)
-                        .background(.white)
+                        .background(colorScheme == .light ? AnyShapeStyle(Color.white) : AnyShapeStyle(.ultraThinMaterial))
                         .clipShape(RoundedRectangle(cornerRadius: 12))
 
                         Group {
