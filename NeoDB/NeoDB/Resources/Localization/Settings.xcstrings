@@ -355,6 +355,12 @@
     },
     "account_add" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tilføj konto"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -456,6 +462,12 @@
     },
     "accounts_footer" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk på en konto for at skifte til den. Swipe til venstre for at fjerne."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -472,6 +484,12 @@
     },
     "accounts_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Konti"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -625,7 +643,7 @@
         "da" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plads frigives når cachen tømmes. App’en downloader data igen når det er krævet."
+            "value" : "Plads frigives når cachen tømmes. App'en downloader data igen når det er krævet."
           }
         },
         "en" : {
@@ -678,6 +696,12 @@
     },
     "developer_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Udvikler"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -695,6 +719,12 @@
     "instance_alert_description" : {
       "comment" : "Description explaining why instance is not compatible and what to do next",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet er en app til NeoDB, vælg venligst en af NeoDB-serverne ovenfor. Du kan stadig bruge din Mastodon-konto til at logge ind, når du har valgt en NeoDB-server."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -712,6 +742,12 @@
     "instance_alert_incompatible" : {
       "comment" : "Message shown when instance is not compatible (includes %@ for instance name)",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ er ikke en NeoDB-server."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -729,6 +765,12 @@
     "instance_alert_title" : {
       "comment" : "Title for incompatible instance alert",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ikke tilgængelig"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -812,6 +854,12 @@
     "instance_search_empty" : {
       "comment" : "Message shown when no search results are found",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ingen resultater fundet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -829,6 +877,12 @@
     "instance_search_prompt" : {
       "comment" : "Placeholder text for instance search field",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Navn på fællesskab eller URL..."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -868,6 +922,12 @@
     "instance_title" : {
       "comment" : "Navigation title for instance selection view",
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Server"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -884,6 +944,12 @@
     },
     "loading_text" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indlæser..."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -944,6 +1010,12 @@
     },
     "login_instance_rules_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regler"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -960,6 +1032,12 @@
     },
     "login_instance_terms_notice" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Servicevilkår og privatlivspolitik er gældende."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -976,6 +1054,12 @@
     },
     "login_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log ind"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -992,6 +1076,12 @@
     },
     "mastodon_guide_subtitle" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "For at logge ind med Mastodon, tryk på %@. På den åbnede hjemmeside, tryk på fediverse-symbolet og indtast din mastodon-server."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1008,6 +1098,12 @@
     },
     "mastodon_guide_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tryk på fediverse-symbolet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1442,6 +1538,12 @@
     },
     "profile_error_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kunne ikke indlæse profil"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1580,6 +1682,12 @@
     },
     "store_button_redeem" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indløs kode"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1728,6 +1836,12 @@
     },
     "store_description_plus" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nyd NeoDB-rejsen med eksklusive oplevelser."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2536,6 +2650,12 @@
     },
     "welcome_get_started" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kom i gang"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2552,6 +2672,12 @@
     },
     "welcome_present_by" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et @lcandy2 projekt."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",

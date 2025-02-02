@@ -73,7 +73,6 @@ struct WelcomeView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .opacity(contentOpacity)
                     
                     Button(String(localized: "policy_terms_of_use", table: "Settings"))
                     {
@@ -87,6 +86,7 @@ struct WelcomeView: View {
                 }
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+                .opacity(contentOpacity)
             }
             .padding()
         }
