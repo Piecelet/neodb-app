@@ -328,6 +328,7 @@ class SearchViewModel: ObservableObject {
         searchTask = nil
         galleryTask = nil
         searchDebounceTask = nil
+        searchText = ""
     }
     
     func fetchFromURL(_ urlString: String) async {

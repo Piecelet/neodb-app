@@ -92,9 +92,6 @@
         }
       }
     },
-    "discover_search_paste_url" : {
-
-    },
     "discover_search_prompt" : {
       "localizations" : {
         "da" : {
@@ -182,12 +179,6 @@
           }
         }
       }
-    },
-    "discover_search_url_input_placeholder" : {
-
-    },
-    "discover_search_url_section" : {
-
     }
   },
   "version" : "1.0"

@@ -54,9 +54,15 @@ enum ItemCoverSize {
     }
 }
 
+enum ItemCoverAlignment {
+    case horizontal
+    case vertical
+}
+
 struct ItemCoverView: View {
     let item: (any ItemProtocol)?
     let size: ItemCoverSize
+    var alignment: ItemCoverAlignment = .horizontal
     var showSkeleton: Bool = false
 
     var body: some View {
@@ -72,7 +78,8 @@ struct ItemCoverView: View {
                         RoundedRectangle(cornerRadius: size.cornerRadius)
                     )
                     .frame(
-                        maxWidth: size.height * AppConfig.defaultItemCoverRatio,
+                        maxWidth: alignment == .horizontal ? size.height * AppConfig.defaultItemCoverRatio : nil,
+                        maxHeight: alignment == .vertical ? size.height : nil,
                         alignment: size == .large ? .topLeading : .center
                     )
                     .overlay {
@@ -100,7 +107,8 @@ struct ItemCoverView: View {
             .aspectRatio(item?.category.placeholderRatio, contentMode: .fit)
             .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
             .frame(
-                width: size.height * AppConfig.defaultItemCoverRatio,
+                width: alignment == .horizontal ? size.height * AppConfig.defaultItemCoverRatio : nil,
+                height: alignment == .vertical ? size.height : nil,
                 alignment: .topLeading
             )
             .fixedSize(horizontal: false, vertical: false)

@@ -327,5 +327,10 @@ private struct InstanceRowView: View {
             }
         }
         .padding(.vertical, 4)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }

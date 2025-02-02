@@ -12,7 +12,13 @@ struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
-    @Binding var isSearchActive: Bool
+    @Binding var isSearchActive: Bool {
+        didSet {
+            if !isSearchActive {
+                viewModel.cleanup()
+            }
+        }
+    }
     
     var body: some View {
         searchContent
@@ -41,7 +47,7 @@ struct SearchView: View {
                 if !viewModel.recentSearches.isEmpty {
                     recentSearchesSection
                 }
-                galleryContent
+                GalleryView(viewModel: viewModel)
             } else {
                 if !viewModel.searchText.isEmpty && viewModel.searchText.count >= viewModel.minSearchLength {
                     categoryFilterSection
@@ -153,38 +159,6 @@ struct SearchView: View {
             }
         } header: {
             Text("discover_search_recent", tableName: "Discover")
-        }
-    }
-    
-    private var galleryContent: some View {
-        ForEach(viewModel.galleryItems) { gallery in
-            Section(header: Text(gallery.displayTitle).textCase(.none)) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 12) {
-                        ForEach(gallery.items, id: \.uuid) { item in
-                            Button {
-                                HapticFeedback.selection()
-                                router.navigate(to: .itemDetailWithItem(item: item))
-                            } label: {
-                                VStack(alignment: .leading, spacing: 0) {
-                                    ItemCoverImage(url: item.coverImageUrl)
-                                        .frame(width: 100, height: 150)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    
-                                    Text(item.displayTitle ?? "")
-                                        .font(.caption)
-                                        .foregroundStyle(.primary)
-                                        .lineLimit(2)
-                                        .frame(width: 100)
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal)
-                }
-                .listRowInsets(EdgeInsets())
-            }
         }
     }
     
