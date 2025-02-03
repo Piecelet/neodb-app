@@ -18,6 +18,7 @@
 		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		246F52C12D4FD82C0037669C /* ColorfulX in Frameworks */ = {isa = PBXBuildFile; productRef = 246F52C02D4FD82C0037669C /* ColorfulX */; };
+		2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 2475428B2D51215D006F032F /* TelemetryDeck */; };
 		2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2477BCD62D4D52AC00E39E1A /* ButtonKit */; };
 		24895F532D4BDCEA008EDD4C /* Perception in Frameworks */ = {isa = PBXBuildFile; productRef = 24895F522D4BDCEA008EDD4C /* Perception */; };
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
@@ -106,6 +107,7 @@
 				2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */,
 				24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */,
 				2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */,
+				2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,6 +195,7 @@
 				24895F522D4BDCEA008EDD4C /* Perception */,
 				2477BCD62D4D52AC00E39E1A /* ButtonKit */,
 				246F52C02D4FD82C0037669C /* ColorfulX */,
+				2475428B2D51215D006F032F /* TelemetryDeck */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -293,6 +296,7 @@
 				24895F512D4BDCEA008EDD4C /* XCRemoteSwiftPackageReference "swift-perception" */,
 				2477BCD52D4D52AC00E39E1A /* XCRemoteSwiftPackageReference "ButtonKit" */,
 				246F52BF2D4FD82C0037669C /* XCRemoteSwiftPackageReference "ColorfulX" */,
+				2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -789,6 +793,14 @@
 				minimumVersion = 5.5.5;
 			};
 		};
+		2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TelemetryDeck/SwiftSDK";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.7.1;
+			};
+		};
 		2477BCD52D4D52AC00E39E1A /* XCRemoteSwiftPackageReference "ButtonKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Dean151/ButtonKit";
@@ -888,6 +900,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 246F52BF2D4FD82C0037669C /* XCRemoteSwiftPackageReference "ColorfulX" */;
 			productName = ColorfulX;
+		};
+		2475428B2D51215D006F032F /* TelemetryDeck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */;
+			productName = TelemetryDeck;
 		};
 		2477BCD62D4D52AC00E39E1A /* ButtonKit */ = {
 			isa = XCSwiftPackageProductDependency;

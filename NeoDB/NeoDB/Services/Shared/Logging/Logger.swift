@@ -68,6 +68,8 @@ extension Logger {
             static let urlUtilities = Logger(
                 subsystem: subsystem, category: "services.url.urlUtilities")
         }
+
+        static let telemetry = Logger(subsystem: subsystem, category: "services.telemetry")
     }
 
     // MARK: - Views

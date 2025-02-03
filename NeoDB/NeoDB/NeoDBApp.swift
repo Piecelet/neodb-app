@@ -12,7 +12,8 @@ import WhatsNewKit
 @main
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
-    @StateObject private var storeManager = StoreManager()  // 全局唯一的 StoreManager
+    @StateObject private var storeManager = StoreManager()
+    @StateObject private var telemetryService = TelemetryService()
     @StateObject private var router = Router()
 
     var body: some Scene {
@@ -36,6 +37,7 @@ struct NeoDBApp: App {
             }
             .environmentObject(accountsManager)
             .environmentObject(storeManager)
+            .environmentObject(telemetryService)
             .onOpenURL { url in
                 if url.scheme == "neodb" && url.host == "oauth" {
                     Task {
@@ -60,6 +62,9 @@ struct NeoDBApp: App {
                     storeManager.customerInfo = customerInfo
                     storeManager.appUserID = Purchases.shared.appUserID
                 }
+            
+                // Track app launch when ContentView appears
+                telemetryService.trackAppLaunch()
             }
             .enableInjection()
         }

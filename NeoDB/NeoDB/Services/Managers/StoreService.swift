@@ -28,7 +28,7 @@ class StoreManager: ObservableObject {
     }
 
     private func configure() {
-        Purchases.logLevel = .error
+        Purchases.logLevel = AppConfig.isDebug == true ? .debug : .error
         Purchases.proxyURL = StoreConfig.RevenueCat.proxyURL
         // 使用带有 StoreKit 2 的最现代化方式
         Purchases.configure(
