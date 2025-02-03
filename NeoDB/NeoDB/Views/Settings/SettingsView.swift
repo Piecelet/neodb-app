@@ -579,26 +579,6 @@ struct SettingsView: View {
                 Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)
             }
-            .disabled(viewModel.user == nil)
         }
     }
-
-    #if DEBUG
-        private var developerSection: some View {
-            Section {
-                NavigationLink {
-                    DeveloperView()
-                } label: {
-                    Label {
-                        Text(
-                            String(
-                                localized: "developer_title", table: "Settings")
-                        )
-                    } icon: {
-                        Image(systemName: "hammer")
-                    }
-                }
-            }
-        }
-    #endif
 }
