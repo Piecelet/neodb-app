@@ -5,7 +5,6 @@
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
-import ColorfulX
 import Kingfisher
 import OSLog
 import SwiftUI
@@ -480,12 +479,14 @@ struct SettingsView: View {
             }
             .background(
                 ZStack {
-                    ColorfulView(
-                        color: .constant([
+                    LinearGradient(
+                        colors: [
                             .green.opacity(0.8),
-                            .mint,
-                            .teal,
-                        ])
+                            .mint.opacity(0.9),
+                            .teal.opacity(0.8)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                     .opacity(0.5)
 

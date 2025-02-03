@@ -28,24 +28,6 @@
       }
     },
     {
-      "identity" : "colorfulx",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/ColorfulX",
-      "state" : {
-        "revision" : "424740ff16b9e1a82d0508137538652edf966605",
-        "version" : "5.5.5"
-      }
-    },
-    {
-      "identity" : "colorvector",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/ColorVector.git",
-      "state" : {
-        "revision" : "031ce6ce65c0b347fb192302aa8ec4a17cc1494f",
-        "version" : "1.0.3"
-      }
-    },
-    {
       "identity" : "inject",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/krzysztofzablocki/Inject.git",
@@ -82,15 +64,6 @@
       }
     },
     {
-      "identity" : "msdisplaylink",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/MSDisplayLink.git",
-      "state" : {
-        "revision" : "efbc0188b207ca44e043aa2bcbdba0309fc2f54b",
-        "version" : "2.0.5"
-      }
-    },
-    {
       "identity" : "purchases-ios-spm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios-spm.git",
@@ -106,15 +79,6 @@
       "state" : {
         "branch" : "stable",
         "revision" : "84c5850bc32857846d387eb8d6885d00230767df"
-      }
-    },
-    {
-      "identity" : "springinterpolation",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/Lakr233/SpringInterpolation.git",
-      "state" : {
-        "revision" : "f9d1ee3d2466bdb00fd0ade7f256ed20229c8413",
-        "version" : "1.3.0"
       }
     },
     {
