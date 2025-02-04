@@ -32,17 +32,42 @@ struct AccountAvatarView: View {
         }
     }
     
-    let account: MastodonAccount
+    let account: MastodonAccount?
+    let user: User?
     var size: Size = .regular
     var showPlaceholder: Bool = true
     
+    init(account: MastodonAccount, size: Size = .regular, showPlaceholder: Bool = true) {
+        self.account = account
+        self.user = nil
+        self.size = size
+        self.showPlaceholder = showPlaceholder
+    }
+    
+    init(user: User, size: Size = .regular, showPlaceholder: Bool = true) {
+        self.account = nil
+        self.user = user
+        self.size = size
+        self.showPlaceholder = showPlaceholder
+    }
+    
     private var shouldShowAvatar: Bool {
-        return account.haveAvatar
+        if let account = account {
+            return account.haveAvatar
+        }
+        return user?.avatar != nil
+    }
+    
+    private var avatarURL: URL? {
+        if let account = account {
+            return account.avatar
+        }
+        return user?.avatar
     }
     
     var body: some View {
         Group {
-            if shouldShowAvatar, let avatar = account.avatar {
+            if shouldShowAvatar, let avatar = avatarURL {
                 KFImage(avatar)
                     .placeholder {
                         placeholderView
