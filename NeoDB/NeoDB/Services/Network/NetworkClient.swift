@@ -285,7 +285,7 @@ enum NetworkError: LocalizedError {
                 let result = try decoder.decode(type, from: data)
                 return result
             } catch let decodingError {
-                logDecodingError(decodingError, data: data)
+                logDecodingError(decodingError, endpoint: endpoint, data: data, type: type)
                 logger.error("First decoding attempt failed for type \(T.self): \(decodingError.localizedDescription)")
                 
                 // Try to decode as MessageSchema
@@ -394,28 +394,37 @@ enum NetworkError: LocalizedError {
         }
     }
 
-    private func logDecodingError(_ error: Error, data: Data) {
+    private func logDecodingError<T>(
+        _ error: Error,
+        endpoint: NetworkEndpoint,
+        data: Data,
+        type: T.Type
+    ) {
+        logger.error("""
+            Decoding error for \(String(describing: type))
+            Endpoint: \(endpoint.path)
+            Error: \(error.localizedDescription)
+            Raw Data: \(String(data: data, encoding: .utf8) ?? "Unable to convert data to string")
+            Debug Description: \(error)
+            """)
+        
         if let decodingError = error as? DecodingError {
             switch decodingError {
+            case .keyNotFound(let key, let context):
+                logger.error("Key '\(key.stringValue)' not found: \(context.debugDescription)")
+                logger.error("Coding path: \(context.codingPath.map { $0.stringValue })")
+            case .valueNotFound(let type, let context):
+                logger.error("Value of type '\(type)' not found: \(context.debugDescription)")
+                logger.error("Coding path: \(context.codingPath.map { $0.stringValue })")
+            case .typeMismatch(let type, let context):
+                logger.error("Type '\(type)' mismatch: \(context.debugDescription)")
+                logger.error("Coding path: \(context.codingPath.map { $0.stringValue })")
             case .dataCorrupted(let context):
                 logger.error("Data corrupted: \(context.debugDescription)")
-            case .keyNotFound(let key, let context):
-                logger.error(
-                    "Key not found: \(key.stringValue) - \(context.debugDescription)"
-                )
-            case .typeMismatch(let type, let context):
-                logger.error(
-                    "Type mismatch: \(type) - \(context.debugDescription)")
-            case .valueNotFound(let type, let context):
-                logger.error(
-                    "Value not found: \(type) - \(context.debugDescription)")
+                logger.error("Coding path: \(context.codingPath.map { $0.stringValue })")
             @unknown default:
                 logger.error("Unknown decoding error: \(decodingError)")
             }
-        }
-
-        if let rawResponse = String(data: data, encoding: .utf8) {
-            logger.error("Raw response: \(rawResponse)")
         }
     }
 }

@@ -39,21 +39,24 @@ struct ProfileView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         // Header Image
-                        AsyncImage(url: account.header) { image in
-                            image.resizable()
-                                .aspectRatio(contentMode: .fill)
+                        if let header = account.header {
+                            AsyncImage(url: header) { image in
+                                image.resizable()
+                                    .aspectRatio(contentMode: .fill)
                         } placeholder: {
                             Rectangle()
                                 .fill(.quaternary)
+                            }
+                            .frame(height: 200)
+                            .clipped()
                         }
-                        .frame(height: 200)
-                        .clipped()
 
                         // Avatar and Stats
                         HStack(alignment: .bottom) {
-                            AsyncImage(url: account.avatar) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
+                            if let avatar = account.avatar {
+                                AsyncImage(url: avatar) { image in
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fill)
                             } placeholder: {
                                 Rectangle()
                                     .fill(.quaternary)
@@ -63,6 +66,7 @@ struct ProfileView: View {
                             .overlay(Circle().stroke(.quaternary, lineWidth: 1))
                             .padding(.leading)
                             .offset(y: -40)
+                            }
 
                             Spacer()
 
