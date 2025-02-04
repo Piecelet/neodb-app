@@ -83,9 +83,9 @@ struct StatusItemView: View {
         .task {
             viewModel.accountsManager = accountsManager
         }
-        .onDisappear {
-            viewModel.cleanup()
-        }
+//        .onDisappear {
+//            viewModel.cleanup()
+//        }
         .enableInjection()
     }
 
