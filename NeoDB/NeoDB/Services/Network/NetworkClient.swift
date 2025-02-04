@@ -220,6 +220,8 @@ enum NetworkError: LocalizedError {
             request.setValue(value, forHTTPHeaderField: key)
         }
 
+        // request.setValue("Piecelet/\(AppInfo.bundle.version)", forHTTPHeaderField: "User-Agent")
+
         // 通过锁安全读取当前 oauthToken
         if let token = critical.withLock({ $0.oauthToken?.accessToken }) {
             request.setValue(
