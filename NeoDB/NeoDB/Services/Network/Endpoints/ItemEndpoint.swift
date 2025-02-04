@@ -78,7 +78,7 @@ extension ItemEndpoint: NetworkEndpoint {
                 return "/performance/\(uuid)"
             }
         case .post(let uuid, _):
-            return "/item/\(uuid)/posts)"
+            return "/item/\(uuid)/posts/"
         }
     }
 

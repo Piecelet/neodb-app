@@ -91,13 +91,21 @@ struct ItemView: View {
                     }
                 }
 
+            actionsView
+                .padding(.horizontal)
+                .padding(.top)
+                
             Divider()
                 .padding(.vertical)
 
             ItemViewDescription(item: viewModel.item)
-
-            actionsView
-                .padding(.horizontal)
+            
+            if let item = viewModel.item {
+                Divider()
+                    .padding(.vertical)
+                    
+                ItemViewPosts(item: item)
+            }
         }
     }
 
@@ -166,14 +174,14 @@ struct ItemView: View {
     // MARK: - Actions View
     private var actionsView: some View {
         VStack(spacing: 12) {
+            shelfTypeButtons
+            
             if viewModel.isMarkLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if let mark = viewModel.mark {
                 ItemMarkView(mark: mark, size: .large)
             }
-
-            shelfTypeButtons
         }
         .onChange(of: viewModel.isRefreshing) { newValue in
             if newValue {

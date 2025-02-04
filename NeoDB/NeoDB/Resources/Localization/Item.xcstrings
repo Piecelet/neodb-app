@@ -365,6 +365,9 @@
         }
       }
     },
+    "item_no_posts" : {
+
+    },
     "item_open_in_website" : {
       "localizations" : {
         "da" : {
@@ -392,6 +395,9 @@
           }
         }
       }
+    },
+    "item_posts" : {
+
     },
     "item_rating_na" : {
       "localizations" : {
