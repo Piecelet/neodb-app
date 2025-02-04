@@ -8,7 +8,6 @@
 import Kingfisher
 import OSLog
 import SwiftUI
-import WishKit
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -303,11 +302,6 @@ struct SettingsView: View {
 
     private let avatarSize: CGFloat = 60
 
-    init() {
-        WishKit.configure(with: AppConfig.wishkitApiKey)
-        WishKit.theme.primaryColor = .accent
-    }
-
     // MARK: - Body
     var body: some View {
         Group {
@@ -510,8 +504,7 @@ struct SettingsView: View {
     private var appSection: some View {
         Section {
             NavigationLink {
-                WishKit.FeedbackListView()
-                    .padding(.bottom)
+                WishKitView()
             } label: {
                 Label {
                     Text("app_feature_requests", tableName: "Settings")
