@@ -250,9 +250,7 @@ struct TimelinesView: View {
             
             TabView(selection: $selectedTimelineType) {
                 ForEach(TimelineType.allCases, id: \.self) { type in
-                    Group {
-                        timelineContent(for: type)
-                    }
+                    timelineContent(for: type)
                         .refreshable {
                             await actor.loadTimeline(type: type, refresh: true)
                         }
@@ -319,52 +317,60 @@ struct TimelinesView: View {
                 )
             }
         } else {
-            ScrollView {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(state.statuses.enumerated()), id: \.element.id) { index, status in
-                        VStack(spacing: 0) {
-                            Button {
-                                router.navigate(
-                                    to: .statusDetailWithStatus(status: status))
-                            } label: {
-                                StatusView(status: status, mode: .timeline)
-                                    .id(index)
-                                    .task {
-                                        if index >= state.statuses.count - 3 && state.hasMore {
-                                            await actor.loadTimeline(type: type)
-                                        }
-                                    }
+            List {
+                ForEach(Array(state.statuses.enumerated()), id: \.element.id) { index, status in
+                    Button {
+                        router.navigate(
+                            to: .statusDetailWithStatus(status: status))
+                    } label: {
+                        StatusView(status: status, mode: .timeline)
+                            .id(index)
+                            .task {
+                                if index >= state.statuses.count - 3 && state.hasMore {
+                                    await actor.loadTimeline(type: type)
+                                }
                             }
-                            .buttonStyle(.plain)
-                            
-                            if status.id != state.statuses.last?.id {
-                                Divider()
-                                    .padding(.horizontal)
-                            }
-                        }
                     }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
                     
-                    if state.isLoading && !state.isRefreshing {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding()
+                    if status.id != state.statuses.last?.id {
+                        Divider()
+                            .padding(.horizontal)
+                            .listRowInsets(EdgeInsets())
+                            .listRowSeparator(.hidden)
                     }
                 }
+                
+                if state.isLoading && !state.isRefreshing {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .padding()
+                }
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
     }
     
     private let skeletonCount = 5
     
     private var timelineSkeletonContent: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                ForEach(0..<skeletonCount, id: \.self) { _ in
-                    statusSkeletonView
-                }
+        List {
+            ForEach(0..<skeletonCount, id: \.self) { _ in
+                statusSkeletonView
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
             }
-            .padding()
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
     }
     
     private var statusSkeletonView: some View {
