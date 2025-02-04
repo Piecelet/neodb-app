@@ -11,7 +11,6 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @EnvironmentObject var storeManager: StoreManager
-    @EnvironmentObject var telemetryService: TelemetryService
     @StateObject private var router = Router()
     @State private var isSearchActive = false
     private let logger = Logger.views.contentView
@@ -20,7 +19,7 @@ struct ContentView: View {
         TabView(
             selection: $router.selectedTab.onUpdate { oldTab, newTab in
                 // Track tab changes
-                telemetryService.trackTabChange(to: newTab)
+                TelemetryService.shared.trackTabChange(to: newTab)
                 // Only activate search when clicking search tab while already on search tab
                 if oldTab == .search && newTab == .search {
                     isSearchActive.toggle()

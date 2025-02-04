@@ -22,20 +22,24 @@ class TelemetryService: ObservableObject {
     }
     
     private func configure() {
-        let config = TelemetryDeck.Config(appID: AppConfig.telemetryDeckApiKey)
+        let config = TelemetryDeck.Config(appID: AppConfig.telemetryDeckAppID)
         
         // Add default signal prefix for better organization
         config.defaultSignalPrefix = "App."
         
         // Add default parameters that will be included with every signal
-        config.defaultParameters = {[
-            "appVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
-            "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown",
-            "isDebug": "\(AppConfig.isDebug)"
-        ]}
+        config.defaultParameters = { [
+        "appVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
+        "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown",
+        "isDebug": "\(AppConfig.isDebug)"
+    ] }
         
         TelemetryDeck.initialize(config: config)
         logger.debug("TelemetryDeck initialized")
+    }
+
+    func updateDefaultUserID(to id: String?) {
+        TelemetryDeck.updateDefaultUserID(to: id)
     }
     
     // MARK: - App Lifecycle Events

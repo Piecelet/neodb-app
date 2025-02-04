@@ -7,6 +7,7 @@
 
 import Foundation
 import RevenueCat
+import TelemetryDeck
 
 @MainActor
 class StoreManager: ObservableObject {
@@ -106,6 +107,11 @@ class StoreManager: ObservableObject {
                 .with(storeKitVersion: .storeKit2)
                 .build()
         )
+        Purchases.shared.attribution.setAttributes([
+            "$telemetryDeckUserId": TelemetryManager.shared
+                .hashedDefaultUser,
+            "$telemetryDeckAppId": AppConfig.telemetryDeckAppID
+        ])
     }
 
     func setCustomerInfo() async {

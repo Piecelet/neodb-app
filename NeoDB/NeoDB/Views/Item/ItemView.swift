@@ -94,12 +94,7 @@ struct ItemView: View {
             Divider()
                 .padding(.vertical)
 
-            if !viewModel.description.isEmpty {
-                descriptionView
-
-                Divider()
-                    .padding(.vertical)
-            }
+            ItemViewDescription(item: viewModel.item)
 
             actionsView
                 .padding(.horizontal)
@@ -168,21 +163,6 @@ struct ItemView: View {
         }
     }
 
-    // MARK: - Description View
-    private var descriptionView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("item_description", tableName: "Item")
-                .font(.headline)
-
-            ExpandableText(viewModel.description)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .lineLimit(4)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
-    }
-
     // MARK: - Actions View
     private var actionsView: some View {
         VStack(spacing: 12) {
@@ -209,7 +189,8 @@ struct ItemView: View {
                 if let item = viewModel.item {
                     Group {
                         if let mark = viewModel.mark,
-                         mark.shelfType == type {
+                            mark.shelfType == type
+                        {
                             Button {
                                 router.presentSheet(
                                     .editShelfItem(
@@ -218,7 +199,8 @@ struct ItemView: View {
                                 HapticFeedback.impact(.medium)
                             } label: {
                                 HStack(spacing: 4) {
-                                    Image(symbol: type.symbolActionStateDoneFill)
+                                    Image(
+                                        symbol: type.symbolActionStateDoneFill)
                                     Text(
                                         type.displayNameForCategory(
                                             viewModel.item?.category)
@@ -316,7 +298,7 @@ struct ItemView: View {
 // MARK: - Button Style
 private struct ShelfTypeButtonStyle: ButtonStyle {
     let filled: Bool
-    
+
     init(filled: Bool = false) {
         self.filled = filled
     }
@@ -334,7 +316,9 @@ private struct ShelfTypeButtonStyle: ButtonStyle {
             .foregroundStyle(filled ? color : color)
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(filled ? color.opacity(0.4) : color, lineWidth: strokeWidth)
+                    .stroke(
+                        filled ? color.opacity(0.4) : color,
+                        lineWidth: strokeWidth)
             }
             .opacity(configuration.isPressed ? 0.7 : 1.0)
     }

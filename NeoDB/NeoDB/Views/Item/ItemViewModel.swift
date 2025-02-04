@@ -55,7 +55,6 @@ final class ItemViewModel: ObservableObject {
     var coverImageURL: URL? { item?.coverImageUrl }
     var rating: String { item?.rating.map { String(format: "%.1f", $0) } ?? "" }
     var ratingCount: String { item?.ratingCount.map(String.init) ?? "0" }
-    var description: String { item?.description ?? "" }
     var shelfType: ShelfType? { mark?.shelfType }
 
     var metadata: [String] {

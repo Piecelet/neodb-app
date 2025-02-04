@@ -9,7 +9,7 @@ enum AppConfig {
     
     static let wishkitApiKey = "6AA7DB14-8EED-4895-B4D6-3F6EB5210921"
 
-    static let telemetryDeckApiKey = "08C5A003-C174-4FAE-ADA2-A9BA3A008FF7"
+    static let telemetryDeckAppID = "08C5A003-C174-4FAE-ADA2-A9BA3A008FF7"
 
     static let appStoreId = "6739444863"
 

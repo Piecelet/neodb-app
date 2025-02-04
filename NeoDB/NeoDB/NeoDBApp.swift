@@ -13,8 +13,11 @@ import WhatsNewKit
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
     @StateObject private var storeManager = StoreManager()
-    @StateObject private var telemetryService = TelemetryService()
     @StateObject private var router = Router()
+
+    init() {
+        _ = TelemetryService.shared
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -37,7 +40,6 @@ struct NeoDBApp: App {
             }
             .environmentObject(accountsManager)
             .environmentObject(storeManager)
-            .environmentObject(telemetryService)
             .onOpenURL { url in
                 if url.scheme == "neodb" && url.host == "oauth" {
                     Task {
@@ -64,7 +66,9 @@ struct NeoDBApp: App {
                 }
             
                 // Track app launch when ContentView appears
-                telemetryService.trackAppLaunch()
+                TelemetryService.shared.trackAppLaunch()
+
+                TelemetryService.shared.updateDefaultUserID(to: storeManager.appUserID)
             }
             .enableInjection()
         }
