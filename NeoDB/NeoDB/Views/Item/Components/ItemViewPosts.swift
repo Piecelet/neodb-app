@@ -6,40 +6,42 @@
 //  Copyright © 2025 https://github.com/lcandy2. All Rights Reserved.
 //
 
-import SwiftUI
 import OSLog
+import SwiftUI
 
 @MainActor
 final class ItemViewPostsViewModel: ObservableObject {
     // MARK: - Dependencies
     private let logger = Logger.views.item
-    
+
     // MARK: - Published Properties
     @Published private(set) var posts: [NeoDBPost] = []
     @Published private(set) var isLoading = false
     @Published var error: Error?
     @Published var showError = false
-    
+
     // MARK: - Properties
     var accountsManager: AppAccountsManager?
     let item: any ItemProtocol
-    
+
     init(item: any ItemProtocol) {
         self.item = item
     }
-    
+
     func loadPosts() async {
         guard let accountsManager = accountsManager else {
             logger.debug("No accountsManager available")
             return
         }
-        
+
         isLoading = true
         defer { isLoading = false }
-        
+
         do {
-            let endpoint = ItemEndpoint.post(uuid: item.uuid, types: [.review, .comment])
-            let result = try await accountsManager.currentClient.fetch(endpoint, type: PaginatedPostList.self)
+            let endpoint = ItemEndpoint.post(
+                uuid: item.uuid, types: [.review, .comment])
+            let result = try await accountsManager.currentClient.fetch(
+                endpoint, type: PaginatedPostList.self)
             posts = result.data
         } catch {
             self.error = error
@@ -52,42 +54,49 @@ final class ItemViewPostsViewModel: ObservableObject {
 struct ItemViewPosts: View {
     @StateObject private var viewModel: ItemViewPostsViewModel
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    
+
     init(item: any ItemProtocol) {
-        self._viewModel = StateObject(wrappedValue: ItemViewPostsViewModel(item: item))
+        self._viewModel = StateObject(
+            wrappedValue: ItemViewPostsViewModel(item: item))
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("item_posts", tableName: "Item")
+            Text("item_posts_comments", tableName: "Item")
                 .font(.headline)
-            
+
             if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if viewModel.posts.isEmpty {
-                Text("item_no_posts", tableName: "Item")
+                Text("item_posts_comments_empty", tableName: "Item")
                     .font(.callout)
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(viewModel.posts, id: \.id) { post in
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(post.account.displayName ?? post.account.username)
+                    HStack(alignment: .top, spacing: 8) {
+                        AccountAvatarView(account: post.account, size: .small)
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text(
+                                    post.account.displayName
+                                        ?? post.account.username
+                                )
                                 .font(.subheadline)
                                 .fontWeight(.medium)
-                            Spacer()
-                            Text(post.createdAt.relativeFormatted)
-                                .font(.caption)
+                                Spacer()
+                                Text(post.createdAt.relativeFormatted)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Text(post.content.asSafeMarkdownAttributedString)
+                                .font(.callout)
                                 .foregroundStyle(.secondary)
                         }
-                        
-                        Text(post.content.asSafeMarkdownAttributedString)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
                     }
                     .padding(.vertical, 8)
-                    
+
                     if post.id != viewModel.posts.last?.id {
                         Divider()
                     }
@@ -100,14 +109,16 @@ struct ItemViewPosts: View {
             viewModel.accountsManager = accountsManager
             await viewModel.loadPosts()
         }
-        .alert("Error", isPresented: $viewModel.showError, presenting: viewModel.error) { _ in
+        .alert(
+            "Error", isPresented: $viewModel.showError,
+            presenting: viewModel.error
+        ) { _ in
             Button("OK", role: .cancel) {}
         }
         .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
-

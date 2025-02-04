@@ -17,7 +17,7 @@ struct AccountAvatarView: View {
 
         var dimension: CGFloat {
             switch self {
-            case .small: 32
+            case .small: 36
             case .regular: 44
             case .large: 80
             }
