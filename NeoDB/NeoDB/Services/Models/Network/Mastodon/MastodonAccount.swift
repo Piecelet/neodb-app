@@ -73,14 +73,14 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
 
     var haveAvatar: Bool {
         if let avatar {
-            return avatar.lastPathComponent != "missing.png"
+            return !avatar.lastPathComponent.contains("missing")
         }
         return false
     }
 
     var haveHeader: Bool {
         if let header {
-            return header.lastPathComponent != "missing.png"
+            return !header.lastPathComponent.contains("missing")
         }
         return false
     }

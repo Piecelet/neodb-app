@@ -38,21 +38,7 @@ struct StatusView: View {
                 Button {
                     router.navigate(to: .userProfile(id: status.account.id))
                 } label: {
-                    KFImage(status.account.avatar)
-                        .placeholder {
-                            Circle()
-                                .fill(Color.gray.opacity(0.2))
-                                .frame(width: 44, height: 44)
-                                .overlay {
-                                    Image(systemName: "person.circle.fill")
-                                        .symbolRenderingMode(.hierarchical)
-                                        .foregroundStyle(.secondary)
-                                }
-                        }
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 44, height: 44)
-                        .clipShape(Circle())
+                    AccountAvatarView(account: status.account)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(status.account.displayName ?? "")
