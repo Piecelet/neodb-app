@@ -112,7 +112,7 @@ struct AppClient: Codable, Identifiable {
                 throw AccountError.invalidURL
             case .invalidResponse:
                 throw AccountError.invalidResponse
-            case .httpError(let code):
+            case .httpError(code: let code, message: _):
                 throw AccountError.registrationFailed("HTTP error: \(code)")
             case .decodingError:
                 throw AccountError.registrationFailed("Failed to decode response")

@@ -69,7 +69,10 @@ extension Logger {
                 subsystem: subsystem, category: "services.url.urlUtilities")
         }
 
+        enum telemetry {
         static let telemetry = Logger(subsystem: subsystem, category: "services.telemetry")
+            static let auth = Logger(subsystem: subsystem, category: "services.telemetry.auth")
+        }
     }
 
     // MARK: - Views

@@ -12,9 +12,12 @@ import OSLog
 
 @MainActor
 class TelemetryService: ObservableObject {
-    private let logger = Logger.services.telemetry
+    // MARK: - Singleton
+    static let shared = TelemetryService()
     
-    init() {
+    private let logger = Logger.services.telemetry.telemetry
+    
+    private init() {
         configure()
     }
     
@@ -44,14 +47,14 @@ class TelemetryService: ObservableObject {
     
     // MARK: - Authentication Events
     
-    func trackLogin(instance: String) {
-        TelemetryDeck.signal("auth.login", parameters: ["instance": instance])
-        logger.debug("Tracked login for instance: \(instance)")
+    func trackAuthLogin(instance: String? = nil) {
+        TelemetryDeck.signal("auth.login", parameters: ["instance": instance ?? "unknown"])
+        logger.debug("Tracked login for instance: \(instance ?? "unknown")")
     }
     
-    func trackLogout() {
-        TelemetryDeck.signal("auth.logout")
-        logger.debug("Tracked logout")
+    func trackAuthLogout(instance: String? = nil) {
+        TelemetryDeck.signal("auth.logout", parameters: ["instance": instance ?? "unknown"])
+        logger.debug("Tracked logout for instance: \(instance ?? "unknown")")
     }
     
     // MARK: - Navigation Events

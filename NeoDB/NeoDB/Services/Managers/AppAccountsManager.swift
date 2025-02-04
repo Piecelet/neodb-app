@@ -232,6 +232,7 @@ class AppAccountsManager: ObservableObject {
                     type: Data.self)
             }
             availableAccounts.removeAll(where: { $0.id == account.id })
+            let instance = account.instance
             account.delete()
             if currentAccount.id == account.id {
                 currentAccount =
@@ -239,6 +240,8 @@ class AppAccountsManager: ObservableObject {
                     ?? AppAccount(instance: "neodb.social", oauthToken: nil)
                 isAuthenticated = currentAccount.oauthToken != nil
             }
+
+            TelemetryService.shared.trackAuthLogout(instance: instance)
 
             // Reset hasShownPurchaseView when deleting the last account
             shouldShowPurchase = false
@@ -327,6 +330,8 @@ class AppAccountsManager: ObservableObject {
             // 添加更新后的账户
             add(account: updatedAccount)
 
+            TelemetryService.shared.trackAuthLogin(instance: state)
+
             logger.debug(
                 "After adding account, shouldShowPurchase: \(shouldShowPurchase)"
             )
@@ -373,7 +378,7 @@ class AppAccountsManager: ObservableObject {
                 throw AccountError.invalidURL
             case .invalidResponse:
                 throw AccountError.invalidResponse
-            case .httpError(let code):
+            case .httpError(code: let code, message: _):
                 throw AccountError.tokenRefreshFailed("HTTP error: \(code)")
             case .decodingError:
                 throw AccountError.tokenRefreshFailed(
