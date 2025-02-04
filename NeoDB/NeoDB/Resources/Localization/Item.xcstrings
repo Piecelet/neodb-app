@@ -365,9 +365,6 @@
         }
       }
     },
-    "item_no_posts" : {
-
-    },
     "item_open_in_website" : {
       "localizations" : {
         "da" : {
@@ -396,7 +393,10 @@
         }
       }
     },
-    "item_posts" : {
+    "item_posts_comments" : {
+
+    },
+    "item_posts_comments_empty" : {
 
     },
     "item_rating_na" : {

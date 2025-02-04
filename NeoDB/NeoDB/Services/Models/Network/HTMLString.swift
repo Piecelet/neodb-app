@@ -22,7 +22,30 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
     var asRawText: String = ""
     var statusesURLs = [URL]()
     private(set) var links = [Link]()
-
+    private(set) var neodbItems = [(item: any ItemProtocol, range: Range<String.Index>)]()
+    
+    var asMarkdownWithoutNeoDBItem: String {
+        var result = asMarkdown
+        // Remove links in reverse order to maintain correct indices
+        for (_, range) in neodbItems.reversed() {
+            result.removeSubrange(range)
+        }
+        return result
+    }
+    
+    var asSafeMarkdownAttributedStringWithoutNeoDBItem: AttributedString {
+        do {
+            let options = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            return try AttributedString(
+                markdown: asMarkdownWithoutNeoDBItem.trimmingCharacters(in: .whitespacesAndNewlines),
+                options: options)
+        } catch {
+            return AttributedString(stringLiteral: htmlValue)
+        }
+    }
+    
     var asSafeMarkdownAttributedString: AttributedString = .init()
     private var main_regex: NSRegularExpression?
     private var underscore_regex: NSRegularExpression?
@@ -183,6 +206,15 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                 let href = try node.attr("href")
                 if href != "" {
                     if let url = URL(string: href) {
+                        asMarkdown += "["
+                        let start = asMarkdown.endIndex
+                        // descend into this node now so we can wrap the
+                        // inner part of the link in the right markup
+                        for nn in node.getChildNodes() {
+                            handleNode(node: nn, listCounters: &listCounters)
+                        }
+                        let finish = asMarkdown.endIndex
+                        
                         if Int(url.lastPathComponent) != nil {
                             statusesURLs.append(url)
                         } else if url.host() == "www.threads.net"
@@ -192,36 +224,31 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                         {
                             statusesURLs.append(url)
                         }
+                        
+                        var linkRef = href
+                        // Try creating a URL from the string. If it fails, try URL encoding
+                        //   the string first.
+                        var urlForLink = URL(string: href)
+                        if urlForLink == nil {
+                            urlForLink = URL(string: href, encodePath: true)
+                        }
+                        if let linkUrl = urlForLink {
+                            linkRef = linkUrl.absoluteString
+                            let displayString = String(asMarkdown[start..<finish])
+                            let link = Link(linkUrl, displayString: displayString)
+                            links.append(link)
+                            
+                            // Store NeoDB item if found
+                            if let neodbItem = link.neodbItem {
+                                neodbItems.append((neodbItem, start..<finish))
+                            }
+                        }
+
+                        asMarkdown += "]("
+                        asMarkdown += linkRef
+                        asMarkdown += ")"
                     }
                 }
-                asMarkdown += "["
-                let start = asMarkdown.endIndex
-                // descend into this node now so we can wrap the
-                // inner part of the link in the right markup
-                for nn in node.getChildNodes() {
-                    handleNode(node: nn, listCounters: &listCounters)
-                }
-                let finish = asMarkdown.endIndex
-
-                var linkRef = href
-
-                // Try creating a URL from the string. If it fails, try URL encoding
-                //   the string first.
-                var url = URL(string: href)
-                if url == nil {
-                    url = URL(string: href, encodePath: true)
-                }
-                if let linkUrl = url {
-                    linkRef = linkUrl.absoluteString
-                    let displayString = asMarkdown[start..<finish]
-                    links.append(
-                        Link(linkUrl, displayString: String(displayString)))
-                }
-
-                asMarkdown += "]("
-                asMarkdown += linkRef
-                asMarkdown += ")"
-
                 return
             } else if node.nodeName() == "#text" {
                 var txt = node.description
@@ -330,11 +357,15 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
         let displayString: String
         let type: LinkType
         let title: String
+        let neodbItem: (any ItemProtocol)?
 
         init(_ url: URL, displayString: String) {
             self.url = url
             self.displayString = displayString
-
+            
+            // Try to parse NeoDB item first
+            self.neodbItem = NeoDBURL.parseItemURL(url, title: displayString)
+            
             switch displayString.first {
             case "@":
                 type = .mention
@@ -351,12 +382,65 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                 title = hostNameUrl
             }
         }
+        
+        // MARK: - Codable
+        private enum CodingKeys: String, CodingKey {
+            case url, displayString, type, title
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            url = try container.decode(URL.self, forKey: .url)
+            displayString = try container.decode(String.self, forKey: .displayString)
+            type = try container.decode(LinkType.self, forKey: .type)
+            title = try container.decode(String.self, forKey: .title)
+            neodbItem = NeoDBURL.parseItemURL(url, title: displayString)
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(url, forKey: .url)
+            try container.encode(displayString, forKey: .displayString)
+            try container.encode(type, forKey: .type)
+            try container.encode(title, forKey: .title)
+        }
+        
+        // MARK: - Hashable
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(url)
+            hasher.combine(displayString)
+            hasher.combine(type)
+            hasher.combine(title)
+        }
+        
+        static func == (lhs: Link, rhs: Link) -> Bool {
+            lhs.url == rhs.url &&
+            lhs.displayString == rhs.displayString &&
+            lhs.type == rhs.type &&
+            lhs.title == rhs.title
+        }
 
         enum LinkType: String, Codable {
             case url
             case mention
             case hashtag
         }
+    }
+
+    static func == (lhs: HTMLString, rhs: HTMLString) -> Bool {
+        lhs.htmlValue == rhs.htmlValue &&
+        lhs.asMarkdown == rhs.asMarkdown &&
+        lhs.asRawText == rhs.asRawText &&
+        lhs.statusesURLs == rhs.statusesURLs &&
+        lhs.links == rhs.links
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(htmlValue)
+        hasher.combine(asMarkdown)
+        hasher.combine(asRawText)
+        hasher.combine(statusesURLs)
+        hasher.combine(links)
     }
 }
 

@@ -23,12 +23,19 @@ struct StatusView: View {
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @State private var item: (any ItemProtocol)?
 
     init(status: MastodonStatus, mode: StatusViewMode = .timeline) {
         self.status = status
         self.mode = mode
         _viewModel = StateObject(wrappedValue: StatusViewModel(status: status))
+        
+        // Log NeoDB items for debugging
+        logger.debug("""
+            NeoDB items in status \(status.id):
+            Links count: \(status.content.links.count)
+            NeoDB items: \(status.content.links.compactMap { $0.neodbItem }.map { "Title: \($0.displayTitle ?? "nil"), UUID: \($0.uuid)" })
+            Raw content: \(status.content.htmlValue)
+            """)
     }
 
     var body: some View {
@@ -69,8 +76,8 @@ struct StatusView: View {
                 .textSelection(.enabled)
                 .lineLimit(mode == .timeline ? 5 : nil)
 
-            // Item Preview if available
-            if let item = item {
+            // Item Previews if available
+            ForEach(status.content.links.compactMap(\.neodbItem), id: \.uuid) { item in
                 StatusItemView(item: item)
             }
 
@@ -151,16 +158,6 @@ struct StatusView: View {
         .background(Color(.systemBackground))
         .task {
             viewModel.accountsManager = accountsManager
-            if !status.content.links.isEmpty {
-                for link in status.content.links {
-                    if let extractedItem = NeoDBURL.parseItemURL(
-                        link.url, title: link.displayString)
-                    {
-                        item = extractedItem
-                        break
-                    }
-                }
-            }
         }
         .alert("Error", isPresented: .constant(false)) {
             Button("OK") {}
