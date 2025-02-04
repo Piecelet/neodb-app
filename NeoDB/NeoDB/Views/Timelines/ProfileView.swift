@@ -53,19 +53,10 @@ struct ProfileView: View {
 
                         // Avatar and Stats
                         HStack(alignment: .bottom) {
-                            if let avatar = account.avatar {
-                                AsyncImage(url: avatar) { image in
-                                    image.resizable()
-                                        .aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Rectangle()
-                                    .fill(.quaternary)
-                            }
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(.quaternary, lineWidth: 1))
-                            .padding(.leading)
-                            .offset(y: -40)
+                            if let account = account ?? viewModel.account {
+                                AccountAvatarView(account: account, size: .large)
+                                    .padding(.leading)
+                                    .offset(y: -40)
                             }
 
                             Spacer()
@@ -170,17 +161,8 @@ struct ProfileView: View {
                     VStack(alignment: .leading, spacing: 16) {
                         // Avatar
                         HStack(alignment: .center) {
-                            AsyncImage(url: user.avatar) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                            } placeholder: {
-                                Rectangle()
-                                    .fill(.quaternary)
-                            }
-                            .frame(width: 80, height: 80)
-                            .clipShape(Circle())
-                            .overlay(Circle().stroke(.quaternary, lineWidth: 1))
-                            .padding(.leading)
+                            AccountAvatarView(user: user, size: .large)
+                                .padding(.leading)
 
                             Spacer()
                         }

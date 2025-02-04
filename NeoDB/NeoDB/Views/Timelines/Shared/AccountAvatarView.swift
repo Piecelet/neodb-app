@@ -14,7 +14,7 @@ struct AccountAvatarView: View {
         case small
         case regular
         case large
-        
+
         var dimension: CGFloat {
             switch self {
             case .small: 32
@@ -22,49 +22,52 @@ struct AccountAvatarView: View {
             case .large: 80
             }
         }
-        
+
         var symbolScale: CGFloat {
             switch self {
-            case .small: 0.6
+            case .small: 0.5
             case .regular: 0.5
-            case .large: 0.8
+            case .large: 0.5
             }
         }
     }
-    
+
     let account: MastodonAccount?
     let user: User?
     var size: Size = .regular
     var showPlaceholder: Bool = true
-    
-    init(account: MastodonAccount, size: Size = .regular, showPlaceholder: Bool = true) {
+
+    init(
+        account: MastodonAccount, size: Size = .regular,
+        showPlaceholder: Bool = true
+    ) {
         self.account = account
         self.user = nil
         self.size = size
         self.showPlaceholder = showPlaceholder
     }
-    
+
     init(user: User, size: Size = .regular, showPlaceholder: Bool = true) {
         self.account = nil
         self.user = user
         self.size = size
         self.showPlaceholder = showPlaceholder
     }
-    
+
     private var shouldShowAvatar: Bool {
         if let account = account {
             return account.haveAvatar
         }
         return user?.avatar != nil
     }
-    
+
     private var avatarURL: URL? {
         if let account = account {
             return account.avatar
         }
         return user?.avatar
     }
-    
+
     var body: some View {
         Group {
             if shouldShowAvatar, let avatar = avatarURL {
@@ -82,7 +85,7 @@ struct AccountAvatarView: View {
         }
         .enableInjection()
     }
-    
+
     private var placeholderView: some View {
         Circle()
             .fill(Color.grayBackground)
