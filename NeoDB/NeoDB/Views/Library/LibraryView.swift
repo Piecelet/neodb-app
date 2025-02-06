@@ -98,6 +98,10 @@ struct LibraryView: View {
                 .padding(.top, 4)
         }
         .contentShape(Rectangle())
+        .onAppear {
+            // Initialize MarkDataController when item appears
+            _ = viewModel.getMarkDataController(for: mark.item.uuid)
+        }
     }
 
     private func itemDetails(for mark: MarkSchema) -> some View {

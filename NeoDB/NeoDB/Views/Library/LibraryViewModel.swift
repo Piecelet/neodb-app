@@ -23,6 +23,8 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
     private let logger = Logger.views.library
     private let cacheService = CacheService()
+    private let markDataProvider = MarkDataControllerProvider.shared
+    private var markDataControllers: [String: MarkDataController] = [:]
     
     // MARK: - Task Management
     private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
@@ -62,6 +64,7 @@ final class LibraryViewModel: ObservableObject {
                     .complete: ShelfItemsState(),
                     .dropped: ShelfItemsState()
                 ]
+                markDataControllers.removeAll()
             }
         }
     }
@@ -200,6 +203,40 @@ final class LibraryViewModel: ObservableObject {
     func cleanup() {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
+        markDataControllers.removeAll()
+    }
+    
+    // MARK: - Mark Management
+    func getMarkDataController(for uuid: String) -> MarkDataController? {
+        guard let accountsManager = accountsManager else { return nil }
+        if let controller = markDataControllers[uuid] {
+            return controller
+        }
+        let controller = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
+        markDataControllers[uuid] = controller
+        return controller
+    }
+    
+    private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
+        if !Task.isCancelled {
+            updateShelfState(type: type) { state in
+                state.items = cached.data
+                state.totalPages = cached.pages
+                state.state = .loaded
+            }
+            
+            // Initialize MarkDataControllers for cached items
+            if let accountsManager = accountsManager {
+                let uuids = cached.data.map { $0.item.uuid }
+                for uuid in uuids {
+                    if markDataControllers[uuid] == nil {
+                        markDataControllers[uuid] = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
+                    }
+                }
+            }
+            
+            logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
+        }
     }
     
     // MARK: - Private Methods
@@ -226,17 +263,6 @@ final class LibraryViewModel: ObservableObject {
         }
     }
     
-    private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
-        if !Task.isCancelled {
-            updateShelfState(type: type) { state in
-                state.items = cached.data
-                state.totalPages = cached.pages
-                state.state = .loaded
-            }
-            logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
-        }
-    }
-    
     private func fetchItems(type: ShelfType, using accountsManager: AppAccountsManager) async throws -> PagedMarkSchema {
         guard accountsManager.isAuthenticated else {
             logger.error("User not authenticated")
@@ -256,38 +282,41 @@ final class LibraryViewModel: ObservableObject {
     }
     
     private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
-        guard !Task.isCancelled else {
-            logger.debug("Shelf items loading cancelled after fetch for type: \(type)")
-            return
-        }
-        
-        updateShelfState(type: type) { state in
-            if state.currentPage == 1 || state.isRefreshing {
-                // 如果是第一页或刷新，直接替换数据
-                state.items = result.data
-            } else {
-                // 如果是加载更多，检查并去重后添加
-                let existingIds = Set(state.items.map { $0.id })
-                let newItems = result.data.filter { !existingIds.contains($0.id) }
-                state.items.append(contentsOf: newItems)
+        if !Task.isCancelled {
+            updateShelfState(type: type) { state in
+                if state.currentPage == 1 {
+                    state.items = result.data
+                } else {
+                    let existingIds = Set(state.items.map { $0.id })
+                    let newItems = result.data.filter { !existingIds.contains($0.id) }
+                    state.items.append(contentsOf: newItems)
+                }
+                state.totalPages = result.pages
+                state.state = .loaded
             }
-            state.totalPages = result.pages
-            state.state = .loaded
+            
+            // Initialize MarkDataControllers for new items
+            let uuids = result.data.map { $0.item.uuid }
+            for uuid in uuids {
+                if markDataControllers[uuid] == nil {
+                    markDataControllers[uuid] = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
+                }
+            }
+            
+            // 只在第一页时缓存数据
+            let state = shelfStates[type] ?? ShelfItemsState()
+            if state.currentPage == 1 {
+                try? await cacheService.cacheLibrary(
+                    result,
+                    key: accountsManager.currentAccount.id,
+                    shelfType: type,
+                    category: selectedCategory
+                )
+                logger.debug("Cached first page data for type: \(type)")
+            }
+            
+            logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
         }
-        
-        // 只在第一页时缓存数据
-        let state = shelfStates[type] ?? ShelfItemsState()
-        if state.currentPage == 1 {
-            try? await cacheService.cacheLibrary(
-                result,
-                key: accountsManager.currentAccount.id,
-                shelfType: type,
-                category: selectedCategory
-            )
-            logger.debug("Cached first page data for type: \(type)")
-        }
-        
-        logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
     }
     
     private func handleError(_ error: Error, type: ShelfType) async {

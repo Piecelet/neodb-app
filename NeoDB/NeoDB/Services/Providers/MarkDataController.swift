@@ -35,10 +35,26 @@ final class MarkDataControllerProvider {
         dictionary[key] = controller
         return controller
     }
-    
+
+    func dataController(for mark: MarkSchema, appAccountsManager: AppAccountsManager) -> MarkDataController {
+        let key = DictionaryKey(uuid: mark.item.uuid, accountID: appAccountsManager.currentAccount.id)
+        if let controller = dictionary[key] as? MarkDataController {
+            return controller
+        }
+        let controller = MarkDataController(uuid: mark.item.uuid, appAccountsManager: appAccountsManager, mark: mark)
+        dictionary[key] = controller
+        return controller
+    }
+
     func updateDataControllers(for UUIDs: [String], appAccountsManager: AppAccountsManager) {
         for uuid in UUIDs {
             _ = dataController(for: uuid, appAccountsManager: appAccountsManager)
+        }
+    }
+
+    func updateDataController(for marks: [MarkSchema], appAccountsManager: AppAccountsManager) {
+        for mark in marks {
+            _ = dataController(for: mark, appAccountsManager: appAccountsManager)
         }
     }
 }
@@ -56,9 +72,10 @@ final class MarkDataController: MarkDataControlling {
     @Published var visibility: MarkVisibility?
     @Published var createdTime: Date?
 
-    init(uuid: String, appAccountsManager: AppAccountsManager) {
+    init(uuid: String, appAccountsManager: AppAccountsManager, mark: MarkSchema? = nil) {
         self.uuid = uuid
         self.appAccountsManager = appAccountsManager
+        self.mark = mark
 
         Task {
             await getMark()
@@ -66,6 +83,8 @@ final class MarkDataController: MarkDataControlling {
     }
 
     func getMark() async {
+        guard self.mark != nil else { return }
+
         do {
             let endpoint = MarkEndpoint.get(itemUUID: uuid)
             mark = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)

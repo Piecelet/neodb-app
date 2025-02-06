@@ -12,6 +12,8 @@ import SwiftUI
 @MainActor
 class MarkViewModel: ObservableObject {
     private let logger = Logger.views.mark.mark
+    private let markDataProvider = MarkDataControllerProvider.shared
+    private var markDataController: MarkDataController?
 
     let item: (any ItemProtocol)
     let existingMark: MarkSchema?
@@ -28,7 +30,13 @@ class MarkViewModel: ObservableObject {
     @Published var showError = false
     @Published var isDismissed = false
 
-    var accountsManager: AppAccountsManager?
+    var accountsManager: AppAccountsManager? {
+        didSet {
+            if let accountsManager = accountsManager {
+                markDataController = markDataProvider.dataController(for: item.uuid, appAccountsManager: accountsManager)
+            }
+        }
+    }
 
     init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
         self.item = item
@@ -53,8 +61,7 @@ class MarkViewModel: ObservableObject {
     }
 
     func saveMark() async {
-        guard let accountsManager = accountsManager else { return }
-
+        guard markDataController != nil else { return }
         isLoading = true
         defer { isLoading = false }
 
@@ -70,10 +77,7 @@ class MarkViewModel: ObservableObject {
                 postId: existingMark?.postId
             )
 
-            let endpoint = MarkEndpoint.mark(itemUUID: item.uuid, mark: mark)
-            _ = try await accountsManager.currentClient.fetch(
-                endpoint, type: MessageSchema.self)
-
+            await markDataController?.updateMark(for: mark)
             isDismissed = true
         } catch {
             self.error = error
@@ -83,18 +87,15 @@ class MarkViewModel: ObservableObject {
     }
 
     func deleteMark() async {
-        guard let accountsManager = accountsManager,
-            existingMark != nil
+        guard 
+              markDataController != nil
         else { return }
 
         isLoading = true
         defer { isLoading = false }
 
         do {
-            let endpoint = MarkEndpoint.delete(itemUUID: item.uuid)
-            _ = try await accountsManager.currentClient.fetch(
-                endpoint, type: MessageSchema.self)
-
+            await markDataController?.deleteMark(for: item.uuid)
             isDismissed = true
         } catch {
             self.error = error
