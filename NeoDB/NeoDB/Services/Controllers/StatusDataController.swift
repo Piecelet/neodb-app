@@ -74,10 +74,10 @@ final class StatusDataController: StatusDataControlling {
   
   @Published var item: (any ItemProtocol)? = nil
 
-  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager, item: (any ItemProtocol)? = nil) {
+  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager) {
     self.status = status
     self.appAccountsManager = appAccountsManager
-    self.unfetchedItem = item
+    self.unfetchedItem = status.content.links.compactMap(\.neodbItem).first
 
     isReblogged = status.reblogged == true
     isBookmarked = status.bookmarked == true
@@ -87,6 +87,10 @@ final class StatusDataController: StatusDataControlling {
     repliesCount = status.repliesCount
     favoritesCount = status.favouritesCount
     content = status.content
+
+    Task {
+      await getItem()
+    }
   }
 
   func updateFrom(status: AnyMastodonStatus) {

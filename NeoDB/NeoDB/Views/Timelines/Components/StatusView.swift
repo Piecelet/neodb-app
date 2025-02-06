@@ -70,9 +70,12 @@ struct StatusView: View {
                     .lineLimit(mode == .timeline ? 5 : nil)
                 
                 // Item Previews if available
-                ForEach(status.content.links.compactMap(\.neodbItem), id: \.uuid) { item in
+                // ForEach(status.content.links.compactMap(\.neodbItem), id: \.uuid) { item in
+                //     StatusItemView(item: item)
+                //     .id(item.uuid)
+                // }
+                if let item = viewModel.statusDataController?.item {
                     StatusItemView(item: item)
-                    .id(item.uuid)
                 }
                 
                 // Media
@@ -102,7 +105,7 @@ struct StatusView: View {
                     Button {
                         router.presentSheet(.replyToStatus(status: status))
                     } label: {
-                        Label("\(status.repliesCount)", systemImage: "bubble.right")
+                        Label("\(viewModel.statusDataController?.repliesCount ?? 0)", systemImage: "bubble.right")
                     }
                     .foregroundStyle(.secondary)
                     Spacer()
@@ -111,8 +114,8 @@ struct StatusView: View {
                             viewModel.toggleReblog()
                         }
                     } label: {
-                        Label("\(viewModel.status.reblogsCount)", systemSymbol: .arrow2Squarepath)
-                            .foregroundStyle(viewModel.status.reblogged ?? false ? .blue : .secondary)
+                        Label("\(viewModel.statusDataController?.reblogsCount ?? 0)", systemSymbol: .arrow2Squarepath)
+                            .foregroundStyle(viewModel.statusDataController?.isReblogged ?? false ? .blue : .secondary)
                             .contentTransition(.numericText())
                     }
                     Spacer()
@@ -121,8 +124,8 @@ struct StatusView: View {
                             viewModel.toggleFavorite()
                         }
                     } label: {
-                        Label("\(viewModel.status.favouritesCount)", systemSymbol: viewModel.status.favourited ?? false ? .heartFill : .heart)
-                            .foregroundStyle(viewModel.status.favourited ?? false ? .red : .secondary)
+                        Label("\(viewModel.statusDataController?.favoritesCount ?? 0)", systemSymbol: viewModel.statusDataController?.isFavorited ?? false ? .heartFill : .heart)
+                            .foregroundStyle(viewModel.statusDataController?.isFavorited ?? false ? .red : .secondary)
                             .contentTransition(.numericText())
                     }
                     Spacer()
@@ -130,9 +133,9 @@ struct StatusView: View {
                         Button {
                             viewModel.toggleBookmark()
                         } label: {
-                            Label("Bookmark", systemSymbol: viewModel.status.bookmarked ?? false ? .bookmarkFill : .bookmark)
+                            Label("Bookmark", systemSymbol: viewModel.statusDataController?.isBookmarked ?? false ? .bookmarkFill : .bookmark)
                                 .labelStyle(.iconOnly)
-                                .foregroundStyle(viewModel.status.bookmarked ?? false ? .orange : .secondary)
+                                .foregroundStyle(viewModel.statusDataController?.isBookmarked ?? false ? .orange : .secondary)
                         }
                         .padding(.trailing, mode == .detail ? 8 : nil)
                         if let url = URL(string: status.url ?? ""), mode == .timeline {
