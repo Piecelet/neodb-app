@@ -19,9 +19,7 @@ enum RouterDestination: Hashable {
     case userProfile(id: String)
     case userProfileWithUser(user: User)
     case statusDetail(id: String)
-    @available(*, deprecated, message: "Use statusDetailWithDataController instead")
     case statusDetailWithStatus(status: MastodonStatus)
-    case statusDetailWithDataController(dataController: StatusDataController)
     case hashTag(tag: String)
     
     // Lists
@@ -62,9 +60,6 @@ enum RouterDestination: Hashable {
         case .statusDetailWithStatus(let status):
             hasher.combine(7)
             hasher.combine(status.id)
-        case .statusDetailWithDataController(let dataController):
-            hasher.combine(8)
-            hasher.combine(dataController.status.id)
         case .hashTag(let tag):
             hasher.combine(9)
             hasher.combine(tag)
@@ -122,9 +117,7 @@ enum SheetDestination: Identifiable {
     case editStatus(status: MastodonStatus)
     case replyToStatus(status: MastodonStatus)
     case addToShelf(item: any ItemProtocol, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    @available(*, deprecated, message: "Use editStatusWithDataController instead")
     case editShelfItem(mark: MarkSchema, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    case editShelfItemWithDataController(dataController: MarkDataController, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
     case itemDetails(item: any ItemProtocol)
     case login
 
@@ -136,7 +129,7 @@ enum SheetDestination: Identifiable {
         switch self {
         case .newStatus, .editStatus, .replyToStatus:
             return "statusEditor"
-        case .addToShelf, .editShelfItem, .editShelfItemWithDataController:
+        case .addToShelf, .editShelfItem:
             return "shelfEditor"
         case .itemDetails:
             return "itemDetails"
