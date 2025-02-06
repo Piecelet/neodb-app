@@ -281,6 +281,7 @@ final class LibraryViewModel: ObservableObject {
                 // 确保为每个 mark 创建新的 controller
                 let newItems = result.data.map { mark in
                     let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                    controller.updateForm(for: mark)
                     return ShelfMarkItem(mark: mark, controller: controller)
                 }
                 
