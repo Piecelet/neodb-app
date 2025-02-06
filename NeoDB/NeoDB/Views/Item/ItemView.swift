@@ -179,8 +179,8 @@ struct ItemView: View {
             if viewModel.isMarkLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
-            } else if let mark = viewModel.mark {
-                // ItemMarkView(mark: mark, size: .large)
+            } else if let markDataController = viewModel.markDataController {
+                ItemMarkView(markController: markDataController, size: .large)
             }
         }
         .onChange(of: viewModel.isRefreshing) { newValue in
@@ -196,7 +196,7 @@ struct ItemView: View {
                 type in
                 if let item = viewModel.item {
                     Group {
-                        if let mark = viewModel.mark,
+                        if let mark = viewModel.markDataController?.mark,
                             mark.shelfType == type
                         {
                             Button {

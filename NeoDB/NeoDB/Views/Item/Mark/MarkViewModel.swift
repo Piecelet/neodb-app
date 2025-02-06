@@ -19,6 +19,8 @@ class MarkViewModel: ObservableObject {
     let item: (any ItemProtocol)
     let existingMark: MarkSchema?
 
+    var targetShelfType: ShelfType?
+
     @Published var shelfType: ShelfType {
         didSet {
             markDataController?.shelfType = shelfType
@@ -55,7 +57,7 @@ class MarkViewModel: ObservableObject {
                 } else {
                     markDataController = markDataProvider.dataController(for: item.uuid, appAccountsManager: accountsManager)
                 }
-                self.shelfType = markDataController?.shelfType ?? .wishlist
+                self.shelfType = targetShelfType ?? markDataController?.shelfType ?? .wishlist
                 self.rating = markDataController?.ratingGrade
                 self.comment = markDataController?.commentText ?? ""
                 self.visibility = markDataController?.visibility ?? .pub
@@ -68,6 +70,7 @@ class MarkViewModel: ObservableObject {
         self.item = item
         self.existingMark = mark
         self.shelfType = shelfType ?? .wishlist
+        self.targetShelfType = shelfType
 
         // if let mark = mark {
         //     self.shelfType = mark.shelfType

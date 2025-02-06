@@ -23,11 +23,15 @@ final class ItemViewModel: ObservableObject {
 
     // MARK: - Task Management
     private var loadTask: Task<Void, Never>?
-    private var markLoadTask: Task<Void, Never>?
+    // private var markLoadTask: Task<Void, Never>?
+
+    private let markDataProvider = MarkDataControllerProvider.shared
+
+    var markDataController: MarkDataController?
 
     // MARK: - Published Properties
     @Published private(set) var item: (any ItemProtocol)?
-    @Published private(set) var mark: MarkSchema?
+    // @Published private(set) var mark: MarkSchema?
     @Published private(set) var state: ItemState = .loading
     @Published var error: Error?
     @Published var showError = false
@@ -55,7 +59,7 @@ final class ItemViewModel: ObservableObject {
     var coverImageURL: URL? { item?.coverImageUrl }
     var rating: String { item?.rating.map { String(format: "%.1f", $0) } ?? "" }
     var ratingCount: String { item?.ratingCount.map(String.init) ?? "0" }
-    var shelfType: ShelfType? { mark?.shelfType }
+    var shelfType: ShelfType? { markDataController?.shelfType }
 
     var metadata: [String] {
         guard let item else { return [] }
@@ -151,7 +155,7 @@ final class ItemViewModel: ObservableObject {
     }
     
     func loadMarkIfNeeded() {
-        guard mark == nil,
+        guard 
             let item
         else { return }
         loadMark(itemId: item.uuid, refresh: false)
@@ -164,56 +168,66 @@ final class ItemViewModel: ObservableObject {
 
     func cleanup() {
         loadTask?.cancel()
-        markLoadTask?.cancel()
+        // markLoadTask?.cancel()
         loadTask = nil
-        markLoadTask = nil
+        // markLoadTask = nil
     }
 
     private func loadMark(itemId: String, refresh: Bool) {
-        markLoadTask?.cancel()
+        guard let accountsManager else { return }
 
-        markLoadTask = Task {
-            guard let accountsManager else {
-                logger.debug("No accountsManager available")
-                return
-            }
-
-            if !Task.isCancelled {
-                if refresh {
-                    isRefreshing = true
-                } else {
-                    isMarkLoading = true
-                }
-            }
-
-            defer {
-                if !Task.isCancelled {
-                    isMarkLoading = false
-                    isRefreshing = false
-                }
-            }
-
-            do {
-                if !refresh,
-                    let cached = try? await getCachedMark(itemId: itemId)
-                {
-                    if !Task.isCancelled {
-                        mark = cached
-                    }
-                }
-
-                let endpoint = MarkEndpoint.get(itemUUID: itemId)
-                let result = try await accountsManager.currentClient.fetch(
-                    endpoint, type: MarkSchema.self)
-
-                if !Task.isCancelled {
-                    mark = result
-                    try? await cacheMark(result, itemId: itemId)
-                }
-            } catch {
-                await handleMarkError(error, itemId: itemId)
-            }
+        if markDataController == nil {
+            markDataController = markDataProvider.dataController(for: itemId, appAccountsManager: accountsManager)
         }
+
+        if refresh {
+            markDataController?.updateForm(for: itemId)
+        }
+
+        // markLoadTask?.cancel()
+
+        // markLoadTask = Task {
+        //     guard let accountsManager else {
+        //         logger.debug("No accountsManager available")
+        //         return
+        //     }
+
+        //     if !Task.isCancelled {
+        //         if refresh {
+        //             isRefreshing = true
+        //         } else {
+        //             isMarkLoading = true
+        //         }
+        //     }
+
+        //     defer {
+        //         if !Task.isCancelled {
+        //             isMarkLoading = false
+        //             isRefreshing = false
+        //         }
+        //     }
+
+        //     do {
+        //         if !refresh,
+        //             let cached = try? await getCachedMark(itemId: itemId)
+        //         {
+        //             if !Task.isCancelled {
+        //                 mark = cached
+        //             }
+        //         }
+
+        //         let endpoint = MarkEndpoint.get(itemUUID: itemId)
+        //         let result = try await accountsManager.currentClient.fetch(
+        //             endpoint, type: MarkSchema.self)
+
+        //         if !Task.isCancelled {
+        //             mark = result
+        //             try? await cacheMark(result, itemId: itemId)
+        //         }
+        //     } catch {
+        //         await handleMarkError(error, itemId: itemId)
+        //     }
+        // }
     }
 
     private func updateLoadingState(refresh: Bool) {
@@ -267,11 +281,11 @@ final class ItemViewModel: ObservableObject {
                 statusCode == 404
             {
                 // 404 means no mark exists, which is a normal case
-                mark = nil
+                markDataController?.mark = nil
                 logger.debug("No mark found for item: \(itemId)")
             } else {
                 // Only show error if we don't have cached data
-                if mark == nil {
+                if markDataController?.mark == nil {
                     self.error = error
                     self.showError = true
                     logger.error(
