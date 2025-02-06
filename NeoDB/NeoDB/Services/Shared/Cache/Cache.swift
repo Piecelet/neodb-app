@@ -130,8 +130,8 @@ extension CacheService {
     
     // MARK: - Marks Caching
     
-    func cacheMark(_ mark: MarkSchema, itemID: String, accountID: String) async throws {
-        let key = Keys.mark(itemID: itemID, accountID: accountID)
+    func cacheMark(_ mark: MarkSchema, accountID: String) async throws {
+        let key = Keys.mark(itemID: mark.item.id, accountID: accountID)
         try await cache(mark, forKey: key, type: MarkSchema.self)
     }
 

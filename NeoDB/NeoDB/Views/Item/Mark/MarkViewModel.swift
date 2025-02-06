@@ -40,7 +40,7 @@ class MarkViewModel: ObservableObject {
             self.rating = mark.ratingGrade
             self.comment = mark.commentText ?? ""
             self.visibility = mark.visibility
-            if let date = mark.createdTime.asDate {
+            if let date = mark.createdTime?.asDate {
                 self.createdTime = date
             }
         }
@@ -66,7 +66,8 @@ class MarkViewModel: ObservableObject {
                 ratingGrade: rating == 0 ? nil : rating,
                 tags: [],
                 createdTime: changeTime ? ServerDate.from(createdTime) : nil,
-                postToFediverse: postToFediverse
+                postToFediverse: postToFediverse,
+                postId: existingMark?.postId
             )
 
             let endpoint = MarkEndpoint.mark(itemId: item.uuid, mark: mark)
