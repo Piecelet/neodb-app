@@ -23,8 +23,8 @@ extension CacheService {
         }
         
         // Marks related
-        static func mark(key: String, itemUUID: String) -> String {
-            "mark_\(key)_\(itemUUID)"
+        static func mark(itemID: String, accountID: String) -> String {
+            "mark_\(accountID)_\(itemID)"
         }
         
         // Library related
@@ -130,18 +130,18 @@ extension CacheService {
     
     // MARK: - Marks Caching
     
-    func cacheMark(_ mark: MarkSchema, key: String, itemUUID: String, instance: String? = nil) async throws {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func cacheMark(_ mark: MarkSchema, itemID: String, accountID: String) async throws {
+        let key = Keys.mark(itemID: itemID, accountID: accountID)
         try await cache(mark, forKey: key, type: MarkSchema.self)
     }
 
-    func retrieveMark(key: String, itemUUID: String) async throws -> MarkSchema? {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func retrieveMark(itemID: String, accountID: String) async throws -> MarkSchema? {
+        let key = Keys.mark(itemID: itemID, accountID: accountID)
         return try await retrieve(forKey: key, type: MarkSchema.self)
     }
     
-    func removeMark(key: String, itemUUID: String) async throws {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func removeMark(itemID: String, accountID: String) async throws {
+        let key = Keys.mark(itemID: itemID, accountID: accountID)
         try await remove(forKey: key, type: MarkSchema.self)
     }
     
