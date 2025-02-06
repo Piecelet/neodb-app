@@ -214,10 +214,13 @@ final class LibraryViewModel: ObservableObject {
         if !Task.isCancelled {
             updateShelfState(type: type) { state in
                 if let accountsManager = self.accountsManager {
-                    state.items = cached.data.map { mark in
+                    // 确保为每个 mark 创建新的 controller
+                    let newItems = cached.data.map { mark in
                         let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                        controller.updateForm(for: mark)
                         return ShelfMarkItem(mark: mark, controller: controller)
                     }
+                    state.items = newItems
                 }
                 state.totalPages = cached.pages
                 state.state = .loaded
@@ -230,20 +233,10 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Private Methods
     private func updateShelfState(type: ShelfType, update: (inout ShelfItemsState) -> Void) {
         var state = shelfStates[type] ?? ShelfItemsState()
-            
-        // Initialize MarkDataControllers for cached items
-        if let accountsManager = accountsManager {
-            markDataProvider.updateDataControllers(for: state.items.map { $0.mark }, appAccountsManager: accountsManager)
-            for item in state.items {
-                let markDataController = markDataProvider.dataController(for: item.mark, appAccountsManager: accountsManager) 
-                    state.items.append(ShelfMarkItem(mark: item.mark, controller: markDataController))
-                
-            }
-        }
-
+        
+        // 只应用状态更新，不处理 controllers
         update(&state)
         shelfStates[type] = state
-
     }
     
     private func updateLoadingState(type: ShelfType, refresh: Bool) {
@@ -285,6 +278,7 @@ final class LibraryViewModel: ObservableObject {
         if !Task.isCancelled {
             // 更新 UI 状态
             updateShelfState(type: type) { state in
+                // 确保为每个 mark 创建新的 controller
                 let newItems = result.data.map { mark in
                     let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
                     return ShelfMarkItem(mark: mark, controller: controller)
