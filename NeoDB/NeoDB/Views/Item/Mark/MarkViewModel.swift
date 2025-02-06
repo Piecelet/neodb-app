@@ -70,7 +70,7 @@ class MarkViewModel: ObservableObject {
                 postId: existingMark?.postId
             )
 
-            let endpoint = MarkEndpoint.mark(itemId: item.uuid, mark: mark)
+            let endpoint = MarkEndpoint.mark(itemUUID: item.uuid, mark: mark)
             _ = try await accountsManager.currentClient.fetch(
                 endpoint, type: MessageSchema.self)
 
@@ -91,7 +91,7 @@ class MarkViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let endpoint = MarkEndpoint.delete(itemId: item.uuid)
+            let endpoint = MarkEndpoint.delete(itemUUID: item.uuid)
             _ = try await accountsManager.currentClient.fetch(
                 endpoint, type: MessageSchema.self)
 

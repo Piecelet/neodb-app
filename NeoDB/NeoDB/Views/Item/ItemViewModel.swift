@@ -202,7 +202,7 @@ final class ItemViewModel: ObservableObject {
                     }
                 }
 
-                let endpoint = MarkEndpoint.get(itemId: itemId)
+                let endpoint = MarkEndpoint.get(itemUUID: itemId)
                 let result = try await accountsManager.currentClient.fetch(
                     endpoint, type: MarkSchema.self)
 
@@ -291,13 +291,12 @@ final class ItemViewModel: ObservableObject {
 
     private func getCachedMark(itemId: String) async throws -> MarkSchema? {
         // let cacheKey = "mark_\(itemId)"
-        return try await cacheService.retrieveMark(
-            key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId)
+        return try await cacheService.retrieveMark(itemID: itemId, accountID: accountsManager?.currentAccount.id ?? "default")
     }
 
     private func cacheMark(_ mark: MarkSchema, itemId: String) async throws {
         try await cacheService.cacheMark(
-            mark, key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId, instance: accountsManager?.currentAccount.instance)
+            mark, accountID: accountsManager?.currentAccount.id ?? "default")
     }
 
     private func refreshItemInBackground(id: String, category: ItemCategory)

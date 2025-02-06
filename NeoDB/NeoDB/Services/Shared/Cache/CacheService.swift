@@ -6,7 +6,7 @@ import Cache
 class CacheService {
     static let shared = CacheService()
     
-    private init() {}  // 确保只能通过 shared 访问
+    init() {}  // 确保只能通过 shared 访问
     
     private let logger = Logger.cache
     
