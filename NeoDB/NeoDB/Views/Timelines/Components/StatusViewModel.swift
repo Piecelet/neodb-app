@@ -50,8 +50,8 @@ class StatusViewModel: ObservableObject {
         Task {
             do {
                 let endpoint = newReblogged ? 
-                    StatusesEndpoints.reblog(id: status.id) :
-                    StatusesEndpoints.unreblog(id: status.id)
+                    StatusesEndpoint.reblog(id: status.id) :
+                    StatusesEndpoint.unreblog(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
                 status = updatedStatus
@@ -87,8 +87,8 @@ class StatusViewModel: ObservableObject {
         Task {
             do {
                 let endpoint = newFavorited ? 
-                    StatusesEndpoints.favorite(id: status.id) :
-                    StatusesEndpoints.unfavorite(id: status.id)
+                    StatusesEndpoint.favorite(id: status.id) :
+                    StatusesEndpoint.unfavorite(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
                 status = updatedStatus
@@ -123,8 +123,8 @@ class StatusViewModel: ObservableObject {
         Task {
             do {
                 let endpoint = newBookmarked ? 
-                    StatusesEndpoints.bookmark(id: status.id) :
-                    StatusesEndpoints.unbookmark(id: status.id)
+                    StatusesEndpoint.bookmark(id: status.id) :
+                    StatusesEndpoint.unbookmark(id: status.id)
                 
                 let updatedStatus = try await accountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
                 status = updatedStatus

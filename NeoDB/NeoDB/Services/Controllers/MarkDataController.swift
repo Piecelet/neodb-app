@@ -22,12 +22,12 @@ final class MarkDataControllerProvider {
     private var dictionary: NSMutableDictionary = [:]
 
     private struct DictionaryKey: Hashable {
-        let uuid: String
+        let itemUUID: String
         let accountID: String
     }
 
     func dataController(for uuid: String, appAccountsManager: AppAccountsManager) -> MarkDataController {
-        let key = DictionaryKey(uuid: uuid, accountID: appAccountsManager.currentAccount.id)
+        let key = DictionaryKey(itemUUID: uuid, accountID: appAccountsManager.currentAccount.id)
         if let controller = dictionary[key] as? MarkDataController {
             return controller
         }
@@ -37,7 +37,7 @@ final class MarkDataControllerProvider {
     }
 
     func dataController(for mark: MarkSchema, appAccountsManager: AppAccountsManager) -> MarkDataController {
-        let key = DictionaryKey(uuid: mark.item.uuid, accountID: appAccountsManager.currentAccount.id)
+        let key = DictionaryKey(itemUUID: mark.item.uuid, accountID: appAccountsManager.currentAccount.id)
         if let controller = dictionary[key] as? MarkDataController {
             return controller
         }
@@ -65,7 +65,7 @@ final class MarkDataControllerProvider {
 final class MarkDataController: MarkDataControlling {
     private let uuid: String
     private let appAccountsManager: AppAccountsManager
-    private let logger = Logger.views.mark.mark
+    private let logger = Logger.dataControllers.markDataController
 
     @Published var mark: MarkSchema?
     @Published var shelfType: ShelfType = .wishlist

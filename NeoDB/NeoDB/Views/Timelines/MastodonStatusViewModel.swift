@@ -81,7 +81,7 @@ class MastodonStatusViewModel: ObservableObject {
                     throw NetworkError.unauthorized
                 }
                 
-                let endpoint = StatusesEndpoints.status(id: id)
+                let endpoint = StatusesEndpoint.status(id: id)
                 logger.debug("Fetching status with endpoint: \(String(describing: endpoint))")
                 
                 let result = try await accountsManager.currentClient.fetch(

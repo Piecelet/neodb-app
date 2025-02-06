@@ -139,6 +139,12 @@ extension Logger {
         static let accountsManager = Logger(
             subsystem: subsystem, category: "manager.accountsManager")
     }
+
+    // MARK: - Data Controllers
+    enum dataControllers {
+        static let markDataController = Logger(
+            subsystem: subsystem, category: "dataControllers.markDataController")
+    }
 }
 
 // MARK: - Convenience Methods
