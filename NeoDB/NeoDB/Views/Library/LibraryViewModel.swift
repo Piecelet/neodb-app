@@ -209,12 +209,7 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Mark Management
     func getMarkDataController(for uuid: String) -> MarkDataController? {
         guard let accountsManager = accountsManager else { return nil }
-        if let controller = markDataControllers[uuid] {
-            return controller
-        }
-        let controller = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
-        markDataControllers[uuid] = controller
-        return controller
+        return markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
     }
     
     private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
@@ -227,12 +222,7 @@ final class LibraryViewModel: ObservableObject {
             
             // Initialize MarkDataControllers for cached items
             if let accountsManager = accountsManager {
-                let uuids = cached.data.map { $0.item.uuid }
-                for uuid in uuids {
-                    if markDataControllers[uuid] == nil {
-                        markDataControllers[uuid] = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
-                    }
-                }
+                markDataProvider.updateDataController(for: cached.data, appAccountsManager: accountsManager)
             }
             
             logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
@@ -296,12 +286,7 @@ final class LibraryViewModel: ObservableObject {
             }
             
             // Initialize MarkDataControllers for new items
-            let uuids = result.data.map { $0.item.uuid }
-            for uuid in uuids {
-                if markDataControllers[uuid] == nil {
-                    markDataControllers[uuid] = markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
-                }
-            }
+            markDataProvider.updateDataController(for: result.data, appAccountsManager: accountsManager)
             
             // 只在第一页时缓存数据
             let state = shelfStates[type] ?? ShelfItemsState()

@@ -68,7 +68,7 @@ struct LibraryView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw 
     #endif
 
     private var headerView: some View {
