@@ -13,15 +13,16 @@ import SwiftUI
 class MarkViewModel: ObservableObject {
     private let logger = Logger.views.mark.mark
     private let markDataProvider = MarkDataControllerProvider.shared
-    private var markDataController: MarkDataController?
+    
+    var markDataController: MarkDataController?
 
     let item: (any ItemProtocol)
-    let existingMark: MarkSchema?
+    // let existingMark: MarkSchema?
 
-    @Published var shelfType: ShelfType
-    @Published var rating: Int?
-    @Published var comment: String = ""
-    @Published var visibility: MarkVisibility = .pub
+    // @Published var shelfType: ShelfType
+    // @Published var rating: Int?
+    // @Published var comment: String = ""
+    // @Published var visibility: MarkVisibility = .pub
     @AppStorage(\.mark.postToFediverse) public var postToFediverse: Bool = true
     @Published var createdTime: Date = Date()
     @Published var changeTime = false
@@ -40,22 +41,22 @@ class MarkViewModel: ObservableObject {
 
     init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
         self.item = item
-        self.existingMark = mark
-        self.shelfType = shelfType ?? .wishlist
+        // self.existingMark = mark
+        // self.shelfType = shelfType ?? .wishlist
 
-        if let mark = mark {
-            self.shelfType = mark.shelfType
-            self.rating = mark.ratingGrade
-            self.comment = mark.commentText ?? ""
-            self.visibility = mark.visibility
-            if let date = mark.createdTime?.asDate {
-                self.createdTime = date
-            }
-        }
+        // if let mark = mark {
+        //     self.shelfType = mark.shelfType
+        //     self.rating = mark.ratingGrade
+        //     self.comment = mark.commentText ?? ""
+        //     self.visibility = mark.visibility
+        //     if let date = mark.createdTime?.asDate {
+        //         self.createdTime = date
+        //     }
+        // }
     }
 
     var title: String {
-        item.displayTitle ?? item.title ?? (existingMark == nil ? 
+        item.displayTitle ?? item.title ?? (markDataController?.mark == nil ? 
             String(localized: "mark_title", table: "Item") : 
             String(localized: "mark_edit_title", table: "Item"))
     }
@@ -66,18 +67,18 @@ class MarkViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let mark = MarkInSchema(
-                shelfType: shelfType,
-                visibility: visibility,
-                commentText: comment.isEmpty ? nil : comment,
-                ratingGrade: rating == 0 ? nil : rating,
-                tags: [],
-                createdTime: changeTime ? ServerDate.from(createdTime) : nil,
-                postToFediverse: postToFediverse,
-                postId: existingMark?.postId
-            )
+            // let mark = MarkInSchema(
+            //     shelfType: markDataController?.shelfType,
+            //     visibility: markDataController?.visibility,
+            //     commentText: markDataController?.commentText.isEmpty ?? true ? nil : markDataController?.commentText,
+            //     ratingGrade: markDataController?.rating == 0 ? nil : markDataController?.rating,
+            //     tags: [],
+            //     createdTime: changeTime ? ServerDate.from(createdTime) : nil,
+            //     postToFediverse: postToFediverse,
+            //     postId: markDataController?.mark?.postId
+            // )
 
-            await markDataController?.updateMark(for: mark)
+            await markDataController?.updateMark(changedTime: changeTime ? ServerDate.from(createdTime) : nil, postToFediverse: postToFediverse)
             isDismissed = true
         } catch {
             self.error = error

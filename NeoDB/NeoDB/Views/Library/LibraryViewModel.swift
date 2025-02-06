@@ -24,7 +24,6 @@ final class LibraryViewModel: ObservableObject {
     private let logger = Logger.views.library
     private let cacheService = CacheService()
     let markDataProvider = MarkDataControllerProvider.shared
-    private var markDataControllers: [String: MarkDataController] = [:]
     
     // MARK: - Task Management
     private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
@@ -64,7 +63,6 @@ final class LibraryViewModel: ObservableObject {
                     .complete: ShelfItemsState(),
                     .dropped: ShelfItemsState()
                 ]
-                markDataControllers.removeAll()
             }
         }
     }
@@ -203,13 +201,6 @@ final class LibraryViewModel: ObservableObject {
     func cleanup() {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
-        markDataControllers.removeAll()
-    }
-    
-    // MARK: - Mark Management
-    func getMarkDataController(for uuid: String) -> MarkDataController? {
-        guard let accountsManager = accountsManager else { return nil }
-        return markDataProvider.dataController(for: uuid, appAccountsManager: accountsManager)
     }
     
     private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
@@ -220,11 +211,6 @@ final class LibraryViewModel: ObservableObject {
                 state.state = .loaded
             }
             
-            // Initialize MarkDataControllers for cached items
-            if let accountsManager = accountsManager {
-                markDataProvider.updateDataController(for: cached.data, appAccountsManager: accountsManager)
-            }
-            
             logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
         }
     }
@@ -232,8 +218,15 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Private Methods
     private func updateShelfState(type: ShelfType, update: (inout ShelfItemsState) -> Void) {
         var state = shelfStates[type] ?? ShelfItemsState()
+            
+        // Initialize MarkDataControllers for cached items
+        if let accountsManager = accountsManager {
+            markDataProvider.updateDataControllers(for: state.items, appAccountsManager: accountsManager)
+        }
+        
         update(&state)
         shelfStates[type] = state
+
     }
     
     private func updateLoadingState(type: ShelfType, refresh: Bool) {
@@ -273,8 +266,6 @@ final class LibraryViewModel: ObservableObject {
     
     private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
         if !Task.isCancelled {
-            // 首先更新 MarkDataController
-            markDataProvider.updateDataController(for: result.data, appAccountsManager: accountsManager)
             
             // 然后更新 UI 状态
             updateShelfState(type: type) { state in

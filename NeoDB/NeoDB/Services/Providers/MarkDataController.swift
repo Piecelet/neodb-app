@@ -53,7 +53,7 @@ final class MarkDataControllerProvider {
         }
     }
 
-    func updateDataController(for marks: [MarkSchema], appAccountsManager: AppAccountsManager) {
+    func updateDataControllers(for marks: [MarkSchema], appAccountsManager: AppAccountsManager) {
         for mark in marks {
             let controller = dataController(for: mark, appAccountsManager: appAccountsManager)
             controller.updateForm(for: mark)
@@ -167,6 +167,27 @@ final class MarkDataController: MarkDataControlling {
                 self.visibility = nil
                 self.createdTime = nil
             }
+        }
+    }
+
+    func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async {
+        do {
+            if let shelfType = self.shelfType, let visibility = self.visibility, let commentText = self.commentText, let ratingGrade = self.ratingGrade {
+                let markIn = MarkInSchema(
+                    shelfType: shelfType,
+                    visibility: visibility,
+                    commentText: commentText,
+                    ratingGrade: ratingGrade,
+                    tags: tags,
+                    createdTime: changedTime,
+                    postToFediverse: postToFediverse,
+                    postId: nil
+                )
+                let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: markIn)
+                _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+            }
+        } catch {
+            logger.error("Failed to update mark: \(error.localizedDescription)")
         }
     }
 

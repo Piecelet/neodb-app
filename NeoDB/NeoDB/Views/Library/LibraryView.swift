@@ -98,10 +98,6 @@ struct LibraryView: View {
                 .padding(.top, 4)
         }
         .contentShape(Rectangle())
-        .onAppear {
-            // 使用 mark 初始化 MarkDataController
-            _ = viewModel.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
-        }
     }
 
     private func itemDetails(for mark: MarkSchema) -> some View {
