@@ -88,10 +88,10 @@ struct LibraryView: View {
     }
 
     // MARK: - Item View Components
-    private func shelfItemView(mark: MarkSchema) -> some View {
+    private func shelfItemView(item: ShelfMarkItem) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            ItemCoverView(item: mark.item, size: .medium)
-            itemDetails(for: mark)
+            ItemCoverView(item: item.mark.item, size: .medium)
+            itemDetails(for: item)
         }
         .overlay(alignment: .topTrailing) {
             chevronIcon
@@ -100,22 +100,20 @@ struct LibraryView: View {
         .contentShape(Rectangle())
     }
 
-    private func itemDetails(for mark: MarkSchema) -> some View {
-        let controller = viewModel.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
-        
-        return VStack(alignment: .leading, spacing: 4) {
+    private func itemDetails(for item: ShelfMarkItem) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
             ItemTitleView(
-                item: mark.item,
+                item: item.mark.item,
                 mode: .title,
                 size: .medium
             )
 
-            ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
+            ItemRatingView(item: item.mark.item, size: .small, hideRatingCount: true)
 
-            ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
+            ItemDescriptionView(item: item.mark.item, mode: .brief, size: .medium)
 
             ItemMarkView(
-                markController: controller,
+                markController: item.controller,
                 size: .medium,
                 brief: true,
                 showEditButton: true
@@ -170,13 +168,13 @@ struct LibraryView: View {
     
     @ViewBuilder
     private func shelfItemsList(for state: ShelfItemsState, type: ShelfType) -> some View {
-        ForEach(state.items) { mark in
+        ForEach(state.items) { item in
             Button {
-                router.navigate(to: .itemDetailWithItem(item: mark.item))
+                router.navigate(to: .itemDetailWithItem(item: item.mark.item))
             } label: {
-                shelfItemView(mark: mark)
+                shelfItemView(item: item)
                     .onAppear {
-                        if mark.id == state.items.last?.id {
+                        if item.id == state.items.last?.id {
                             Task {
                                 await viewModel.loadNextPage(type: type)
                             }

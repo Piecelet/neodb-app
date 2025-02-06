@@ -30,7 +30,16 @@ struct MarkSchema: AnyMarkSchema {
     let ratingGrade: Int?
     let tags: [String]
     
-    var id: String { postId.map { String($0) } ?? item.id }
+    var id: String {
+        let components = [
+            postId.map { "p\($0)" },
+            "i\(item.id)",
+            "t\(shelfType.rawValue)",
+            createdTime.map { "c\($0)" }
+        ].compactMap { $0 }
+        
+        return components.joined(separator: "_")
+    }
     
     enum CodingKeys: CodingKey {
         case shelfType

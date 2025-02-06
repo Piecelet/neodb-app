@@ -7,8 +7,15 @@ enum LibraryState {
     case error
 }
 
+struct ShelfMarkItem: Identifiable {
+    let mark: MarkSchema
+    let controller: MarkDataController
+    
+    var id: String { mark.id }
+}
+
 struct ShelfItemsState {
-    var items: [MarkSchema] = []
+    var items: [ShelfMarkItem] = []
     var state: LibraryState = .loading
     var currentPage = 1
     var totalPages = 1
@@ -206,7 +213,12 @@ final class LibraryViewModel: ObservableObject {
     private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
         if !Task.isCancelled {
             updateShelfState(type: type) { state in
-                state.items = cached.data
+                if let accountsManager = self.accountsManager {
+                    state.items = cached.data.map { mark in
+                        let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                        return ShelfMarkItem(mark: mark, controller: controller)
+                    }
+                }
                 state.totalPages = cached.pages
                 state.state = .loaded
             }
@@ -221,9 +233,14 @@ final class LibraryViewModel: ObservableObject {
             
         // Initialize MarkDataControllers for cached items
         if let accountsManager = accountsManager {
-            markDataProvider.updateDataControllers(for: state.items, appAccountsManager: accountsManager)
+            markDataProvider.updateDataControllers(for: state.items.map { $0.mark }, appAccountsManager: accountsManager)
+            for item in state.items {
+                let markDataController = markDataProvider.dataController(for: item.mark, appAccountsManager: accountsManager) 
+                    state.items.append(ShelfMarkItem(mark: item.mark, controller: markDataController))
+                
+            }
         }
-        
+
         update(&state)
         shelfStates[type] = state
 
@@ -266,15 +283,19 @@ final class LibraryViewModel: ObservableObject {
     
     private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
         if !Task.isCancelled {
-            
-            // 然后更新 UI 状态
+            // 更新 UI 状态
             updateShelfState(type: type) { state in
+                let newItems = result.data.map { mark in
+                    let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                    return ShelfMarkItem(mark: mark, controller: controller)
+                }
+                
                 if state.currentPage == 1 {
-                    state.items = result.data
+                    state.items = newItems
                 } else {
                     let existingIds = Set(state.items.map { $0.id })
-                    let newItems = result.data.filter { !existingIds.contains($0.id) }
-                    state.items.append(contentsOf: newItems)
+                    let filteredNewItems = newItems.filter { !existingIds.contains($0.id) }
+                    state.items.append(contentsOf: filteredNewItems)
                 }
                 state.totalPages = result.pages
                 state.state = .loaded

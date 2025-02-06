@@ -115,8 +115,10 @@ struct ItemMarkView: View {
                 .buttonStyle(.borderless)
                 .accentColor(.gray)
                 .foregroundStyle(.secondary)
-                .frame(width: 40, height: (markController.commentText.isEmpty) ? 28 : 32)
+                .frame(width: 40, height: (markController.ratingGrade != nil
+                                           && markController.commentText.isEmpty) ? 28 : 32)
                 .labelStyle(.iconOnly)
+                // .background(.grayBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
