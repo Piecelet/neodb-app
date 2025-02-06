@@ -17,12 +17,28 @@ class MarkViewModel: ObservableObject {
     var markDataController: MarkDataController?
 
     let item: (any ItemProtocol)
-    // let existingMark: MarkSchema?
+    let existingMark: MarkSchema?
 
-    // @Published var shelfType: ShelfType
-    // @Published var rating: Int?
-    // @Published var comment: String = ""
-    // @Published var visibility: MarkVisibility = .pub
+    @Published var shelfType: ShelfType {
+        didSet {
+            markDataController?.shelfType = shelfType
+        }
+    }
+    @Published var rating: Int? {
+        didSet {
+            markDataController?.ratingGrade = rating
+        }
+    }
+    @Published var comment: String = "" {
+        didSet {
+            markDataController?.commentText = comment
+        }
+    }
+    @Published var visibility: MarkVisibility = .pub {
+        didSet {
+            markDataController?.visibility = visibility
+        }
+    }
     @AppStorage(\.mark.postToFediverse) public var postToFediverse: Bool = true
     @Published var createdTime: Date = Date()
     @Published var changeTime = false
@@ -34,15 +50,24 @@ class MarkViewModel: ObservableObject {
     var accountsManager: AppAccountsManager? {
         didSet {
             if let accountsManager = accountsManager {
-                markDataController = markDataProvider.dataController(for: item.uuid, appAccountsManager: accountsManager)
+                if let mark = existingMark {
+                    markDataController = markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                } else {
+                    markDataController = markDataProvider.dataController(for: item.uuid, appAccountsManager: accountsManager)
+                }
+                self.shelfType = markDataController?.shelfType ?? .wishlist
+                self.rating = markDataController?.ratingGrade
+                self.comment = markDataController?.commentText ?? ""
+                self.visibility = markDataController?.visibility ?? .pub
+                self.createdTime = markDataController?.createdTime?.asDate ?? Date()
             }
         }
     }
 
     init(item: any ItemProtocol, mark: MarkSchema? = nil, shelfType: ShelfType? = nil) {
         self.item = item
-        // self.existingMark = mark
-        // self.shelfType = shelfType ?? .wishlist
+        self.existingMark = mark
+        self.shelfType = shelfType ?? .wishlist
 
         // if let mark = mark {
         //     self.shelfType = mark.shelfType

@@ -62,8 +62,8 @@ struct MarkView: View {
 
                 TabView(
                     selection: Binding(
-                        get: { viewModel.markDataController?.shelfType },
-                        set: { viewModel.markDataController?.shelfType = $0 }
+                        get: { viewModel.shelfType },
+                        set: { viewModel.shelfType = $0 }
                     )
                 ) {
                     ForEach(ShelfType.allCases, id: \.self) { type in
@@ -137,10 +137,10 @@ struct MarkView: View {
         TopTabBarView(
             items: ShelfType.allCases,
             selection: Binding(
-                get: { viewModel.markDataController?.shelfType },
+                get: { viewModel.shelfType },
                 set: { newValue in
-                    if viewModel.markDataController?.shelfType != newValue {
-                        viewModel.markDataController?.shelfType = newValue
+                    if viewModel.shelfType != newValue {
+                        viewModel.shelfType = newValue
                         HapticFeedback.impact(.light)
                     }
                 }
@@ -156,7 +156,7 @@ struct MarkView: View {
 
     private var markContentViewWithRating: some View {
         markContentViewBase {
-            StarRatingView(inputRating: $viewModel.markDataController?.rating)
+            StarRatingView(inputRating: $viewModel.rating)
                 .frame(maxWidth: .infinity)
         }
     }
@@ -169,7 +169,7 @@ struct MarkView: View {
             VStack {
                 header()
 
-                TextEditor(text: $viewModel.markDataController?.commentText)
+                TextEditor(text: $viewModel.comment)
                     .frame(
                         minHeight: detentLevel == .detailed
                             ? 200 : paddingTop ? 100 : 50,
@@ -177,7 +177,7 @@ struct MarkView: View {
                     )
                     .fixedSize(horizontal: false, vertical: true)
                     .overlay {
-                        if viewModel.markDataController?.commentText.isEmpty ?? true {
+                        if viewModel.comment.isEmpty {
                             TextEditor(
                                 text: .constant(
                                     String(
@@ -191,7 +191,7 @@ struct MarkView: View {
                             .disabled(true)
                         }
                     }
-                    .scrollDisabled(viewModel.markDataController?.commentText.isEmpty ?? true)
+                    .scrollDisabled(viewModel.comment.isEmpty)
                     .padding(10)
                     .background(.secondary.opacity(0.5))
                     .cornerRadius(8)
@@ -212,14 +212,14 @@ struct MarkView: View {
     private var advancedOptionsLabel: some View {
         HStack {
             Label {
-                Text(viewModel.markDataController?.visibility.displayText ?? "")
+                Text(viewModel.visibility.displayText)
             } icon: {
-                Image(symbol: viewModel.markDataController?.visibility.symbolImage ?? "")
+                Image(symbol: viewModel.visibility.symbolImage)
                     .padding(.trailing, -6)
             }
             .labelStyle(.titleAndIcon)
 
-            if viewModel.markDataController?.postToFediverse ?? false {
+            if viewModel.postToFediverse {
                 Label {
                     Text(
                         "mark_share_fediverse_enabled_label",
