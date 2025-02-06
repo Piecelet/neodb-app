@@ -48,13 +48,15 @@ final class MarkDataControllerProvider {
 
     func updateDataControllers(for UUIDs: [String], appAccountsManager: AppAccountsManager) {
         for uuid in UUIDs {
-            _ = dataController(for: uuid, appAccountsManager: appAccountsManager)
+            let controller = dataController(for: uuid, appAccountsManager: appAccountsManager)
+            controller.updateForm(for: uuid)
         }
     }
 
     func updateDataController(for marks: [MarkSchema], appAccountsManager: AppAccountsManager) {
         for mark in marks {
-            _ = dataController(for: mark, appAccountsManager: appAccountsManager)
+            let controller = dataController(for: mark, appAccountsManager: appAccountsManager)
+            controller.updateForm(for: mark)
         }
     }
 }
@@ -83,6 +85,23 @@ final class MarkDataController: MarkDataControlling {
         }
     }
 
+    func updateForm(for mark: MarkSchema) {
+        self.mark = mark
+        self.shelfType = mark.shelfType
+        self.commentText = mark.commentText
+        self.ratingGrade = mark.ratingGrade
+        self.visibility = mark.visibility
+        self.createdTime = mark.createdTime
+        self.tags = mark.tags
+    }
+
+    func updateForm(for UUID: String) {
+        self.mark = nil
+        Task {
+            await getMark()
+        }
+    }
+
     func getMark() async {
         if let mark = mark {
             self.shelfType = mark.shelfType
@@ -96,7 +115,8 @@ final class MarkDataController: MarkDataControlling {
 
         do {
             let endpoint = MarkEndpoint.get(itemUUID: uuid)
-            mark = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+            let fetchedMark = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+            updateForm(for: fetchedMark)
         } catch {
             logger.error("Failed to get mark: \(error.localizedDescription)")
         }
@@ -109,7 +129,7 @@ final class MarkDataController: MarkDataControlling {
         self.commentText = mark.commentText
         self.ratingGrade = mark.ratingGrade
         self.visibility = mark.visibility
-        self.createdTime = mark.createdTime
+        self.createdTime = mark.createdTime ?? previousMark?.createdTime
         self.tags = mark.tags
         do {
             let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: mark)
@@ -120,7 +140,7 @@ final class MarkDataController: MarkDataControlling {
                     visibility: mark.visibility,
                     postId: previousMark.postId,
                     item: previousMark.item,
-                    createdTime: mark.createdTime,
+                    createdTime: mark.createdTime ?? previousMark.createdTime,
                     commentText: mark.commentText,
                     ratingGrade: mark.ratingGrade,
                     tags: mark.tags
@@ -146,7 +166,6 @@ final class MarkDataController: MarkDataControlling {
                 self.ratingGrade = nil
                 self.visibility = nil
                 self.createdTime = nil
-                self.tags = []
             }
         }
     }
