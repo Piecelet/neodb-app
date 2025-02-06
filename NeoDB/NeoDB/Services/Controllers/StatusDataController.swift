@@ -57,7 +57,8 @@ final class StatusDataControllerProvider {
 
 @MainActor
 final class StatusDataController: StatusDataControlling {
-  private let status: AnyMastodonStatus
+  // MARK: - Properties
+  nonisolated let status: AnyMastodonStatus
   private let appAccountsManager: AppAccountsManager
   private let logger = Logger.dataControllers.statusDataController
   private var unfetchedItem: (any ItemProtocol)? = nil
@@ -73,7 +74,7 @@ final class StatusDataController: StatusDataControlling {
   
   @Published var item: (any ItemProtocol)? = nil
 
-  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager, item: (any ItemProtocol)?) {
+  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager, item: (any ItemProtocol)? = nil) {
     self.status = status
     self.appAccountsManager = appAccountsManager
     self.unfetchedItem = item

@@ -122,6 +122,12 @@ struct ContentView: View {
                         detentLevel: detentLevel
                     )
                     .environmentObject(accountsManager)
+                case .editShelfItemWithDataController(let dataController, let shelfType, let detentLevel):
+                    MarkView(
+                        item: dataController.item, mark: dataController.mark, shelfType: shelfType,
+                        detentLevel: detentLevel
+                    )
+                    .environmentObject(accountsManager)
                 case .itemDetails(let item):
                     ItemDetailsSheet(item: item)
                 case .purchase:
@@ -184,6 +190,8 @@ struct ContentView: View {
             MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):
             MastodonStatusView(id: status.id, status: status)
+        case .statusDetailWithDataController(let dataController):
+            MastodonStatusView(id: dataController.status.id, status: dataController.status)
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):
