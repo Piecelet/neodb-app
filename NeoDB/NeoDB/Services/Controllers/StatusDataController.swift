@@ -59,6 +59,8 @@ final class StatusDataControllerProvider {
 final class StatusDataController: StatusDataControlling {
   private let status: AnyMastodonStatus
   private let appAccountsManager: AppAccountsManager
+  private let logger = Logger.dataControllers.statusDataController
+  private var unfetchedItem: (any ItemProtocol)? = nil
 
   @Published var isReblogged: Bool
   @Published var isBookmarked: Bool
@@ -68,10 +70,13 @@ final class StatusDataController: StatusDataControlling {
   @Published var favoritesCount: Int
   @Published var reblogsCount: Int
   @Published var repliesCount: Int
+  
+  @Published var item: (any ItemProtocol)? = nil
 
-  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager) {
+  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager, item: (any ItemProtocol)?) {
     self.status = status
     self.appAccountsManager = appAccountsManager
+    self.unfetchedItem = item
 
     isReblogged = status.reblogged == true
     isBookmarked = status.bookmarked == true
@@ -92,6 +97,17 @@ final class StatusDataController: StatusDataControlling {
     repliesCount = status.repliesCount
     favoritesCount = status.favouritesCount
     content = status.content
+  }
+
+  private func getItem() async {
+    guard let item = unfetchedItem else { return }
+    do {
+      let endpoint = ItemEndpoint.make(id: item.id, category: item.category)
+      let fetchedItem = try await appAccountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
+      self.item = fetchedItem
+    } catch {
+      logger.error("Failed to get item: \(error.localizedDescription)")
+    }
   }
 
   func toggleFavorite(remoteStatus: String?) async {

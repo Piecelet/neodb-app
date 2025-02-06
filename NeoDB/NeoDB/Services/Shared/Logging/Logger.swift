@@ -144,6 +144,8 @@ extension Logger {
     enum dataControllers {
         static let markDataController = Logger(
             subsystem: subsystem, category: "dataControllers.markDataController")
+        static let statusDataController = Logger(
+            subsystem: subsystem, category: "dataControllers.statusDataController")
     }
 }
 
