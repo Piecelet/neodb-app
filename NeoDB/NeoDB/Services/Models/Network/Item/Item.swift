@@ -88,6 +88,28 @@ struct ItemSchema: ItemProtocol {
 }
 
 extension ItemSchema {
+    static func makeTemporaryItemSchema(uuid: String) -> ItemSchema {
+        return ItemSchema(
+            id: uuid,
+            type: .unknown,
+            uuid: uuid,
+            url: "",
+            apiUrl: "",
+            category: .book,
+            parentUuid: nil,
+            displayTitle: nil,
+            externalResources: nil,
+            title: nil,
+            description: nil,
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: nil,
+            rating: nil,
+            ratingCount: nil,
+            brief: nil
+        )
+    }
+
     static func makeType(category: ItemCategory) -> any ItemProtocol.Type {
         switch category {
         case .book, .fanfic, .exhibition, .collection:

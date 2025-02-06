@@ -1,5 +1,5 @@
 //
-//  MarkDataControllerProvider.swift
+//  MarkDataController.swift
 //  NeoDB
 //
 //  Created by 甜檸Citron(lcandy2) on 2/7/25.
@@ -62,15 +62,16 @@ final class MarkDataControllerProvider {
 @MainActor
 final class MarkDataController: MarkDataControlling {
     private let uuid: String
-    private var mark: MarkSchema?
     private let appAccountsManager: AppAccountsManager
     private let logger = Logger.views.mark.mark
 
+    @Published var mark: MarkSchema?
     @Published var shelfType: ShelfType?
     @Published var commentText: String?
     @Published var ratingGrade: Int?
     @Published var visibility: MarkVisibility?
-    @Published var createdTime: Date?
+    @Published var createdTime: ServerDate?
+    @Published var tags: [String] = []
 
     init(uuid: String, appAccountsManager: AppAccountsManager, mark: MarkSchema? = nil) {
         self.uuid = uuid
@@ -83,7 +84,15 @@ final class MarkDataController: MarkDataControlling {
     }
 
     func getMark() async {
-        guard self.mark != nil else { return }
+        if let mark = mark {
+            self.shelfType = mark.shelfType
+            self.commentText = mark.commentText
+            self.ratingGrade = mark.ratingGrade
+            self.visibility = mark.visibility
+            self.createdTime = mark.createdTime
+            self.tags = mark.tags
+            return
+        }
 
         do {
             let endpoint = MarkEndpoint.get(itemUUID: uuid)
@@ -96,15 +105,30 @@ final class MarkDataController: MarkDataControlling {
     func updateMark(for mark: MarkInSchema) async {
         let previousMark = self.mark
 
-        shelfType = mark.shelfType
-        commentText = mark.commentText
-        ratingGrade = mark.ratingGrade
-        visibility = mark.visibility
-        createdTime = mark.createdTime?.asDate ?? Date()
+        self.shelfType = mark.shelfType
+        self.commentText = mark.commentText
+        self.ratingGrade = mark.ratingGrade
+        self.visibility = mark.visibility
+        self.createdTime = mark.createdTime
+        self.tags = mark.tags
         do {
-            let endpoint = MarkEndpoint.mark(itemUUID: uuid, mark: mark)
-            let result = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
-            self.mark = result
+            let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: mark)
+            _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+            if let previousMark = previousMark {
+                let newMark = MarkSchema(
+                    shelfType: mark.shelfType,
+                    visibility: mark.visibility,
+                    postId: previousMark.postId,
+                    item: previousMark.item,
+                    createdTime: mark.createdTime,
+                    commentText: mark.commentText,
+                    ratingGrade: mark.ratingGrade,
+                    tags: mark.tags
+                )
+                self.mark = newMark
+            } else {
+                self.mark = mark.toMarkSchema(item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
+            }
         } catch {
             logger.error("Failed to update mark: \(error.localizedDescription)")
             if let previousMark = previousMark {
@@ -113,7 +137,8 @@ final class MarkDataController: MarkDataControlling {
                 self.commentText = previousMark.commentText
                 self.ratingGrade = previousMark.ratingGrade
                 self.visibility = previousMark.visibility
-                self.createdTime = previousMark.createdTime?.asDate ?? Date()
+                self.createdTime = previousMark.createdTime
+                self.tags = previousMark.tags
             } else {
                 self.mark = nil
                 self.shelfType = nil
@@ -121,6 +146,7 @@ final class MarkDataController: MarkDataControlling {
                 self.ratingGrade = nil
                 self.visibility = nil
                 self.createdTime = nil
+                self.tags = []
             }
         }
     }

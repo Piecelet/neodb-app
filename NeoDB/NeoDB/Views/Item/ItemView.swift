@@ -180,7 +180,7 @@ struct ItemView: View {
                 ProgressView()
                     .frame(maxWidth: .infinity)
             } else if let mark = viewModel.mark {
-                ItemMarkView(mark: mark, size: .large)
+                // ItemMarkView(mark: mark, size: .large)
             }
         }
         .onChange(of: viewModel.isRefreshing) { newValue in

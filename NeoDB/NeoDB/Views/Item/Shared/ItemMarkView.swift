@@ -42,7 +42,7 @@ enum ItemMarkSize {
 struct ItemMarkView: View {
     @EnvironmentObject private var router: Router
     
-    let mark: MarkSchema
+    let markController: MarkDataController
     let size: ItemMarkSize
     var brief: Bool = false
     var showEditButton: Bool = false
@@ -51,32 +51,36 @@ struct ItemMarkView: View {
         Group {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: size.spacing) {
-                    if let rating = mark.ratingGrade {
+                    if let rating = markController.ratingGrade {
                         markRatingView(rating)
                         Spacer()
-                        Text(mark.createdTime?.relativeFormatted ?? "")
+                        Text(markController.createdTime?.relativeFormatted ?? "")
                             .foregroundStyle(.secondary)
-                        Image(symbol: mark.shelfType.symbolImage)
-                            .foregroundStyle(.secondary)
+                        if let shelfType = markController.shelfType {
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                        }
                     } else {
-                        Image(symbol: mark.shelfType.symbolImage)
-                            .foregroundStyle(.secondary)
-                        Text(mark.createdTime?.relativeFormatted ?? "")
+                        if let shelfType = markController.shelfType {
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(markController.createdTime?.relativeFormatted ?? "")
                             .foregroundStyle(.secondary)
                     }
                 }
                 .font(size.font)
                 
-                if let comment = mark.commentText, !comment.isEmpty {
+                if let comment = markController.commentText, !comment.isEmpty {
                     Text(comment)
                         .font(size.font)
                         .lineLimit(brief ? 2 : nil)
                 }
                 
-                if !mark.tags.isEmpty {
+                if !markController.tags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: size.spacing) {
-                            ForEach(mark.tags, id: \.self) { tag in
+                            ForEach(markController.tags, id: \.self) { tag in
                                 Text("#\(tag)")
                                     .font(.caption2)
                                     .foregroundStyle(.secondary)
@@ -92,11 +96,11 @@ struct ItemMarkView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(size.padding)
             .background(Color.grayBackground)
-            .padding(.bottom, (showEditButton && mark.ratingGrade != nil && mark.commentText == nil) ? 20 : 0)
+            .padding(.bottom, (showEditButton && markController.ratingGrade != nil && markController.commentText == nil) ? 20 : 0)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .overlay(alignment: .bottomTrailing) {
-            if showEditButton {
+            if showEditButton, let mark = markController.mark {
                 Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .ellipsis) {
                     router.presentSheet(.editShelfItem(mark: mark))
                     HapticFeedback.impact()

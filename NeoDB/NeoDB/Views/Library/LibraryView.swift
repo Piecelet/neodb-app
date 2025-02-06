@@ -99,13 +99,15 @@ struct LibraryView: View {
         }
         .contentShape(Rectangle())
         .onAppear {
-            // Initialize MarkDataController when item appears
-            _ = viewModel.getMarkDataController(for: mark.item.uuid)
+            // 使用 mark 初始化 MarkDataController
+            _ = viewModel.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
         }
     }
 
     private func itemDetails(for mark: MarkSchema) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        let controller = viewModel.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+        
+        return VStack(alignment: .leading, spacing: 4) {
             ItemTitleView(
                 item: mark.item,
                 mode: .title,
@@ -117,7 +119,11 @@ struct LibraryView: View {
             ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
 
             ItemMarkView(
-                mark: mark, size: .medium, brief: true, showEditButton: true)
+                markController: controller,
+                size: .medium,
+                brief: true,
+                showEditButton: true
+            )
         }
     }
 

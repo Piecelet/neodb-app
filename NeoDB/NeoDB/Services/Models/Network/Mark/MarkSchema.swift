@@ -45,3 +45,18 @@ struct MarkInSchema: AnyMarkSchema {
     
     var id: String { UUID().uuidString } // 临时 ID，因为这是输入数据
 }
+
+extension MarkInSchema {
+    func toMarkSchema(item: ItemSchema) -> MarkSchema {
+        MarkSchema(
+            shelfType: shelfType,
+            visibility: visibility,
+            postId: postId,
+            item: item,
+            createdTime: createdTime,
+            commentText: commentText,
+            ratingGrade: ratingGrade,
+            tags: tags
+        )
+    }
+}

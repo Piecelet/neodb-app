@@ -23,7 +23,7 @@ final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
     private let logger = Logger.views.library
     private let cacheService = CacheService()
-    private let markDataProvider = MarkDataControllerProvider.shared
+    let markDataProvider = MarkDataControllerProvider.shared
     private var markDataControllers: [String: MarkDataController] = [:]
     
     // MARK: - Task Management
@@ -273,6 +273,10 @@ final class LibraryViewModel: ObservableObject {
     
     private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
         if !Task.isCancelled {
+            // 首先更新 MarkDataController
+            markDataProvider.updateDataController(for: result.data, appAccountsManager: accountsManager)
+            
+            // 然后更新 UI 状态
             updateShelfState(type: type) { state in
                 if state.currentPage == 1 {
                     state.items = result.data
@@ -284,9 +288,6 @@ final class LibraryViewModel: ObservableObject {
                 state.totalPages = result.pages
                 state.state = .loaded
             }
-            
-            // Initialize MarkDataControllers for new items
-            markDataProvider.updateDataController(for: result.data, appAccountsManager: accountsManager)
             
             // 只在第一页时缓存数据
             let state = shelfStates[type] ?? ShelfItemsState()
