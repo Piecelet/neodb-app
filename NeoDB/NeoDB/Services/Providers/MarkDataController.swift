@@ -68,10 +68,10 @@ final class MarkDataController: MarkDataControlling {
     private let logger = Logger.views.mark.mark
 
     @Published var mark: MarkSchema?
-    @Published var shelfType: ShelfType?
-    @Published var commentText: String?
+    @Published var shelfType: ShelfType = .wishlist
+    @Published var commentText: String = ""
     @Published var ratingGrade: Int?
-    @Published var visibility: MarkVisibility?
+    @Published var visibility: MarkVisibility = .pub
     @Published var createdTime: ServerDate?
     @Published var tags: [String] = []
 
@@ -161,23 +161,23 @@ final class MarkDataController: MarkDataControlling {
                 self.tags = previousMark.tags
             } else {
                 self.mark = nil
-                self.shelfType = nil
-                self.commentText = nil
+                self.commentText = ""
                 self.ratingGrade = nil
-                self.visibility = nil
+                self.visibility = .pub
                 self.createdTime = nil
             }
         }
     }
 
     func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async {
+
         do {
-            if let shelfType = self.shelfType, let visibility = self.visibility, let commentText = self.commentText, let ratingGrade = self.ratingGrade {
+            if let ratingGrade = self.ratingGrade {
                 let markIn = MarkInSchema(
-                    shelfType: shelfType,
-                    visibility: visibility,
-                    commentText: commentText,
-                    ratingGrade: ratingGrade,
+                    shelfType: self.shelfType,
+                    visibility: self.visibility,
+                    commentText: self.commentText,
+                    ratingGrade: ratingGrade == 0 ? nil : ratingGrade,
                     tags: tags,
                     createdTime: changedTime,
                     postToFediverse: postToFediverse,
@@ -185,6 +185,24 @@ final class MarkDataController: MarkDataControlling {
                 )
                 let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: markIn)
                 _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+
+                if let previousMark = self.mark {
+                    let newMark = MarkSchema(
+                        shelfType: shelfType,
+                        visibility: visibility,
+                        postId: previousMark.postId,
+                        item: previousMark.item,
+                        createdTime: changedTime,
+                        commentText: commentText,
+                        ratingGrade: ratingGrade == 0 ? nil : ratingGrade,
+                        tags: tags
+                    )
+                    self.mark = newMark
+                } else {
+                    self.mark = markIn.toMarkSchema(item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
+                }
+            } else {
+                throw NetworkError.invalidURL
             }
         } catch {
             logger.error("Failed to update mark: \(error.localizedDescription)")

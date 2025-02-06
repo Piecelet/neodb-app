@@ -56,23 +56,19 @@ struct ItemMarkView: View {
                         Spacer()
                         Text(markController.createdTime?.relativeFormatted ?? "")
                             .foregroundStyle(.secondary)
-                        if let shelfType = markController.shelfType {
-                            Image(symbol: shelfType.symbolImage)
+                            Image(symbol: markController.shelfType.symbolImage)
                                 .foregroundStyle(.secondary)
-                        }
                     } else {
-                        if let shelfType = markController.shelfType {
-                            Image(symbol: shelfType.symbolImage)
+                            Image(symbol: markController.shelfType.symbolImage)
                                 .foregroundStyle(.secondary)
-                        }
                         Text(markController.createdTime?.relativeFormatted ?? "")
                             .foregroundStyle(.secondary)
                     }
                 }
                 .font(size.font)
                 
-                if let comment = markController.commentText, !comment.isEmpty {
-                    Text(comment)
+                if !markController.commentText.isEmpty {
+                    Text(markController.commentText)
                         .font(size.font)
                         .lineLimit(brief ? 2 : nil)
                 }
