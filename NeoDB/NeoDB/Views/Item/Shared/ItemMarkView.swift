@@ -41,7 +41,7 @@ enum ItemMarkSize {
 
 struct ItemMarkView: View {
     @EnvironmentObject private var router: Router
-    
+
     let markController: MarkDataController
     let size: ItemMarkSize
     var brief: Bool = false
@@ -54,25 +54,29 @@ struct ItemMarkView: View {
                     if let rating = markController.ratingGrade {
                         markRatingView(rating)
                         Spacer()
-                        Text(markController.createdTime?.relativeFormatted ?? "")
+                        Text(
+                            markController.createdTime?.relativeFormatted ?? ""
+                        )
+                        .foregroundStyle(.secondary)
+                        Image(symbol: markController.shelfType.symbolImage)
                             .foregroundStyle(.secondary)
-                            Image(symbol: markController.shelfType.symbolImage)
-                                .foregroundStyle(.secondary)
                     } else {
-                            Image(symbol: markController.shelfType.symbolImage)
-                                .foregroundStyle(.secondary)
-                        Text(markController.createdTime?.relativeFormatted ?? "")
+                        Image(symbol: markController.shelfType.symbolImage)
                             .foregroundStyle(.secondary)
+                        Text(
+                            markController.createdTime?.relativeFormatted ?? ""
+                        )
+                        .foregroundStyle(.secondary)
                     }
                 }
                 .font(size.font)
-                
+
                 if !markController.commentText.isEmpty {
                     Text(markController.commentText)
                         .font(size.font)
                         .lineLimit(brief ? 2 : nil)
                 }
-                
+
                 if !markController.tags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: size.spacing) {
@@ -91,22 +95,29 @@ struct ItemMarkView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(size.padding)
+            .padding(
+                .bottom,
+                (showEditButton && markController.ratingGrade != nil
+                 && markController.commentText.isEmpty) ? 20 : 0
+            )
             .background(Color.grayBackground)
-            .padding(.bottom, (showEditButton && markController.ratingGrade != nil && markController.commentText == nil) ? 20 : 0)
             .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         .overlay(alignment: .bottomTrailing) {
             if showEditButton, let mark = markController.mark {
-                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .ellipsis) {
+                Button(
+                    "Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")",
+                    systemSymbol: .ellipsis
+                ) {
                     router.presentSheet(.editShelfItem(mark: mark))
                     HapticFeedback.impact()
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.borderless)
                 .accentColor(.gray)
-                .frame(width: 16, height: 14)
+                .foregroundStyle(.secondary)
+                .frame(width: 40, height: (markController.commentText.isEmpty) ? 28 : 32)
                 .labelStyle(.iconOnly)
-                .padding(.bottom, 8)
-                .padding(.trailing, 12)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         }
         .enableInjection()
