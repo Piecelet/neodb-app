@@ -286,7 +286,7 @@ final class ItemViewModel: ObservableObject {
     ) async throws -> any ItemProtocol {
         let endpoint = ItemEndpoint.make(id: id, category: category)
         return try await client.fetch(
-            endpoint, type: ItemSchema.make(category: category))
+            endpoint, type: ItemSchema.makeType(category: category))
     }
 
     private func getCachedMark(itemId: String) async throws -> MarkSchema? {

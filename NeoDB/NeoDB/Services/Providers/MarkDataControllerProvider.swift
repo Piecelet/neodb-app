@@ -11,32 +11,35 @@ import OSLog
 
 @MainActor
 protocol MarkDataControlling {
-    func updateMark(for mark: MarkSchema) async throws
-    func deleteMark(for mark: MarkSchema) async throws
+    func updateMark(for mark: MarkInSchema) async
+    func deleteMark(for UUID: String) async
 }
 
 @MainActor
-final class MarkDataControllerProvider: MarkDataControlling {
+final class MarkDataControllerProvider {
     static let shared = MarkDataControllerProvider()
 
-    private let cacheService: CacheService
+    private var dictionary: NSMutableDictionary = [:]
 
-    init() {
-        self.cacheService = CacheService.shared
+    private struct DictionaryKey: Hashable {
+        let uuid: String
+        let accountID: String
     }
 
-    func dataController(for mark: MarkSchema, accountID: String) -> MarkDataController {
-        let key = CacheKey(uuid: uuid)
-        if let controller = cache[key] as? MarkDataController {
+    func dataController(for uuid: String, appAccountsManager: AppAccountsManager) -> MarkDataController {
+        let key = DictionaryKey(uuid: uuid, accountID: appAccountsManager.currentAccount.id)
+        if let controller = dictionary[key] as? MarkDataController {
             return controller
         }
-        let controller = MarkDataController(uuid: uuid)
-        cache[key] = controller
+        let controller = MarkDataController(uuid: uuid, appAccountsManager: appAccountsManager)
+        dictionary[key] = controller
+        return controller
     }
     
-    func updateMark(uuid: String, mark: MarkInSchema) async throws {
-        let endpoint = MarkEndpoint.mark(itemId: uuid, mark: mark)
-        let mark = try await accountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+    func updateDataControllers(for UUIDs: [String], appAccountsManager: AppAccountsManager) {
+        for uuid in UUIDs {
+            _ = dataController(for: uuid, appAccountsManager: appAccountsManager)
+        }
     }
 }
 
@@ -47,11 +50,11 @@ final class MarkDataController: MarkDataControlling {
     private let appAccountsManager: AppAccountsManager
     private let logger = Logger.views.mark.mark
 
-    @Published var shelfType: ShelfType
+    @Published var shelfType: ShelfType?
     @Published var commentText: String?
     @Published var ratingGrade: Int?
-    @Published var visibility: MarkVisibility = .pub
-    @Published var createdTime: Date = Date()
+    @Published var visibility: MarkVisibility?
+    @Published var createdTime: Date?
 
     init(uuid: String, appAccountsManager: AppAccountsManager) {
         self.uuid = uuid
@@ -71,24 +74,44 @@ final class MarkDataController: MarkDataControlling {
         }
     }
 
-    func updateMark(for mark: MarkSchema) async {
-        let markIn = MarkInSchema(
-            shelfType: shelfType,
-            visibility: visibility,
-            commentText: commentText,
-            ratingGrade: ratingGrade,
-            tags: mark.tags,
-            createdTime: mark.createdTime,
-            postToFediverse: false,
-            postId: mark.postId
-        )
-        
-        let endpoint = MarkEndpoint.mark(itemUUID: mark.item.uuid, mark: markIn)
-        _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+    func updateMark(for mark: MarkInSchema) async {
+        let previousMark = self.mark
+
+        shelfType = mark.shelfType
+        commentText = mark.commentText
+        ratingGrade = mark.ratingGrade
+        visibility = mark.visibility
+        createdTime = mark.createdTime?.asDate ?? Date()
+        do {
+            let endpoint = MarkEndpoint.mark(itemUUID: uuid, mark: mark)
+            let result = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+            self.mark = result
+        } catch {
+            logger.error("Failed to update mark: \(error.localizedDescription)")
+            if let previousMark = previousMark {
+                self.mark = previousMark
+                self.shelfType = previousMark.shelfType
+                self.commentText = previousMark.commentText
+                self.ratingGrade = previousMark.ratingGrade
+                self.visibility = previousMark.visibility
+                self.createdTime = previousMark.createdTime?.asDate ?? Date()
+            } else {
+                self.mark = nil
+                self.shelfType = nil
+                self.commentText = nil
+                self.ratingGrade = nil
+                self.visibility = nil
+                self.createdTime = nil
+            }
+        }
     }
 
-    func deleteMark(for mark: MarkSchema) async throws {
-        let endpoint = MarkEndpoint.deleteMark(itemUUID: mark.item.uuid)
-        _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+    func deleteMark(for UUID: String) async {
+        do {
+            let endpoint = MarkEndpoint.delete(itemUUID: UUID)
+            _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+        } catch {
+            logger.error("Failed to delete mark: \(error.localizedDescription)")
+        }
     }
 }

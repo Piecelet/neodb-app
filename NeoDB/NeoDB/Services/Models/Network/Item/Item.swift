@@ -88,7 +88,7 @@ struct ItemSchema: ItemProtocol {
 }
 
 extension ItemSchema {
-    static func make(category: ItemCategory) -> any ItemProtocol.Type {
+    static func makeType(category: ItemCategory) -> any ItemProtocol.Type {
         switch category {
         case .book, .fanfic, .exhibition, .collection:
             return EditionSchema.self

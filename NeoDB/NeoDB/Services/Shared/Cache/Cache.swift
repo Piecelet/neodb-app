@@ -101,13 +101,13 @@ extension CacheService {
     
     func retrieveItem(id: String, category: ItemCategory, instance: String? = nil) async throws -> (any ItemProtocol)? {
         let key = Keys.item(uuid: id, instance: instance)
-        let type = ItemSchema.make(category: category)
+        let type = ItemSchema.makeType(category: category)
         return try await retrieve(forKey: key, type: type)
     }
     
     func removeItem(id: String, category: ItemCategory, instance: String? = nil) async throws {
         let key = Keys.item(uuid: id, instance: instance)
-        let type = ItemSchema.make(category: category)
+        let type = ItemSchema.makeType(category: category)
         try await remove(forKey: key, type: type)
     }
     
