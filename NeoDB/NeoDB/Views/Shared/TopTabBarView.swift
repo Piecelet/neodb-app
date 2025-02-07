@@ -54,6 +54,7 @@ struct TopTabBarView<T: Hashable>: View {
                 }
             }
             .padding(.horizontal, 4)
+            .padding(.leading, -2)
         }
         .padding(.horizontal)
         .padding(.top, 8)

@@ -17,25 +17,31 @@ struct MastodonTimelinesView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // Without this, the tab bar will be transparent without any blur
+            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+            GeometryReader { geometry in
+                TabView(selection: $selectedTimelineType) {
+                    ForEach(MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated), id: \.self) { type in
+                        List {
+                            timelineContent(for: type)
+                            
+                        }
+                        .listStyle(.plain)
+                        .refreshable {
+                            await viewModel.loadTimeline(type: type, refresh: true)
+                        }
+                        .tag(type)
+                    }
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea(edges: .bottom)
+        }
+        .safeAreaInset(edge: .top) {
             TopTabBarView(
                 items: MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated),
                 selection: $selectedTimelineType
             ) { item in item.displayName }
-            
-            TabView(selection: $selectedTimelineType) {
-                ForEach(MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated), id: \.self) { type in
-                    List {
-                        timelineContent(for: type)
-
-                    }
-                    .listStyle(.plain)
-                    .refreshable {
-                        await viewModel.loadTimeline(type: type, refresh: true)
-                    }
-                    .tag(type)
-                }
-            }
-            .tabViewStyle(.page(indexDisplayMode: .never))
         }
         .task {
             viewModel.accountsManager = accountsManager
@@ -71,7 +77,7 @@ struct MastodonTimelinesView: View {
     }
     
     @ViewBuilder
-    private func timelineContent(for type: MastodonTimelinesFilter) -> some View {
+    private func timelineContent(for type: MastodonTimelinesFilter, geometry: GeometryProxy? = nil) -> some View {
         let state = viewModel.timelineStates[type] ?? MastodonTimelinesState()
         
         if let error = state.error {
@@ -80,6 +86,10 @@ struct MastodonTimelinesView: View {
                 systemImage: "exclamationmark.triangle",
                 description: Text(error.localizedDescription)
             )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
         } else if state.statuses.isEmpty {
             if state.isLoading || state.isRefreshing {
                 timelineSkeletonContent
@@ -89,6 +99,10 @@ struct MastodonTimelinesView: View {
                     systemImage: "text.bubble",
                     description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
                 )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
             }
         } else {
             ForEach(state.statuses, id: \.id) { status in
