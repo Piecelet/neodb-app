@@ -31,6 +31,7 @@ struct ItemCategoryBarView: View {
                                     .id(tab)
                             }
                         }
+                        .padding(.bottom, activeTab == .allItems ? 2.5 : 0)
                     }
                     .padding(.horizontal)
                     .frame(minWidth: geometry.size.width)
@@ -84,12 +85,16 @@ struct ItemCategoryBarView: View {
         )
         .background {
             Rectangle()
-                .fill(activeTab == tab ? tab.color : Color.gray.opacity(0.15))
+                .fill(activeTab == tab ? AnyShapeStyle(tab.color) : AnyShapeStyle(Color.gray.opacity(0.15)))
+                .background {
+                    Rectangle()
+                        .fill(activeTab == tab ? AnyShapeStyle(tab.color) : AnyShapeStyle(.background))
+                }
         }
         .clipShape(.rect(cornerRadius: 14, style: .continuous))
         .background {
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(.background)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.background.opacity(0.75))
                 .padding(activeTab == .allItems && tab != .allItems ? -3 : 3)
         }
         .contentShape(.rect)

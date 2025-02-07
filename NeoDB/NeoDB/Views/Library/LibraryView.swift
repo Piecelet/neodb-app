@@ -9,22 +9,65 @@ import Kingfisher
 import OSLog
 import SwiftUI
 
+fileprivate struct HorizontalDivider: View {
+    
+    let color: Color
+    let height: CGFloat
+    
+    init(color: Color, height: CGFloat = 0.5) {
+        self.color = color
+        self.height = height
+    }
+    
+    var body: some View {
+        color
+            .frame(height: height)
+    }
+}
+
 struct LibraryView: View {
     // MARK: - Properties
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LibraryViewModel()
-
+    @Environment(\.colorScheme) private var colorScheme
+    
+    let statusBarHeight: CGFloat = {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return windowScene.statusBarManager?.statusBarFrame.height ?? 0
+        }
+        return 0
+    }()
+    let topTabBarHeight: CGFloat = 74
+    let navBarHeight: CGFloat
+    let tabBarHeight: CGFloat = 92
+    
+    init() {
+        navBarHeight = UINavigationController().navigationBar.frame.height
+    }
+    
     // MARK: - Body
     var body: some View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
-            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+            if #unavailable(iOS 17.0) {
+                Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+            }
             GeometryReader { geometry in
                 TabView(selection: $viewModel.selectedShelfType) {
                     ForEach(ShelfType.allCases, id: \.self) { type in
-                        List {
-                            shelfContentView(for: type, geometry: geometry)
+                        Group {
+                            if #available(iOS 17.0, *) {
+                                List {
+                                    shelfContentView(for: type, geometry: geometry)
+                                }
+                                .safeAreaPadding(.top, topTabBarHeight + navBarHeight + statusBarHeight)
+                                .safeAreaPadding(.bottom, tabBarHeight)
+                            } else {
+                                List {
+                                    shelfContentView(for: type, geometry: geometry)
+                                }
+                            }
                         }
                         .listStyle(.plain)
                         .refreshable {
@@ -38,11 +81,16 @@ struct LibraryView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea(edges: .bottom)
         }
+        .toolbarBackground(.visible, for: .tabBar)
+        .modifier(IgnoreSafeAreaModifier())
         .safeAreaInset(edge: .top) {
             headerView
         }
         .navigationTitle(String(localized: "library_title", table: "Library"))
         .navigationBarTitleDisplayMode(.inline)
+        .safeAreaInset(edge: .bottom) {
+            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+        }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Text("library_title", tableName: "Library")
@@ -79,7 +127,11 @@ struct LibraryView: View {
                 items: ShelfType.allCases,
                 selection: $viewModel.selectedShelfType
             ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
+                .padding(.bottom, 4)
+            
+            HorizontalDivider(color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
         }
+        .background(Material.bar)
         .padding(.bottom, -12)
     }
 
@@ -199,5 +251,15 @@ struct LibraryView: View {
         LibraryView()
             .environmentObject(Router())
             .environmentObject(AppAccountsManager())
+    }
+}
+
+fileprivate struct IgnoreSafeAreaModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.ignoresSafeArea(edges: .top)
+        } else {
+            content
+        }
     }
 }

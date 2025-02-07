@@ -10,18 +10,42 @@ import OSLog
 import SwiftUI
 import SwiftUIIntrospect
 
+fileprivate struct HorizontalDivider: View {
+    
+    let color: Color
+    let height: CGFloat
+    
+    init(color: Color, height: CGFloat = 0.5) {
+        self.color = color
+        self.height = height
+    }
+    
+    var body: some View {
+        color
+            .frame(height: height)
+    }
+}
+
 struct MastodonTimelinesView: View {
     @StateObject private var viewModel = MastodonTimelinesViewModel()
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @AppStorage("selectedTimelineType") private var selectedTimelineType: MastodonTimelinesFilter = .local
+    @Environment(\.colorScheme) private var colorScheme
     
-    @State private var navBarHeight: CGFloat = 2 {
-        didSet {
-            print("navBarHeight: \(navBarHeight)")
+    let statusBarHeight: CGFloat = {
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return windowScene.statusBarManager?.statusBarFrame.height ?? 0
         }
+        return 0
+    }()
+    let topTabBarHeight: CGFloat = 32
+    let navBarHeight: CGFloat
+    let tabBarHeight: CGFloat = 92
+    
+    init() {
+        navBarHeight = UINavigationController().navigationBar.frame.height
     }
-    let topTabBarHeight: CGFloat = 40
     
     var body: some View {
         VStack {
@@ -37,7 +61,8 @@ struct MastodonTimelinesView: View {
                                 List {
                                     timelineContent(for: type)
                                 }
-                                .safeAreaPadding(.top, topTabBarHeight)
+                                .safeAreaPadding(.top, topTabBarHeight + navBarHeight + statusBarHeight)
+                                .safeAreaPadding(.bottom, tabBarHeight)
                             } else {
                                 List {
                                     timelineContent(for: type)
@@ -55,8 +80,8 @@ struct MastodonTimelinesView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea(edges: .bottom)
         }
-        .toolbar(.visible, for: .tabBar)
-        .modifier(SafeAreaModifier())
+        .toolbarBackground(.visible, for: .tabBar)
+        .modifier(IgnoreSafeAreaModifier())
         .safeAreaInset(edge: .top) {
             VStack(spacing:0) {
                 TopTabBarView(
@@ -64,9 +89,9 @@ struct MastodonTimelinesView: View {
                     selection: $selectedTimelineType
                 ) { item in item.displayName }
                     .padding(.bottom, 4)
-                Divider()
+                HorizontalDivider(color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
             }
-            .background(.bar)
+            .background(Material.bar)
         }
         .safeAreaInset(edge: .bottom) {
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)
@@ -223,7 +248,7 @@ struct MastodonTimelinesView: View {
     }
 }
 
-fileprivate struct SafeAreaModifier: ViewModifier {
+fileprivate struct IgnoreSafeAreaModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             content.ignoresSafeArea(edges: .top)
@@ -232,5 +257,3 @@ fileprivate struct SafeAreaModifier: ViewModifier {
         }
     }
 }
-
-
