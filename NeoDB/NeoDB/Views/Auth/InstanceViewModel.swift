@@ -7,10 +7,9 @@
 //
 
 import Foundation
-import Perception
 import SwiftUI
 
-@Perceptible final class InstanceViewModel: ObservableObject {
+final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var client: NetworkClient?
     private let versionIdentifier = "neodb"

@@ -71,6 +71,10 @@ protocol AnyMastodonStatus {
     // MARK: NeoDB Private
     //    var extNeodb: [NeoDBTag] {get}
     //    var relatedWith:
+
+    // MARK: - NeoDB
+
+    var neodbItem: (any ItemProtocol)? { get set }
 }
 
 struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
@@ -112,6 +116,9 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
     let filtered: [MastodonFiltered]?
     let sensitive: Bool
     let language: String?
+
+    // MARK: - NeoDB
+    var neodbItem: (any ItemProtocol)? = nil
 
     var isHidden: Bool {
         filtered?.first?.filter.filterAction == .hide
@@ -324,6 +331,9 @@ struct MastodonReblogStatus: AnyMastodonStatus, Codable, Identifiable,
     let filtered: [MastodonFiltered]?
     let sensitive: Bool
     let language: String?
+
+    // MARK: - NeoDB
+    var neodbItem: (any ItemProtocol)? = nil
 
     var isHidden: Bool {
         filtered?.first?.filter.filterAction == .hide
