@@ -56,11 +56,13 @@ struct StatusActionsView: View {
                 Button {
                     router.presentSheet(.replyToStatus(status: status))
                 } label: {
-                Label(
-                    "\(dataController.repliesCount)",
-                    systemImage: "bubble.right"
-                )
-                .labelStyle(.titleAndIcon)
+                    Label(
+                        "\(dataController.repliesCount)",
+                        systemImage: "bubble.right"
+                    )
+                    .padding(6)
+                    .background(.grayBackground)
+                    .labelStyle(.titleAndIcon)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
@@ -70,19 +72,21 @@ struct StatusActionsView: View {
                 Button {
                     HapticFeedback.impact(.medium)
                     Task { @MainActor in
-                        await dataController.toggleReblog(remoteStatus: status.id)
+                        await dataController.toggleReblog(
+                            remoteStatus: status.id)
                     }
                 } label: {
-                Label(
-                    "\(dataController.reblogsCount)",
-                    systemSymbol: .arrow2Squarepath
-                )
-                .labelStyle(.titleAndIcon)
-                .foregroundStyle(
-                    dataController.isReblogged
-                        ? .blue : .secondary
-                )
-                .contentTransition(.numericText())
+                    Label(
+                        "\(dataController.reblogsCount)",
+                        systemSymbol: .arrow2Squarepath
+                    )
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(
+                        dataController.isReblogged
+                            ? .blue : .secondary
+                    )
+                    .padding(6)
+                    .contentTransition(.numericText())
                 }
                 .buttonStyle(.plain)
             }
@@ -91,61 +95,69 @@ struct StatusActionsView: View {
                 Button {
                     HapticFeedback.impact(.medium)
                     Task { @MainActor in
-                        await dataController.toggleFavorite(remoteStatus: status.id)
+                        await dataController.toggleFavorite(
+                            remoteStatus: status.id)
                     }
                 } label: {
-                Label(
-                    "\(dataController.favoritesCount)",
-                    systemSymbol: dataController.isFavorited
-                        ? .heartFill : .heart
-                )
-                .labelStyle(.titleAndIcon)
-                .foregroundStyle(
-                    dataController.isFavorited
-                        ? .red : .secondary
-                )
-                .contentTransition(.numericText())
+                    Label(
+                        "\(dataController.favoritesCount)",
+                        systemSymbol: dataController.isFavorited
+                            ? .heartFill : .heart
+                    )
+                    .padding(6)
+                    .labelStyle(.titleAndIcon)
+                    .foregroundStyle(
+                        dataController.isFavorited
+                            ? .red : .secondary
+                    )
+                    .contentTransition(.numericText())
                 }
                 .buttonStyle(.plain)
             }
             Spacer()
-            HStack(spacing: 16) {
+            HStack(spacing: 10) {
                 if showActions.contains(.bookmark) {
                     Button {
                         HapticFeedback.impact(.medium)
                         Task {
-                        await dataController.toggleBookmark(remoteStatus: status.id)
+                            await dataController.toggleBookmark(
+                                remoteStatus: status.id)
+                        }
+                    } label: {
+                        Label(
+                            "Bookmark",
+                            systemSymbol: dataController.isBookmarked
+                                ? .bookmarkFill : .bookmark
+                        )
+                        .padding(6)
+                        .background(.grayBackground)
+                        .foregroundStyle(
+                            dataController.isBookmarked
+                                ? .orange : .secondary)
                     }
-                } label: {
-                    Label(
-                        "Bookmark",
-                        systemSymbol: dataController.isBookmarked
-                            ? .bookmarkFill : .bookmark
-                    )
                     .labelStyle(.iconOnly)
-                    .foregroundStyle(
-                        dataController.isBookmarked
-                            ? .orange : .secondary)
-                }
-                .buttonStyle(.plain)
-                .padding(.trailing, !showActions.contains(.share) ? 8 : nil)
+                    .buttonStyle(.plain)
+                    .padding(.trailing, !showActions.contains(.share) ? 8 : nil)
                 }
                 if showActions.contains(.share) {
                     ShareLink(item: URL(string: status.url ?? "")!) {
                         Label("Share", systemSymbol: .arrowUpRight)
                     }
+                    .padding(6)
+                    .background(.grayBackground)
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
                     .foregroundStyle(.secondary)
                 }
             }
         }
+        .padding(.vertical, -6)
         .padding(.horizontal)
         .font(.subheadline)
         .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
