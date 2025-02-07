@@ -12,153 +12,174 @@ import SwiftUI
 
 @MainActor
 protocol StatusDataControlling {
-  var isReblogged: Bool { get set }
-  var isBookmarked: Bool { get set }
-  var isFavorited: Bool { get set }
+    var isReblogged: Bool { get set }
+    var isBookmarked: Bool { get set }
+    var isFavorited: Bool { get set }
 
-  var favoritesCount: Int { get set }
-  var reblogsCount: Int { get set }
-  var repliesCount: Int { get set }
+    var favoritesCount: Int { get set }
+    var reblogsCount: Int { get set }
+    var repliesCount: Int { get set }
 
-  func toggleBookmark(remoteStatus: String?) async
-  func toggleReblog(remoteStatus: String?) async
-  func toggleFavorite(remoteStatus: String?) async
+    func toggleBookmark(remoteStatus: String?) async
+    func toggleReblog(remoteStatus: String?) async
+    func toggleFavorite(remoteStatus: String?) async
 }
 
 @MainActor
 final class StatusDataControllerProvider {
-  static let shared = StatusDataControllerProvider()
+    static let shared = StatusDataControllerProvider()
 
-  private var dictionary: NSMutableDictionary = [:]
+    private var dictionary: NSMutableDictionary = [:]
 
-  private struct DictionaryKey: Hashable {
-    let statusId: String
-    let accountID: String
-  }
-
-  func dataController(for status: any AnyMastodonStatus, appAccountsManager: AppAccountsManager) -> StatusDataController {
-    let key = DictionaryKey(statusId: status.id, accountID: appAccountsManager.currentAccount.id)
-    if let controller = dictionary[key] as? StatusDataController {
-      return controller
+    private struct DictionaryKey: Hashable {
+        let statusId: String
+        let accountID: String
     }
-    let controller = StatusDataController(status: status, appAccountsManager: appAccountsManager)
-    dictionary[key] = controller
-    return controller
-  }
 
-  func updateDataControllers(for statuses: [MastodonStatus], appAccountsManager: AppAccountsManager) {
-    for status in statuses {
-      let realStatus: AnyMastodonStatus = status.reblog ?? status
-      let controller = dataController(for: realStatus, appAccountsManager: appAccountsManager)
-      controller.updateFrom(status: realStatus)
+    func dataController(
+        for status: any AnyMastodonStatus, accountsManager: AppAccountsManager
+    ) -> StatusDataController {
+        let key = DictionaryKey(
+            statusId: status.id, accountID: accountsManager.currentAccount.id)
+        if let controller = dictionary[key] as? StatusDataController {
+            return controller
+        }
+        let controller = StatusDataController(
+            status: status, accountsManager: accountsManager)
+        dictionary[key] = controller
+        return controller
     }
-  }
+
+    func updateDataControllers(
+        for statuses: [MastodonStatus], accountsManager: AppAccountsManager
+    ) {
+        for status in statuses {
+            let realStatus: AnyMastodonStatus = status.reblog ?? status
+            let controller = dataController(
+                for: realStatus, accountsManager: accountsManager)
+            controller.updateFrom(status: realStatus)
+        }
+    }
 }
 
 @MainActor
 final class StatusDataController: StatusDataControlling {
-  // MARK: - Properties
-  nonisolated let status: AnyMastodonStatus
-  private let appAccountsManager: AppAccountsManager
-  private let logger = Logger.dataControllers.statusDataController
-  private var unfetchedItem: (any ItemProtocol)? = nil
+    // MARK: - Properties
+    nonisolated let status: AnyMastodonStatus
+    private let accountsManager: AppAccountsManager
+    private let logger = Logger.dataControllers.statusDataController
+    private var unfetchedItem: (any ItemProtocol)? = nil
 
-  @Published var isReblogged: Bool
-  @Published var isBookmarked: Bool
-  @Published var isFavorited: Bool
-  @Published var content: HTMLString
+    @Published var isReblogged: Bool
+    @Published var isBookmarked: Bool
+    @Published var isFavorited: Bool
+    @Published var content: HTMLString
 
-  @Published var favoritesCount: Int
-  @Published var reblogsCount: Int
-  @Published var repliesCount: Int
-  
-  @Published var item: (any ItemProtocol)? = nil
+    @Published var favoritesCount: Int
+    @Published var reblogsCount: Int
+    @Published var repliesCount: Int
 
-  init(status: AnyMastodonStatus, appAccountsManager: AppAccountsManager) {
-    self.status = status
-    self.appAccountsManager = appAccountsManager
-    self.unfetchedItem = status.content.links.compactMap(\.neodbItem).first
+    @Published var item: (any ItemProtocol)? = nil
 
-    isReblogged = status.reblogged == true
-    isBookmarked = status.bookmarked == true
-    isFavorited = status.favourited == true
+    init(status: AnyMastodonStatus, accountsManager: AppAccountsManager) {
+        self.status = status
+        self.accountsManager = accountsManager
+        self.unfetchedItem = status.content.links.compactMap(\.neodbItem).first
 
-    reblogsCount = status.reblogsCount
-    repliesCount = status.repliesCount
-    favoritesCount = status.favouritesCount
-    content = status.content
+        isReblogged = status.reblogged == true
+        isBookmarked = status.bookmarked == true
+        isFavorited = status.favourited == true
 
-    Task {
-      await getItem()
+        reblogsCount = status.reblogsCount
+        repliesCount = status.repliesCount
+        favoritesCount = status.favouritesCount
+        content = status.content
+
+        Task {
+            await getItem()
+        }
     }
-  }
 
-  func updateFrom(status: AnyMastodonStatus) {
-    isReblogged = status.reblogged == true
-    isBookmarked = status.bookmarked == true
-    isFavorited = status.favourited == true
+    func updateFrom(status: AnyMastodonStatus) {
+        isReblogged = status.reblogged == true
+        isBookmarked = status.bookmarked == true
+        isFavorited = status.favourited == true
 
-    reblogsCount = status.reblogsCount
-    repliesCount = status.repliesCount
-    favoritesCount = status.favouritesCount
-    content = status.content
-  }
+        reblogsCount = status.reblogsCount
+        repliesCount = status.repliesCount
+        favoritesCount = status.favouritesCount
+        content = status.content
+    }
 
-  private func getItem() async {
-    guard let item = unfetchedItem else { return }
-    do {
-      let endpoint = ItemEndpoint.make(id: item.id, category: item.category)
-      let fetchedItem = try await appAccountsManager.currentClient.fetch(endpoint, type: ItemSchema.self)
-      self.item = fetchedItem
-    } catch {
-      logger.error("Failed to get item: \(error.localizedDescription)")
+    private func getItem() async {
+        guard let item = unfetchedItem else { return }
+        do {
+            let endpoint = ItemEndpoint.make(
+                id: item.id, category: item.category)
+            let fetchedItem = try await accountsManager.currentClient.fetch(
+                endpoint, type: ItemSchema.self)
+            self.item = fetchedItem
+        } catch {
+            logger.error("Failed to get item: \(error.localizedDescription)")
+        }
     }
-  }
 
-  func toggleFavorite(remoteStatus: String?) async {
-    guard appAccountsManager.isAuthenticated else { return }
-    isFavorited.toggle()
-    let id = remoteStatus ?? status.id
-    let endpoint = isFavorited ? StatusesEndpoint.favorite(id: id) : StatusesEndpoint.unfavorite(id: id)
-    withAnimation(.default) {
-      favoritesCount += isFavorited ? 1 : -1
+    func toggleFavorite(remoteStatus: String?) async {
+        guard accountsManager.isAuthenticated else { return }
+        isFavorited.toggle()
+        let id = remoteStatus ?? status.id
+        let endpoint =
+            isFavorited
+            ? StatusesEndpoint.favorite(id: id)
+            : StatusesEndpoint.unfavorite(id: id)
+        withAnimation(.default) {
+            favoritesCount += isFavorited ? 1 : -1
+        }
+        do {
+            let status = try await accountsManager.currentClient.fetch(
+                endpoint, type: MastodonStatus.self)
+            updateFrom(status: status.reblog ?? status)
+        } catch {
+            isFavorited.toggle()
+            favoritesCount += isFavorited ? -1 : 1
+        }
     }
-    do {
-      let status = try await appAccountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-      updateFrom(status: status.reblog ?? status)
-    } catch {
-      isFavorited.toggle()
-      favoritesCount += isFavorited ? -1 : 1
-    }
-  }
 
-  func toggleReblog(remoteStatus: String?) async {
-    guard appAccountsManager.isAuthenticated else { return }
-    isReblogged.toggle()
-    let id = remoteStatus ?? status.id
-    let endpoint = isReblogged ? StatusesEndpoint.reblog(id: id) : StatusesEndpoint.unreblog(id: id)
-    withAnimation(.default) {
-      reblogsCount += isReblogged ? 1 : -1
+    func toggleReblog(remoteStatus: String?) async {
+        guard accountsManager.isAuthenticated else { return }
+        isReblogged.toggle()
+        let id = remoteStatus ?? status.id
+        let endpoint =
+            isReblogged
+            ? StatusesEndpoint.reblog(id: id)
+            : StatusesEndpoint.unreblog(id: id)
+        withAnimation(.default) {
+            reblogsCount += isReblogged ? 1 : -1
+        }
+        do {
+            let status = try await accountsManager.currentClient.fetch(
+                endpoint, type: MastodonStatus.self)
+            updateFrom(status: status.reblog ?? status)
+        } catch {
+            isReblogged.toggle()
+            reblogsCount += isReblogged ? -1 : 1
+        }
     }
-    do {
-      let status = try await appAccountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-      updateFrom(status: status.reblog ?? status)
-    } catch {
-      isReblogged.toggle()
-      reblogsCount += isReblogged ? -1 : 1
-    }
-  }
 
-  func toggleBookmark(remoteStatus: String?) async {
-    guard appAccountsManager.isAuthenticated else { return }
-    isBookmarked.toggle()
-    let id = remoteStatus ?? status.id
-    let endpoint = isBookmarked ? StatusesEndpoint.bookmark(id: id) : StatusesEndpoint.unbookmark(id: id)
-    do {
-      let status = try await appAccountsManager.currentClient.fetch(endpoint, type: MastodonStatus.self)
-      updateFrom(status: status.reblog ?? status)
-    } catch {
-      isBookmarked.toggle()
+    func toggleBookmark(remoteStatus: String?) async {
+        guard accountsManager.isAuthenticated else { return }
+        isBookmarked.toggle()
+        let id = remoteStatus ?? status.id
+        let endpoint =
+            isBookmarked
+            ? StatusesEndpoint.bookmark(id: id)
+            : StatusesEndpoint.unbookmark(id: id)
+        do {
+            let status = try await accountsManager.currentClient.fetch(
+                endpoint, type: MastodonStatus.self)
+            updateFrom(status: status.reblog ?? status)
+        } catch {
+            isBookmarked.toggle()
+        }
     }
-  }
 }

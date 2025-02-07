@@ -20,7 +20,7 @@ class StatusViewModel: ObservableObject {
             if let accountsManager = accountsManager {
                 statusDataController = statusDataControllerProvider.dataController(
                     for: status,
-                    appAccountsManager: accountsManager
+                    accountsManager: accountsManager
                 )
             }
         }
