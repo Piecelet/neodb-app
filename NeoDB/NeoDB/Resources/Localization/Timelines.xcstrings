@@ -552,6 +552,17 @@
         }
       }
     },
+    "timelines_type_latest" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Latest"
+          }
+        }
+      }
+    },
     "timelines_type_local" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
@@ -581,6 +592,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "热门"
+          }
+        }
+      }
+    },
+    "timelines_type_resume" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Resume"
           }
         }
       }

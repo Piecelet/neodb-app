@@ -1,5 +1,5 @@
 //
-//  TimelinesViewModel.swift
+//  MastodonTimelinesViewModel.swift
 //  NeoDB
 //
 //  Created by 甜檸Citron(lcandy2) on 2/7/25.
@@ -12,7 +12,7 @@ import SwiftUI
 
 @MainActor
 @Perceptible
-class TimelinesViewModel {
+class MastodonTimelinesViewModel {
     var scrollToId: String?
     var statusesState: MastodonStatusesState = .loading
     var timeline: MastodonTimelinesFilter = .local {
@@ -110,7 +110,7 @@ class TimelinesViewModel {
 
 // MARK: - Cache
 
-extension TimelinesViewModel {
+extension MastodonTimelinesViewModel {
 //    private func cache() async {
 //        if let client = accountsManager?.currentClient, isCacheEnabled {
 //            await cache.set(
@@ -137,7 +137,7 @@ extension TimelinesViewModel {
 
 // MARK: - StatusesFetcher
 
-extension TimelinesViewModel: MastodonStatusesFetcher {
+extension MastodonTimelinesViewModel: MastodonStatusesFetcher {
     func pullToRefresh() async {
         timelineTask?.cancel()
 
@@ -392,7 +392,7 @@ extension TimelinesViewModel: MastodonStatusesFetcher {
 
 // MARK: - Marker handling
 
-extension TimelinesViewModel {
+extension MastodonTimelinesViewModel {
     func fetchMarker() async -> MastodonMarker.Content? {
         guard let client = accountsManager?.currentClient else {
             return nil
@@ -424,7 +424,7 @@ extension TimelinesViewModel {
 
 // MARK: - Event handling
 
-extension TimelinesViewModel {
+extension MastodonTimelinesViewModel {
     func handleEvent(event: any StreamEvent) async {
         guard let accountsManager, canStreamEvents, isTimelineVisible else {
             return
