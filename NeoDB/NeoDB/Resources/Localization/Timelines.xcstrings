@@ -2,7 +2,6 @@
   "sourceLanguage" : "en",
   "strings" : {
     "timelines_error_title" : {
-      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -25,7 +24,6 @@
       }
     },
     "timelines_no_posts_description" : {
-      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -48,7 +46,6 @@
       }
     },
     "timelines_no_posts_title" : {
-      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
