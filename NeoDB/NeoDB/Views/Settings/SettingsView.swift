@@ -312,7 +312,23 @@ struct SettingsView: View {
             await viewModel.loadUserProfile()
         }
         .navigationTitle(String(localized: "settings_title", table: "Settings"))
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Text("settings_title", tableName: "Settings")
+                    .font(.system(size: 24))
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .padding(.top, 6)
+            }
+            ToolbarItem(placement: .principal) {
+                Text("settings_title", tableName: "Settings")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
+            }
+        }
         #if DEBUG
             .enableInjection()
         #endif
@@ -453,9 +469,11 @@ struct SettingsView: View {
                         .labelStyle(.titleOnly)
                         .foregroundStyle(.primary)
                         if storeManager.isPlus {
-                            Text("store_description_plus", tableName: "Settings")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            Text(
+                                "store_description_plus", tableName: "Settings"
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         } else {
                             Text("store_description", tableName: "Settings")
                                 .font(.subheadline)
@@ -477,7 +495,7 @@ struct SettingsView: View {
                         colors: [
                             .green.opacity(0.8),
                             .mint.opacity(0.9),
-                            .teal.opacity(0.8)
+                            .teal.opacity(0.8),
                         ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
@@ -485,7 +503,10 @@ struct SettingsView: View {
                     .opacity(0.5)
 
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(colorScheme == .dark ? .black.opacity(0.7) : .white.opacity(0.9))
+                        .fill(
+                            colorScheme == .dark
+                                ? .black.opacity(0.7) : .white.opacity(0.9)
+                        )
                         .padding(2)
                 }
             )
