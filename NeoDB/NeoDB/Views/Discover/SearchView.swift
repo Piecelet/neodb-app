@@ -10,6 +10,10 @@ import Kingfisher
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
+    @State private var toolbarOpacity: Double = 0
+    
+    let fadeThreshold: CGFloat = 70
+    
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
     @Binding var isSearchActive: Bool {
@@ -23,12 +27,19 @@ struct SearchView: View {
     var body: some View {
         searchContent
             .navigationTitle(String(localized: "discover_search_title", table: "Discover"))
+            .onPreferenceChange(ViewOffsetKey.self) { value in
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    toolbarOpacity = value < fadeThreshold ? 1 : 0
+                }
+            }
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Text("discover_search_title", tableName: "Discover")
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
+                        .opacity(toolbarOpacity)
+
             }
             ToolbarItem(placement: .principal) {
                 Text("discover_search_title", tableName: "Discover")
@@ -301,3 +312,11 @@ struct ItemCoverImage: View {
         .environmentObject(Router())
 }
 
+
+struct ViewOffsetKey: PreferenceKey {
+    typealias Value = CGFloat
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}

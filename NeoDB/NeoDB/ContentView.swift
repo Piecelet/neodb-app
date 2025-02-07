@@ -18,6 +18,7 @@ struct ContentView: View {
     var body: some View {
         TabView(
             selection: $router.selectedTab.onUpdate { oldTab, newTab in
+                HapticService.shared.selection()
                 // Track tab changes
                 TelemetryService.shared.trackTabChange(to: newTab)
                 // Only activate search when clicking search tab while already on search tab

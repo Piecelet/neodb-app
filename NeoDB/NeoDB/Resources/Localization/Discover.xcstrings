@@ -137,20 +137,20 @@
       "localizations" : {
         "da" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "needs_review",
             "value" : "Søg"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Search"
+            "value" : "Discover"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "搜索"
+            "value" : "探索"
           }
         }
       }
@@ -179,6 +179,12 @@
     },
     "discover_search_url_clear_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ryd"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -190,17 +196,17 @@
             "state" : "translated",
             "value" : "清除链接"
           }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ryd"
-          }
         }
       }
     },
     "discover_search_url_input_placeholder" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indtast eller indsæt URL..."
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -212,17 +218,17 @@
             "state" : "translated",
             "value" : "输入或粘贴链接..."
           }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indtast eller indsæt URL..."
-          }
         }
       }
     },
     "discover_search_url_invalid_url" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ugyldig URL"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -234,17 +240,17 @@
             "state" : "translated",
             "value" : "链接不可用"
           }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ugyldig URL"
-          }
         }
       }
     },
     "discover_search_url_submit_button" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indsend URL"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -256,17 +262,17 @@
             "state" : "translated",
             "value" : "提交链接"
           }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Indsend URL"
-          }
         }
       }
     },
     "discover_search_url_title" : {
       "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Søg fra internettet"
+          }
+        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
@@ -277,12 +283,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "从互联网搜索"
-          }
-        },
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Søg fra internettet"
           }
         }
       }

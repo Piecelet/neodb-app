@@ -144,7 +144,7 @@ struct StatusActionsView: View {
                     }
                     .padding(6)
                     .simultaneousGesture(TapGesture().onEnded {
-                        HapticService.shared.selection()
+                        HapticService.shared.impact(.medium)
                     })
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
