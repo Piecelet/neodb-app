@@ -320,7 +320,7 @@ struct SettingsView: View {
                     .fontWeight(.semibold)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
-                    .padding(.top, 6)
+                    .padding(.top, 4)
             }
             ToolbarItem(placement: .principal) {
                 Text("settings_title", tableName: "Settings")

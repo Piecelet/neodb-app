@@ -8,6 +8,7 @@
 
 import OSLog
 import SwiftUI
+import SwiftUIIntrospect
 
 struct MastodonTimelinesView: View {
     @StateObject private var viewModel = MastodonTimelinesViewModel()
@@ -15,16 +16,33 @@ struct MastodonTimelinesView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @AppStorage("selectedTimelineType") private var selectedTimelineType: MastodonTimelinesFilter = .local
     
+    @State private var navBarHeight: CGFloat = 2 {
+        didSet {
+            print("navBarHeight: \(navBarHeight)")
+        }
+    }
+    let topTabBarHeight: CGFloat = 40
+    
     var body: some View {
-        VStack(spacing: 0) {
+        VStack {
             // Without this, the tab bar will be transparent without any blur
-            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+            if #unavailable(iOS 17.0) {
+                Text(verbatim: " ").frame(width: 0.01, height: 0.01)
+            }
             GeometryReader { geometry in
                 TabView(selection: $selectedTimelineType) {
                     ForEach(MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated), id: \.self) { type in
-                        List {
-                            timelineContent(for: type)
-                            
+                        Group {
+                            if #available(iOS 17.0, *) {
+                                List {
+                                    timelineContent(for: type)
+                                }
+                                .safeAreaPadding(.top, topTabBarHeight)
+                            } else {
+                                List {
+                                    timelineContent(for: type)
+                                }
+                            }
                         }
                         .listStyle(.plain)
                         .refreshable {
@@ -37,11 +55,21 @@ struct MastodonTimelinesView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea(edges: .bottom)
         }
+        .toolbar(.visible, for: .tabBar)
+        .modifier(SafeAreaModifier())
         .safeAreaInset(edge: .top) {
-            TopTabBarView(
-                items: MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated),
-                selection: $selectedTimelineType
-            ) { item in item.displayName }
+            VStack(spacing:0) {
+                TopTabBarView(
+                    items: MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated),
+                    selection: $selectedTimelineType
+                ) { item in item.displayName }
+                    .padding(.bottom, 4)
+                Divider()
+            }
+            .background(.bar)
+        }
+        .safeAreaInset(edge: .bottom) {
+            Text(verbatim: " ").frame(width: 0.01, height: 0.01)
         }
         .task {
             viewModel.accountsManager = accountsManager
@@ -192,6 +220,16 @@ struct MastodonTimelinesView: View {
         MastodonTimelinesView()
             .environmentObject(Router())
             .environmentObject(AppAccountsManager())
+    }
+}
+
+fileprivate struct SafeAreaModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.ignoresSafeArea(edges: .top)
+        } else {
+            content
+        }
     }
 }
 
