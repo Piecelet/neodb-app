@@ -26,7 +26,7 @@ struct StatusActionsView: View {
 
     let status: MastodonStatus
     let accountsManager: AppAccountsManager
-    @StateObject private var dataController: StatusDataController
+    @ObservedObject private var dataController: StatusDataController
     let size: Size
 
     var showActions: [Action] = [.reply, .reblog, .favorite, .bookmark, .share]
@@ -38,15 +38,14 @@ struct StatusActionsView: View {
         size: Size = .regular,
         showActions: [Action] = [.reply, .reblog, .favorite, .bookmark, .share]
     ) {
-        let controller = statusDataControllerProvider.dataController(
-            for: status,
-            accountsManager: accountsManager
-        )
         self.status = status
         self.accountsManager = accountsManager
         self.size = size
         self.showActions = showActions
-        _dataController = StateObject(wrappedValue: controller)
+        self.dataController = statusDataControllerProvider.dataController(
+            for: status,
+            accountsManager: accountsManager
+        )
     }
 
     var body: some View {
