@@ -40,14 +40,6 @@ struct StatusView: View {
                     } label: {
                         AccountAvatarView(account: status.account)
                         
-                        // VStack(alignment: .leading, spacing: 2) {
-                        //     Text(status.account.displayName ?? "")
-                        //         .font(.headline)
-                        //         .foregroundStyle(.primary)
-                        //     Text("@\(status.account.username)")
-                        //         .font(.subheadline)
-                        //         .foregroundStyle(.secondary)
-                        // }
                         AccountNameView(account: status.account)
                     }
                     .buttonStyle(.plain)
@@ -102,7 +94,9 @@ struct StatusView: View {
                         router.presentSheet(.replyToStatus(status: status))
                     } label: {
                         Label("\(viewModel.statusDataController?.repliesCount ?? 0)", systemImage: "bubble.right")
+                            .labelStyle(.titleAndIcon)
                     }
+                    .buttonStyle(.plain)
                     .foregroundStyle(.secondary)
                     Spacer()
                     Button {
@@ -111,9 +105,11 @@ struct StatusView: View {
                         }
                     } label: {
                         Label("\(viewModel.statusDataController?.reblogsCount ?? 0)", systemSymbol: .arrow2Squarepath)
+                            .labelStyle(.titleAndIcon)
                             .foregroundStyle(viewModel.statusDataController?.isReblogged ?? false ? .blue : .secondary)
                             .contentTransition(.numericText())
                     }
+                    .buttonStyle(.plain)
                     Spacer()
                     Button {
                         withAnimation {
@@ -121,9 +117,11 @@ struct StatusView: View {
                         }
                     } label: {
                         Label("\(viewModel.statusDataController?.favoritesCount ?? 0)", systemSymbol: viewModel.statusDataController?.isFavorited ?? false ? .heartFill : .heart)
+                            .labelStyle(.titleAndIcon)
                             .foregroundStyle(viewModel.statusDataController?.isFavorited ?? false ? .red : .secondary)
                             .contentTransition(.numericText())
                     }
+                    .buttonStyle(.plain)
                     Spacer()
                     HStack(spacing: 16) {
                         Button {
@@ -133,11 +131,13 @@ struct StatusView: View {
                                 .labelStyle(.iconOnly)
                                 .foregroundStyle(viewModel.statusDataController?.isBookmarked ?? false ? .orange : .secondary)
                         }
+                        .buttonStyle(.plain)
                         .padding(.trailing, mode == .detail ? 8 : nil)
                         if let url = URL(string: status.url ?? ""), mode == .timeline {
                             ShareLink(item: url) {
                                 Label("Share", systemSymbol: .arrowUpRight)
                             }
+                            .buttonStyle(.plain)
                             .labelStyle(.iconOnly)
                             .foregroundStyle(.secondary)
                         }

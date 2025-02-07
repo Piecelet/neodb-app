@@ -26,6 +26,7 @@ struct MastodonTimelinesView: View {
                 ForEach(MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated), id: \.self) { type in
                     List {
                         timelineContent(for: type)
+
                     }
                     .listStyle(.plain)
                     .refreshable {
@@ -91,34 +92,32 @@ struct MastodonTimelinesView: View {
             }
         } else {
             ForEach(state.statuses, id: \.id) { status in
-                Button {
-                    router.navigate(to: .statusDetailWithStatus(status: status))
-                } label: {
-                    StatusView(status: status, mode: .timeline)
-                }
-                .buttonStyle(.plain)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-                .onAppear {
-                    if status == state.statuses.last && state.hasMore {
-                        Task {
-                            await viewModel.loadTimeline(type: type)
+                Group {
+                    Button {
+                        router.navigate(to: .statusDetailWithStatus(status: status))
+                    } label: {
+                        StatusView(status: status, mode: .timeline)
+                    }
+                    .buttonStyle(.plain)
+                    .onAppear {
+                        if status == state.statuses.last && state.hasMore {
+                            Task {
+                                await viewModel.loadTimeline(type: type)
+                            }
                         }
                     }
                 }
-                
-                if status.id != state.statuses.last?.id {
-                    Divider()
-                        .padding(.horizontal)
-                        .listRowInsets(EdgeInsets())
-                        .listRowSeparator(.hidden)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in
+                    return 0
                 }
+                .listRowInsets(EdgeInsets())
             }
             
             if state.isLoading && !state.isRefreshing {
                 HStack {
                     Spacer()
                     ProgressView()
+                        .id(UUID())
                     Spacer()
                 }
                 .listRowInsets(EdgeInsets())
