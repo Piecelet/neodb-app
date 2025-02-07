@@ -126,7 +126,7 @@ final class StatusDataController: StatusDataControlling {
     //     }
     // }
 
-    func toggleFavorite(remoteStatus: String?) async {
+    func toggleFavorite(remoteStatus: String? = nil) async {
         guard accountsManager.isAuthenticated else { return }
         isFavorited.toggle()
         let id = remoteStatus ?? status.id
@@ -147,7 +147,7 @@ final class StatusDataController: StatusDataControlling {
         }
     }
 
-    func toggleReblog(remoteStatus: String?) async {
+    func toggleReblog(remoteStatus: String? = nil) async {
         guard accountsManager.isAuthenticated else { return }
         isReblogged.toggle()
         let id = remoteStatus ?? status.id
@@ -168,7 +168,7 @@ final class StatusDataController: StatusDataControlling {
         }
     }
 
-    func toggleBookmark(remoteStatus: String?) async {
+    func toggleBookmark(remoteStatus: String? = nil) async {
         guard accountsManager.isAuthenticated else { return }
         isBookmarked.toggle()
         let id = remoteStatus ?? status.id

@@ -6,3 +6,146 @@
 //  Copyright © 2025 https://github.com/lcandy2. All Rights Reserved.
 //
 
+import SwiftUI
+
+struct StatusActionsView: View {
+    enum Size {
+        case regular
+    }
+
+    enum Action {
+        case reply
+        case reblog
+        case favorite
+        case bookmark
+        case share
+    }
+
+    private let statusDataControllerProvider = StatusDataControllerProvider
+        .shared
+
+    let status: MastodonStatus
+    let accountsManager: AppAccountsManager
+    let dataController: StatusDataController
+    let size: Size
+
+    var showActions: [Action] = [.reply, .reblog, .favorite, .bookmark, .share]
+
+    @EnvironmentObject private var router: Router
+
+    init(
+        status: MastodonStatus, accountsManager: AppAccountsManager,
+        size: Size = .regular,
+        showActions: [Action] = [.reply, .reblog, .favorite, .bookmark, .share]
+    ) {
+        self.status = status
+        self.accountsManager = accountsManager
+        self.dataController = statusDataControllerProvider.dataController(
+            for: status,
+            accountsManager: accountsManager
+        )
+        self.size = size
+        self.showActions = showActions
+    }
+
+    var body: some View {
+
+        // Stats
+        HStack {
+            if showActions.contains(.reply) {
+                Button {
+                    router.presentSheet(.replyToStatus(status: status))
+                } label: {
+                Label(
+                    "\(dataController.repliesCount)",
+                    systemImage: "bubble.right"
+                )
+                .labelStyle(.titleAndIcon)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if showActions.contains(.reblog) {
+                Button {
+                    HapticFeedback.impact(.medium)
+                    Task { @MainActor in
+                        await dataController.toggleReblog(remoteStatus: status.id)
+                    }
+                } label: {
+                Label(
+                    "\(dataController.reblogsCount)",
+                    systemSymbol: .arrow2Squarepath
+                )
+                .labelStyle(.titleAndIcon)
+                .foregroundStyle(
+                    dataController.isReblogged
+                        ? .blue : .secondary
+                )
+                .contentTransition(.numericText())
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer()
+            if showActions.contains(.favorite) {
+                Button {
+                    HapticFeedback.impact(.medium)
+                    Task { @MainActor in
+                        await dataController.toggleFavorite(remoteStatus: status.id)
+                    }
+                } label: {
+                Label(
+                    "\(dataController.favoritesCount)",
+                    systemSymbol: dataController.isFavorited
+                        ? .heartFill : .heart
+                )
+                .labelStyle(.titleAndIcon)
+                .foregroundStyle(
+                    dataController.isFavorited
+                        ? .red : .secondary
+                )
+                .contentTransition(.numericText())
+                }
+                .buttonStyle(.plain)
+            }
+            Spacer()
+            HStack(spacing: 16) {
+                if showActions.contains(.bookmark) {
+                    Button {
+                        HapticFeedback.impact(.medium)
+                        Task {
+                        await dataController.toggleBookmark(remoteStatus: status.id)
+                    }
+                } label: {
+                    Label(
+                        "Bookmark",
+                        systemSymbol: dataController.isBookmarked
+                            ? .bookmarkFill : .bookmark
+                    )
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(
+                        dataController.isBookmarked
+                            ? .orange : .secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.trailing, !showActions.contains(.share) ? 8 : nil)
+                }
+                if showActions.contains(.share) {
+                    ShareLink(item: URL(string: status.url ?? "")!) {
+                        Label("Share", systemSymbol: .arrowUpRight)
+                    }
+                    .buttonStyle(.plain)
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(.horizontal)
+        .font(.subheadline)
+        .enableInjection()
+    }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
+}

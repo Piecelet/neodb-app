@@ -12,14 +12,23 @@ import SwiftUI
 enum StatusViewMode {
     case timeline
     case detail
+    case itemPost
+
+    var actions: [StatusActionsView.Action] {
+        switch self {
+        case .timeline: return [.reply, .reblog, .favorite, .bookmark, .share]
+        case .detail: return [.reply, .reblog, .favorite, .bookmark]
+        case .itemPost: return [.favorite]
+        }
+    }
 }
 
 struct StatusView: View {
     private let logger = Logger.views.status.status
+    private let statusDataControllerProvider = StatusDataControllerProvider.shared
     let status: MastodonStatus
     let mode: StatusViewMode
 
-    @StateObject private var viewModel: StatusViewModel
     @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
@@ -27,7 +36,6 @@ struct StatusView: View {
     init(status: MastodonStatus, mode: StatusViewMode = .timeline) {
         self.status = status
         self.mode = mode
-        _viewModel = StateObject(wrappedValue: StatusViewModel(status: status))
     }
 
     var body: some View {
@@ -87,76 +95,17 @@ struct StatusView: View {
                         }
                     }
                 }
-                
-                // Stats
-                HStack {
-                    Button {
-                        router.presentSheet(.replyToStatus(status: status))
-                    } label: {
-                        Label("\(viewModel.statusDataController?.repliesCount ?? 0)", systemImage: "bubble.right")
-                            .labelStyle(.titleAndIcon)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.secondary)
-                    Spacer()
-                    Button {
-                        withAnimation {
-                            viewModel.toggleReblog()
-                        }
-                    } label: {
-                        Label("\(viewModel.statusDataController?.reblogsCount ?? 0)", systemSymbol: .arrow2Squarepath)
-                            .labelStyle(.titleAndIcon)
-                            .foregroundStyle(viewModel.statusDataController?.isReblogged ?? false ? .blue : .secondary)
-                            .contentTransition(.numericText())
-                    }
-                    .buttonStyle(.plain)
-                    Spacer()
-                    Button {
-                        withAnimation {
-                            viewModel.toggleFavorite()
-                        }
-                    } label: {
-                        Label("\(viewModel.statusDataController?.favoritesCount ?? 0)", systemSymbol: viewModel.statusDataController?.isFavorited ?? false ? .heartFill : .heart)
-                            .labelStyle(.titleAndIcon)
-                            .foregroundStyle(viewModel.statusDataController?.isFavorited ?? false ? .red : .secondary)
-                            .contentTransition(.numericText())
-                    }
-                    .buttonStyle(.plain)
-                    Spacer()
-                    HStack(spacing: 16) {
-                        Button {
-                            viewModel.toggleBookmark()
-                        } label: {
-                            Label("Bookmark", systemSymbol: viewModel.statusDataController?.isBookmarked ?? false ? .bookmarkFill : .bookmark)
-                                .labelStyle(.iconOnly)
-                                .foregroundStyle(viewModel.statusDataController?.isBookmarked ?? false ? .orange : .secondary)
-                        }
-                        .buttonStyle(.plain)
-                        .padding(.trailing, mode == .detail ? 8 : nil)
-                        if let url = URL(string: status.url ?? ""), mode == .timeline {
-                            ShareLink(item: url) {
-                                Label("Share", systemSymbol: .arrowUpRight)
-                            }
-                            .buttonStyle(.plain)
-                            .labelStyle(.iconOnly)
-                            .foregroundStyle(.secondary)
-                        }
-                    }
-                }
-                .padding(.horizontal)
-                .font(.subheadline)
-                .disabled(viewModel.isLoading)
+
+                StatusActionsView(status: status, accountsManager: accountsManager, showActions: mode.actions)
             }
             .padding()
             .background(Color(.systemBackground))
-            .task {
-                viewModel.accountsManager = accountsManager
-            }
-            .alert("Error", isPresented: .constant(false)) {
-                Button("OK") {}
-            } message: {
-                Text(viewModel.error?.localizedDescription ?? "Unknown error")
-            }
+        }
+        .task {
+            statusDataControllerProvider.updateDataControllers(
+                for: [status],
+                accountsManager: accountsManager
+            )
         }
         .enableInjection()
     }

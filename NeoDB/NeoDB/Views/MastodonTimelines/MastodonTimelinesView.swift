@@ -122,7 +122,7 @@ struct MastodonTimelinesView: View {
                     }
                 }
                 .alignmentGuide(.listRowSeparatorLeading) { _ in
-                    return 0
+                    return 4
                 }
                 .listRowInsets(EdgeInsets())
             }
