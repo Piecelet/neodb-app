@@ -23,6 +23,20 @@ struct SearchView: View {
     var body: some View {
         searchContent
             .navigationTitle(String(localized: "discover_search_title", table: "Discover"))
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Text("discover_search_title", tableName: "Discover")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+            }
+            ToolbarItem(placement: .principal) {
+                Text("discover_search_title", tableName: "Discover")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
+            }
+        }
             .onAppear {
                 viewModel.accountsManager = accountsManager
                 Task {
@@ -75,7 +89,9 @@ struct SearchView: View {
             }
         }
         .listStyle(.plain)
-        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, prompt: String(localized: "discover_search_prompt", table: "Discover"))
+        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, 
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: String(localized: "discover_search_prompt", table: "Discover"))
         .onSubmit(of: .search) {
             Task {
                 await viewModel.confirmSearch()

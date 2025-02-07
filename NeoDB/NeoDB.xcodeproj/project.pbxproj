@@ -22,6 +22,7 @@
 		24895F532D4BDCEA008EDD4C /* Perception in Frameworks */ = {isa = PBXBuildFile; productRef = 24895F522D4BDCEA008EDD4C /* Perception */; };
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
+		24CDA87C2D56859E0010C589 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */; };
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 		24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24ECD3B62D46432A00E24D7D /* StoreKit.framework */; };
 		24ECD3C42D464AC100E24D7D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 24ECD3C32D464AC100E24D7D /* RevenueCat */; };
@@ -98,6 +99,7 @@
 				24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */,
 				2405C5E32D42757100457DF5 /* WebView in Frameworks */,
 				24BABF592D40309800785306 /* WishKit in Frameworks */,
+				24CDA87C2D56859E0010C589 /* SwiftUIIntrospect in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
 				243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */,
@@ -193,6 +195,7 @@
 				24895F522D4BDCEA008EDD4C /* Perception */,
 				2477BCD62D4D52AC00E39E1A /* ButtonKit */,
 				2475428B2D51215D006F032F /* TelemetryDeck */,
+				24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -293,6 +296,7 @@
 				24895F512D4BDCEA008EDD4C /* XCRemoteSwiftPackageReference "swift-perception" */,
 				2477BCD52D4D52AC00E39E1A /* XCRemoteSwiftPackageReference "ButtonKit" */,
 				2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */,
+				24CDA87A2D56859E0010C589 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -829,6 +833,14 @@
 				minimumVersion = 2.2.1;
 			};
 		};
+		24CDA87A2D56859E0010C589 /* XCRemoteSwiftPackageReference "swiftui-introspect" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/siteline/swiftui-introspect";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.3.0;
+			};
+		};
 		24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios-spm.git";
@@ -908,6 +920,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24BABF5D2D40B0E900785306 /* XCRemoteSwiftPackageReference "WhatsNewKit" */;
 			productName = WhatsNewKit;
+		};
+		24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 24CDA87A2D56859E0010C589 /* XCRemoteSwiftPackageReference "swiftui-introspect" */;
+			productName = SwiftUIIntrospect;
 		};
 		24D1BE402D2A9F340063B530 /* Inject */ = {
 			isa = XCSwiftPackageProductDependency;

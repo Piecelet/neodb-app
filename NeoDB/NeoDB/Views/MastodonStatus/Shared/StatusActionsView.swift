@@ -54,6 +54,7 @@ struct StatusActionsView: View {
         HStack {
             if showActions.contains(.reply) {
                 Button {
+                    HapticService.shared.selection()
                     router.presentSheet(.replyToStatus(status: status))
                 } label: {
                     Label(
@@ -61,7 +62,6 @@ struct StatusActionsView: View {
                         systemImage: "bubble.right"
                     )
                     .padding(6)
-                    .background(.grayBackground)
                     .labelStyle(.titleAndIcon)
                 }
                 .buttonStyle(.plain)
@@ -70,7 +70,7 @@ struct StatusActionsView: View {
             Spacer()
             if showActions.contains(.reblog) {
                 Button {
-                    HapticFeedback.impact(.medium)
+                    HapticService.shared.impact(.medium)
                     Task { @MainActor in
                         await dataController.toggleReblog(
                             remoteStatus: status.id)
@@ -93,7 +93,7 @@ struct StatusActionsView: View {
             Spacer()
             if showActions.contains(.favorite) {
                 Button {
-                    HapticFeedback.impact(.medium)
+                    HapticService.shared.impact(.medium)
                     Task { @MainActor in
                         await dataController.toggleFavorite(
                             remoteStatus: status.id)
@@ -118,7 +118,7 @@ struct StatusActionsView: View {
             HStack(spacing: 10) {
                 if showActions.contains(.bookmark) {
                     Button {
-                        HapticFeedback.impact(.medium)
+                        HapticService.shared.impact(.medium)
                         Task {
                             await dataController.toggleBookmark(
                                 remoteStatus: status.id)
@@ -130,7 +130,6 @@ struct StatusActionsView: View {
                                 ? .bookmarkFill : .bookmark
                         )
                         .padding(6)
-                        .background(.grayBackground)
                         .foregroundStyle(
                             dataController.isBookmarked
                                 ? .orange : .secondary)
@@ -144,7 +143,9 @@ struct StatusActionsView: View {
                         Label("Share", systemSymbol: .arrowUpRight)
                     }
                     .padding(6)
-                    .background(.grayBackground)
+                    .simultaneousGesture(TapGesture().onEnded {
+                        HapticService.shared.selection()
+                    })
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
                     .foregroundStyle(.secondary)
