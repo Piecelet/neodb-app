@@ -11,7 +11,7 @@ import OSLog
 import SwiftUI
 
 @MainActor
-protocol StatusDataControlling {
+protocol StatusDataControlling: ObservableObject {
     var isReblogged: Bool { get set }
     var isBookmarked: Bool { get set }
     var isFavorited: Bool { get set }
@@ -103,14 +103,25 @@ final class StatusDataController: StatusDataControlling {
     }
 
     func updateFrom(status: AnyMastodonStatus) {
-        isReblogged = status.reblogged == true
-        isBookmarked = status.bookmarked == true
-        isFavorited = status.favourited == true
+        Task {
+            let endpoint = StatusesEndpoint.status(id: status.id)
+            do {
+                let status = try await accountsManager.currentClient.fetch(
+                    endpoint, type: MastodonStatus.self)
+                isReblogged = status.reblogged == true
+                isBookmarked = status.bookmarked == true
+                isFavorited = status.favourited == true
 
-        reblogsCount = status.reblogsCount
-        repliesCount = status.repliesCount
-        favoritesCount = status.favouritesCount
-        content = status.content
+                reblogsCount = status.reblogsCount
+                repliesCount = status.repliesCount
+                favoritesCount = status.favouritesCount
+                content = status.content
+            } catch {
+                logger.error(
+                    "Failed to update from status: \(error.localizedDescription)"
+                )
+            }
+        }
     }
 
     // private func getItem() async {

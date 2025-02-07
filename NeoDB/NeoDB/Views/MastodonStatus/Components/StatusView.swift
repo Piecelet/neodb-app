@@ -25,7 +25,6 @@ enum StatusViewMode {
 
 struct StatusView: View {
     private let logger = Logger.views.status.status
-    private let statusDataControllerProvider = StatusDataControllerProvider.shared
     let status: MastodonStatus
     let mode: StatusViewMode
 
@@ -100,12 +99,6 @@ struct StatusView: View {
             }
             .padding()
             .background(Color(.systemBackground))
-        }
-        .task {
-            statusDataControllerProvider.updateDataControllers(
-                for: [status],
-                accountsManager: accountsManager
-            )
         }
         .enableInjection()
     }
