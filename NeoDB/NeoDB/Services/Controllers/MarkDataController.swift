@@ -11,8 +11,8 @@ import OSLog
 
 @MainActor
 protocol MarkDataControlling {
-    func updateMark(for mark: MarkInSchema) async
-    func deleteMark(for UUID: String) async
+    func updateMark(for mark: MarkInSchema) async throws
+    func deleteMark(for UUID: String) async throws
 }
 
 @MainActor
@@ -122,7 +122,7 @@ final class MarkDataController: MarkDataControlling {
         }
     }
 
-    func updateMark(for mark: MarkInSchema) async {
+    func updateMark(for mark: MarkInSchema) async throws {
         let previousMark = self.mark
 
         self.shelfType = mark.shelfType
@@ -166,10 +166,11 @@ final class MarkDataController: MarkDataControlling {
                 self.visibility = .pub
                 self.createdTime = nil
             }
+            throw error
         }
     }
 
-    func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async {
+    func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async throws {
 
         do {
             if let ratingGrade = self.ratingGrade {
@@ -206,15 +207,17 @@ final class MarkDataController: MarkDataControlling {
             }
         } catch {
             logger.error("Failed to update mark: \(error.localizedDescription)")
+            throw error
         }
     }
 
-    func deleteMark(for UUID: String) async {
+    func deleteMark(for UUID: String) async throws {
         do {
             let endpoint = MarkEndpoint.delete(itemUUID: UUID)
             _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
         } catch {
             logger.error("Failed to delete mark: \(error.localizedDescription)")
+            throw error
         }
     }
 }

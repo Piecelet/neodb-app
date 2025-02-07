@@ -6,7 +6,6 @@ import Combine
 final class TimelineActor: ObservableObject {
     private let logger = Logger.views.timelines
     private let cacheService = CacheService()
-    private var streamWatcher: StreamWatcher?
     private var loadTasks: [TimelineType: Task<Void, Never>] = [:]
     private var cancellables = Set<AnyCancellable>()
     
@@ -23,28 +22,7 @@ final class TimelineActor: ObservableObject {
         didSet {
             if oldValue !== accountsManager {
                 initTimelineStates()
-                setupStreamWatcher()
             }
-        }
-    }
-    
-    // MARK: - Initialization
-    init() {
-        setupStreamWatcher()
-    }
-    
-    private func setupStreamWatcher() {
-        streamWatcher = StreamWatcher()
-        if let streamWatcher = streamWatcher {
-            streamWatcher.$latestEvent
-                .compactMap { $0 }
-                .sink { [weak self] event in
-                    guard let self = self else { return }
-                    Task { @MainActor in
-                        await self.handleStreamEvent(event)
-                    }
-                }
-                .store(in: &cancellables)
         }
     }
     
@@ -66,11 +44,7 @@ final class TimelineActor: ObservableObject {
         var state = timelineStates[type] ?? TimelineState()
         update(&state)
         timelineStates[type] = state
-        
-        // Update stream watcher subscription if needed
-        if state.isActive && !state.isStreamSubscribed {
-            subscribeToStream(for: type)
-        }
+    
     }
     
     // MARK: - Timeline Loading
@@ -165,42 +139,6 @@ final class TimelineActor: ObservableObject {
         await loadTasks[type]?.value
     }
     
-    // MARK: - Stream Management
-    private func subscribeToStream(for type: TimelineType) {
-        guard let streamWatcher = streamWatcher else { return }
-        
-        let stream: StreamWatcher.Stream
-        switch type {
-        case .friends:
-            stream = .home
-        case .home:
-            stream = .local
-        case .popular:
-            stream = .trending
-        case .fediverse:
-            stream = .federated
-        }
-        
-        streamWatcher.watch(streams: [stream])
-        
-        updateState(for: type) { state in
-            state.isStreamSubscribed = true
-        }
-    }
-    
-    private func handleStreamEvent(_ event: any StreamEvent) async {
-        switch event {
-        case let update as StreamEventUpdate:
-            await handleStatusUpdate(update.status)
-        case let statusUpdate as StreamEventStatusUpdate:
-            await handleStatusUpdate(statusUpdate.status)
-        case let delete as StreamEventDelete:
-            await handleStatusDelete(delete.status)
-        default:
-            break
-        }
-    }
-    
     private func handleStatusUpdate(_ status: MastodonStatus) async {
         // Determine which timeline type this status belongs to based on visibility and source
         for type in TimelineType.allCases {
@@ -239,13 +177,11 @@ final class TimelineActor: ObservableObject {
     func cleanup() {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
-        streamWatcher?.stopWatching()
         
         // Mark all timelines as inactive
         for type in TimelineType.allCases {
             updateState(for: type) { state in
                 state.isActive = false
-                state.isStreamSubscribed = false
             }
         }
     }

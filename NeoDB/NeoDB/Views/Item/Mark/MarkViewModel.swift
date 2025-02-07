@@ -106,7 +106,7 @@ class MarkViewModel: ObservableObject {
             //     postId: markDataController?.mark?.postId
             // )
 
-            await markDataController?.updateMark(changedTime: changeTime ? ServerDate.from(createdTime) : nil, postToFediverse: postToFediverse)
+            try await markDataController?.updateMark(changedTime: changeTime ? ServerDate.from(createdTime) : nil, postToFediverse: postToFediverse)
             isDismissed = true
         } catch {
             self.error = error
@@ -124,7 +124,7 @@ class MarkViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            await markDataController?.deleteMark(for: item.uuid)
+            try await markDataController?.deleteMark(for: item.uuid)
             isDismissed = true
         } catch {
             self.error = error
