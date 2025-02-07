@@ -28,7 +28,7 @@ struct ContentView: View {
         ) {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
-                TimelinesView()
+                MastodonTimelinesView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)

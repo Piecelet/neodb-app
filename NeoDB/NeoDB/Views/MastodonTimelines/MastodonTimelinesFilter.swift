@@ -9,7 +9,7 @@
 import Foundation
 import SwiftUI
 
-enum MastodonTimelinesFilter: Hashable, Equatable, Identifiable, Sendable {
+enum MastodonTimelinesFilter: String, Hashable, Equatable, Identifiable, Sendable, CaseIterable {
     case following, local, trending, federated
     case latest
     case resume
@@ -22,7 +22,7 @@ enum MastodonTimelinesFilter: Hashable, Equatable, Identifiable, Sendable {
         hasher.combine(id)
     }
 
-    func availableTimeline(isAuthenticated: Bool = false) -> [MastodonTimelinesFilter] {
+    static func availableTimeline(isAuthenticated: Bool = false) -> [MastodonTimelinesFilter] {
         if !isAuthenticated {
             return [.local, .trending, .federated]
         }
@@ -55,7 +55,7 @@ enum MastodonTimelinesFilter: Hashable, Equatable, Identifiable, Sendable {
         }
     }
 
-    var localizedTitle: String {
+    var displayName: String {
         switch self {
         case .following:
             String(localized: "timelines_type_following", defaultValue: "Following", table: "Timelines")
@@ -73,7 +73,7 @@ enum MastodonTimelinesFilter: Hashable, Equatable, Identifiable, Sendable {
     }
     
 
-    func endpoint(sinceId: String? = nil, maxId: String? = nil, minId: String? = nil, offset: Int?, limit: Int? = nil) -> TimelinesEndpoint {
+    func endpoint(sinceId: String? = nil, maxId: String? = nil, minId: String? = nil, offset: Int? = nil, limit: Int? = nil) -> TimelinesEndpoint {
         switch self {
         case .following:
             return .home(sinceId: sinceId, maxId: maxId, minId: minId, limit: limit)
