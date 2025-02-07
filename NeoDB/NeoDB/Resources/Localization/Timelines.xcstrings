@@ -464,17 +464,6 @@
         }
       }
     },
-    "timelines_type_federated" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Federated"
-          }
-        }
-      }
-    },
     "timelines_type_fediverse" : {
       "localizations" : {
         "da" : {
@@ -493,17 +482,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "联邦宇宙"
-          }
-        }
-      }
-    },
-    "timelines_type_following" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Following"
           }
         }
       }
@@ -552,28 +530,6 @@
         }
       }
     },
-    "timelines_type_latest" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Latest"
-          }
-        }
-      }
-    },
-    "timelines_type_local" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Local"
-          }
-        }
-      }
-    },
     "timelines_type_popular" : {
       "localizations" : {
         "da" : {
@@ -592,28 +548,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "热门"
-          }
-        }
-      }
-    },
-    "timelines_type_resume" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Resume"
-          }
-        }
-      }
-    },
-    "timelines_type_trending" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Trending"
           }
         }
       }
