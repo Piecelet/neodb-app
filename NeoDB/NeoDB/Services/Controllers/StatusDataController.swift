@@ -68,7 +68,7 @@ final class StatusDataController: StatusDataControlling {
     nonisolated let status: AnyMastodonStatus
     private let accountsManager: AppAccountsManager
     private let logger = Logger.dataControllers.statusDataController
-    private var unfetchedItem: (any ItemProtocol)? = nil
+    // private var unfetchedItem: (any ItemProtocol)? = nil
 
     @Published var isReblogged: Bool
     @Published var isBookmarked: Bool
@@ -84,7 +84,7 @@ final class StatusDataController: StatusDataControlling {
     init(status: AnyMastodonStatus, accountsManager: AppAccountsManager) {
         self.status = status
         self.accountsManager = accountsManager
-        self.unfetchedItem = status.content.links.compactMap(\.neodbItem).first
+        // self.unfetchedItem = status.content.links.compactMap(\.neodbItem).first
 
         isReblogged = status.reblogged == true
         isBookmarked = status.bookmarked == true
@@ -95,9 +95,11 @@ final class StatusDataController: StatusDataControlling {
         favoritesCount = status.favouritesCount
         content = status.content
 
-        Task {
-            await getItem()
-        }
+        // Task {
+        //     await getItem()
+        // }
+
+        self.item = status.content.links.compactMap(\.neodbItem).first
     }
 
     func updateFrom(status: AnyMastodonStatus) {
@@ -111,18 +113,18 @@ final class StatusDataController: StatusDataControlling {
         content = status.content
     }
 
-    private func getItem() async {
-        guard let item = unfetchedItem else { return }
-        do {
-            let endpoint = ItemEndpoint.make(
-                id: item.id, category: item.category)
-            let fetchedItem = try await accountsManager.currentClient.fetch(
-                endpoint, type: ItemSchema.self)
-            self.item = fetchedItem
-        } catch {
-            logger.error("Failed to get item: \(error.localizedDescription)")
-        }
-    }
+    // private func getItem() async {
+    //     guard let item = unfetchedItem else { return }
+    //     do {
+    //         let endpoint = ItemEndpoint.make(
+    //             id: item.id, category: item.category)
+    //         let fetchedItem = try await accountsManager.currentClient.fetch(
+    //             endpoint, type: ItemSchema.self)
+    //         self.item = fetchedItem
+    //     } catch {
+    //         logger.error("Failed to get item: \(error.localizedDescription)")
+    //     }
+    // }
 
     func toggleFavorite(remoteStatus: String?) async {
         guard accountsManager.isAuthenticated else { return }

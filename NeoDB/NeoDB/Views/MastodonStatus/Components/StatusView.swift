@@ -40,14 +40,15 @@ struct StatusView: View {
                     } label: {
                         AccountAvatarView(account: status.account)
                         
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(status.account.displayName ?? "")
-                                .font(.headline)
-                                .foregroundStyle(.primary)
-                            Text("@\(status.account.username)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
+                        // VStack(alignment: .leading, spacing: 2) {
+                        //     Text(status.account.displayName ?? "")
+                        //         .font(.headline)
+                        //         .foregroundStyle(.primary)
+                        //     Text("@\(status.account.username)")
+                        //         .font(.subheadline)
+                        //         .foregroundStyle(.secondary)
+                        // }
+                        AccountNameView(account: status.account)
                     }
                     .buttonStyle(.plain)
                     
@@ -69,12 +70,7 @@ struct StatusView: View {
                     .textSelection(.enabled)
                     .lineLimit(mode == .timeline ? 5 : nil)
                 
-                // Item Previews if available
-                // ForEach(status.content.links.compactMap(\.neodbItem), id: \.uuid) { item in
-                //     StatusItemView(item: item)
-                //     .id(item.uuid)
-                // }
-                if let item = viewModel.statusDataController?.item {
+                if let item = status.content.links.compactMap(\.neodbItem).first {
                     StatusItemView(item: item)
                 }
                 
