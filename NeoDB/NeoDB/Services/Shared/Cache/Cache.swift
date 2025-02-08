@@ -33,12 +33,13 @@ extension CacheService {
         }
         
         // Gallery related
+        @available(*, deprecated, message: "Use gallery(instance:category:) instead")
         static func gallery(instance: String? = nil) -> String {
             "gallery_\(instance ?? "default")"
         }
 
-        static func gallery(instance: String = "default.instance", category: ItemCategory) -> String {
-            "gallery_\(instance)"
+        static func gallery(instance: String = "default.instance", category: ItemCategory.galleryCategory) -> String {
+            "gallery_\(instance)_\(category.rawValue)"
         }
         
         // Search related
@@ -181,6 +182,45 @@ extension CacheService {
         let key = Keys.gallery(instance: instance)
         try await remove(forKey: key, type: [GalleryResult].self)
     }
+
+    func cacheGallery(_ gallery: TrendingGalleryResult, category: ItemCategory.galleryCategory, instance: String) async throws {
+        let key = Keys.gallery(instance: instance, category: category)
+        switch category {
+        case .book:
+            if let bookGallery = gallery as? [EditionSchema] {
+                try await cache(bookGallery, forKey: key, type: [EditionSchema].self)
+            }
+        case .movie:
+            if let movieGallery = gallery as? [MovieSchema] {
+                try await cache(movieGallery, forKey: key, type: [MovieSchema].self)
+            }
+        case .tv:
+            if let tvGallery = gallery as? [TVShowSchema] {
+                try await cache(tvGallery, forKey: key, type: [TVShowSchema].self)
+            }
+        case .music:
+            if let musicGallery = gallery as? [AlbumSchema] {
+                try await cache(musicGallery, forKey: key, type: [AlbumSchema].self)
+            }
+        case .game:
+            if let gameGallery = gallery as? [GameSchema] {
+                try await cache(gameGallery, forKey: key, type: [GameSchema].self)
+            }
+        case .podcast:
+            if let podcastGallery = gallery as? [PodcastSchema] {
+                try await cache(podcastGallery, forKey: key, type: [PodcastSchema].self)
+            }
+        case .collection:
+            break
+        }
+    }
+
+    func retrieveGallery(category: ItemCategory.galleryCategory, instance: String) async throws -> TrendingGalleryResult? {
+        let key = Keys.gallery(instance: instance, category: category)
+        let type = ItemSchema.makeType(category: category.itemCategory)
+        return try await retrieve(forKey: key, type: [type])
+    }
+    
 
     // MARK: - Timelines Caching
 

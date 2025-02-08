@@ -26,7 +26,7 @@ class GalleryViewModel: ObservableObject {
     init() {
         // Initialize states for all categories
         for category in ItemCategory.galleryCategory.allCases {
-            galleryStates[category] = GalleryState()
+            galleryStates[category] = GalleryState(galleryCategory: category)
         }
     }
     
@@ -58,7 +58,7 @@ class GalleryViewModel: ObservableObject {
                     type: GalleryResult.self
                 ) {
                     updateState(for: category) { state in
-                        state.gallery = cached
+                        state.trendingGallery = cached
                         state.lastRefreshTime = Date()
                     }
                 }
@@ -125,7 +125,8 @@ class GalleryViewModel: ObservableObject {
 
 // MARK: - Gallery State
 struct GalleryState {
-    var gallery: GalleryResult?
+    var galleryCategory: ItemCategory.galleryCategory
+    var trendingGallery: TrendingGalleryResult?
     var isLoading = false
     var isRefreshing = false
     var error: Error?

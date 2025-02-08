@@ -42,3 +42,5 @@ struct GalleryResult: Codable, Identifiable {
 }
 
 typealias TrendingGalleryResult = [any ItemProtocol]
+
+

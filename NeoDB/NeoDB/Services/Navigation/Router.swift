@@ -27,7 +27,7 @@ enum RouterDestination: Hashable {
     case following(id: String)
 
     // Discover
-    case galleryCategory(gallery: GalleryResult)
+    case galleryCategory(trendingGallery: TrendingGalleryResult)
 
     // Store
     case purchase
@@ -69,9 +69,9 @@ enum RouterDestination: Hashable {
         case .following(let id):
             hasher.combine(10)
             hasher.combine(id)
-        case .galleryCategory(let gallery):
+        case .galleryCategory(let trendingGallery):
             hasher.combine(11)
-            hasher.combine(gallery.id)
+            hasher.combine(trendingGallery.first?.id ?? "trendingGallery")
         case .purchase:
             hasher.combine(12)
         case .purchaseWithFeature(let feature):

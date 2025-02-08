@@ -39,6 +39,24 @@ struct GalleryView: View {
 
     private var galleryContent: some View {
         ForEach(ItemCategory.galleryCategory.allCases, id: \.self) { category in
+
+        VStack(alignment: .leading) {
+            Button {
+                router.navigate(to: .galleryCategory(trendingGallery: category.items))
+            } label: {
+                HStack(alignment: .center, spacing: 4) {
+                    Text(category.displayName)
+                        .font(.system(size: 20))
+                        .foregroundStyle(.primary)
+                    Image(systemSymbol: .chevronRight)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .fontWeight(.bold)
+            }
+            .padding(.horizontal)
+            .buttonStyle(.plain)
+
             if let state = viewModel.galleryStates[category],
                let gallery = state.gallery {
                 Section {
@@ -54,25 +72,12 @@ struct GalleryView: View {
                 }
             }
         }
+        .padding(.top, 20)
+        .listRowInsets(EdgeInsets())
+        }
     }
 
     private func galleryView(_ gallery: GalleryResult) -> some View {
-        VStack(alignment: .leading) {
-            Button {
-                router.navigate(to: .galleryCategory(gallery: gallery))
-            } label: {
-                HStack(alignment: .center, spacing: 4) {
-                    Text(gallery.displayTitle)
-                        .font(.system(size: 20))
-                        .foregroundStyle(.primary)
-                    Image(systemSymbol: .chevronRight)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                }
-                .fontWeight(.bold)
-            }
-            .padding(.horizontal)
-            .buttonStyle(.plain)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(alignment: .top, spacing: 12) {
@@ -93,9 +98,6 @@ struct GalleryView: View {
                 }
                 .padding(.horizontal)
             }
-        }
-        .padding(.top, 20)
-        .listRowInsets(EdgeInsets())
     }
 
     #if DEBUG

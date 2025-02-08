@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct GalleryCategoryView: View {
-    let gallery: GalleryResult
+    let trendingGallery: TrendingGalleryResult
     @EnvironmentObject private var router: Router
     
     var body: some View {
         List {
-            ForEach(gallery.items, id: \.uuid) { item in
+            ForEach(trendingGallery.items, id: \.uuid) { item in
                 Button {
                     HapticFeedback.selection()
                     router.navigate(to: .itemDetailWithItem(item: item))
