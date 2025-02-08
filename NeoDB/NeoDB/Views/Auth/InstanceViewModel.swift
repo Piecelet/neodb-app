@@ -22,7 +22,6 @@ final class InstanceViewModel: ObservableObject {
     @Published var error: Error?
     @Published var showIncompatibleAlert = false
     @Published var instanceAddress: String = ""
-    @EnvironmentObject private var router: Router
     
     var disableInteractiveDismiss = false
 
@@ -68,16 +67,6 @@ final class InstanceViewModel: ObservableObject {
             isLoading = false
         }
     }
-    
-//    func selectMastodonInstance(instance: MastodonInstance, address: String) {
-//        logger.debug("Selecting Mastodon instance: \(address)")
-//        router.navigate(to: .loginWithInstance(instance: instance, instanceAddress: address))
-//    }
-//    
-//    func selectAppInstance(instance: AppInstance) {
-//        logger.debug("Selecting app instance: \(instance.host)")
-//        router.navigate(to: .login(instance: instance.host))
-//    }
     
     func showIncompatibleInstanceAlert() {
         showIncompatibleAlert = true

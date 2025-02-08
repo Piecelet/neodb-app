@@ -32,12 +32,12 @@ struct NeoDBApp: App {
                                 whatsNewCollection: self
                             )
                         )
+            .environmentObject(router)
                 } else {
                     WelcomeView()
                 }
             }
             .id(accountsManager.appId)
-            .environmentObject(router)
             .environmentObject(accountsManager)
             .environmentObject(storeManager)
             .onOpenURL { url in

@@ -36,10 +36,10 @@ private enum IconType {
 
 struct InstanceView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @EnvironmentObject private var router: Router
     @StateObject private var instanceViewModel = InstanceViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
+    @State private var showLoginView = false
     @AppStorage(\.customInstance) private var customInstance: String
     let isAddingAccount: Bool
     private let logger = Logger.views.login
@@ -86,9 +86,7 @@ struct InstanceView: View {
                             accountsManager.add(account: account)
                             logger.debug("Starting navigation to LoginView with instance: \(instance)")
                             instanceViewModel.instanceAddress = searchText
-                            router.navigate(
-                                to: .login(
-                                    instanceAddress: instanceViewModel.instanceAddress), for: .auth)
+                            showLoginView = true
                         } label: {
                             InstanceRowView(
                                 instance: .mastodon(
@@ -120,9 +118,7 @@ struct InstanceView: View {
                         accountsManager.add(account: account)
                         logger.debug("Starting navigation to LoginView with instance: \(instance)")
                         instanceViewModel.instanceAddress = instance.host
-                        router.navigate(
-                            to: .login(instanceAddress: instanceViewModel.instanceAddress),
-                            for: .auth)
+                        showLoginView = true
                     } label: {
                         InstanceRowView(instance: .app(instance))
                     }
@@ -166,6 +162,9 @@ struct InstanceView: View {
             logger.debug(
                 "InstanceView initialized with isAddingAccount: \(isAddingAccount)"
             )
+        }
+        .navigationDestination(isPresented: $showLoginView) {
+            LoginView(instanceAddress: instanceViewModel.instanceAddress)
         }
         .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
                 VStack(spacing: 0) {
