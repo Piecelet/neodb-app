@@ -14,6 +14,7 @@ class LoginViewModel: ObservableObject {
     private let logger = Logger.views.login
     private var client: NetworkClient?
 
+    // State
     @Published var errorMessage: String?
     @Published var showError = false
     @Published var isAuthenticating = false {
@@ -27,8 +28,20 @@ class LoginViewModel: ObservableObject {
     @Published var authUrl: URL?
     @Published var instanceInfo: MastodonInstance?
     @Published var isLoading = false
+    @Published var showMastodonLogin = false
+    @Published var canDismiss = false
+    @Published var buttonScale = 1.0
     
+    // Dependencies
     var accountsManager: AppAccountsManager!
+    let instance: MastodonInstance?
+    let instanceAddress: String
+    
+    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
+        self.instance = instance
+        self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
+        logger.debug("LoginViewModel initialized with instance: \(String(describing: instance))")
+    }
 
     func loadInstanceInfo(instance: String? = nil) async {
         isLoading = true
@@ -78,6 +91,24 @@ class LoginViewModel: ObservableObject {
         // Load instance info after updating instance
         Task {
             await loadInstanceInfo(instance: newInstance)
+        }
+    }
+    
+    func handleSignInButtonTap() {
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            buttonScale = 0.95
+        }
+
+        // Reset scale after brief delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                self.buttonScale = 1.0
+            }
+        }
+
+        Task {
+            await authenticate()
+            accountsManager.isAuthenticating = true
         }
     }
 }

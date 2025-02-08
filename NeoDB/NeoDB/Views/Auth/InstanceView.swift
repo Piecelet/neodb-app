@@ -38,7 +38,6 @@ private enum IconType {
 struct InstanceView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
-    @StateObject private var viewModel = LoginViewModel()
     @StateObject private var instanceViewModel = InstanceViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
@@ -103,7 +102,6 @@ struct InstanceView: View {
                     ) { instance in
                         Button {
                             router.navigate(to: .login(instanceAddress: instance.host), for: .auth)
-                            viewModel.updateInstance(instance.host)
                         } label: {
                             InstanceRowView(instance: .app(instance))
                         }
@@ -157,7 +155,6 @@ struct InstanceView: View {
                 instanceViewModel.updateSearchText(newValue)
             }
             .task {
-                viewModel.accountsManager = accountsManager
                 logger.debug(
                     "InstanceView initialized with isAddingAccount: \(isAddingAccount)"
                 )
@@ -246,23 +243,6 @@ struct InstanceView: View {
                     }
                 }
             }
-            // .navigationDestination(
-            //     isPresented: $instanceViewModel.isLoginActive
-            // ) {
-            //     if let instance = instanceViewModel.selectedInstance {
-            //         LoginView(
-            //             instance: instance,
-            //             instanceAddress: instanceViewModel
-            //                 .selectedInstanceAddress)
-            //         .environment(\.isAddingAccount, isAddingAccount)
-            //     } else if let address = instanceViewModel
-            //         .selectedInstanceAddress
-            //     {
-            //         LoginView(
-            //             instanceAddress: address)
-            //         .environment(\.isAddingAccount, isAddingAccount)
-            //     }
-            // }
         }
         .enableInjection()
     }

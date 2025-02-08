@@ -11,41 +11,24 @@ import os
 
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @StateObject private var viewModel = LoginViewModel()
     @Environment(\.dismiss) private var dismiss
-    @State private var showMastodonLogin = false
     @Environment(\.isAddingAccount) private var isAddingAccount
-    let instance: MastodonInstance?
-    let instanceAddress: String
+    @StateObject private var viewModel: LoginViewModel
+    @State private var showMastodonLogin = false
     @State private var canDismiss = false
     private let logger = Logger.views.login
 
-    // Animation states
-    @State private var buttonScale = 1.0
-
     init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
-        self.instance = instance
-        self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
+        _viewModel = StateObject(wrappedValue: LoginViewModel(
+            instance: instance,
+            instanceAddress: instanceAddress
+        ))
         logger.debug("LoginView initialized with instance: \(String(describing: instance))")
     }
 
     private var signInButton: some View {
         Button(action: {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                buttonScale = 0.95
-            }
-
-            // Reset scale after brief delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                    buttonScale = 1.0
-                }
-            }
-
-            Task {
-                await viewModel.authenticate()
-                accountsManager.isAuthenticating = true
-            }
+            viewModel.handleSignInButtonTap()
         }) {
             HStack {
                 if accountsManager.isAuthenticating {
@@ -69,7 +52,7 @@ struct LoginView: View {
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .scaleEffect(buttonScale)
+        .scaleEffect(viewModel.buttonScale)
         .disabled(accountsManager.isAuthenticating)
     }
 
@@ -93,7 +76,7 @@ struct LoginView: View {
 
                 if viewModel.isLoading {
                     ProgressView()
-                } else if let instance = instance ?? viewModel.instanceInfo {
+                } else if let instance = viewModel.instance ?? viewModel.instanceInfo {
                     VStack(alignment: .leading, spacing: 16) {
                         if let rules = instance.rules, !rules.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
@@ -121,7 +104,6 @@ struct LoginView: View {
                         }
                     }
                 }
-
             }
             .padding(.vertical)
         }
@@ -162,7 +144,7 @@ struct LoginView: View {
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
-        .interactiveDismissDisabled(!canDismiss && isAddingAccount)
+        .interactiveDismissDisabled(!viewModel.canDismiss && isAddingAccount)
         .onAppear {
             logger.debug("LoginView appeared, isAddingAccount: \(isAddingAccount), canDismiss: \(canDismiss)")
             if !isAddingAccount {
@@ -188,8 +170,8 @@ struct LoginView: View {
         )
         .task {
             viewModel.accountsManager = accountsManager
-            if instance == nil {
-                await viewModel.loadInstanceInfo(instance: instanceAddress)
+            if viewModel.instance == nil {
+                viewModel.updateInstance(viewModel.instanceAddress)
             }
         }
         .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
