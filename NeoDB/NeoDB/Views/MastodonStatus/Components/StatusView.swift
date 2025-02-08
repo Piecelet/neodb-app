@@ -38,67 +38,118 @@ struct StatusView: View {
     }
 
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 12) {
-                // Header
-                HStack(alignment: .top, spacing: 8) {
-                    Button {
-                        router.navigate(to: .userProfile(id: status.account.id))
-                    } label: {
-                        AccountAvatarView(account: status.account)
-                        
-                        AccountNameView(account: status.account)
-                    }
-                    .buttonStyle(.plain)
-                    
-                    Spacer()
-                    
-                    Text(status.createdAt.relativeFormatted)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                
-                Text(status.content.asSafeMarkdownAttributedString)
-                    .environment(
-                        \.openURL,
-                         OpenURLAction { url in
-                             handleURL(url)
-                             return .handled
-                         }
-                    )
-                    .textSelection(.enabled)
-                    .lineLimit(mode == .timeline ? 5 : nil)
-                
-                if let item = status.content.links.compactMap(\.neodbItem).first {
-                    StatusItemView(item: item)
-                }
-                
-                // Media
-                if !status.mediaAttachments.isEmpty {
-                    mediaGrid
-                }
-                
-                // Footer
-                if !status.tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 8) {
-                            ForEach(status.tags, id: \.name) { tag in
-                                Text("#\(tag.name)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color.secondary.opacity(0.1))
-                                    .clipShape(Capsule())
+        Group {
+            switch mode {
+            case .timeline, .detail:
+                HStack {
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Header
+                        HStack(alignment: .top, spacing: 8) {
+                            Button {
+                                router.navigate(
+                                    to: .userProfile(id: status.account.id))
+                            } label: {
+                                AccountAvatarView(account: status.account)
+
+                                AccountNameView(account: status.account)
+                            }
+                            .buttonStyle(.plain)
+
+                            Spacer()
+
+                            Text(status.createdAt.relativeFormatted)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(status.content.asSafeMarkdownAttributedString)
+                            .environment(
+                                \.openURL,
+                                OpenURLAction { url in
+                                    handleURL(url)
+                                    return .handled
+                                }
+                            )
+                            .textSelection(.enabled)
+                            .lineLimit(mode == .timeline ? 5 : nil)
+
+                        if let item = status.content.links.compactMap(
+                            \.neodbItem
+                        ).first {
+                            StatusItemView(item: item)
+                        }
+
+                        // Media
+                        if !status.mediaAttachments.isEmpty {
+                            mediaGrid
+                        }
+
+                        // Footer
+                        if !status.tags.isEmpty {
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    ForEach(status.tags, id: \.name) { tag in
+                                        Text("#\(tag.name)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(
+                                                Color.secondary.opacity(0.1)
+                                            )
+                                            .clipShape(Capsule())
+                                    }
+                                }
                             }
                         }
+
+                        StatusActionsView(
+                            status: status, accountsManager: accountsManager,
+                            showActions: mode.actions)
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                }
+            case .itemPost:
+                HStack(alignment: .top, spacing: 8) {
+                    Button {
+                        router.navigate(
+                            to: .userProfile(id: status.account.id))
+                    } label: {
+                        AccountAvatarView(account: status.account, size: .small)
+                    }
+                    .buttonStyle(.plain)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(
+                                status.account.displayName
+                                    ?? status.account.username
+                            )
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            Spacer()
+                            Text(status.createdAt.relativeFormatted)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        Text(status.content.asSafeMarkdownAttributedString)
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+
+                        StatusActionsView(
+                            status: status, accountsManager: accountsManager,
+                            size: .compact,
+                            showActions: mode.actions
+                        )
+                        .padding(.top, 4)
+                        .padding(.horizontal, -6)
                     }
                 }
-
-                StatusActionsView(status: status, accountsManager: accountsManager, showActions: mode.actions)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
             }
-            .padding()
-            .background(Color(.systemBackground))
         }
         .enableInjection()
     }

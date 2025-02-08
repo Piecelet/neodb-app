@@ -11,6 +11,7 @@ import SwiftUI
 struct StatusActionsView: View {
     enum Size {
         case regular
+        case compact
     }
 
     enum Action {
@@ -66,8 +67,9 @@ struct StatusActionsView: View {
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)
+
+                Spacer()
             }
-            Spacer()
             if showActions.contains(.reblog) {
                 Button {
                     HapticService.shared.impact(.medium)
@@ -89,8 +91,9 @@ struct StatusActionsView: View {
                     .contentTransition(.numericText())
                 }
                 .buttonStyle(.plain)
+
+                Spacer()
             }
-            Spacer()
             if showActions.contains(.favorite) {
                 Button {
                     HapticService.shared.impact(.medium)
@@ -113,8 +116,9 @@ struct StatusActionsView: View {
                     .contentTransition(.numericText())
                 }
                 .buttonStyle(.plain)
+
+                Spacer()
             }
-            Spacer()
             HStack(spacing: 10) {
                 if showActions.contains(.bookmark) {
                     Button {
@@ -153,7 +157,7 @@ struct StatusActionsView: View {
             }
         }
         .padding(.vertical, -6)
-        .padding(.horizontal)
+        .padding(.horizontal, size == .compact ? 0 : 16)
         .font(.subheadline)
         .enableInjection()
     }

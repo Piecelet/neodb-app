@@ -54,6 +54,7 @@ final class ItemViewPostsViewModel: ObservableObject {
 struct ItemViewPosts: View {
     @StateObject private var viewModel: ItemViewPostsViewModel
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var router: Router
 
     init(item: any ItemProtocol) {
         self._viewModel = StateObject(
@@ -74,28 +75,13 @@ struct ItemViewPosts: View {
                     .foregroundStyle(.secondary)
             } else {
                 ForEach(viewModel.posts, id: \.id) { post in
-                    HStack(alignment: .top, spacing: 8) {
-                        AccountAvatarView(account: post.account, size: .small)
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text(
-                                    post.account.displayName
-                                        ?? post.account.username
-                                )
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                Spacer()
-                                Text(post.createdAt.relativeFormatted)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-
-                            Text(post.content.asSafeMarkdownAttributedString)
-                                .font(.callout)
-                                .foregroundStyle(.secondary)
-                        }
+                    Button {
+                        router.navigate(
+                            to: .statusDetailWithStatus(status: post))
+                    } label: {
+                        StatusView(status: post, mode: .itemPost)
                     }
-                    .padding(.vertical, 8)
+                    .buttonStyle(.plain)
 
                     if post.id != viewModel.posts.last?.id {
                         Divider()
