@@ -288,5 +288,17 @@ extension ItemCategory {
         var displayName: String {
             itemCategory.displayName
         }
+
+        var endpoint: TrendingEndpoint {
+            switch self {
+            case .book: return .book
+            case .movie: return .movie
+            case .tv: return .tv
+            case .music: return .music
+            case .game: return .game
+            case .podcast: return .podcast
+            case .collection: return .collection
+            }
+        }
     }
 }

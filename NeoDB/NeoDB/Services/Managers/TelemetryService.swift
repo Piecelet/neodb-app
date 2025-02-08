@@ -27,13 +27,6 @@ class TelemetryService: ObservableObject {
         // Add default signal prefix for better organization
         config.defaultSignalPrefix = "App."
         
-        // Add default parameters that will be included with every signal
-        config.defaultParameters = { [
-        "appVersion": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "unknown",
-        "buildNumber": Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "unknown",
-        "isDebug": "\(AppConfig.isDebug)"
-    ] }
-        
         TelemetryDeck.initialize(config: config)
         logger.debug("TelemetryDeck initialized")
     }

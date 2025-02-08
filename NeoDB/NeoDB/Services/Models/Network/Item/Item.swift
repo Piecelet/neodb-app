@@ -160,8 +160,8 @@ extension ItemSchema {
             localizedTitle: nil,
             localizedDescription: nil,
             coverImageUrl: URL(string: "https://unknown.neodb.net/placeholder")!,
-            rating: 0,
-            ratingCount: 0,
+            rating: 5,
+            ratingCount: 46,
             brief: "placeholder"
         )
     }

@@ -11,7 +11,8 @@ import OSLog
 
 @MainActor
 protocol MarkDataControlling {
-    func updateMark(changedTime: ServerDate?, postToFediverse: Bool?) async throws
+    func updateMark(changedTime: ServerDate?, postToFediverse: Bool?)
+        async throws
     func deleteMark(for UUID: String) async throws
 }
 
@@ -26,36 +27,52 @@ final class MarkDataControllerProvider {
         let accountID: String
     }
 
-    func dataController(for uuid: String, appAccountsManager: AppAccountsManager) -> MarkDataController {
-        let key = DictionaryKey(itemUUID: uuid, accountID: appAccountsManager.currentAccount.id)
+    func dataController(
+        for uuid: String, appAccountsManager: AppAccountsManager
+    ) -> MarkDataController {
+        let key = DictionaryKey(
+            itemUUID: uuid, accountID: appAccountsManager.currentAccount.id)
         if let controller = dictionary[key] as? MarkDataController {
             return controller
         }
-        let controller = MarkDataController(uuid: uuid, appAccountsManager: appAccountsManager)
+        let controller = MarkDataController(
+            uuid: uuid, appAccountsManager: appAccountsManager)
         dictionary[key] = controller
         return controller
     }
 
-    func dataController(for mark: MarkSchema, appAccountsManager: AppAccountsManager) -> MarkDataController {
-        let key = DictionaryKey(itemUUID: mark.item.uuid, accountID: appAccountsManager.currentAccount.id)
+    func dataController(
+        for mark: MarkSchema, appAccountsManager: AppAccountsManager
+    ) -> MarkDataController {
+        let key = DictionaryKey(
+            itemUUID: mark.item.uuid,
+            accountID: appAccountsManager.currentAccount.id)
         if let controller = dictionary[key] as? MarkDataController {
             return controller
         }
-        let controller = MarkDataController(uuid: mark.item.uuid, appAccountsManager: appAccountsManager, mark: mark)
+        let controller = MarkDataController(
+            uuid: mark.item.uuid, appAccountsManager: appAccountsManager,
+            mark: mark)
         dictionary[key] = controller
         return controller
     }
 
-    func updateDataControllers(for UUIDs: [String], appAccountsManager: AppAccountsManager) {
+    func updateDataControllers(
+        for UUIDs: [String], appAccountsManager: AppAccountsManager
+    ) {
         for uuid in UUIDs {
-            let controller = dataController(for: uuid, appAccountsManager: appAccountsManager)
+            let controller = dataController(
+                for: uuid, appAccountsManager: appAccountsManager)
             controller.updateForm(for: uuid)
         }
     }
 
-    func updateDataControllers(for marks: [MarkSchema], appAccountsManager: AppAccountsManager) {
+    func updateDataControllers(
+        for marks: [MarkSchema], appAccountsManager: AppAccountsManager
+    ) {
         for mark in marks {
-            let controller = dataController(for: mark, appAccountsManager: appAccountsManager)
+            let controller = dataController(
+                for: mark, appAccountsManager: appAccountsManager)
             controller.updateForm(for: mark)
         }
     }
@@ -75,7 +92,10 @@ final class MarkDataController: MarkDataControlling {
     @Published var createdTime: ServerDate?
     @Published var tags: [String] = []
 
-    init(uuid: String, appAccountsManager: AppAccountsManager, mark: MarkSchema? = nil) {
+    init(
+        uuid: String, appAccountsManager: AppAccountsManager,
+        mark: MarkSchema? = nil
+    ) {
         self.uuid = uuid
         self.appAccountsManager = appAccountsManager
         self.mark = mark
@@ -115,14 +135,18 @@ final class MarkDataController: MarkDataControlling {
 
         do {
             let endpoint = MarkEndpoint.get(itemUUID: uuid)
-            let fetchedMark = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+            let fetchedMark = try await appAccountsManager.currentClient.fetch(
+                endpoint, type: MarkSchema.self)
             updateForm(for: fetchedMark)
         } catch {
             logger.error("Failed to get mark: \(error.localizedDescription)")
         }
     }
 
-    @available(*, deprecated, message: "Use updateMark(changedTime:postToFediverse:) instead")
+    @available(
+        *, deprecated,
+        message: "Use updateMark(changedTime:postToFediverse:) instead"
+    )
     func updateMark(for mark: MarkInSchema) async throws {
         let previousMark = self.mark
 
@@ -134,7 +158,8 @@ final class MarkDataController: MarkDataControlling {
         self.tags = mark.tags
         do {
             let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: mark)
-            _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+            _ = try await appAccountsManager.currentClient.fetch(
+                markEndpoint, type: MessageSchema.self)
             if let previousMark = previousMark {
                 let newMark = MarkSchema(
                     shelfType: mark.shelfType,
@@ -148,7 +173,8 @@ final class MarkDataController: MarkDataControlling {
                 )
                 self.mark = newMark
             } else {
-                self.mark = mark.toMarkSchema(item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
+                self.mark = mark.toMarkSchema(
+                    item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
             }
         } catch {
             logger.error("Failed to update mark: \(error.localizedDescription)")
@@ -171,7 +197,9 @@ final class MarkDataController: MarkDataControlling {
         }
     }
 
-    func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async throws {
+    func updateMark(
+        changedTime: ServerDate? = nil, postToFediverse: Bool? = nil
+    ) async throws {
         do {
             if let shelfType = self.shelfType {
                 let markIn = MarkInSchema(
@@ -184,8 +212,10 @@ final class MarkDataController: MarkDataControlling {
                     postToFediverse: postToFediverse,
                     postId: nil
                 )
-                let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: markIn)
-                _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+                let markEndpoint = MarkEndpoint.mark(
+                    itemUUID: uuid, mark: markIn)
+                _ = try await appAccountsManager.currentClient.fetch(
+                    markEndpoint, type: MessageSchema.self)
 
                 if changedTime == nil {
                     self.createdTime = ServerDate.now
@@ -206,7 +236,8 @@ final class MarkDataController: MarkDataControlling {
                     )
                     self.mark = newMark
                 } else {
-                    self.mark = markIn.toMarkSchema(item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
+                    self.mark = markIn.toMarkSchema(
+                        item: ItemSchema.makeTemporaryItemSchema(uuid: uuid))
                 }
             } else {
                 throw NetworkError.invalidURL
@@ -220,7 +251,8 @@ final class MarkDataController: MarkDataControlling {
     func deleteMark(for UUID: String) async throws {
         do {
             let endpoint = MarkEndpoint.delete(itemUUID: UUID)
-            _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MessageSchema.self)
+            _ = try await appAccountsManager.currentClient.fetch(
+                endpoint, type: MessageSchema.self)
             self.mark = nil
             self.shelfType = nil
             self.commentText = ""

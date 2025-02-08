@@ -67,7 +67,7 @@ struct SearchView: View {
                 if !viewModel.recentSearches.isEmpty {
                     recentSearchesSection
                 }
-                GalleryView(galleryItems: viewModel.galleryItems)
+                GalleryView()
             } else {
                 if !viewModel.searchText.isEmpty
                     && viewModel.searchText.count >= viewModel.minSearchLength

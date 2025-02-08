@@ -10,8 +10,9 @@ import Kingfisher
 import SwiftUI
 
 struct GalleryView: View {
-    let galleryItems: [GalleryResult]
+    @StateObject private var viewModel = GalleryViewModel()
     @EnvironmentObject private var router: Router
+    @EnvironmentObject private var accountsManager: AppAccountsManager
     
     private let coverSize: ItemCoverSize = .large
     private var coverWidth: CGFloat {
@@ -19,66 +20,85 @@ struct GalleryView: View {
     }
 
     var body: some View {
-        ForEach(Array(galleryItems.enumerated()), id: \.element.id) { index, gallery in
-            Section {
-                VStack(alignment: .leading) {
-                    Button {
-                        router.navigate(to: .galleryCategory(gallery: gallery))
-                    } label: {
-                        HStack(alignment: .center, spacing: 4) {
-                            Text(gallery.displayTitle)
-                                .font(.system(size: 20))
-                                .foregroundStyle(.primary)
-                            Image(systemSymbol: .chevronRight)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .fontWeight(.bold)
-                    }
-                    .padding(.horizontal)
-                    .buttonStyle(.plain)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(alignment: .top, spacing: 12) {
-                            ForEach(gallery.items, id: \.uuid) { item in
-                                Button {
-                                    HapticFeedback.selection()
-                                    router.navigate(to: .itemDetailWithItem(item: item))
-                                } label: {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        ItemCoverView(item: item, size: coverSize, alignment: .fixed)
+        galleryContent
+            .task {
+                viewModel.accountsManager = accountsManager
+                // Load all categories
+                for category in ItemCategory.galleryCategory.allCases {
+                    await viewModel.loadGallery(category: category)
+                }
+            }
+            .refreshable {
+                // Refresh all categories
+                for category in ItemCategory.galleryCategory.allCases {
+                    await viewModel.loadGallery(category: category, refresh: true)
+                }
+            }
+            .enableInjection()
+    }
 
-                                        ItemTitleView(item: item, mode: .title, size: .compact, alignment: .center)
-                                            .frame(width: coverWidth)
-                                    }
-                                }
-                                .buttonStyle(.plain)
+    private var galleryContent: some View {
+        ForEach(ItemCategory.galleryCategory.allCases, id: \.self) { category in
+            if let state = viewModel.galleryStates[category],
+               let gallery = state.gallery {
+                Section {
+                    galleryView(gallery)
+                }
+                .listRowSeparator(.hidden)
+            } else if let state = viewModel.galleryStates[category],
+                      state.isLoading {
+                Section {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                        .listRowSeparator(.hidden)
+                }
+            }
+        }
+    }
+
+    private func galleryView(_ gallery: GalleryResult) -> some View {
+        VStack(alignment: .leading) {
+            Button {
+                router.navigate(to: .galleryCategory(gallery: gallery))
+            } label: {
+                HStack(alignment: .center, spacing: 4) {
+                    Text(gallery.displayTitle)
+                        .font(.system(size: 20))
+                        .foregroundStyle(.primary)
+                    Image(systemSymbol: .chevronRight)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+                .fontWeight(.bold)
+            }
+            .padding(.horizontal)
+            .buttonStyle(.plain)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(alignment: .top, spacing: 12) {
+                    ForEach(gallery.items, id: \.uuid) { item in
+                        Button {
+                            HapticFeedback.selection()
+                            router.navigate(to: .itemDetailWithItem(item: item))
+                        } label: {
+                            VStack(alignment: .leading, spacing: 8) {
+                                ItemCoverView(item: item, size: coverSize, alignment: .fixed)
+
+                                ItemTitleView(item: item, mode: .title, size: .compact, alignment: .center)
+                                    .frame(width: coverWidth)
                             }
                         }
-                        .padding(.horizontal)
+                        .buttonStyle(.plain)
                     }
                 }
-                .padding(.top, index == 0 ? 20 : nil)
-                .listRowInsets(.horizontal(0))
+                .padding(.horizontal)
             }
-            .listRowSeparator(.hidden)
         }
-        .enableInjection()
+        .padding(.top, 20)
+        .listRowInsets(EdgeInsets())
     }
 
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-}
-
-#Preview {
-    List {
-        GalleryView(galleryItems: [
-            GalleryResult(
-                name: "Preview Gallery",
-                items: [ItemSchema.preview]
-            )
-        ])
-        .environmentObject(Router())
-    }
 }
