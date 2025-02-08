@@ -36,6 +36,11 @@
 	<array>
 		<string>douban</string>
 		<string>goodreads</string>
+		<string>googlebooks</string>
+		<string>imdb</string>
+		<string>bangumi</string>
+		<string>bandcamp</string>
+		<string>spotify</string>
 	</array>
 </dict>
 </plist>

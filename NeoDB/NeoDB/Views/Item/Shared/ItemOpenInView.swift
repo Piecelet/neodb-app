@@ -56,15 +56,16 @@ struct ItemOpenInView: View {
                 } header: {
                     Text("Open in App")
                 }
-                if !websiteResources.isEmpty {
-                    Menu {
-                        availableWebsitesView
-                    } label: {
-                        Label("Open in Website", systemSymbol: .safari)
-                            .labelStyle(.iconOnly)
-                    }
-                }
-            } else if !websiteResources.isEmpty {
+            }
+            //     if !websiteResources.isEmpty {
+            //         Menu {
+            //             availableWebsitesView
+            //         } label: {
+            //             Label("Open in Website", systemSymbol: .safari)
+            //                 .labelStyle(.iconOnly)
+            //         }
+            //     }
+            if !websiteResources.isEmpty {
                 Section {
                     availableWebsitesView
                 } header: {
