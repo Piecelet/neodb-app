@@ -53,11 +53,9 @@ struct ProfileView: View {
 
                         // Avatar and Stats
                         HStack(alignment: .bottom) {
-                            if let account = account ?? viewModel.account {
-                                AccountAvatarView(account: account, size: .large)
-                                    .padding(.leading)
-                                    .offset(y: -40)
-                            }
+                            AccountAvatarView(account: account, size: .large)
+                                .padding(.leading)
+                                .offset(y: -40)
 
                             Spacer()
 

@@ -50,7 +50,7 @@ class CacheService {
     func retrieve<T: Codable>(forKey key: String, type: T.Type) async throws -> T? {
         let storage = try storage(for: type)
         let item = try? storage.object(forKey: key)
-        if let item {
+        if item != nil {
             logger.debug("Retrieved item of type \(type) with key: \(key)")
         }
         return item

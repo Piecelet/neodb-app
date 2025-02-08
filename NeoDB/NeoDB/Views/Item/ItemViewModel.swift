@@ -89,6 +89,7 @@ final class ItemViewModel: ObservableObject {
     }
 
     var shareURL: URL? {
+        guard let item else { return nil }
         return URL(string: item.id)
     }
 
