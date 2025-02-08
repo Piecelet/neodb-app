@@ -19,7 +19,7 @@ enum ItemState {
 final class ItemViewModel: ObservableObject {
     // MARK: - Dependencies
     let logger = Logger.views.item
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
 
     // MARK: - Task Management
     private var loadTask: Task<Void, Never>?
@@ -133,7 +133,7 @@ final class ItemViewModel: ObservableObject {
             do {
                 if !refresh,
                     let cached = try? await cacheService.retrieveItem(
-                        id: id, category: category, instance: accountsManager.currentAccount.instance)
+                        id: id, category: category)
                 {
                     await handleCachedItem(cached, id: id, category: category)
                         return
@@ -261,7 +261,7 @@ final class ItemViewModel: ObservableObject {
             item = result
             state = .loaded
             try? await cacheService.cacheItem(
-                result, id: id, category: category, instance: accountsManager?.currentAccount.instance)
+                result, id: id, category: category)
         }
     }
 
@@ -324,7 +324,7 @@ final class ItemViewModel: ObservableObject {
                 client: accountsManager.currentClient)
             logger.debug("Cache \(id) \(category) item refreshed")
             try? await cacheService.cacheItem(
-                result, id: id, category: category, instance: accountsManager.currentAccount.instance)
+                result, id: id, category: category)
             
             if !Task.isCancelled {
                 item = result

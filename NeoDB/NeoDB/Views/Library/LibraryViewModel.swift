@@ -29,7 +29,7 @@ struct ShelfItemsState {
 final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
     private let logger = Logger.views.library
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     let markDataProvider = MarkDataControllerProvider.shared
     
     // MARK: - Task Management

@@ -13,8 +13,8 @@ extension CacheService {
     /// Cache keys for different types of data
     enum Keys {
         // Items
-        static func item(uuid: String, instance: String? = nil) -> String {
-            "item_\(instance ?? "default")_\(uuid)"
+        static func item(id: String) -> String {
+            "item_\(id)"
         }
         
         // User related
@@ -50,9 +50,8 @@ extension CacheService {
     
     // MARK: - Item Caching
     
-    func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory, instance: String? = nil) async throws {
-        let uuid = id.components(separatedBy: "/").last ?? id
-        let key = Keys.item(uuid: uuid, instance: instance)
+    func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory) async throws {
+        let key = Keys.item(id: id)
         switch category {
         case .book:
             if let book = item as? EditionSchema {
@@ -99,14 +98,14 @@ extension CacheService {
         }
     }
     
-    func retrieveItem(id: String, category: ItemCategory, instance: String? = nil) async throws -> (any ItemProtocol)? {
-        let key = Keys.item(uuid: id, instance: instance)
+    func retrieveItem(id: String, category: ItemCategory) async throws -> (any ItemProtocol)? {
+        let key = Keys.item(id: id)
         let type = ItemSchema.makeType(category: category)
         return try await retrieve(forKey: key, type: type)
     }
     
-    func removeItem(id: String, category: ItemCategory, instance: String? = nil) async throws {
-        let key = Keys.item(uuid: id, instance: instance)
+    func removeItem(id: String, category: ItemCategory) async throws {
+        let key = Keys.item(id: id)
         let type = ItemSchema.makeType(category: category)
         try await remove(forKey: key, type: type)
     }

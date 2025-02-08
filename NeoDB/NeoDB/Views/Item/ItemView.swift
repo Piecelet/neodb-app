@@ -47,7 +47,7 @@ struct ItemView: View {
         }
         .refreshable {
             await viewModel.loadItemDetail(
-                id: itemUUID, category: category, refresh: true)
+                id: id, category: category, refresh: true)
         }
         .alert(
             "Error", isPresented: $viewModel.showError,
@@ -57,7 +57,7 @@ struct ItemView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            await viewModel.loadItemDetail(id: itemUUID, category: category)
+            await viewModel.loadItemDetail(id: id, category: category)
         }
         .onDisappear {
             viewModel.cleanup()
@@ -291,11 +291,6 @@ struct ItemView: View {
                 }
             }
         }
-    }
-
-    // MARK: - Helper Properties
-    private var itemUUID: String {
-        URL(string: id)?.lastPathComponent ?? id
     }
 
     #if DEBUG

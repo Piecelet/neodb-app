@@ -25,7 +25,7 @@ class SettingsViewModel: ObservableObject {
     @Published var isCacheClearing = false
     @Published var showClearCacheConfirmation = false
 
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private let logger = Logger.views.settings
 
     func loadUserProfile(forceRefresh: Bool = false) async {

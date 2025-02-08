@@ -12,7 +12,7 @@ import OSLog
 class MastodonStatusViewModel: ObservableObject {
     private let logger = Logger.views.status.status
     private var loadTask: Task<Void, Never>?
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     
     @Published var status: MastodonStatus?
     @Published var isLoading = false

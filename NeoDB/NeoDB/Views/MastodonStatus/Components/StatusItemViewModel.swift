@@ -11,7 +11,7 @@ import OSLog
 @MainActor
 class StatusItemViewModel: ObservableObject {
     private let logger = Logger.views.status.item
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private var loadTask: Task<Void, Never>?
     
     var accountsManager: AppAccountsManager? {
@@ -61,7 +61,7 @@ class StatusItemViewModel: ObservableObject {
         // Only load if we don't have full details
         guard item.description == nil || item.rating == nil else { 
             logger.debug("Item already has full details")
-            return 
+            return
         }
         
         loadItem(refresh: false)
@@ -86,7 +86,7 @@ class StatusItemViewModel: ObservableObject {
             // Try cache first if not refreshing
             if !refresh {
                 logger.debug("Using cached item: \(item.uuid) with category: \(item.category)")
-                if let cached = try? await cacheService.retrieveItem(id: item.uuid, category: item.category, instance: accountsManager.currentAccount.instance) {
+                if let cached = try? await cacheService.retrieveItem(id: item.id, category: item.category) {
                     if !Task.isCancelled {
                         logger.debug("Using cached item: \(item.uuid)")
                         item = cached
@@ -109,7 +109,7 @@ class StatusItemViewModel: ObservableObject {
                 if !Task.isCancelled {
                     logger.debug("Successfully loaded item: \(item.uuid)")
                     item = result
-                    try? await cacheService.cacheItem(result, id: item.uuid, category: item.category, instance: accountsManager.currentAccount.instance)
+                    try? await cacheService.cacheItem(result, id: item.id, category: item.category)
                 }
             } catch {
                 if !Task.isCancelled {

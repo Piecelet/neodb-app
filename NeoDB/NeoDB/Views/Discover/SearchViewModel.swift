@@ -12,7 +12,7 @@ import UIKit
 @MainActor
 class SearchViewModel: ObservableObject {
     private let logger = Logger.views.discover.search
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private var searchTask: Task<Void, Never>?
     private var galleryTask: Task<Void, Never>?
     private var searchDebounceTask: Task<Void, Never>?

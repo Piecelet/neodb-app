@@ -5,7 +5,7 @@ import OSLog
 class ProfileViewModel: ObservableObject {
     private let logger = Logger.views.profile
     private var loadTask: Task<Void, Never>?
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     
     @Published var account: MastodonAccount?
     @Published var isLoading = false

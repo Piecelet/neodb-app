@@ -14,7 +14,7 @@ import SwiftUI
 final class MastodonTimelinesViewModel: ObservableObject {
     // MARK: - Properties
     private let logger = Logger.views.timelines
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private var loadTasks: [MastodonTimelinesFilter: Task<Void, Never>] = [:]
     
     @Published private(set) var timelineStates: [MastodonTimelinesFilter: MastodonTimelinesState] = [

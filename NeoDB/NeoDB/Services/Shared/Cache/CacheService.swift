@@ -6,44 +6,34 @@ import Cache
 class CacheService {
     static let shared = CacheService()
     
-    init() {}  // 确保只能通过 shared 访问
+    private init() {}
     
     private let logger = Logger.cache
     
-    // Default configurations
-    private let defaultMemoryConfig = MemoryConfig(
-        expiry: .date(Date().addingTimeInterval(12 * 60 * 60)), // 12 hours
-        countLimit: 50,
-        totalCostLimit: 50 * 1024 * 1024 // 50 MB
-    )
-    
-    private let defaultDiskConfig = DiskConfig(
+    private let diskConfig = DiskConfig(
         name: "NeoDB",
         expiry: .date(Date().addingTimeInterval(7 * 24 * 60 * 60)), // 7 days
         maxSize: 512 * 1024 * 1024 // 512 MB
     )
     
-    private let defaultFileManager = FileManager.default
+    private let memoryConfig = MemoryConfig(
+        expiry: .date(Date().addingTimeInterval(12 * 60 * 60)), // 12 hours
+        countLimit: 50,
+        totalCostLimit: 50 * 1024 * 1024 // 50 MB
+    )
     
-    // Type-safe storage instances
     private var storages: [String: Any] = [:]
     
-    // Create storage for a specific type
-    func storage<T: Codable>(for type: T.Type, name: String) throws -> Storage<String, T> {
+    func storage<T: Codable>(for type: T.Type) throws -> Storage<String, T> {
+        let name = String(describing: type)
         if let existing = storages[name] as? Storage<String, T> {
             return existing
         }
         
-        let diskConfig = DiskConfig(
-            name: name,
-            expiry: defaultDiskConfig.expiry,
-            maxSize: defaultDiskConfig.maxSize
-        )
-        
         let storage = try Storage<String, T>(
             diskConfig: diskConfig,
-            memoryConfig: defaultMemoryConfig,
-            fileManager: defaultFileManager,
+            memoryConfig: memoryConfig,
+            fileManager: FileManager.default,
             transformer: TransformerFactory.forCodable(ofType: T.self)
         )
         
@@ -51,22 +41,23 @@ class CacheService {
         return storage
     }
     
-    // Generic methods for cache operations
     func cache<T: Codable>(_ item: T, forKey key: String, type: T.Type) async throws {
-        let storage = try storage(for: type, name: String(describing: type))
+        let storage = try storage(for: type)
         try storage.setObject(item, forKey: key)
         logger.debug("Cached item of type \(type) with key: \(key)")
     }
     
     func retrieve<T: Codable>(forKey key: String, type: T.Type) async throws -> T? {
-        let storage = try storage(for: type, name: String(describing: type))
-        let item = try storage.object(forKey: key)
-        logger.debug("Retrieved item of type \(type) with key: \(key)")
+        let storage = try storage(for: type)
+        let item = try? storage.object(forKey: key)
+        if let item {
+            logger.debug("Retrieved item of type \(type) with key: \(key)")
+        }
         return item
     }
     
     func remove<T: Codable>(forKey key: String, type: T.Type) async throws {
-        let storage = try storage(for: type, name: String(describing: type))
+        let storage = try storage(for: type)
         try storage.removeObject(forKey: key)
         logger.debug("Removed item of type \(type) with key: \(key)")
     }
