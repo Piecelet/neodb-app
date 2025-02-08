@@ -10,14 +10,15 @@ import SwiftUI
 struct MastodonStatusView: View {
     let id: String
     let status: MastodonStatus?
-    
+    let item: (any ItemProtocol)?
     @StateObject private var viewModel = MastodonStatusViewModel()
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
     
-    init(id: String, status: MastodonStatus? = nil) {
+    init(id: String, status: MastodonStatus? = nil, item: (any ItemProtocol)? = nil) {
         self.id = id
         self.status = status
+        self.item = item
     }
     
     var body: some View {
@@ -47,7 +48,7 @@ struct MastodonStatusView: View {
                 }
             }
         }
-        .navigationTitle(String(localized: "timelines_status_title", table: "Timelines"))
+        .navigationTitle(item?.title ?? String(localized: "timelines_status_title", table: "Timelines"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager

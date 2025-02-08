@@ -20,6 +20,7 @@ enum RouterDestination: Hashable {
     case userProfileWithUser(user: User)
     case statusDetail(id: String)
     case statusDetailWithStatus(status: MastodonStatus)
+    case statusDetailWithStatusAndItem(status: MastodonStatus, item: any ItemProtocol)
     case hashTag(tag: String)
 
     // Lists
@@ -65,6 +66,10 @@ enum RouterDestination: Hashable {
         case .statusDetailWithStatus(let status):
             hasher.combine(7)
             hasher.combine(status.id)
+        case .statusDetailWithStatusAndItem(let status, let item):
+            hasher.combine(8)
+            hasher.combine(status.id)
+            hasher.combine(item.id)
         case .hashTag(let tag):
             hasher.combine(9)
             hasher.combine(tag)
@@ -87,9 +92,7 @@ enum RouterDestination: Hashable {
         case .login(let instanceAddress):
             hasher.combine(15)
             hasher.combine(instanceAddress)
-        // case .loginWithInstance(let instance, _):
-        //     hasher.combine(16)
-        //     hasher.combine(instance.title)
+            
         }
     }
 
@@ -159,6 +162,8 @@ extension RouterDestination {
             MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):
             MastodonStatusView(id: status.id, status: status)
+        case .statusDetailWithStatusAndItem(let status, let item):
+            MastodonStatusView(id: status.id, status: status, item: item)
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):

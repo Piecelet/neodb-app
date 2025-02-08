@@ -77,7 +77,8 @@ struct ItemViewPosts: View {
                 ForEach(viewModel.posts, id: \.id) { post in
                     Button {
                         router.navigate(
-                            to: .statusDetailWithStatus(status: post))
+                            to: .statusDetailWithStatusAndItem(
+                                status: post, item: viewModel.item))
                     } label: {
                         StatusView(status: post, mode: .itemPost)
                     }

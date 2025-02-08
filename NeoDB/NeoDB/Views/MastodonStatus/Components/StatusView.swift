@@ -12,12 +12,13 @@ import SwiftUI
 enum StatusViewMode {
     case timeline
     case detail
+    case detailWithItem
     case itemPost
 
     var actions: [StatusActionsView.Action] {
         switch self {
         case .timeline: return [.reply, .reblog, .favorite, .bookmark, .share]
-        case .detail: return [.reply, .reblog, .favorite, .bookmark]
+        case .detail, .detailWithItem: return [.reply, .reblog, .favorite, .bookmark]
         case .itemPost: return [.favorite]
         }
     }
@@ -40,7 +41,7 @@ struct StatusView: View {
     var body: some View {
         Group {
             switch mode {
-            case .timeline, .detail:
+            case .timeline, .detail, .detailWithItem:
                 HStack {
                     VStack(alignment: .leading, spacing: 12) {
                         // Header
@@ -75,7 +76,7 @@ struct StatusView: View {
 
                         if let item = status.content.links.compactMap(
                             \.neodbItem
-                        ).first {
+                        ).first, mode != .detailWithItem {
                             StatusItemView(item: item)
                         }
 
