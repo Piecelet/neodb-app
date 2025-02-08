@@ -63,26 +63,15 @@ struct GalleryView: View {
                         .padding(.horizontal)
                         .buttonStyle(.plain)
 
-                        if state.isLoading {
-                            galleryView(ItemSchema.placeholders, isPlaceholder: true)
-                        } else if let gallery = state.gallery {
-                            galleryView(gallery)
+                        if state.trendingGallery.isEmpty {
+                            if state.isLoading || !state.isInited || state.isRefreshing {
+                                galleryView(ItemSchema.placeholders, isPlaceholder: true)
+                            } else {
+                                galleryView(ItemSchema.placeholders, isPlaceholder: true)
+                            }
+                        } else {
+                            galleryView(state.trendingGallery)
                         }
-
-                        // if let state = viewModel.galleryStates[category],
-                        //    let gallery = state.gallery {
-                        //     Section {
-                        //         galleryView(gallery)
-                        //     }
-                        //     .listRowSeparator(.hidden)
-                        // } else if let state = viewModel.galleryStates[category],
-                        //           state.isLoading {
-                        //     Section {
-                        //         ProgressView()
-                        //             .frame(maxWidth: .infinity)
-                        //             .listRowSeparator(.hidden)
-                        //     }
-                        // }
                     }
                     .listRowSeparator(.hidden)
                     .padding(.top, 20)

@@ -16,11 +16,12 @@ class GalleryViewModel: ObservableObject {
 
     struct State {
         var galleryCategory: ItemCategory.galleryCategory
-        var trendingGallery: TrendingItemResult? = nil
+        var trendingGallery: TrendingItemResult = []
         var isLoading = false
         var isRefreshing = false
         var error: Error?
         var lastRefreshTime: Date?
+        var isInited = false
     }
 
     private let logger = Logger.views.discover.gallery
@@ -72,6 +73,7 @@ class GalleryViewModel: ObservableObject {
                     updateState(for: category) { state in
                         state.trendingGallery = cached
                         state.lastRefreshTime = Date()
+                        state.isInited = true
                     }
                 }
             }
@@ -85,6 +87,7 @@ class GalleryViewModel: ObservableObject {
                     state.trendingGallery = result
                     state.lastRefreshTime = Date()
                     state.error = nil
+                    state.isInited = true
                 }
                 
                 // Cache only if it's a refresh or first load
