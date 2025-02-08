@@ -88,11 +88,16 @@ struct ItemSchema: ItemProtocol {
 }
 
 extension ItemSchema {
+    @available(*, deprecated, message: "Use ItemSchema.makeTemporaryItemSchema(uuid: String) instead.")
     static func makeTemporaryItemSchema(uuid: String) -> ItemSchema {
+        return ItemSchema.makeTemporaryItemSchema(id: URL(string: "https://unknown.neodb.net/unknown/\(uuid)")!)
+    }
+
+    static func makeTemporaryItemSchema(id: URL) -> ItemSchema {
         return ItemSchema(
-            id: uuid,
+            id: id.absoluteString,
             type: .unknown,
-            uuid: uuid,
+            uuid: id.lastPathComponent.components(separatedBy: "/").last ?? id.absoluteString,
             url: "",
             apiUrl: "",
             category: .book,
@@ -135,6 +140,45 @@ extension ItemSchema {
         case .performanceProduction:
             return PerformanceProductionSchema.self
         }
+    }
+}
+
+extension ItemSchema {
+    static var placeholder: ItemSchema {
+        return .init(
+            id: "https://unknown.neodb.net/placeholder",
+            type: .unknown,
+            uuid: "placeholder",
+            url: "https://unknown.neodb.net/placeholder",
+            apiUrl: "https://unknown.neodb.net/placeholder",
+            category: .book,
+            parentUuid: nil,
+            displayTitle: "placeholder",
+            externalResources: [],
+            title: "placeholder",
+            description: "placeholder",
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: URL(string: "https://unknown.neodb.net/placeholder")!,
+            rating: 0,
+            ratingCount: 0,
+            brief: "placeholder"
+        )
+    }
+
+    static var placeholders: [ItemSchema] {
+        return [
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder
+        ]
     }
 }
 

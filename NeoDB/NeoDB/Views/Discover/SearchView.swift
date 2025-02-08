@@ -96,6 +96,7 @@ struct SearchView: View {
                 .animation(.default, value: viewModel.searchState)
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .listStyle(.plain)
         .searchable_iOS16(
             text: $viewModel.searchText, isPresented: $isSearchActive,
