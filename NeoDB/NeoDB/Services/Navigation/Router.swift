@@ -112,37 +112,6 @@ enum RouterDestination: Hashable {
     }
 }
 
-enum SheetDestination: Identifiable {
-    case newStatus
-    case editStatus(status: MastodonStatus)
-    case replyToStatus(status: MastodonStatus)
-    case addToShelf(item: any ItemProtocol, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    case editShelfItem(mark: MarkSchema, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    case itemDetails(item: any ItemProtocol)
-    case login
-
-    // Store
-    case purchase
-    case purchaseWithFeature(feature: StoreConfig.Features)
-    
-    var id: String {
-        switch self {
-        case .newStatus, .editStatus, .replyToStatus:
-            return "statusEditor"
-        case .addToShelf, .editShelfItem:
-            return "shelfEditor"
-        case .itemDetails:
-            return "itemDetails"
-        case .purchase:
-            return "purchase"
-        case .purchaseWithFeature:
-            return "purchaseWithFeature"
-        case .login:
-            return "login"
-        }
-    }
-}
-
 enum TabSection: String, CaseIterable {
     case home
     case search

@@ -7,6 +7,7 @@
 
 import BetterSafariView
 import SwiftUI
+import os
 
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
@@ -15,13 +16,18 @@ struct LoginView: View {
     @State private var showMastodonLogin = false
     let instance: MastodonInstance?
     let instanceAddress: String
+    let isAddingAccount: Bool
+    @State private var canDismiss = false
+    private let logger = Logger.views.login
 
     // Animation states
     @State private var buttonScale = 1.0
 
-    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
+    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil, isAddingAccount: Bool = false) {
         self.instance = instance
         self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
+        self.isAddingAccount = isAddingAccount
+        logger.debug("LoginView initialized with isAddingAccount: \(isAddingAccount), instance: \(String(describing: instance))")
     }
 
     private var signInButton: some View {
@@ -157,6 +163,21 @@ struct LoginView: View {
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
+        .interactiveDismissDisabled(!canDismiss && isAddingAccount)
+        .onAppear {
+            logger.debug("LoginView appeared, isAddingAccount: \(isAddingAccount), canDismiss: \(canDismiss)")
+            if !isAddingAccount {
+                canDismiss = true
+            }
+        }
+        .onDisappear {
+            if isAddingAccount {
+                logger.debug("LoginView disappearing, restoring last authenticated account")
+                accountsManager.restoreLastAuthenticatedAccount()
+                canDismiss = true
+                logger.debug("LoginView disappeared, canDismiss set to true")
+            }
+        }
         .alert(
             "Error", isPresented: $viewModel.showError,
             actions: {

@@ -97,57 +97,8 @@ struct ContentView: View {
                 router.presentSheet(.purchase)
             }
         }
-        .sheet(
-            item: Binding(
-                get: { router.sheetStack.last },
-                set: { _, _ in router.dismissSheet() }
-            )
-        ) { sheet in
-            Group {
-                switch sheet {
-                case .newStatus:
-                    Text("New Status")  // TODO: Implement StatusEditorView
-                case .editStatus(let status):
-                    Text("Edit Status: \(status.id)")  // TODO: Implement StatusEditorView
-                case .replyToStatus(let status):
-                    StatusReplyView(status: status)
-                case .addToShelf(let item, let shelfType, let detentLevel):
-                    MarkView(
-                        item: item, shelfType: shelfType,
-                        detentLevel: detentLevel
-                    )
-                    .environmentObject(accountsManager)
-                case .editShelfItem(let mark, let shelfType, let detentLevel):
-                    MarkView(
-                        item: mark.item, mark: mark, shelfType: shelfType,
-                        detentLevel: detentLevel
-                    )
-                    .environmentObject(accountsManager)
-                case .itemDetails(let item):
-                    ItemDetailsSheet(item: item)
-                case .purchase:
-                    PurchaseView(type: .sheet)
-                case .purchaseWithFeature(let feature):
-                    PurchaseView(type: .sheet, scrollToFeature: feature)
-                case .login:
-                    NavigationStack {
-                        InstanceView()
-                            .toolbar {
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Button(action: {
-                                        accountsManager.restoreLastAuthenticatedAccount()
-                                        router.dismissSheet()
-                                    }) {
-                                        Text("Done")
-                                    }
-                                }
-                            }
-                    }
-                    .interactiveDismissDisabled()
-                    .environmentObject(accountsManager)
-                }
-            }
-            .environmentObject(router)
+        .sheet(for: router.presentedSheet) {
+            router.dismissSheet()
         }
         .whatsNewSheet()
         .enableInjection()
@@ -204,4 +155,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(AppAccountsManager())
+        .environmentObject(StoreManager())
 }

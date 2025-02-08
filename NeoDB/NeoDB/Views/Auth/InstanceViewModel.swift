@@ -8,16 +8,23 @@
 
 import Foundation
 import SwiftUI
+import os
 
 final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var client: NetworkClient?
     private let versionIdentifier = "neodb"
+    private let logger = Logger.views.login
 
-    var isLoading = false
-    var instanceInfo: MastodonInstance?
-    var error: Error?
-    var showIncompatibleAlert = false
+    @Published var isLoading = false
+    @Published var instanceInfo: MastodonInstance?
+    @Published var error: Error?
+    @Published var showIncompatibleAlert = false
+    @Published var isLoginActive = false
+    @Published var selectedInstance: MastodonInstance?
+    @Published var selectedInstanceAddress: String?
+    
+    var disableInteractiveDismiss = false
 
     var isCompatible: Bool {
         guard let instance = instanceInfo else { return false }
@@ -60,5 +67,27 @@ final class InstanceViewModel: ObservableObject {
 
             isLoading = false
         }
+    }
+    
+    func selectMastodonInstance(instance: MastodonInstance, address: String) {
+        logger.debug("Selecting Mastodon instance: \(address)")
+        selectedInstance = instance
+        selectedInstanceAddress = address
+        isLoginActive = true
+    }
+    
+    func selectAppInstance(instance: AppInstance) {
+        logger.debug("Selecting app instance: \(instance.host)")
+        selectedInstance = nil
+        selectedInstanceAddress = instance.host
+        isLoginActive = true
+    }
+    
+    func showIncompatibleInstanceAlert() {
+        showIncompatibleAlert = true
+    }
+    
+    func dismissIncompatibleAlert() {
+        showIncompatibleAlert = false
     }
 }

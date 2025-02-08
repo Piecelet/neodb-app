@@ -27,7 +27,7 @@ class LoginViewModel: ObservableObject {
     @Published var authUrl: URL?
     @Published var instanceInfo: MastodonInstance?
     @Published var isLoading = false
-
+    
     var accountsManager: AppAccountsManager!
 
     func loadInstanceInfo(instance: String? = nil) async {

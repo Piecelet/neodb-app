@@ -9,6 +9,7 @@
 import Kingfisher
 import Perception
 import SwiftUI
+import os
 
 // 定义图标类型枚举
 private enum IconType {
@@ -27,12 +28,15 @@ struct InstanceView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LoginViewModel()
     @StateObject private var instanceViewModel = InstanceViewModel()
+    @Environment(\.dismiss) private var dismiss
     @State private var searchText = ""
     @AppStorage(\.customInstance) private var customInstance: String
+    let isAddingAccount: Bool
+    private let logger = Logger.views.login
 
     private let instances = AppConfig.instances
 
-    var filteredInstances: [AppInstance] {
+    private var filteredInstances: [AppInstance] {
         if searchText.isEmpty {
             return instances
         }
@@ -43,6 +47,12 @@ struct InstanceView: View {
         }
     }
 
+    init(isAddingAccount: Bool = false) {
+        self.isAddingAccount = isAddingAccount
+        logger.debug(
+            "InstanceView initialized with isAddingAccount: \(isAddingAccount)")
+    }
+
     var body: some View {
         WithPerceptionTracking {
             List {
@@ -51,11 +61,9 @@ struct InstanceView: View {
                 {
                     Section {
                         if instanceViewModel.isCompatible {
-                            NavigationLink {
-                                LoginView(instance: instance, instanceAddress: searchText)
-                                    .onAppear {
-                                        viewModel.updateInstance(searchText)
-                                    }
+                            Button {
+                                instanceViewModel.selectMastodonInstance(
+                                    instance: instance, address: searchText)
                             } label: {
                                 InstanceRowView(
                                     instance: .mastodon(
@@ -64,7 +72,7 @@ struct InstanceView: View {
                             }
                         } else {
                             Button {
-                                instanceViewModel.showIncompatibleAlert = true
+                                instanceViewModel.showIncompatibleInstanceAlert()
                             } label: {
                                 InstanceRowView(
                                     instance: .mastodon(
@@ -82,11 +90,10 @@ struct InstanceView: View {
                         filteredInstances.isEmpty
                             ? instances : filteredInstances, id: \.host
                     ) { instance in
-                        NavigationLink {
-                            LoginView(instanceAddress: instance.host)
-                                .onAppear {
-                                    viewModel.updateInstance(instance.host)
-                                }
+                        Button {
+                            instanceViewModel.selectAppInstance(
+                                instance: instance)
+                            viewModel.updateInstance(instance.host)
                         } label: {
                             InstanceRowView(instance: .app(instance))
                         }
@@ -98,8 +105,12 @@ struct InstanceView: View {
                     Section {
                         HStack {
                             Spacer()
-                            Text(String(localized: "instance_search_empty", table: "Settings"))
-                                .foregroundStyle(.secondary)
+                            Text(
+                                String(
+                                    localized: "instance_search_empty",
+                                    table: "Settings")
+                            )
+                            .foregroundStyle(.secondary)
                             Spacer()
                         }
                     }
@@ -119,13 +130,16 @@ struct InstanceView: View {
                     .listSectionSeparator(.hidden, edges: .bottom)
                 }
             }
-            .navigationTitle(String(localized: "instance_title", table: "Settings"))
+            .navigationTitle(
+                String(localized: "instance_title", table: "Settings")
+            )
             .navigationBarTitleDisplayMode(.inline)
             .listStyle(.plain)
             .searchable(
                 text: $searchText,
                 placement: .navigationBarDrawer(displayMode: .always),
-                prompt: String(localized: "instance_search_prompt", table: "Settings")
+                prompt: String(
+                    localized: "instance_search_prompt", table: "Settings")
             )
             .autocorrectionDisabled()
             .textInputAutocapitalization(.never)
@@ -134,13 +148,20 @@ struct InstanceView: View {
             }
             .task {
                 viewModel.accountsManager = accountsManager
+                logger.debug(
+                    "InstanceView initialized with isAddingAccount: \(isAddingAccount)"
+                )
             }
             .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
                 WithPerceptionTracking {
                     VStack(spacing: 0) {
                         HStack {
-                            Text(String(localized: "instance_alert_title", table: "Settings"))
-                                .font(.headline)
+                            Text(
+                                String(
+                                    localized: "instance_alert_title",
+                                    table: "Settings")
+                            )
+                            .font(.headline)
                             Spacer()
                             Button(action: {
                                 instanceViewModel.showIncompatibleAlert = false
@@ -159,14 +180,24 @@ struct InstanceView: View {
                                 .font(.largeTitle)
 
                             VStack(spacing: 12) {
-                                Text(String(format: String(localized: "instance_alert_incompatible", table: "Settings"), searchText))
-                                    .font(.body)
-                                    .multilineTextAlignment(.center)
+                                Text(
+                                    String(
+                                        format: String(
+                                            localized:
+                                                "instance_alert_incompatible",
+                                            table: "Settings"), searchText)
+                                )
+                                .font(.body)
+                                .multilineTextAlignment(.center)
 
-                                Text(String(localized: "instance_alert_description", table: "Settings"))
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                                    .multilineTextAlignment(.center)
+                                Text(
+                                    String(
+                                        localized: "instance_alert_description",
+                                        table: "Settings")
+                                )
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                                .multilineTextAlignment(.center)
                             }
                         }
                         .padding(.top, -40)
@@ -178,6 +209,49 @@ struct InstanceView: View {
                 }
                 .presentationDetents([.fraction(0.45)])
                 .presentationDragIndicator(.visible)
+            }
+            .toolbar {
+                if isAddingAccount {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Text("instance_title", tableName: "Settings")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 2)
+                    }
+                    ToolbarItem(placement: .principal) {
+                        Text("instance_title", tableName: "Settings")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 2)
+                            .hidden()
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button(action: {
+                            accountsManager.restoreLastAuthenticatedAccount()
+                            dismiss()
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.gray)
+                                .font(.headline)
+                        }
+                    }
+                }
+            }
+            .navigationDestination(
+                isPresented: $instanceViewModel.isLoginActive
+            ) {
+                if let instance = instanceViewModel.selectedInstance {
+                    LoginView(
+                        instance: instance,
+                        instanceAddress: instanceViewModel
+                            .selectedInstanceAddress,
+                        isAddingAccount: isAddingAccount)
+                } else if let address = instanceViewModel
+                    .selectedInstanceAddress
+                {
+                    LoginView(
+                        instanceAddress: address,
+                        isAddingAccount: isAddingAccount)
+                }
             }
         }
         .enableInjection()
@@ -331,6 +405,6 @@ private struct InstanceRowView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
