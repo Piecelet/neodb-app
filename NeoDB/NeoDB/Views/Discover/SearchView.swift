@@ -95,8 +95,14 @@ struct SearchView: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .listStyle(.plain)
-        .searchable_iOS16(
-            text: $viewModel.searchText, isPresented: $isSearchActive,
+//        .searchable_iOS16(
+//            text: $viewModel.searchText, isPresented: $isSearchActive,
+//            placement: .navigationBarDrawer(displayMode: .always),
+//            prompt: String(
+//                localized: "discover_search_prompt", table: "Discover")
+//        )
+        .searchable(
+            text: $viewModel.searchText,
             placement: .navigationBarDrawer(displayMode: .always),
             prompt: String(
                 localized: "discover_search_prompt", table: "Discover")

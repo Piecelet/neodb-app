@@ -56,14 +56,14 @@ struct ItemOpenInView: View {
                 Section {
                     availableAppsView
                 } header: {
-                    Text("Open in App")
+                    Text("item_open_in_section_title_apps")
                 }
             }
             if !websiteResources.isEmpty {
                 Section {
                     availableWebsitesView
                 } header: {
-                    Text("Open in Website")
+                    Text("item_open_in_section_title_websites")
                 }
             }
         }
@@ -78,7 +78,7 @@ struct ItemOpenInView: View {
         Menu {
             self.body
         } label: {
-            Label("Open website", symbol: .sfSymbol(.arrowUpForwardApp))
+            Label("item_open_in_open_links", symbol: .sfSymbol(.arrowUpForwardApp))
                 .labelStyle(.iconOnly)
         }
         .enableInjection()

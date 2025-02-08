@@ -8,12 +8,14 @@
 import Foundation
 import RevenueCat
 import TelemetryDeck
+import OSLog
 
 @MainActor
 class StoreManager: ObservableObject {
     @Published var appUserID: String? = nil
     @Published var customerInfo: RevenueCat.CustomerInfo? = nil
     @Published var plusOffering: Offering? = nil
+    private let logger = Logger.managers.store
 
     var isPlus: Bool {
         return customerInfo?.entitlements.active[
@@ -120,7 +122,7 @@ class StoreManager: ObservableObject {
             self.customerInfo = info
             self.appUserID = Purchases.shared.appUserID
         } catch {
-            print("Error setting customer info: \(error)")
+            logger.error("Error setting customer info: \(error)")
         }
     }
 
@@ -131,7 +133,7 @@ class StoreManager: ObservableObject {
                 plusOffering = offerings.offering(identifier: "plus") ?? offerings.current
             }
         } catch {
-            print("Error loading offerings: \(error)")
+            logger.error("Error loading offerings: \(error)")
         }
     }
 
