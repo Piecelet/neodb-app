@@ -36,7 +36,7 @@ enum RouterDestination: Hashable {
     // Login
     case instance
     case login(instanceAddress: String)
-    case loginWithInstance(instance: MastodonInstance, instanceAddress: String)
+    // case loginWithInstance(instance: MastodonInstance, instanceAddress: String)
 
     func hash(into hasher: inout Hasher) {
         switch self {
@@ -87,9 +87,9 @@ enum RouterDestination: Hashable {
         case .login(let instanceAddress):
             hasher.combine(15)
             hasher.combine(instanceAddress)
-        case .loginWithInstance(let instance, _):
-            hasher.combine(16)
-            hasher.combine(instance.title)
+        // case .loginWithInstance(let instance, _):
+        //     hasher.combine(16)
+        //     hasher.combine(instance.title)
         }
     }
 
@@ -175,8 +175,8 @@ extension RouterDestination {
             InstanceView()
         case .login(let instanceAddress):
             LoginView(instanceAddress: instanceAddress)
-        case .loginWithInstance(let instance, let instanceAddress):
-            LoginView(instance: instance, instanceAddress: instanceAddress)
+        // case .loginWithInstance(let instance, let instanceAddress):
+            // LoginView(instance: instance, instanceAddress: instanceAddress)
         }
     }
 }

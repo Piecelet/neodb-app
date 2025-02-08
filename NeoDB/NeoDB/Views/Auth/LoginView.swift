@@ -15,15 +15,13 @@ struct LoginView: View {
     @Environment(\.isAddingAccount) private var isAddingAccount
     @StateObject private var viewModel: LoginViewModel
     @State private var showMastodonLogin = false
-    @State private var canDismiss = false
     private let logger = Logger.views.login
 
-    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
+    init(instanceAddress: String) {
         _viewModel = StateObject(wrappedValue: LoginViewModel(
-            instance: instance,
             instanceAddress: instanceAddress
         ))
-        logger.debug("LoginView initialized with instance: \(String(describing: instance))")
+        logger.debug("LoginView initialized with instanceAddress: \(instanceAddress)")
     }
 
     private var signInButton: some View {
@@ -41,7 +39,7 @@ struct LoginView: View {
                             format: String(
                                 localized: "login_button_signin_with",
                                 table: "Settings"),
-                            accountsManager.currentAccount.instance))
+                            viewModel.instanceAddress))
                 }
             }
             .fontWeight(.medium)
@@ -53,7 +51,7 @@ struct LoginView: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .scaleEffect(viewModel.buttonScale)
-        .disabled(accountsManager.isAuthenticating)
+        .disabled(accountsManager.isAuthenticating || viewModel.isAuthLoading)
     }
 
     var body: some View {
@@ -65,7 +63,7 @@ struct LoginView: View {
                     .frame(width: 120, height: 120)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(accountsManager.currentAccount.instance)
+                    Text(viewModel.instanceAddress)
                         .foregroundColor(.secondary)
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,9 +74,9 @@ struct LoginView: View {
 
                 if viewModel.isLoading {
                     ProgressView()
-                } else if let instance = viewModel.instance ?? viewModel.instanceInfo {
+                } else if let instanceInfo = viewModel.instanceInfo {
                     VStack(alignment: .leading, spacing: 16) {
-                        if let rules = instance.rules, !rules.isEmpty {
+                        if let rules = instanceInfo.rules, !rules.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(
                                     String(
@@ -145,20 +143,6 @@ struct LoginView: View {
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
         .interactiveDismissDisabled(!viewModel.canDismiss && isAddingAccount)
-        .onAppear {
-            logger.debug("LoginView appeared, isAddingAccount: \(isAddingAccount), canDismiss: \(canDismiss)")
-            if !isAddingAccount {
-                canDismiss = true
-            }
-        }
-        .onDisappear {
-            if isAddingAccount {
-                logger.debug("LoginView disappearing, restoring last authenticated account")
-                accountsManager.restoreLastAuthenticatedAccount()
-                canDismiss = true
-                logger.debug("LoginView disappeared, canDismiss set to true")
-            }
-        }
         .alert(
             "Error", isPresented: $viewModel.showError,
             actions: {
@@ -170,10 +154,9 @@ struct LoginView: View {
         )
         .task {
             viewModel.accountsManager = accountsManager
-            if viewModel.instance == nil {
-                viewModel.updateInstance(viewModel.instanceAddress)
-            }
+            viewModel.initialize()
         }
+        .id(accountsManager.appId)
         .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
             WebAuthenticationSession(
                 url: viewModel.authUrl!,

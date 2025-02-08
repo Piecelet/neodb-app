@@ -7,9 +7,8 @@
 //
 
 import Kingfisher
-import Perception
-import SwiftUI
 import OSLog
+import SwiftUI
 
 private struct IsAddingAccountKey: EnvironmentKey {
     static let defaultValue = false
@@ -60,186 +59,191 @@ struct InstanceView: View {
 
     init(isAddingAccount: Bool = false) {
         self.isAddingAccount = isAddingAccount
-        logger.debug(
-            "InstanceView initialized with isAddingAccount: \(isAddingAccount)")
     }
 
     var body: some View {
-        WithPerceptionTracking {
-            List {
-                if let instance = instanceViewModel.instanceInfo,
-                    !instances.contains(where: { $0.host == searchText })
-                {
-                    Section {
-                        if instanceViewModel.isCompatible {
-                            Button {
-                                router.navigate(to: .loginWithInstance(instance: instance, instanceAddress: searchText), for: .auth)
-                            } label: {
-                                InstanceRowView(
-                                    instance: .mastodon(
-                                        instance, host: searchText,
-                                        isCompatible: true))
-                            }
-                        } else {
-                            Button {
-                                instanceViewModel.showIncompatibleInstanceAlert()
-                            } label: {
-                                InstanceRowView(
-                                    instance: .mastodon(
-                                        instance, host: searchText,
-                                        isCompatible: false))
-                            }
-                            .foregroundColor(.primary)
-                        }
-                    }
-                    .listSectionSeparator(.hidden, edges: .top)
-                }
-
+        List {
+            if instanceViewModel.isLoading {
                 Section {
-                    ForEach(
-                        filteredInstances.isEmpty
-                            ? instances : filteredInstances, id: \.host
-                    ) { instance in
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .id(UUID())
+                        Spacer()
+                    }
+                    .listRowBackground(Color.clear)
+                }
+                .listSectionSeparator(.hidden, edges: .bottom)
+            }
+
+            if let instance = instanceViewModel.instanceInfo,
+                !instances.contains(where: { $0.host == searchText })
+            {
+                Section {
+                    if instanceViewModel.isCompatible {
                         Button {
-                            router.navigate(to: .login(instanceAddress: instance.host), for: .auth)
+                            let account = AppAccount(instance: searchText, oauthToken: nil)
+                            accountsManager.add(account: account)
+                            logger.debug("Starting navigation to LoginView with instance: \(instance)")
+                            instanceViewModel.instanceAddress = searchText
+                            router.navigate(
+                                to: .login(
+                                    instanceAddress: instanceViewModel.instanceAddress), for: .auth)
                         } label: {
-                            InstanceRowView(instance: .app(instance))
+                            InstanceRowView(
+                                instance: .mastodon(
+                                    instance, host: searchText,
+                                    isCompatible: true))
                         }
+                    } else {
+                        Button {
+                            instanceViewModel.showIncompatibleInstanceAlert()
+                        } label: {
+                            InstanceRowView(
+                                instance: .mastodon(
+                                    instance, host: searchText,
+                                    isCompatible: false))
+                        }
+                        .foregroundColor(.primary)
                     }
                 }
                 .listSectionSeparator(.hidden, edges: .top)
+            }
 
-                if instanceViewModel.error != nil {
-                    Section {
-                        HStack {
-                            Spacer()
-                            Text(
-                                String(
-                                    localized: "instance_search_empty",
-                                    table: "Settings")
-                            )
-                            .foregroundStyle(.secondary)
-                            Spacer()
-                        }
+            Section {
+                ForEach(
+                    filteredInstances.isEmpty
+                        ? instances : filteredInstances, id: \.host
+                ) { instance in
+                    Button {
+                        let account = AppAccount(instance: instance.host, oauthToken: nil)
+                        accountsManager.add(account: account)
+                        logger.debug("Starting navigation to LoginView with instance: \(instance)")
+                        instanceViewModel.instanceAddress = instance.host
+                        router.navigate(
+                            to: .login(instanceAddress: instanceViewModel.instanceAddress),
+                            for: .auth)
+                    } label: {
+                        InstanceRowView(instance: .app(instance))
                     }
-                    .listSectionSeparator(.hidden, edges: .bottom)
-                }
-
-                if instanceViewModel.isLoading {
-                    Section {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                                .id(UUID())
-                            Spacer()
-                        }
-                        .listRowBackground(Color.clear)
-                    }
-                    .listSectionSeparator(.hidden, edges: .bottom)
                 }
             }
-            .navigationTitle(
-                String(localized: "instance_title", table: "Settings")
-            )
-            .navigationBarTitleDisplayMode(.inline)
-            .listStyle(.plain)
-            .searchable(
-                text: $searchText,
-                placement: .navigationBarDrawer(displayMode: .always),
-                prompt: String(
-                    localized: "instance_search_prompt", table: "Settings")
-            )
-            .autocorrectionDisabled()
-            .textInputAutocapitalization(.never)
-            .onChange(of: searchText) { newValue in
-                instanceViewModel.updateSearchText(newValue)
-            }
-            .task {
-                logger.debug(
-                    "InstanceView initialized with isAddingAccount: \(isAddingAccount)"
-                )
-            }
-            .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
-                WithPerceptionTracking {
-                    VStack(spacing: 0) {
-                        HStack {
-                            Text(
-                                String(
-                                    localized: "instance_alert_title",
-                                    table: "Settings")
-                            )
-                            .font(.headline)
-                            Spacer()
-                            Button(action: {
-                                instanceViewModel.showIncompatibleAlert = false
-                            }) {
-                                Image(systemSymbol: .xmarkCircleFill)
-                                    .font(.title2)
-                            }
-                            .foregroundStyle(.secondary)
-                        }
-                        .padding()
+            .listSectionSeparator(.hidden, edges: .top)
 
+            if instanceViewModel.error != nil {
+                Section {
+                    HStack {
                         Spacer()
-
-                        VStack(spacing: 20) {
-                            Image(systemSymbol: .exclamationmarkTriangleFill)
-                                .font(.largeTitle)
-
-                            VStack(spacing: 12) {
-                                Text(
-                                    String(
-                                        format: String(
-                                            localized:
-                                                "instance_alert_incompatible",
-                                            table: "Settings"), searchText)
-                                )
-                                .font(.body)
-                                .multilineTextAlignment(.center)
-
-                                Text(
-                                    String(
-                                        localized: "instance_alert_description",
-                                        table: "Settings")
-                                )
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
-                                .multilineTextAlignment(.center)
-                            }
-                        }
-                        .padding(.top, -40)
-                        .padding(.horizontal)
-
+                        Text(
+                            String(
+                                localized: "instance_search_empty",
+                                table: "Settings")
+                        )
+                        .foregroundStyle(.secondary)
                         Spacer()
                     }
-                    .background(.ultraThinMaterial)
                 }
-                .presentationDetents([.fraction(0.45)])
-                .presentationDragIndicator(.visible)
+                .listSectionSeparator(.hidden, edges: .bottom)
             }
-            .toolbar {
-                if isAddingAccount {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Text("instance_title", tableName: "Settings")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 2)
-                    }
-                    ToolbarItem(placement: .principal) {
-                        Text("instance_title", tableName: "Settings")
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.leading, 2)
-                            .hidden()
-                    }
-                    ToolbarItem(placement: .topBarTrailing) {
+        }
+        .navigationTitle(
+            String(localized: "instance_title", table: "Settings")
+        )
+        .navigationBarTitleDisplayMode(.inline)
+        .listStyle(.plain)
+        .searchable(
+            text: $searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: String(
+                localized: "instance_search_prompt", table: "Settings")
+        )
+        .autocorrectionDisabled()
+        .textInputAutocapitalization(.never)
+        .onChange(of: searchText) { newValue in
+            instanceViewModel.updateSearchText(newValue)
+        }
+        .task {
+            logger.debug(
+                "InstanceView initialized with isAddingAccount: \(isAddingAccount)"
+            )
+        }
+        .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
+                VStack(spacing: 0) {
+                    HStack {
+                        Text(
+                            String(
+                                localized: "instance_alert_title",
+                                table: "Settings")
+                        )
+                        .font(.headline)
+                        Spacer()
                         Button(action: {
-                            accountsManager.restoreLastAuthenticatedAccount()
-                            dismiss()
+                            instanceViewModel.showIncompatibleAlert = false
                         }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.gray)
-                                .font(.headline)
+                            Image(systemSymbol: .xmarkCircleFill)
+                                .font(.title2)
                         }
+                        .foregroundStyle(.secondary)
+                    }
+                    .padding()
+
+                    Spacer()
+
+                    VStack(spacing: 20) {
+                        Image(systemSymbol: .exclamationmarkTriangleFill)
+                            .font(.largeTitle)
+
+                        VStack(spacing: 12) {
+                            Text(
+                                String(
+                                    format: String(
+                                        localized:
+                                            "instance_alert_incompatible",
+                                        table: "Settings"), searchText)
+                            )
+                            .font(.body)
+                            .multilineTextAlignment(.center)
+
+                            Text(
+                                String(
+                                    localized: "instance_alert_description",
+                                    table: "Settings")
+                            )
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                        }
+                    }
+                    .padding(.top, -40)
+                    .padding(.horizontal)
+
+                    Spacer()
+            }
+                .background(.ultraThinMaterial)
+            .presentationDetents([.fraction(0.45)])
+            .presentationDragIndicator(.visible)
+        }
+        .toolbar {
+            if isAddingAccount {
+                ToolbarItem(placement: .topBarLeading) {
+                    Text("instance_title", tableName: "Settings")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 2)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("instance_title", tableName: "Settings")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 2)
+                        .hidden()
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        dismiss()
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundStyle(.gray)
+                            .font(.headline)
                     }
                 }
             }

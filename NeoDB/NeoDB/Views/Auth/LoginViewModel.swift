@@ -12,7 +12,6 @@ import SwiftUI
 @MainActor
 class LoginViewModel: ObservableObject {
     private let logger = Logger.views.login
-    private var client: NetworkClient?
 
     // State
     @Published var errorMessage: String?
@@ -20,11 +19,11 @@ class LoginViewModel: ObservableObject {
     @Published var isAuthenticating = false {
         didSet {
             if oldValue != isAuthenticating {
-                accountsManager.isAuthenticating = isAuthenticating
+                accountsManager?.isAuthenticating = isAuthenticating
             }
         }
     }
-    @Published var showInstanceInput = false
+    @Published var isAuthLoading = false
     @Published var authUrl: URL?
     @Published var instanceInfo: MastodonInstance?
     @Published var isLoading = false
@@ -33,24 +32,30 @@ class LoginViewModel: ObservableObject {
     @Published var buttonScale = 1.0
     
     // Dependencies
-    var accountsManager: AppAccountsManager!
-    let instance: MastodonInstance?
+    var accountsManager: AppAccountsManager?
+
     let instanceAddress: String
     
-    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
-        self.instance = instance
-        self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
-        logger.debug("LoginViewModel initialized with instance: \(String(describing: instance))")
+    init(instanceAddress: String) {
+        self.instanceAddress = instanceAddress
+        logger.debug("LoginViewModel initialized with instanceAddress: \(instanceAddress)")
     }
 
-    func loadInstanceInfo(instance: String? = nil) async {
+    func initialize() {
+        if accountsManager != nil,
+        instanceInfo == nil {
+            Task {
+                await loadInstanceInfo()
+            }
+        }
+    }
+
+    func loadInstanceInfo() async {
         isLoading = true
         do {
-            let address = instance ?? accountsManager.currentAccount.instance
-            client = NetworkClient(instance: address)
-            guard let client = client else { return }
+            guard accountsManager?.currentClient != nil else { return }
             
-            let instance = try await client.fetch(InstanceEndpoint.instance(), type: MastodonInstance.self)
+            let instance = try await accountsManager?.currentClient.fetch(InstanceEndpoint.instance(), type: MastodonInstance.self)
             instanceInfo = instance
         } catch {
             errorMessage = error.localizedDescription
@@ -61,8 +66,9 @@ class LoginViewModel: ObservableObject {
 
     func authenticate() async {
         do {
-            authUrl = try await accountsManager.authenticate(
-                instance: accountsManager.currentAccount.instance)
+            isAuthLoading = true
+            authUrl = try await accountsManager?.authenticate(
+                instance: accountsManager?.currentAccount.instance ?? AppConfig.defaultInstance)
             isAuthenticating = true
         } catch AccountError.invalidURL {
             errorMessage = "Invalid instance URL"
@@ -77,21 +83,11 @@ class LoginViewModel: ObservableObject {
             showError = true
             isAuthenticating = false
         }
+        isAuthLoading = false
     }
 
     func handleCallback(url: URL) async throws {
-        try await accountsManager.handleCallback(url: url)
-    }
-
-    func updateInstance(_ newInstance: String) {
-        let account = AppAccount(instance: newInstance, oauthToken: nil)
-        accountsManager.add(account: account)
-        showInstanceInput = false
-        
-        // Load instance info after updating instance
-        Task {
-            await loadInstanceInfo(instance: newInstance)
-        }
+        try await accountsManager?.handleCallback(url: url)
     }
     
     func handleSignInButtonTap() {
@@ -108,7 +104,7 @@ class LoginViewModel: ObservableObject {
 
         Task {
             await authenticate()
-            accountsManager.isAuthenticating = true
+            accountsManager?.isAuthenticating = true
         }
     }
 }

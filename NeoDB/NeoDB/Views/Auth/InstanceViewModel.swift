@@ -21,6 +21,7 @@ final class InstanceViewModel: ObservableObject {
     @Published var instanceInfo: MastodonInstance?
     @Published var error: Error?
     @Published var showIncompatibleAlert = false
+    @Published var instanceAddress: String = ""
     @EnvironmentObject private var router: Router
     
     var disableInteractiveDismiss = false
