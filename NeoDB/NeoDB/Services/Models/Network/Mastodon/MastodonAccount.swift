@@ -183,7 +183,15 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
         fields = try container.decode([MastodonAccount.Field].self, forKey: .fields)
         locked = try container.decode(Bool.self, forKey: .locked)
         emojis = try container.decode([MastodonEmoji].self, forKey: .emojis)
-        url = try container.decodeIfPresent(URL.self, forKey: .url)
+        
+        // Handle URL
+        if let urlString = try container.decodeIfPresent(String.self, forKey: .url),
+           !urlString.isEmpty {
+            url = URL(string: urlString)
+        } else {
+            url = nil
+        }
+        
         source = try container.decodeIfPresent(MastodonAccount.Source.self, forKey: .source)
         bot = try container.decode(Bool.self, forKey: .bot)
         discoverable = try container.decodeIfPresent(Bool.self, forKey: .discoverable)
