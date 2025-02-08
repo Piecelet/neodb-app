@@ -56,7 +56,7 @@ class TelemetryService: ObservableObject {
     
     // MARK: - Navigation Events
     
-    func trackTabChange(to tab: TabSection) {
+    func trackTabChange(to tab: TabDestination) {
         TelemetryDeck.signal("navigation.tab", parameters: ["tab": tab.rawValue])
         logger.debug("Tracked tab change to: \(tab.rawValue)")
     }

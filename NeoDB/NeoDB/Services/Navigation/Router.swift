@@ -8,16 +8,10 @@
 import SwiftUI
 import OSLog
 
-enum TabSection: String, CaseIterable {
-    case home
-    case search
-    case library
-    case profile
-}
-
 @MainActor
 class Router: ObservableObject {
-    @Published var paths: [TabSection: [RouterDestination]] = [:]
+    
+    @Published var paths: [TabDestination: [RouterDestination]] = [:]
     @Published var sheetStack: [SheetDestination] = []
     
     var presentedSheet: SheetDestination? {
@@ -25,18 +19,18 @@ class Router: ObservableObject {
     }
     
     @Published var itemToLoad: (any ItemProtocol)?
-    @Published var selectedTab: TabSection = .home
+    @Published var selectedTab: TabDestination = .home
     
     private let logger = Logger.router
     
     init() {
         // Initialize empty paths for each tab
-        TabSection.allCases.forEach { tab in
+        TabDestination.allCases.forEach { tab in
             paths[tab] = []
         }
     }
     
-    func path(for tab: TabSection) -> Binding<[RouterDestination]> {
+    func path(for tab: TabDestination) -> Binding<[RouterDestination]> {
         Binding(
             get: { self.paths[tab] ?? [] },
             set: { self.paths[tab] = $0 }

@@ -175,7 +175,7 @@ enum ItemKnownExternalResource: String {
         switch self {
         case .douban:
             return String(
-                localized: "item_external_resource_douban", defaultValue: "豆瓣",
+                localized: "item_external_resource_douban", defaultValue: "Douban",
                 table: "Item", comment: "Item External Resource Name - Douban")
         case .goodreads:
             return String(
@@ -185,7 +185,7 @@ enum ItemKnownExternalResource: String {
         case .booksTW:
             return String(
                 localized: "item_external_resource_bookstw",
-                defaultValue: "博客來", table: "Item",
+                defaultValue: "BooksTW", table: "Item",
                 comment: "Item External Resource Name - BooksTW")
         case .googleBooks:
             return String(
@@ -203,7 +203,7 @@ enum ItemKnownExternalResource: String {
         case .bangumi:
             return String(
                 localized: "item_external_resource_bangumi",
-                defaultValue: "Bangumi 番组计划", table: "Item",
+                defaultValue: "Bangumi", table: "Item",
                 comment: "Item External Resource Name - Bangumi")
         case .bandcamp:
             return String(
@@ -250,21 +250,21 @@ enum ItemKnownExternalResource: String {
         case .jinjiang:
             return String(
                 localized: "item_external_resource_jinjiang",
-                defaultValue: "晋江", table: "Item",
+                defaultValue: "JinJiang", table: "Item",
                 comment: "Item External Resource Name - JinJiang")
         case .qidian:
             return String(
-                localized: "item_external_resource_qidian", defaultValue: "起点",
+                localized: "item_external_resource_qidian", defaultValue: "Qidian",
                 table: "Item", comment: "Item External Resource Name - Qidian")
         case .ypshuo:
             return String(
                 localized: "item_external_resource_ypshuo",
-                defaultValue: "阅书中文", table: "Item",
+                defaultValue: "Ypshuo", table: "Item",
                 comment: "Item External Resource Name - Ypshuo")
         case .bilibili:
             return String(
                 localized: "item_external_resource_bilibili",
-                defaultValue: "哔哩哔哩", table: "Item",
+                defaultValue: "Bilibili", table: "Item",
                 comment: "Item External Resource Name - Bilibili")
         case .fedi:
             return String(

@@ -56,7 +56,12 @@ private struct SheetEnvironmentWrapper<Content: View>: View {
             .environmentObject(accountsManager)
             .environmentObject(router)
             .environmentObject(storeManager)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 // MARK: - View Builder

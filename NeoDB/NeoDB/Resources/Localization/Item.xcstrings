@@ -411,7 +411,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "Bangumi 番组计划"
+            "value" : "Bangumi"
           }
         }
       }
@@ -435,7 +435,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "哔哩哔哩"
+            "value" : "Bilibili"
           }
         }
       }
@@ -447,7 +447,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "博客來"
+            "value" : "BooksTW"
           }
         }
       }
@@ -471,7 +471,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "豆瓣"
+            "value" : "Douban"
           }
         }
       }
@@ -543,7 +543,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "晋江"
+            "value" : "JinJiang"
           }
         }
       }
@@ -555,7 +555,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "起点"
+            "value" : "Qidian"
           }
         }
       }
@@ -627,7 +627,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "阅书中文"
+            "value" : "Ypshuo"
           }
         }
       }
