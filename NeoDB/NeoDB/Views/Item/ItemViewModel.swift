@@ -89,14 +89,7 @@ final class ItemViewModel: ObservableObject {
     }
 
     var shareURL: URL? {
-        guard let item,
-            let accountsManager
-        else { return nil }
-
-        return ItemURL.makeShareURL(
-            for: item,
-            instance: accountsManager.currentAccount.instance
-        )
+        return URL(string: item.id)
     }
 
     // MARK: - Initialization

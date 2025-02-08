@@ -252,37 +252,9 @@ struct ItemView: View {
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             HStack(spacing: 16) {
-                if let resources = viewModel.item?.externalResources,
-                    !resources.isEmpty
-                {
-                    Menu {
-                        if let shareURL = viewModel.shareURL {
-                            Button(
-                                String(
-                                    format: String(
-                                        localized: "item_open_in_website",
-                                        table: "Item"),
-                                    accountsManager.currentAccount.instance),
-                                systemSymbol: .arrowUpRight
-                            ) {
-                                openURL(shareURL)
-                            }
-
-                            Divider()
-                        }
-
-                        ForEach(resources, id: \.url) { resource in
-                            Button(role: .none) {
-                                openURL(resource.url)
-                            } label: {
-                                Label(resource.name, systemImage: resource.icon)
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "link")
-                    }
+                if let item = viewModel.item {
+                    ItemOpenInSafariView(item: item, accountsManager: accountsManager).bodyMenu
                 }
-
                 if let url = viewModel.shareURL {
                     ShareLink(item: url) {
                         Label("Share", systemImage: "square.and.arrow.up")

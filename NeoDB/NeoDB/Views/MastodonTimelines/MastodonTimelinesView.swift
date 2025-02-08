@@ -9,8 +9,7 @@
 import OSLog
 import SwiftUI
 
-private struct HorizontalDivider: View {
-
+fileprivate struct HorizontalDivider: View {
     let color: Color
     let height: CGFloat
 
@@ -22,7 +21,12 @@ private struct HorizontalDivider: View {
     var body: some View {
         color
             .frame(height: height)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct MastodonTimelinesView: View {

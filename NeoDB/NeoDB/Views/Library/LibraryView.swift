@@ -21,7 +21,12 @@ fileprivate struct HorizontalDivider: View {
     var body: some View {
         color
             .frame(height: height)
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
 
 struct LibraryView: View {
