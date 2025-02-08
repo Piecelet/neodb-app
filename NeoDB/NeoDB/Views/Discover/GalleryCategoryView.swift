@@ -40,7 +40,7 @@ struct GalleryCategoryView: View {
 #Preview {
     NavigationStack {
         GalleryCategoryView(
-            galleryState: GalleryState(
+            galleryState: GalleryViewModel.State(
                 galleryCategory: .book,
                 trendingGallery: [ItemSchema.preview]
             )

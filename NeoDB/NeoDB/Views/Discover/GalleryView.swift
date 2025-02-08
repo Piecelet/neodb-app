@@ -28,13 +28,6 @@ struct GalleryView: View {
                     await viewModel.loadGallery(category: category)
                 }
             }
-            .refreshable {
-                // Refresh all categories
-                for category in ItemCategory.galleryCategory.allCases {
-                    await viewModel.loadGallery(
-                        category: category, refresh: true)
-                }
-            }
             .enableInjection()
     }
 
@@ -63,11 +56,11 @@ struct GalleryView: View {
                         .padding(.horizontal)
                         .buttonStyle(.plain)
 
-                        if state.trendingGallery.isEmpty {
+                        if state.trendingGallery.isEmpty == false {
                             if state.isLoading || !state.isInited || state.isRefreshing {
-                                galleryView(ItemSchema.placeholders, isPlaceholder: true)
+                                galleryView(isPlaceholder: true)
                             } else {
-                                galleryView(ItemSchema.placeholders, isPlaceholder: true)
+                                galleryView(isPlaceholder: true)
                             }
                         } else {
                             galleryView(state.trendingGallery)
@@ -82,7 +75,7 @@ struct GalleryView: View {
     }
 
     private func galleryView(
-        _ items: TrendingItemResult, isPlaceholder: Bool = false
+        _ items: TrendingItemResult
     ) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(alignment: .top, spacing: 12) {
@@ -91,6 +84,28 @@ struct GalleryView: View {
                         HapticFeedback.selection()
                         router.navigate(to: .itemDetailWithItem(item: item))
                     } label: {
+                        galleryItemView(item: item)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+
+    private func galleryView(isPlaceholder: Bool = false) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(alignment: .top, spacing: 12) {
+                ForEach(ItemSchema.placeholders, id: \.uuid) { item in
+                    galleryItemView(item: item)
+                    .redacted(reason: .placeholder)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+
+    private func galleryItemView(item: ItemSchema) -> some View {
                         VStack(alignment: .leading, spacing: 8) {
                             ItemCoverView(
                                 item: item, size: coverSize, alignment: .fixed)
@@ -101,14 +116,6 @@ struct GalleryView: View {
                             )
                             .frame(width: coverWidth)
                         }
-                    }
-                    .disabled(isPlaceholder)
-                    .redacted(reason: isPlaceholder ? .placeholder : [])
-                    .buttonStyle(.plain)
-                }
-            }
-            .padding(.horizontal)
-        }
     }
 
     #if DEBUG
