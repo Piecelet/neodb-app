@@ -9,12 +9,19 @@ import Kingfisher
 import SwiftUI
 
 struct StatusItemView: View {
+    enum Mode {
+        case card
+        case indicator
+    }
+
+    let mode: Mode
     @StateObject private var viewModel: StatusItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
-    init(item: any ItemProtocol) {
+    init(item: any ItemProtocol, mode: Mode = .card) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
+        self.mode = mode
     }
 
     var body: some View {
@@ -67,10 +74,10 @@ struct StatusItemView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-            .padding(.horizontal, 12)
+            .padding(.horizontal, mode == .card ? 12 : 20)
             .padding(.vertical, 12)
             .background(Color.grayBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .clipShape(RoundedRectangle(cornerRadius: mode == .card ? 8 : 0))
         }
         .buttonStyle(.plain)
         .alert("Error", isPresented: .constant(false)) {

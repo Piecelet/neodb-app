@@ -48,7 +48,7 @@ struct MastodonStatusView: View {
                 }
             }
         }
-        .navigationTitle(item?.title ?? String(localized: "timelines_status_title", table: "Timelines"))
+        .navigationTitle(String(localized: "timelines_status_title", table: "Timelines"))
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
@@ -77,8 +77,12 @@ struct MastodonStatusView: View {
     private func statusContent(_ status: MastodonStatus) -> some View {
         ScrollView {
             VStack(spacing: 0) {
+                if let item = item {
+                    StatusItemView(item: item, mode: .indicator)
+                }
+
                 // Status Content
-                StatusView(status: status, mode: .detail)
+                StatusView(status: status, mode: item != nil ? .detailWithItem : .detail)
                 
                 Divider()
                 
