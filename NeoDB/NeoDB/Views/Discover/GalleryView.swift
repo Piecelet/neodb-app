@@ -57,10 +57,36 @@ struct GalleryView: View {
                         .buttonStyle(.plain)
 
                         if state.trendingGallery.isEmpty == false {
-                            if state.isLoading || !state.isInited || state.isRefreshing {
+                            if state.isLoading || !state.isInited
+                                || state.isRefreshing
+                            {
                                 galleryView(isPlaceholder: true)
+                            } else if let error = state.error {
+                                EmptyStateView(
+                                    String(
+                                        localized:
+                                            "discover_gallery_error_title",
+                                        table: "Discover"),
+                                    systemImage: "exclamationmark.triangle",
+                                    description: Text(
+                                        error.localizedDescription)
+                                )
                             } else {
-                                galleryView(isPlaceholder: true)
+                                EmptyStateView(
+                                    String(
+                                        localized:
+                                            "discover_gallery_empty_title",
+                                        table: "Discover"),
+                                    systemImage: "text.bubble",
+                                    description: Text(
+                                        String(
+                                            localized:
+                                                "discover_gallery_empty_description",
+                                            table: "Discover",
+                                            defaultValue: "No items in %@",
+                                            comment:
+                                                "Empty state description for gallery category"
+                                        ), state.galleryCategory.displayName))
                             }
                         } else {
                             galleryView(state.trendingGallery)
@@ -95,10 +121,12 @@ struct GalleryView: View {
 
     private func galleryView(isPlaceholder: Bool = false) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .top, spacing: 12) {
-                ForEach(ItemSchema.placeholders, id: \.uuid) { item in
+            LazyHStack(alignment: .top, spacing: 12) {
+                ForEach(
+                    Array(ItemSchema.placeholders.enumerated()), id: \.offset
+                ) { index, item in
                     galleryItemView(item: item)
-                    .redacted(reason: .placeholder)
+                        .redacted(reason: .placeholder)
                 }
             }
             .padding(.horizontal)
@@ -106,16 +134,16 @@ struct GalleryView: View {
     }
 
     private func galleryItemView(item: ItemSchema) -> some View {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ItemCoverView(
-                                item: item, size: coverSize, alignment: .fixed)
+        VStack(alignment: .leading, spacing: 8) {
+            ItemCoverView(
+                item: item, size: coverSize, alignment: .fixed)
 
-                            ItemTitleView(
-                                item: item, mode: .title, size: .compact,
-                                alignment: .center
-                            )
-                            .frame(width: coverWidth)
-                        }
+            ItemTitleView(
+                item: item, mode: .title, size: .compact,
+                alignment: .center
+            )
+            .frame(width: coverWidth)
+        }
     }
 
     #if DEBUG

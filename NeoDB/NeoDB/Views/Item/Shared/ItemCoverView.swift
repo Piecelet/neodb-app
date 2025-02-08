@@ -81,8 +81,10 @@ struct ItemCoverView: View {
 
     var body: some View {
         Group {
-            if let item = item {
-                KFImage(item.coverImageUrl)
+            if let item = item,
+                let coverImageUrl = item.coverImageUrl,
+                !coverImageUrl.absoluteString.contains("piecelet.internal/placeholder") {
+                KFImage(coverImageUrl)
                     .placeholder {
                         placeholderView
                     }

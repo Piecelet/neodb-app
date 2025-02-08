@@ -146,11 +146,11 @@ extension ItemSchema {
 extension ItemSchema {
     static var placeholder: ItemSchema {
         return .init(
-            id: "https://unknown.neodb.net/placeholder",
+            id: "https://piecelet.internal/placeholder",
             type: .unknown,
             uuid: "placeholder",
-            url: "https://unknown.neodb.net/placeholder",
-            apiUrl: "https://unknown.neodb.net/placeholder",
+            url: "https://piecelet.internal/placeholder",
+            apiUrl: "https://piecelet.internal/placeholder",
             category: .book,
             parentUuid: nil,
             displayTitle: "placeholder",
@@ -159,7 +159,7 @@ extension ItemSchema {
             description: "placeholder",
             localizedTitle: nil,
             localizedDescription: nil,
-            coverImageUrl: URL(string: "https://unknown.neodb.net/placeholder")!,
+            coverImageUrl: URL(string: "https://piecelet.internal/placeholder")!,
             rating: 5,
             ratingCount: 46,
             brief: "placeholder"
