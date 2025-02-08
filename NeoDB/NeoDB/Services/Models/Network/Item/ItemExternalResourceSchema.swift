@@ -49,6 +49,7 @@ enum ItemKnownExternalResource: String {
         case .imdb: return "film"
         case .tmdb: return "movieclapper"
         case .bangumi: return "tv"
+        case .bilibili: return "play.tv"
 
         // Music
         case .bandcamp: return "music.note"
@@ -67,11 +68,50 @@ enum ItemKnownExternalResource: String {
         case .jinjiang, .qidian, .ypshuo: return "text.book.closed"
 
         // Social & Others
-        case .bilibili: return "play.tv"
         case .fedi: return "network"
         case .rss: return "dot.radiowaves.left.and.right"
 
         case .unknown: return "link"
+        }
+    }
+
+    var symbolImage: Symbol {
+        switch self {
+        // Books
+        case .douban: return .custom("custom.service.provider.douban")
+        case .goodreads: return .custom("custom.service.provider.goodreads")
+        case .booksTW: return .systemSymbol(icon)
+        case .googleBooks: return .custom("custom.service.provider.google")
+
+        // Movies & TV
+        case .imdb: return .custom("custom.service.provider.imdb")
+        case .tmdb: return .systemSymbol(icon)
+        case .bangumi: return .systemSymbol(icon)
+        case .bilibili: return .custom("custom.service.provider.bilibili")
+
+        // Music
+        case .bandcamp: return .custom("custom.service.provider.bandcamp")
+        case .spotify: return .custom("custom.service.provider.spotify")
+        case .appleMusic: return .sfSymbol(.musicNote)
+        case .discogs: return .custom("custom.service.provider.discogs")
+        case .applePodcasts: return .custom("custom.podcast")
+
+        // Games
+        case .igdb: return .systemSymbol(icon)
+        case .steam: return .custom("custom.service.provider.steam")
+        case .bgg: return .systemSymbol(icon)
+
+        // Literature
+        case .ao3: return .custom("custom.service.provider.archiveofourown")
+        case .jinjiang: return .systemSymbol(icon)
+        case .qidian: return .systemSymbol(icon)
+        case .ypshuo: return .systemSymbol(icon)
+
+        // Social & Others
+        case .fedi: return .systemSymbol(icon)
+        case .rss: return .systemSymbol(icon)
+        case .unknown:
+            return .sfSymbol(.link)
         }
     }
 
@@ -83,7 +123,7 @@ enum ItemKnownExternalResource: String {
         case .googleBooks: return "books.google.com"
         case .imdb: return "imdb.com"
         case .tmdb: return "themoviedb.org"
-        case .bangumi: return "bangumi.tv"
+        case .bangumi: return "bgm.tv"
         case .bandcamp: return "bandcamp.com"
         case .spotify: return "spotify.com"
         case .appleMusic: return "music.apple.com"
@@ -369,6 +409,10 @@ extension ItemExternalResourceSchema: Hashable {
 
     var icon: String {
         return type.icon
+    }
+
+    var symbolImage: Symbol {
+        return type.symbolImage
     }
 }
 

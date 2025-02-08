@@ -20,3 +20,13 @@ extension Image {
         }
     }
 }
+
+extension Label where Title == Text, Icon == Image {
+    init(_ title: String, symbol: Symbol) {
+        self.init {
+            Text(title)
+        } icon: {
+            Image(symbol: symbol)
+        }
+    }
+}

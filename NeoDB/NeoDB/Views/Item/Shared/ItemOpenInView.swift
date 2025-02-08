@@ -26,7 +26,7 @@ struct ItemOpenInView: View {
         [(resource: ItemExternalResourceSchema, scheme: URL)]
     {
         return item.externalResources?.compactMap { resource in
-            if let scheme = resource.makeAppScheme() {
+            if let scheme = resource.makeAppScheme(), resource.type == .douban {
                 return (resource: resource, scheme: scheme)
             }
             return nil
@@ -59,14 +59,6 @@ struct ItemOpenInView: View {
                     Text("Open in App")
                 }
             }
-            //     if !websiteResources.isEmpty {
-            //         Menu {
-            //             availableWebsitesView
-            //         } label: {
-            //             Label("Open in Website", systemSymbol: .safari)
-            //                 .labelStyle(.iconOnly)
-            //         }
-            //     }
             if !websiteResources.isEmpty {
                 Section {
                     availableWebsitesView
@@ -86,9 +78,10 @@ struct ItemOpenInView: View {
         Menu {
             self.body
         } label: {
-            Label("Open website", systemSymbol: .safari)
+            Label("Open website", symbol: .sfSymbol(.arrowUpForwardApp))
                 .labelStyle(.iconOnly)
         }
+        .enableInjection()
     }
 
     var availableWebsitesView: some View {
@@ -103,7 +96,7 @@ struct ItemOpenInView: View {
 
     func websiteView(_ resource: ItemExternalResourceSchema) -> some View {
         Link(destination: resource.url) {
-            Label(resource.name, systemImage: resource.icon)
+            Label(resource.name, symbol: resource.symbolImage)
         }
     }
 
@@ -113,7 +106,7 @@ struct ItemOpenInView: View {
                 ForEach(appSchemes, id: \.scheme.absoluteString) { pair in
                     Link(destination: pair.scheme) {
                         Label(
-                            pair.resource.name, systemImage: pair.resource.icon)
+                            pair.resource.name, symbol: pair.resource.symbolImage)
                     }
                 }
             }
