@@ -8,7 +8,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "No items in %@"
+            "value" : "No %@"
           }
         }
       }

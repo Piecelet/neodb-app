@@ -23,10 +23,7 @@ struct GalleryView: View {
         galleryContent
             .task {
                 viewModel.accountsManager = accountsManager
-                // Load all categories
-                for category in ItemCategory.galleryCategory.allCases {
-                    await viewModel.loadGallery(category: category)
-                }
+                await viewModel.loadAllGalleries()
             }
             .enableInjection()
     }
@@ -38,10 +35,11 @@ struct GalleryView: View {
                 Section {
                     VStack(alignment: .leading) {
                         Button {
-                            router.navigate(
-                                to: .galleryCategory(
-                                    galleryState: viewModel.galleryStates[
-                                        category]!))
+                            if let state = viewModel.galleryStates[category] {
+                                router.navigate(
+                                    to: .galleryCategory(
+                                        galleryState: state))
+                            }
                         } label: {
                             HStack(alignment: .center, spacing: 4) {
                                 Text(category.displayName)
@@ -56,7 +54,7 @@ struct GalleryView: View {
                         .padding(.horizontal)
                         .buttonStyle(.plain)
 
-                        if state.trendingGallery.isEmpty == false {
+                        if state.trendingGallery.isEmpty {
                             if state.isLoading || !state.isInited
                                 || state.isRefreshing
                             {

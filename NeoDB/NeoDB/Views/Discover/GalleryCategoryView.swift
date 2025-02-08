@@ -14,8 +14,8 @@ struct GalleryCategoryView: View {
     
     var body: some View {
         List {
-            if let items = galleryState.trendingGallery as? [ItemSchema] {
-                ForEach(items, id: \.uuid) { item in
+            if !galleryState.trendingGallery.isEmpty {
+                ForEach(galleryState.trendingGallery, id: \.uuid) { item in
                     Button {
                         HapticFeedback.selection()
                         router.navigate(to: .itemDetailWithItem(item: item))

@@ -38,7 +38,7 @@ class GalleryViewModel: ObservableObject {
     
     init() {
         // Initialize states for all categories
-        for category in ItemCategory.galleryCategory.allCases {
+        for category in ItemCategory.galleryCategory.availableCategories {
             galleryStates[category] = State(galleryCategory: category)
         }
     }
@@ -130,5 +130,81 @@ class GalleryViewModel: ObservableObject {
     func cleanup() {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
+    }
+    
+    func loadAllGalleries(refresh: Bool = false) async {
+        guard let accountsManager = accountsManager else {
+            logger.debug("No accountsManager available")
+            return
+        }
+
+        // Update loading states
+        for category in ItemCategory.galleryCategory.availableCategories {
+            updateLoadingState(for: category, refresh: refresh)
+        }
+
+        do {
+            // Load from cache first if not refreshing
+            if !refresh {
+                for category in ItemCategory.galleryCategory.availableCategories {
+                    if let cached = try? await cacheService.retrieveGallery(
+                        category: category,
+                        instance: accountsManager.currentAccount.instance
+                    ) {
+                        updateState(for: category) { state in
+                            state.trendingGallery = cached
+                            state.lastRefreshTime = Date()
+                            state.isInited = true
+                        }
+                    }
+                }
+            }
+
+            // Concurrent fetch for all categories
+            try await withThrowingTaskGroup(of: (ItemCategory.galleryCategory, [ItemSchema]).self) { group in
+                for category in ItemCategory.galleryCategory.availableCategories {
+                    group.addTask {
+                        let result = try await accountsManager.currentClient.fetch(
+                            category.endpoint, type: [ItemSchema].self)
+                        return (category, result)
+                    }
+                }
+
+                // Process results as they complete
+                for try await (category, result) in group {
+                    updateState(for: category) { state in
+                        state.trendingGallery = result
+                        state.lastRefreshTime = Date()
+                        state.error = nil
+                        state.isInited = true
+                    }
+
+                    // Cache results
+                    if refresh || galleryStates[category]?.trendingGallery == nil {
+                        try? await cacheService.cacheGallery(
+                            result,
+                            category: category,
+                            instance: accountsManager.currentAccount.instance
+                        )
+                    }
+                }
+            }
+        } catch {
+            logger.error("Failed to load galleries: \(error.localizedDescription)")
+            // Update error state for all categories
+            for category in ItemCategory.galleryCategory.availableCategories {
+                updateState(for: category) { state in
+                    state.error = error
+                }
+            }
+        }
+
+        // Reset loading states
+        for category in ItemCategory.galleryCategory.availableCategories {
+            updateState(for: category) { state in
+                state.isLoading = false
+                state.isRefreshing = false
+            }
+        }
     }
 }
