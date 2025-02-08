@@ -98,18 +98,29 @@ struct MastodonTimelinesView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .modifier(IgnoreSafeAreaModifier())
         .safeAreaInset(edge: .top) {
-            VStack(spacing: 0) {
-                TopTabBarView(
-                    items: MastodonTimelinesFilter.availableTimeline(
-                        isAuthenticated: accountsManager.isAuthenticated),
-                    selection: $selectedTimelineType
-                ) { item in item.displayName }
-                .padding(.bottom, 4)
-                HorizontalDivider(
-                    color: .grayBackground,
-                    height: colorScheme == .dark ? 0.5 : 1)
+            if #available(iOS 17.0, *) {
+                VStack(spacing: 0) {
+                    TopTabBarView(
+                        items: MastodonTimelinesFilter.availableTimeline(
+                            isAuthenticated: accountsManager.isAuthenticated),
+                        selection: $selectedTimelineType
+                    ) { item in item.displayName }
+                        .padding(.bottom, 4)
+                    HorizontalDivider(
+                        color: .grayBackground,
+                        height: colorScheme == .dark ? 0.5 : 1)
+                }
+                .background(Material.bar)
+            } else {
+                VStack(spacing: 0) {
+                    TopTabBarView(
+                        items: MastodonTimelinesFilter.availableTimeline(
+                            isAuthenticated: accountsManager.isAuthenticated),
+                        selection: $selectedTimelineType
+                    ) { item in item.displayName }
+                        .padding(.bottom, -12)
+                }
             }
-            .background(Material.bar)
         }
         .safeAreaInset(edge: .bottom) {
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)

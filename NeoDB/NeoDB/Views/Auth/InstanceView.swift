@@ -164,7 +164,7 @@ struct InstanceView: View {
             )
         }
         .navigationDestination(isPresented: $showLoginView) {
-            LoginView(instanceAddress: instanceViewModel.instanceAddress)
+            LoginView(instanceAddress: instanceViewModel.instanceAddress, isAddingAccount: isAddingAccount)
         }
         .sheet(isPresented: $instanceViewModel.showIncompatibleAlert) {
                 VStack(spacing: 0) {

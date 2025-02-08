@@ -9,7 +9,7 @@ import Kingfisher
 import OSLog
 import SwiftUI
 
-fileprivate struct HorizontalDivider: View {
+private struct HorizontalDivider: View {
     let color: Color
     let height: CGFloat
 
@@ -21,11 +21,11 @@ fileprivate struct HorizontalDivider: View {
     var body: some View {
         color
             .frame(height: height)
-        .enableInjection()
+            .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -132,23 +132,41 @@ struct LibraryView: View {
     #endif
 
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            categoryFilter
+        Group {
+            if #available(iOS 17.0, *) {
+                VStack(alignment: .leading, spacing: 0) {
+                    categoryFilter
 
-            TopTabBarView(
-                items: ShelfType.allCases,
-                selection: $viewModel.selectedShelfType
-            ) {
-                $0.displayNameForCategory(
-                    viewModel.selectedCategory.itemCategory)
+                    TopTabBarView(
+                        items: ShelfType.allCases,
+                        selection: $viewModel.selectedShelfType
+                    ) {
+                        $0.displayNameForCategory(
+                            viewModel.selectedCategory.itemCategory)
+                    }
+                    .padding(.bottom, 4)
+
+                    HorizontalDivider(
+                        color: .grayBackground,
+                        height: colorScheme == .dark ? 0.5 : 1)
+                }
+                .background(Material.bar)
+                .padding(.bottom, -12)
+            } else {
+                VStack(alignment: .leading, spacing: 0) {
+                    categoryFilter
+
+                    TopTabBarView(
+                        items: ShelfType.allCases,
+                        selection: $viewModel.selectedShelfType
+                    ) {
+                        $0.displayNameForCategory(
+                            viewModel.selectedCategory.itemCategory)
+                    }
+                    .padding(.bottom, -12)
+                }
             }
-            .padding(.bottom, 4)
-
-            HorizontalDivider(
-                color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
         }
-        .background(Material.bar)
-        .padding(.bottom, -12)
     }
 
     private var categoryFilter: some View {
@@ -288,27 +306,36 @@ struct LibraryView: View {
     private func shelfItemsList(for state: ShelfItemsState, type: ShelfType)
         -> some View
     {
-        ForEach(state.items) { item in
-            Button {
-                router.navigate(to: .itemDetailWithItem(item: item.mark.item))
-            } label: {
-                shelfItemView(item: item)
-                    .onAppear {
-                        if item.id == state.items.last?.id {
-                            Task {
-                                await viewModel.loadNextPage(type: type)
+        Group {
+            Section {
+                ForEach(state.items) { item in
+                    Button {
+                        router.navigate(
+                            to: .itemDetailWithItem(item: item.mark.item))
+                    } label: {
+                        shelfItemView(item: item)
+                            .onAppear {
+                                if item.id == state.items.last?.id {
+                                    Task {
+                                        await viewModel.loadNextPage(type: type)
+                                    }
+                                }
                             }
-                        }
                     }
+                    .buttonStyle(.plain)
+                }
             }
-            .buttonStyle(.plain)
-        }
 
-        if state.isLoading && !state.isRefreshing {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding()
-                .listRowInsets(EdgeInsets())
+            if state.isLoading && !state.isRefreshing {
+                Section {
+                    ProgressView()
+                        .listRowSeparator(.hidden)
+                        .id(UUID())
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .listRowInsets(EdgeInsets())
+                }
+            }
         }
     }
 

@@ -145,7 +145,15 @@ class GalleryViewModel: ObservableObject {
         // Check if enough time has passed since last request
         if !refresh, let lastRequest = lastRequestTime {
             let timeSinceLastRequest = Date().timeIntervalSince(lastRequest)
-            if timeSinceLastRequest < minimumRefreshInterval {
+            
+            // 检查是否所有分类都有数据
+            let hasEmptyGalleries = ItemCategory.galleryCategory.availableCategories.contains { category in
+                let state = galleryStates[category]
+                return state?.trendingGallery.isEmpty ?? true
+            }
+            
+            // 如果时间间隔太短且所有分类都有数据,则跳过请求
+            if timeSinceLastRequest < minimumRefreshInterval && !hasEmptyGalleries {
                 logger.debug("Skipping request - too soon since last request (\(Int(timeSinceLastRequest))s < \(Int(minimumRefreshInterval))s)")
                 return
             }

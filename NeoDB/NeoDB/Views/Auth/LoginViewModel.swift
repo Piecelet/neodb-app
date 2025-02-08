@@ -28,7 +28,6 @@ class LoginViewModel: ObservableObject {
     @Published var instanceInfo: MastodonInstance?
     @Published var isLoading = false
     @Published var showMastodonLogin = false
-    @Published var canDismiss = false
     @Published var buttonScale = 1.0
     
     // Dependencies

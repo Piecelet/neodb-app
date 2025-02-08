@@ -12,16 +12,18 @@ import os
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.isAddingAccount) private var isAddingAccount
     @StateObject private var viewModel: LoginViewModel
     @State private var showMastodonLogin = false
     private let logger = Logger.views.login
 
-    init(instanceAddress: String) {
+    let isAddingAccount: Bool
+
+    init(instanceAddress: String, isAddingAccount: Bool = false) {
+        self.isAddingAccount = isAddingAccount
         _viewModel = StateObject(wrappedValue: LoginViewModel(
             instanceAddress: instanceAddress
         ))
-        logger.debug("LoginView initialized with instanceAddress: \(instanceAddress)")
+        logger.debug("LoginView initialized with instanceAddress: \(instanceAddress) isAddingAccount: \(isAddingAccount)")
     }
 
     private var signInButton: some View {
@@ -142,7 +144,12 @@ struct LoginView: View {
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
-        .interactiveDismissDisabled(!viewModel.canDismiss && isAddingAccount)
+        .onDisappear {
+            if isAddingAccount {
+                accountsManager.restoreLastAuthenticatedAccount()
+            }
+        }
+        .interactiveDismissDisabled(isAddingAccount)
         .alert(
             "Error", isPresented: $viewModel.showError,
             actions: {

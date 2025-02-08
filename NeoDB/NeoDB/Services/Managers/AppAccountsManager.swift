@@ -166,7 +166,7 @@ class AppAccountsManager: ObservableObject {
 
     func add(account: AppAccount) {
         // 删除所有匿名账户
-        // deleteAllAnonymousAndUpdate()
+        deleteAllAnonymousAndUpdate()
 
         // 如果是已授权账户
         if account.oauthToken != nil {
