@@ -9,7 +9,7 @@ import Kingfisher
 import OSLog
 import SwiftUI
 
-private struct HorizontalDivider: View {
+fileprivate struct HorizontalDivider: View {
     let color: Color
     let height: CGFloat
 
