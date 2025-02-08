@@ -9,23 +9,25 @@
 import SwiftUI
 
 struct GalleryCategoryView: View {
-    let trendingGallery: TrendingGalleryResult
+    let galleryState: GalleryState
     @EnvironmentObject private var router: Router
     
     var body: some View {
         List {
-            ForEach(trendingGallery.items, id: \.uuid) { item in
-                Button {
-                    HapticFeedback.selection()
-                    router.navigate(to: .itemDetailWithItem(item: item))
-                } label: {
-                    SearchItemView(item: item, showCategory: false)
+            if let items = galleryState.trendingGallery as? [ItemSchema] {
+                ForEach(items, id: \.uuid) { item in
+                    Button {
+                        HapticFeedback.selection()
+                        router.navigate(to: .itemDetailWithItem(item: item))
+                    } label: {
+                        SearchItemView(item: item, showCategory: false)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
         .listStyle(.plain)
-        .navigationTitle(gallery.displayTitle)
+        .navigationTitle(galleryState.galleryCategory.displayName)
         .navigationBarTitleDisplayMode(.large)
         .enableInjection()
     }
@@ -37,10 +39,12 @@ struct GalleryCategoryView: View {
 
 #Preview {
     NavigationStack {
-        GalleryCategoryView(gallery: GalleryResult(
-            name: "Preview Gallery",
-            items: [ItemSchema.preview]
-        ))
+        GalleryCategoryView(
+            galleryState: GalleryState(
+                galleryCategory: .book,
+                trendingGallery: [ItemSchema.preview]
+            )
+        )
         .environmentObject(Router())
     }
 }

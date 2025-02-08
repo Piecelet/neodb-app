@@ -53,9 +53,9 @@ class GalleryViewModel: ObservableObject {
             
             // Load from cache first if not refreshing
             if !refresh {
-                if let cached = try? await cacheService.retrieve(
-                    forKey: "gallery_\(category.rawValue)",
-                    type: GalleryResult.self
+                if let cached = try? await cacheService.retrieveGallery(
+                    category: category,
+                    instance: accountsManager.currentAccount.instance
                 ) {
                     updateState(for: category) { state in
                         state.trendingGallery = cached
@@ -68,24 +68,19 @@ class GalleryViewModel: ObservableObject {
                 let endpoint = category.endpoint
                 let result = try await accountsManager.currentClient.fetch(
                     endpoint, type: [ItemSchema].self)
-                
-                let gallery = GalleryResult(
-                    name: category.displayName,
-                    items: result
-                )
-                
+                    
                 updateState(for: category) { state in
-                    state.gallery = gallery
+                    state.trendingGallery = result
                     state.lastRefreshTime = Date()
                     state.error = nil
                 }
                 
                 // Cache only if it's a refresh or first load
-                if refresh || galleryStates[category]?.gallery == nil {
-                    try? await cacheService.cache(
-                        gallery,
-                        forKey: "gallery_\(category.rawValue)",
-                        type: GalleryResult.self
+                if refresh || galleryStates[category]?.trendingGallery == nil {
+                    try? await cacheService.cacheGallery(
+                        result,
+                        category: category,
+                        instance: accountsManager.currentAccount.instance
                     )
                 }
             } catch {

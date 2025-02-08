@@ -42,7 +42,7 @@ struct GalleryView: View {
 
         VStack(alignment: .leading) {
             Button {
-                router.navigate(to: .galleryCategory(trendingGallery: category.items))
+                router.navigate(to: .galleryCategory(trendingGallery: viewModel.galleryStates[category]))
             } label: {
                 HStack(alignment: .center, spacing: 4) {
                     Text(category.displayName)

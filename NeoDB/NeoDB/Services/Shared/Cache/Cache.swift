@@ -168,16 +168,19 @@ extension CacheService {
     
     // MARK: - Gallery Caching
     
+    @available(*, deprecated, message: "Use cacheGallery(_:category:instance:) instead")
     func cacheGallery(_ gallery: [GalleryResult], instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
         try await cache(gallery, forKey: key, type: [GalleryResult].self)
     }
-    
+
+    @available(*, deprecated, message: "Use retrieveGallery(category:instance:) instead")
     func retrieveGallery(instance: String? = nil) async throws -> [GalleryResult]? {
         let key = Keys.gallery(instance: instance)
         return try await retrieve(forKey: key, type: [GalleryResult].self)
     }
-    
+
+    @available(*, deprecated, message: "Use removeGallery(category:instance:) instead")
     func removeGallery(instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
         try await remove(forKey: key, type: [GalleryResult].self)
@@ -217,8 +220,42 @@ extension CacheService {
 
     func retrieveGallery(category: ItemCategory.galleryCategory, instance: String) async throws -> TrendingGalleryResult? {
         let key = Keys.gallery(instance: instance, category: category)
-        let type = ItemSchema.makeType(category: category.itemCategory)
-        return try await retrieve(forKey: key, type: [type])
+        switch category {
+        case .book:
+            return try await retrieve(forKey: key, type: [EditionSchema].self)
+        case .movie:
+            return try await retrieve(forKey: key, type: [MovieSchema].self)
+        case .tv:
+            return try await retrieve(forKey: key, type: [TVShowSchema].self)
+        case .music:
+            return try await retrieve(forKey: key, type: [AlbumSchema].self)
+        case .game:
+            return try await retrieve(forKey: key, type: [GameSchema].self)
+        case .podcast:
+            return try await retrieve(forKey: key, type: [PodcastSchema].self)
+        case .collection:
+            return nil
+        }
+    }
+
+    func removeGallery(category: ItemCategory.galleryCategory, instance: String) async throws {
+        let key = Keys.gallery(instance: instance, category: category)
+        switch category {
+        case .book:
+            try await remove(forKey: key, type: [EditionSchema].self)
+        case .movie:
+            try await remove(forKey: key, type: [MovieSchema].self)
+        case .tv:
+            try await remove(forKey: key, type: [TVShowSchema].self)
+        case .music:
+            try await remove(forKey: key, type: [AlbumSchema].self)
+        case .game:
+            try await remove(forKey: key, type: [GameSchema].self)
+        case .podcast:
+            try await remove(forKey: key, type: [PodcastSchema].self)
+        case .collection:
+            break
+        }
     }
     
 

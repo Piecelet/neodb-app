@@ -41,6 +41,25 @@ struct GalleryResult: Codable, Identifiable {
     }
 }
 
-typealias TrendingGalleryResult = [any ItemProtocol]
+typealias TrendingGalleryResult = [(any ItemProtocol)]
 
-
+extension TrendingGalleryResult {
+    static func makeType(category: ItemCategory.galleryCategory) -> Any.Type {
+        switch category {
+        case .book:
+            return [EditionSchema].self
+        case .movie:
+            return [MovieSchema].self
+        case .tv:
+            return [TVShowSchema].self
+        case .music:
+            return [AlbumSchema].self
+        case .game:
+            return [GameSchema].self
+        case .podcast:
+            return [PodcastSchema].self
+        case .collection:
+            return [ItemSchema].self
+        }
+    }
+}
