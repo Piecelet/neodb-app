@@ -9,7 +9,7 @@
 import Kingfisher
 import Perception
 import SwiftUI
-import os
+import OSLog
 
 // 定义图标类型枚举
 private enum IconType {

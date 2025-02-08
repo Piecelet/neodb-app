@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftUI
-import os
+import OSLog
 
 final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?

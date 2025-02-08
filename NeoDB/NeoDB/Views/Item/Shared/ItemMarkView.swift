@@ -48,7 +48,9 @@ struct ItemMarkView: View {
     var showEditButton: Bool = false
 
     var body: some View {
-        if let shelfType = markController.shelfType {
+        if let shelfType = markController.shelfType,
+            let createdTime = markController.createdTime,
+            markController.mark != nil {
             Group {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: size.spacing) {
@@ -56,7 +58,7 @@ struct ItemMarkView: View {
                             markRatingView(rating)
                             Spacer()
                             Text(
-                                markController.createdTime?.relativeFormatted ?? ""
+                                createdTime.relativeFormatted
                             )
                             .foregroundStyle(.secondary)
                             Image(symbol: shelfType.symbolImage)
@@ -65,7 +67,7 @@ struct ItemMarkView: View {
                             Image(symbol: shelfType.symbolImage)
                                 .foregroundStyle(.secondary)
                             Text(
-                                markController.createdTime?.relativeFormatted ?? ""
+                                createdTime.relativeFormatted
                             )
                             .foregroundStyle(.secondary)
                         }

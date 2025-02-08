@@ -18,6 +18,13 @@ struct MarkView: View {
             case .detailed: return .large
             }
         }
+
+        var presentationDetents: Set<PresentationDetent> {
+            switch self {
+            case .brief: return [presentationDetent, DetailLevel.detailed.presentationDetent]
+            case .detailed: return [presentationDetent]
+            }
+        }
     }
     
     @StateObject private var viewModel: MarkViewModel
@@ -103,7 +110,7 @@ struct MarkView: View {
         .background(.ultraThinMaterial)
         .compositingGroup()
         .presentationDetents(
-            [DetailLevel.brief.presentationDetent, DetailLevel.detailed.presentationDetent],
+            self.detentLevel.presentationDetents,
             selection: Binding(
                 get: { self.detentLevel.presentationDetent },
                 set: { detent in
@@ -111,6 +118,7 @@ struct MarkView: View {
                 }
             )
         )
+        // .presentationDetents(viewModel.detentLevel.presentationDetents, selection: $detentLevel)
         .presentationDragIndicator(.visible)
         .onChange(of: viewModel.isDismissed) { dismissed in
             if dismissed {
