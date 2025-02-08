@@ -117,7 +117,7 @@ enum ItemKnownExternalResource: String {
         case .appleMusic: return "music://"
         case .discogs: return "record://"
         case .applePodcasts: return "podcasts://"
-        case .igdb: return "igdb://"
+        case .igdb: return nil
         case .steam: return "steam://"
         case .bgg: return "boardgamegeek://"
         case .ao3: return nil
@@ -439,6 +439,19 @@ extension ItemExternalResourceSchema {
             return nil
         case .discogs:
             return nil
+        case .applePodcasts:
+            if var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                components.scheme = "podcasts"
+                if let podcastsURL = components.url, canOpenURL() {
+                    return podcastsURL
+                }
+            }
+            return nil
+        case .igdb:
+            return nil
+        case .steam:
+            return nil
+            
         default: return nil
         }
     }
