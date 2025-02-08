@@ -13,13 +13,6 @@ struct SearchView: View {
 
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
-    @Binding var isSearchActive: Bool {
-        didSet {
-            if !isSearchActive {
-                viewModel.cleanup()
-            }
-        }
-    }
 
     var body: some View {
         searchContent
@@ -315,8 +308,8 @@ struct ItemCoverImage: View {
     #endif
 }
 
-#Preview {
-    SearchView(isSearchActive: .constant(true))
-        .environmentObject(AppAccountsManager())
-        .environmentObject(Router())
-}
+//#Preview {
+//    SearchView(isSearchActive: .constant(true))
+//        .environmentObject(AppAccountsManager())
+//        .environmentObject(Router())
+//}

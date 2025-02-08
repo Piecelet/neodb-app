@@ -30,9 +30,8 @@ struct ContentView: View {
             // Home Tab
             NavigationStack(path: router.path(for: .home)) {
                 MastodonTimelinesView()
-                    .navigationDestination(for: RouterDestination.self) {
-                        destination in
-                        destinationView(for: destination)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destination.destinationView
                     }
             }
             .tabItem {
@@ -45,10 +44,9 @@ struct ContentView: View {
 
             // Search Tab
             NavigationStack(path: router.path(for: .search)) {
-                SearchView(isSearchActive: $isSearchActive)
-                    .navigationDestination(for: RouterDestination.self) {
-                        destination in
-                        destinationView(for: destination)
+                SearchView()
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destination.destinationView
                     }
             }
             .tabItem {
@@ -62,9 +60,8 @@ struct ContentView: View {
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
                 LibraryView()
-                    .navigationDestination(for: RouterDestination.self) {
-                        destination in
-                        destinationView(for: destination)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destination.destinationView
                     }
             }
             .tabItem {
@@ -77,9 +74,8 @@ struct ContentView: View {
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
                 SettingsView()
-                    .navigationDestination(for: RouterDestination.self) {
-                        destination in
-                        destinationView(for: destination)
+                    .navigationDestination(for: RouterDestination.self) { destination in
+                        destination.destinationView
                     }
             }
             .tabItem {
@@ -107,49 +103,6 @@ struct ContentView: View {
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
-
-    @ViewBuilder
-    private func destinationView(for destination: RouterDestination)
-        -> some View
-    {
-        switch destination {
-        case .itemDetail(let id):
-            ItemView(
-                id: id,
-                category: router.itemToLoad?.category ?? .book
-            )
-        case .itemDetailWithItem(let item):
-            ItemView(
-                id: item.id,
-                category: item.type.category ?? item.category,
-                item: item
-            )
-        case .shelfDetail(let type):
-            Text("Shelf: \(type.displayName)")  // TODO: Implement ShelfDetailView
-        case .userShelf(let userId, let type):
-            Text("User Shelf: \(userId) - \(type.displayName)")  // TODO: Implement UserShelfView
-        case .userProfile(let id):
-            ProfileView(id: id)
-        case .userProfileWithUser(let user):
-            ProfileView(id: user.username, user: user)
-        case .statusDetail(let id):
-            MastodonStatusView(id: id)
-        case .statusDetailWithStatus(let status):
-            MastodonStatusView(id: status.id, status: status)
-        case .hashTag(let tag):
-            Text("Tag: #\(tag)")  // TODO: Implement HashTagView
-        case .followers(let id):
-            Text("Followers: \(id)")  // TODO: Implement FollowersView
-        case .following(let id):
-            Text("Following: \(id)")  // TODO: Implement FollowingView
-        case .galleryCategory(let galleryState):
-            GalleryCategoryView(galleryState: galleryState)
-        case .purchase:
-            PurchaseView()
-        case .purchaseWithFeature(let feature):
-            PurchaseView(scrollToFeature: feature)
-        }
-    }
 }
 
 #Preview {
