@@ -7,9 +7,11 @@
 
 import Foundation
 
+typealias TrendingItemResult = [ItemSchema]
+
 struct GalleryResult: Codable, Identifiable {
     let name: String
-    let items: [ItemSchema]
+    let items: TrendingItemResult
     
     var id: String {
         name
@@ -41,25 +43,11 @@ struct GalleryResult: Codable, Identifiable {
     }
 }
 
-typealias TrendingGalleryResult = [(any ItemProtocol)]
-
-extension TrendingGalleryResult {
-    static func makeType(category: ItemCategory.galleryCategory) -> Any.Type {
-        switch category {
-        case .book:
-            return [EditionSchema].self
-        case .movie:
-            return [MovieSchema].self
-        case .tv:
-            return [TVShowSchema].self
-        case .music:
-            return [AlbumSchema].self
-        case .game:
-            return [GameSchema].self
-        case .podcast:
-            return [PodcastSchema].self
-        case .collection:
-            return [ItemSchema].self
-        }
+struct GalleryTrending: Codable, Identifiable, Hashable {
+    let category: ItemCategory.galleryCategory
+    let items: TrendingItemResult
+    
+    var id: String {
+        category.rawValue
     }
 }

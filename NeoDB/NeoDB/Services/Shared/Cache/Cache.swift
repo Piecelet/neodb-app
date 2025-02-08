@@ -186,79 +186,21 @@ extension CacheService {
         try await remove(forKey: key, type: [GalleryResult].self)
     }
 
-    func cacheGallery(_ gallery: TrendingGalleryResult, category: ItemCategory.galleryCategory, instance: String) async throws {
+    func cacheGallery(_ gallery: TrendingItemResult, category: ItemCategory.galleryCategory, instance: String) async throws {
         let key = Keys.gallery(instance: instance, category: category)
-        switch category {
-        case .book:
-            if let bookGallery = gallery as? [EditionSchema] {
-                try await cache(bookGallery, forKey: key, type: [EditionSchema].self)
-            }
-        case .movie:
-            if let movieGallery = gallery as? [MovieSchema] {
-                try await cache(movieGallery, forKey: key, type: [MovieSchema].self)
-            }
-        case .tv:
-            if let tvGallery = gallery as? [TVShowSchema] {
-                try await cache(tvGallery, forKey: key, type: [TVShowSchema].self)
-            }
-        case .music:
-            if let musicGallery = gallery as? [AlbumSchema] {
-                try await cache(musicGallery, forKey: key, type: [AlbumSchema].self)
-            }
-        case .game:
-            if let gameGallery = gallery as? [GameSchema] {
-                try await cache(gameGallery, forKey: key, type: [GameSchema].self)
-            }
-        case .podcast:
-            if let podcastGallery = gallery as? [PodcastSchema] {
-                try await cache(podcastGallery, forKey: key, type: [PodcastSchema].self)
-            }
-        case .collection:
-            break
-        }
+        try await cache(gallery, forKey: key, type: TrendingItemResult.self)
     }
 
-    func retrieveGallery(category: ItemCategory.galleryCategory, instance: String) async throws -> TrendingGalleryResult? {
+    func retrieveGallery(category: ItemCategory.galleryCategory, instance: String) async throws -> TrendingItemResult? {
         let key = Keys.gallery(instance: instance, category: category)
-        switch category {
-        case .book:
-            return try await retrieve(forKey: key, type: [EditionSchema].self)
-        case .movie:
-            return try await retrieve(forKey: key, type: [MovieSchema].self)
-        case .tv:
-            return try await retrieve(forKey: key, type: [TVShowSchema].self)
-        case .music:
-            return try await retrieve(forKey: key, type: [AlbumSchema].self)
-        case .game:
-            return try await retrieve(forKey: key, type: [GameSchema].self)
-        case .podcast:
-            return try await retrieve(forKey: key, type: [PodcastSchema].self)
-        case .collection:
-            return nil
-        }
+        return try await retrieve(forKey: key, type: TrendingItemResult.self)
     }
 
     func removeGallery(category: ItemCategory.galleryCategory, instance: String) async throws {
         let key = Keys.gallery(instance: instance, category: category)
-        switch category {
-        case .book:
-            try await remove(forKey: key, type: [EditionSchema].self)
-        case .movie:
-            try await remove(forKey: key, type: [MovieSchema].self)
-        case .tv:
-            try await remove(forKey: key, type: [TVShowSchema].self)
-        case .music:
-            try await remove(forKey: key, type: [AlbumSchema].self)
-        case .game:
-            try await remove(forKey: key, type: [GameSchema].self)
-        case .podcast:
-            try await remove(forKey: key, type: [PodcastSchema].self)
-        case .collection:
-            break
-        }
+        try await remove(forKey: key, type: TrendingItemResult.self)
     }
     
-
     // MARK: - Timelines Caching
 
     func cacheTimelines(_ timelines: [MastodonStatus], key: String) async throws {

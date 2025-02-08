@@ -300,5 +300,9 @@ extension ItemCategory {
             case .collection: return .collection
             }
         }
+
+        var availableCategories: [galleryCategory] {
+            return [.book, .movie, .tv, .music, .game, .podcast]
+        }
     }
 }

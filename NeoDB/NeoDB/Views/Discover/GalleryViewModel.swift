@@ -97,7 +97,7 @@ class GalleryViewModel: ObservableObject {
     }
     
     private func updateState(for category: ItemCategory.galleryCategory, update: (inout GalleryState) -> Void) {
-        var state = galleryStates[category] ?? GalleryState()
+        var state = galleryStates[category] ?? GalleryState(galleryCategory: category)
         update(&state)
         galleryStates[category] = state
     }
@@ -121,7 +121,7 @@ class GalleryViewModel: ObservableObject {
 // MARK: - Gallery State
 struct GalleryState {
     var galleryCategory: ItemCategory.galleryCategory
-    var trendingGallery: TrendingGalleryResult?
+    var trendingGallery: TrendingItemResult? = nil
     var isLoading = false
     var isRefreshing = false
     var error: Error?
