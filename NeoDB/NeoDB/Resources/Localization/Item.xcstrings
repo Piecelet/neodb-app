@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Bandcamp" : {
+      "comment" : "Item External Resource Name - Bandcamp"
+    },
     "category_all" : {
       "localizations" : {
         "da" : {
@@ -361,6 +364,270 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法加载内容"
+          }
+        }
+      }
+    },
+    "item_external_resource_ao3" : {
+      "comment" : "Item External Resource Name - AO3",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "AO3"
+          }
+        }
+      }
+    },
+    "item_external_resource_applemusic" : {
+      "comment" : "Item External Resource Name - Apple Music",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Apple Music"
+          }
+        }
+      }
+    },
+    "item_external_resource_applepodcasts" : {
+      "comment" : "Item External Resource Name - Apple Podcasts",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Apple Podcasts"
+          }
+        }
+      }
+    },
+    "item_external_resource_bangumi" : {
+      "comment" : "Item External Resource Name - Bangumi",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bangumi 番组计划"
+          }
+        }
+      }
+    },
+    "item_external_resource_bgg" : {
+      "comment" : "Item External Resource Name - BGG",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Board Game Geek"
+          }
+        }
+      }
+    },
+    "item_external_resource_bilibili" : {
+      "comment" : "Item External Resource Name - Bilibili",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "哔哩哔哩"
+          }
+        }
+      }
+    },
+    "item_external_resource_bookstw" : {
+      "comment" : "Item External Resource Name - BooksTW",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "博客來"
+          }
+        }
+      }
+    },
+    "item_external_resource_discogs" : {
+      "comment" : "Item External Resource Name - Discogs",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Discogs"
+          }
+        }
+      }
+    },
+    "item_external_resource_douban" : {
+      "comment" : "Item External Resource Name - Douban",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "豆瓣"
+          }
+        }
+      }
+    },
+    "item_external_resource_fedi" : {
+      "comment" : "Item External Resource Name - Fediverse",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fediverse"
+          }
+        }
+      }
+    },
+    "item_external_resource_goodreads" : {
+      "comment" : "Item External Resource Name - Goodreads",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Goodreads"
+          }
+        }
+      }
+    },
+    "item_external_resource_googlebooks" : {
+      "comment" : "Item External Resource Name - Google Books",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Google Books"
+          }
+        }
+      }
+    },
+    "item_external_resource_igdb" : {
+      "comment" : "Item External Resource Name - IGDB",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IGDB"
+          }
+        }
+      }
+    },
+    "item_external_resource_imdb" : {
+      "comment" : "Item External Resource Name - IMDb",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IMDb"
+          }
+        }
+      }
+    },
+    "item_external_resource_jinjiang" : {
+      "comment" : "Item External Resource Name - JinJiang",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "晋江"
+          }
+        }
+      }
+    },
+    "item_external_resource_qidian" : {
+      "comment" : "Item External Resource Name - Qidian",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "起点"
+          }
+        }
+      }
+    },
+    "item_external_resource_rss" : {
+      "comment" : "Item External Resource Name - RSS",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "RSS"
+          }
+        }
+      }
+    },
+    "item_external_resource_spotify" : {
+      "comment" : "Item External Resource Name - Spotify",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Spotify"
+          }
+        }
+      }
+    },
+    "item_external_resource_steam" : {
+      "comment" : "Item External Resource Name - Steam",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Steam"
+          }
+        }
+      }
+    },
+    "item_external_resource_tmdb" : {
+      "comment" : "Item External Resource Name - TMDB",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "TMDB"
+          }
+        }
+      }
+    },
+    "item_external_resource_unknown" : {
+      "comment" : "Item External Resource Name - Unknown",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Unknown"
+          }
+        }
+      }
+    },
+    "item_external_resource_ypshuo" : {
+      "comment" : "Item External Resource Name - Ypshuo",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "阅书中文"
           }
         }
       }

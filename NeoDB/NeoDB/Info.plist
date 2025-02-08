@@ -32,5 +32,10 @@
 	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>douban</string>
+		<string>goodreads</string>
+	</array>
 </dict>
 </plist>

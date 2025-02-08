@@ -94,16 +94,16 @@ struct ItemView: View {
             actionsView
                 .padding(.horizontal)
                 .padding(.top)
-                
+
             Divider()
                 .padding(.vertical)
 
             ItemViewDescription(item: viewModel.item)
-            
+
             if let item = viewModel.item {
                 Divider()
                     .padding(.vertical)
-                    
+
                 ItemViewPosts(item: item)
             }
         }
@@ -175,7 +175,7 @@ struct ItemView: View {
     private var actionsView: some View {
         VStack(spacing: 12) {
             shelfTypeButtons
-            
+
             if viewModel.isMarkLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
@@ -253,7 +253,9 @@ struct ItemView: View {
         ToolbarItem(placement: .topBarTrailing) {
             HStack(spacing: 16) {
                 if let item = viewModel.item {
-                    ItemOpenInSafariView(item: item, accountsManager: accountsManager).bodyMenu
+                    ItemOpenInView(
+                        item: item, accountsManager: accountsManager
+                    ).bodyMenu
                 }
                 if let url = viewModel.shareURL {
                     ShareLink(item: url) {

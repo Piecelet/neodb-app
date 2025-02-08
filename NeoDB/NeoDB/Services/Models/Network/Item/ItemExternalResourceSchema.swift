@@ -73,6 +73,90 @@ enum ItemKnownExternalResource: String {
         case .unknown: return "link"
         }
     }
+
+    var host: String? {
+        switch self {
+        case .douban: return "douban.com"
+        case .goodreads: return "goodreads.com"
+        case .booksTW: return "books.com.tw"
+        case .googleBooks: return "books.google.com"
+        case .imdb: return "imdb.com"
+        case .tmdb: return "themoviedb.org"
+        case .bangumi: return "bangumi.tv"
+        case .bandcamp: return "bandcamp.com"
+        case .spotify: return "spotify.com"
+        case .appleMusic: return "music.apple.com"
+        case .discogs: return "discogs.com"
+        case .applePodcasts: return "podcasts.apple.com"
+        case .igdb: return "igdb.com"
+        case .steam: return "steampowered.com"
+        case .bgg: return "boardgamegeek.com"
+        case .ao3: return "archiveofourown.org"
+        case .jinjiang: return "jjwxc.net"
+        case .qidian: return "qidian.com"
+        case .ypshuo: return "ypshuo.com"
+        case .bilibili: return "bilibili.com"
+        case .fedi: return "fedi.com"
+        case .rss: return "rss.com"
+        case .unknown: return nil
+        }
+    }
+
+    var scheme: String? {
+        switch self {
+        case .douban: return "douban://"
+        case .goodreads: return "goodreads://"
+        case .booksTW: return "books://"
+        case .googleBooks: return "books://"
+        case .imdb: return "imdb://"
+        case .tmdb: return "themoviedb://"
+        case .bangumi: return "bangumi://"
+        case .bandcamp: return "bandcamp://"
+        case .spotify: return "spotify://"
+        case .appleMusic: return "music://"
+        case .discogs: return "record://"
+        case .applePodcasts: return "podcasts://"
+        case .igdb: return "igdb://"
+        case .steam: return "steam://"
+        case .bgg: return "boardgamegeek://"
+        case .ao3: return nil
+        case .jinjiang: return "jjwxc.net"
+        case .qidian: return "qidian.com"
+        case .ypshuo: return "ypshuo.com"
+        case .bilibili: return "bilibili.com"
+        case .fedi: return "fedi.com"
+        case .rss: return "rss://"
+        case .unknown: return nil
+        }
+    }
+
+    var displayName: String? {
+        switch self {
+        case .douban: return String(localized: "item_external_resource_douban", defaultValue: "豆瓣", table: "Item", comment: "Item External Resource Name - Douban")
+        case .goodreads: return String(localized: "item_external_resource_goodreads", defaultValue: "Goodreads", table: "Item", comment: "Item External Resource Name - Goodreads")
+        case .booksTW: return String(localized: "item_external_resource_bookstw", defaultValue: "博客來", table: "Item", comment: "Item External Resource Name - BooksTW")
+        case .googleBooks: return String(localized: "item_external_resource_googlebooks", defaultValue: "Google Books", table: "Item", comment: "Item External Resource Name - Google Books")
+        case .imdb: return String(localized: "item_external_resource_imdb", defaultValue: "IMDb", table: "Item", comment: "Item External Resource Name - IMDb")
+        case .tmdb: return String(localized: "item_external_resource_tmdb", defaultValue: "TMDB", table: "Item", comment: "Item External Resource Name - TMDB")
+        case .bangumi: return String(localized: "item_external_resource_bangumi", defaultValue: "Bangumi 番组计划", table: "Item", comment: "Item External Resource Name - Bangumi")
+        case .bandcamp: return String(localized: "Bandcamp", defaultValue: "Bandcamp", table: "Item", comment: "Item External Resource Name - Bandcamp")
+        case .spotify: return String(localized: "item_external_resource_spotify", defaultValue: "Spotify", table: "Item", comment: "Item External Resource Name - Spotify")
+        case .appleMusic: return String(localized: "item_external_resource_applemusic", defaultValue: "Apple Music", table: "Item", comment: "Item External Resource Name - Apple Music")
+        case .discogs: return String(localized: "item_external_resource_discogs", defaultValue: "Discogs", table: "Item", comment: "Item External Resource Name - Discogs")
+        case .applePodcasts: return String(localized: "item_external_resource_applepodcasts", defaultValue: "Apple Podcasts", table: "Item", comment: "Item External Resource Name - Apple Podcasts")
+        case .igdb: return String(localized: "item_external_resource_igdb", defaultValue: "IGDB", table: "Item", comment: "Item External Resource Name - IGDB")
+        case .steam: return String(localized: "item_external_resource_steam", defaultValue: "Steam", table: "Item", comment: "Item External Resource Name - Steam")
+        case .bgg: return String(localized: "item_external_resource_bgg", defaultValue: "Board Game Geek", table: "Item", comment: "Item External Resource Name - BGG")
+        case .ao3: return String(localized: "item_external_resource_ao3", defaultValue: "AO3", table: "Item", comment: "Item External Resource Name - AO3")
+        case .jinjiang: return String(localized: "item_external_resource_jinjiang", defaultValue: "晋江", table: "Item", comment: "Item External Resource Name - JinJiang")
+        case .qidian: return String(localized: "item_external_resource_qidian", defaultValue: "起点", table: "Item", comment: "Item External Resource Name - Qidian")
+        case .ypshuo: return String(localized: "item_external_resource_ypshuo", defaultValue: "阅书中文", table: "Item", comment: "Item External Resource Name - Ypshuo")
+        case .bilibili: return String(localized: "item_external_resource_bilibili", defaultValue: "哔哩哔哩", table: "Item", comment: "Item External Resource Name - Bilibili")
+        case .fedi: return String(localized: "item_external_resource_fedi", defaultValue: "Fediverse", table: "Item", comment: "Item External Resource Name - Fediverse")
+        case .rss: return String(localized: "item_external_resource_rss", defaultValue: "RSS", table: "Item", comment: "Item External Resource Name - RSS")
+        case .unknown: return nil
+        }
+    }
 }
 
 extension ItemExternalResourceSchema: Hashable {
@@ -81,64 +165,64 @@ extension ItemExternalResourceSchema: Hashable {
         let resource: ItemKnownExternalResource
 
         // Books
-        if host.contains("douban.com") {
+        if let targetHost = ItemKnownExternalResource.douban.host, host.contains(targetHost) {
             resource = .douban
-        } else if host.contains("goodreads.com") {
+        } else if let targetHost = ItemKnownExternalResource.goodreads.host, host.contains(targetHost) {
             resource = .goodreads
-        } else if host.contains("books.com.tw") {
+        } else if let targetHost = ItemKnownExternalResource.booksTW.host, host.contains(targetHost) {
             resource = .booksTW
-        } else if host.contains("books.google.com") {
+        } else if let targetHost = ItemKnownExternalResource.googleBooks.host, host.contains(targetHost) {
             resource = .googleBooks
         }
 
         // Movies & TV
-        else if host.contains("imdb.com") {
+        else if let targetHost = ItemKnownExternalResource.imdb.host, host.contains(targetHost) {
             resource = .imdb
-        } else if host.contains("themoviedb.org") {
+        } else if let targetHost = ItemKnownExternalResource.tmdb.host, host.contains(targetHost) {
             resource = .tmdb
-        } else if host.contains("bangumi.tv") {
+        } else if let targetHost = ItemKnownExternalResource.bangumi.host, host.contains(targetHost) {
             resource = .bangumi
         }
 
         // Music
-        else if host.contains("bandcamp.com") {
+        else if let targetHost = ItemKnownExternalResource.bandcamp.host, host.contains(targetHost) {
             resource = .bandcamp
-        } else if host.contains("spotify.com") {
+        } else if let targetHost = ItemKnownExternalResource.spotify.host, host.contains(targetHost) {
             resource = .spotify
-        } else if host.contains("music.apple.com") {
+        } else if let targetHost = ItemKnownExternalResource.appleMusic.host, host.contains(targetHost) {
             resource = .appleMusic
-        } else if host.contains("discogs.com") {
+        } else if let targetHost = ItemKnownExternalResource.discogs.host, host.contains(targetHost) {
             resource = .discogs
-        } else if host.contains("podcasts.apple.com") {
+        } else if let targetHost = ItemKnownExternalResource.applePodcasts.host, host.contains(targetHost) {
             resource = .applePodcasts
         }
 
         // Games
-        else if host.contains("igdb.com") {
+        else if let targetHost = ItemKnownExternalResource.igdb.host, host.contains(targetHost) {
             resource = .igdb
-        } else if host.contains("steampowered.com") {
+        } else if let targetHost = ItemKnownExternalResource.steam.host, host.contains(targetHost) {
             resource = .steam
-        } else if host.contains("boardgamegeek.com") {
+        } else if let targetHost = ItemKnownExternalResource.bgg.host, host.contains(targetHost) {
             resource = .bgg
         }
 
         // Literature
-        else if host.contains("archiveofourown.org") {
+        else if let targetHost = ItemKnownExternalResource.ao3.host, host.contains(targetHost) {
             resource = .ao3
-        } else if host.contains("jjwxc.net") {
+        } else if let targetHost = ItemKnownExternalResource.jinjiang.host, host.contains(targetHost) {
             resource = .jinjiang
-        } else if host.contains("qidian.com") {
+        } else if let targetHost = ItemKnownExternalResource.qidian.host, host.contains(targetHost) {
             resource = .qidian
-        } else if host.contains("ypshuo.com") {
+        } else if let targetHost = ItemKnownExternalResource.ypshuo.host, host.contains(targetHost) {
             resource = .ypshuo
         }
 
         // Social & Others
-        else if host.contains("bilibili.com") {
+        else if let targetHost = ItemKnownExternalResource.bilibili.host, host.contains(targetHost) {
             resource = .bilibili
-        } else if url.scheme == "fedi" {
+        } else if let targetScheme = ItemKnownExternalResource.fedi.host, url.scheme == targetScheme {
             resource = .fedi
-        } else if url.scheme == "rss" {
+        } else if let targetScheme = ItemKnownExternalResource.rss.host, url.scheme == targetScheme {
             resource = .rss
         }
 
@@ -151,10 +235,27 @@ extension ItemExternalResourceSchema: Hashable {
     }
 
     var name: String {
-        return type != .unknown ? type.rawValue : url.host ?? "Unknown"
+        return type.displayName ?? url.host ?? String(localized: "item_external_resource_unknown", defaultValue: "Unknown", table: "Item", comment: "Item External Resource Name - Unknown")
     }
 
     var icon: String {
         return type.icon
+    }
+}
+
+extension ItemExternalResourceSchema {
+    func makeAppScheme() -> URL? {
+        switch self.type {
+        case .douban:
+            let host = url.host ?? ""
+            let type = host.replacingOccurrences(of: ".douban.com", with: "")
+            let id = url.pathComponents.last ?? ""
+            let scheme = URL(string: "douban://douban.com/\(type)/\(id)")
+            if host.isEmpty || type.isEmpty || id.isEmpty {
+                return nil
+            }
+            return scheme
+        default: return nil
+        }
     }
 }
