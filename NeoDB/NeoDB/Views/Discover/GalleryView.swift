@@ -39,6 +39,7 @@ struct GalleryView: View {
                                 router.navigate(
                                     to: .galleryCategory(
                                         galleryState: state))
+                                HapticService.shared.selection()
                             }
                         } label: {
                             HStack(alignment: .center, spacing: 4) {

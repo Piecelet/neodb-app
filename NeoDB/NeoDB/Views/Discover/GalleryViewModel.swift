@@ -36,6 +36,12 @@ class GalleryViewModel: ObservableObject {
     // MARK: - Published Properties
     @Published private(set) var galleryStates: [ItemCategory.galleryCategory: State] = [:]
     
+    // MARK: - Constants
+    private let minimumRefreshInterval: TimeInterval = 15 * 60 // 15 minutes
+    
+    // MARK: - Properties
+    private var lastRequestTime: Date?
+    
     init() {
         // Initialize states for all categories
         for category in ItemCategory.galleryCategory.availableCategories {
@@ -137,7 +143,18 @@ class GalleryViewModel: ObservableObject {
             logger.debug("No accountsManager available")
             return
         }
-
+        
+        // Check if enough time has passed since last request
+        if !refresh, let lastRequest = lastRequestTime {
+            let timeSinceLastRequest = Date().timeIntervalSince(lastRequest)
+            if timeSinceLastRequest < minimumRefreshInterval {
+                logger.debug("Skipping request - too soon since last request (\(Int(timeSinceLastRequest))s < \(Int(minimumRefreshInterval))s)")
+                return
+            }
+        }
+        
+        lastRequestTime = Date()
+        
         // Update loading states
         for category in ItemCategory.galleryCategory.availableCategories {
             updateLoadingState(for: category, refresh: refresh)
