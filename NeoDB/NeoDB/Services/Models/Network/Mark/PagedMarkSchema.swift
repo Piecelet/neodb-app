@@ -12,3 +12,21 @@ struct PagedMarkSchema: Codable {
     let pages: Int
     let count: Int
 }
+
+extension PagedMarkSchema {
+    static var placeholders: PagedMarkSchema {
+        .init(
+            data: [
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+                MarkSchema.placeholder,
+            ], pages: 1, count: 1)
+    }
+}

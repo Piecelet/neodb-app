@@ -9,16 +9,15 @@ import Kingfisher
 import OSLog
 import SwiftUI
 
-fileprivate struct HorizontalDivider: View {
-    
+private struct HorizontalDivider: View {
     let color: Color
     let height: CGFloat
-    
+
     init(color: Color, height: CGFloat = 0.5) {
         self.color = color
         self.height = height
     }
-    
+
     var body: some View {
         color
             .frame(height: height)
@@ -31,9 +30,11 @@ struct LibraryView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @StateObject private var viewModel = LibraryViewModel()
     @Environment(\.colorScheme) private var colorScheme
-    
+
     let statusBarHeight: CGFloat = {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+        if let windowScene = UIApplication.shared.connectedScenes.first
+            as? UIWindowScene
+        {
             return windowScene.statusBarManager?.statusBarFrame.height ?? 0
         }
         return 0
@@ -41,11 +42,11 @@ struct LibraryView: View {
     let topTabBarHeight: CGFloat = 74
     let navBarHeight: CGFloat
     let tabBarHeight: CGFloat = 92
-    
+
     init() {
         navBarHeight = UINavigationController().navigationBar.frame.height
     }
-    
+
     // MARK: - Body
     var body: some View {
         VStack {
@@ -59,13 +60,19 @@ struct LibraryView: View {
                         Group {
                             if #available(iOS 17.0, *) {
                                 List {
-                                    shelfContentView(for: type, geometry: geometry)
+                                    shelfContentView(
+                                        for: type, geometry: geometry)
                                 }
-                                .safeAreaPadding(.top, topTabBarHeight + navBarHeight + statusBarHeight)
+                                .safeAreaPadding(
+                                    .top,
+                                    topTabBarHeight + navBarHeight
+                                        + statusBarHeight
+                                )
                                 .safeAreaPadding(.bottom, tabBarHeight)
                             } else {
                                 List {
-                                    shelfContentView(for: type, geometry: geometry)
+                                    shelfContentView(
+                                        for: type, geometry: geometry)
                                 }
                             }
                         }
@@ -116,7 +123,7 @@ struct LibraryView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw 
+        @ObserveInjection var forceRedraw
     #endif
 
     private var headerView: some View {
@@ -126,10 +133,14 @@ struct LibraryView: View {
             TopTabBarView(
                 items: ShelfType.allCases,
                 selection: $viewModel.selectedShelfType
-            ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
-                .padding(.bottom, 4)
-            
-            HorizontalDivider(color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
+            ) {
+                $0.displayNameForCategory(
+                    viewModel.selectedCategory.itemCategory)
+            }
+            .padding(.bottom, 4)
+
+            HorizontalDivider(
+                color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
         }
         .background(Material.bar)
         .padding(.bottom, -12)
@@ -152,6 +163,18 @@ struct LibraryView: View {
         .contentShape(Rectangle())
     }
 
+    private func shelfItemView(mark: MarkSchema) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            ItemCoverView(item: mark.item, size: .medium)
+            itemDetails(mark: mark)
+        }
+        .overlay(alignment: .topTrailing) {
+            chevronIcon
+                .padding(.top, 4)
+        }
+        .contentShape(Rectangle())
+    }
+
     private func itemDetails(for item: ShelfMarkItem) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             ItemTitleView(
@@ -160,9 +183,11 @@ struct LibraryView: View {
                 size: .medium
             )
 
-            ItemRatingView(item: item.mark.item, size: .small, hideRatingCount: true)
+            ItemRatingView(
+                item: item.mark.item, size: .small, hideRatingCount: true)
 
-            ItemDescriptionView(item: item.mark.item, mode: .brief, size: .medium)
+            ItemDescriptionView(
+                item: item.mark.item, mode: .brief, size: .medium)
 
             ItemMarkView(
                 markController: item.controller,
@@ -170,6 +195,20 @@ struct LibraryView: View {
                 brief: true,
                 showEditButton: true
             )
+        }
+    }
+
+    private func itemDetails(mark: MarkSchema) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ItemTitleView(
+                item: mark.item,
+                mode: .title,
+                size: .medium
+            )
+
+            ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
+
+            ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
         }
     }
 
@@ -181,45 +220,69 @@ struct LibraryView: View {
 
     // MARK: - Shelf Content View
     @ViewBuilder
-    private func shelfContentView(for type: ShelfType, geometry: GeometryProxy? = nil) -> some View {
+    private func shelfContentView(
+        for type: ShelfType, geometry: GeometryProxy? = nil
+    ) -> some View {
         if let state = viewModel.shelfStates[type] {
             if state.items.isEmpty {
-                emptyStateView(for: state, type: type)
+                if let error = state.error {
+                    EmptyStateView(
+                        String(
+                            localized: "library_error_title", table: "Library"),
+                        systemImage: "exclamationmark.triangle",
+                        description: Text(state.detailedError ?? error)
+                    )
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     .padding(.top, (geometry?.size.height ?? 0) / 4)
+                } else if !state.isLoading && !state.isRefreshing {
+                    EmptyStateView(
+                        String(
+                            localized: "library_empty_title", table: "Library"),
+                        systemImage: "books.vertical",
+                        description: Text(
+                            String(
+                                format: String(
+                                    localized: "library_empty_description",
+                                    table: "Library"), type.displayName))
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
+                } else {
+                    shelfItemsPlaceholder()
+                }
             } else {
                 shelfItemsList(for: state, type: type)
             }
         }
     }
-    
+
+    //    @ViewBuilder
+    //    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
+    //        if let error = state.error {
+    //            EmptyStateView(
+    //                String(localized: "library_error_title", table: "Library"),
+    //                systemImage: "exclamationmark.triangle",
+    //                description: Text(state.detailedError ?? error)
+    //            )
+    //        } else if !state.isLoading && !state.isRefreshing {
+    //            EmptyStateView(
+    //                String(localized: "library_empty_title", table: "Library"),
+    //                systemImage: "books.vertical",
+    //                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
+    //            )
+    //        } else {
+    //            shelfItemsPlaceholder()
+    //        }
+    //    }
+
     @ViewBuilder
-    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
-        if let error = state.error {
-            EmptyStateView(
-                String(localized: "library_error_title", table: "Library"),
-                systemImage: "exclamationmark.triangle",
-                description: Text(state.detailedError ?? error)
-            )
-        } else if !state.isLoading && !state.isRefreshing {
-            EmptyStateView(
-                String(localized: "library_empty_title", table: "Library"),
-                systemImage: "books.vertical",
-                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
-            )
-        } else {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding()
-                .id(UUID())
-                .padding(.top, 60)
-        }
-    }
-    
-    @ViewBuilder
-    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType) -> some View {
+    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType)
+        -> some View
+    {
         ForEach(state.items) { item in
             Button {
                 router.navigate(to: .itemDetailWithItem(item: item.mark.item))
@@ -235,12 +298,20 @@ struct LibraryView: View {
             }
             .buttonStyle(.plain)
         }
-        
+
         if state.isLoading && !state.isRefreshing {
             ProgressView()
                 .frame(maxWidth: .infinity)
                 .padding()
                 .listRowInsets(EdgeInsets())
+        }
+    }
+
+    @ViewBuilder
+    private func shelfItemsPlaceholder() -> some View {
+        ForEach(PagedMarkSchema.placeholders.data) { item in
+            shelfItemView(mark: item)
+                .redacted(reason: .placeholder)
         }
     }
 }
@@ -254,7 +325,7 @@ struct LibraryView: View {
     }
 }
 
-fileprivate struct IgnoreSafeAreaModifier: ViewModifier {
+private struct IgnoreSafeAreaModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             content.ignoresSafeArea(edges: .top)

@@ -56,8 +56,8 @@ enum ItemCoverSize {
 
 enum ItemCoverAlignment {
     case horizontal  // 固定宽度，高度自适应
-    case vertical   // 固定高度，宽度自适应
-    case fixed      // 固定宽高，使用placeholderRatio
+    case vertical  // 固定高度，宽度自适应
+    case fixed  // 固定宽高，使用placeholderRatio
 }
 
 struct ItemCoverView: View {
@@ -65,16 +65,21 @@ struct ItemCoverView: View {
     let size: ItemCoverSize
     var alignment: ItemCoverAlignment = .horizontal
     var showSkeleton: Bool = false
-    
+
     private var frameSize: (width: CGFloat?, height: CGFloat?) {
         switch alignment {
         case .horizontal:
-            return (width: size.height * AppConfig.defaultItemCoverRatio, height: nil)
+            return (
+                width: size.height * AppConfig.defaultItemCoverRatio,
+                height: nil
+            )
         case .vertical:
             return (width: nil, height: size.height)
         case .fixed:
             let resizedWidth = size.height * AppConfig.defaultItemCoverRatio
-            let ratio = item?.category.placeholderRatio ?? AppConfig.defaultItemCoverRatio
+            let ratio =
+                item?.category.placeholderRatio
+                ?? AppConfig.defaultItemCoverRatio
             return (width: resizedWidth, height: resizedWidth / ratio)
         }
     }
@@ -83,13 +88,17 @@ struct ItemCoverView: View {
         Group {
             if let item = item,
                 let coverImageUrl = item.coverImageUrl,
-                !coverImageUrl.absoluteString.contains("piecelet.internal/placeholder") {
+                !coverImageUrl.absoluteString.contains(
+                    "piecelet.internal/placeholder")
+            {
                 KFImage(coverImageUrl)
                     .placeholder {
                         placeholderView
                     }
                     .resizable()
-                    .aspectRatio(contentMode: alignment == .fixed ? .fill : .fit)
+                    .aspectRatio(
+                        contentMode: alignment == .fixed ? .fill : .fit
+                    )
                     .clipShape(
                         RoundedRectangle(cornerRadius: size.cornerRadius)
                     )
@@ -123,13 +132,18 @@ struct ItemCoverView: View {
     private var placeholderView: some View {
         Rectangle()
             .fill(Color.gray.opacity(0.2))
-            .aspectRatio(item?.category.placeholderRatio, contentMode: .fill)
+            .aspectRatio(item?.category.placeholderRatio, contentMode: alignment == .fixed ? .fill : .fit)
+            .clipShape(
+                RoundedRectangle(cornerRadius: size.cornerRadius)
+            )
             .frame(
                 width: frameSize.width,
                 height: frameSize.height
             )
             .clipped()
-            .clipShape(RoundedRectangle(cornerRadius: size.cornerRadius))
+            .clipShape(
+                RoundedRectangle(cornerRadius: size.cornerRadius)
+            )
             .overlay {
                 if let item = item {
                     Image(symbol: item.category.symbolImageFill)

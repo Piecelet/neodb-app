@@ -76,6 +76,21 @@ struct MarkSchema: AnyMarkSchema {
     }
 }
 
+extension MarkSchema {
+    static var placeholder: MarkSchema {
+        .init(
+            shelfType: .wishlist,
+            visibility: .pub,
+            postId: nil,
+            item: .placeholder,
+            createdTime: ServerDate(),
+            commentText: "",
+            ratingGrade: nil,
+            tags: []
+        )
+    }
+}
+
 struct MarkInSchema: AnyMarkSchema {
     let shelfType: ShelfType
     let visibility: MarkVisibility
