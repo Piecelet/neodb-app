@@ -27,7 +27,7 @@ enum RouterDestination: Hashable {
     case following(id: String)
 
     // Discover
-    case galleryCategory(galleryState: GalleryState)
+    case galleryCategory(galleryState: GalleryViewModel.State)
 
     // Store
     case purchase

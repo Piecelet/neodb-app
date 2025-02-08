@@ -39,12 +39,16 @@ struct GalleryView: View {
     }
 
     private var galleryContent: some View {
-        ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(ItemCategory.galleryCategory.availableCategories, id: \.rawValue) { category in
+        ForEach(ItemCategory.galleryCategory.availableCategories, id: \.self) {
+            category in
+            if let state = viewModel.galleryStates[category] {
+                Section {
                     VStack(alignment: .leading) {
                         Button {
-                            router.navigate(to: .galleryCategory(galleryState: viewModel.galleryStates[category]!))
+                            router.navigate(
+                                to: .galleryCategory(
+                                    galleryState: viewModel.galleryStates[
+                                        category]!))
                         } label: {
                             HStack(alignment: .center, spacing: 4) {
                                 Text(category.displayName)
@@ -59,23 +63,28 @@ struct GalleryView: View {
                         .padding(.horizontal)
                         .buttonStyle(.plain)
 
-                        if let state = viewModel.galleryStates[category],
-                            let gallery = state.gallery
-                        {
-                            Section {
-                                galleryView(gallery)
-                            }
-                            .listRowSeparator(.hidden)
-                        } else if let state = viewModel.galleryStates[category],
-                            state.isLoading
-                        {
-                            Section {
-                                ProgressView()
-                                    .frame(maxWidth: .infinity)
-                                    .listRowSeparator(.hidden)
-                            }
+                        if state.isLoading {
+                            galleryView(ItemSchema.placeholders, isPlaceholder: true)
+                        } else if let gallery = state.gallery {
+                            galleryView(gallery)
                         }
+
+                        // if let state = viewModel.galleryStates[category],
+                        //    let gallery = state.gallery {
+                        //     Section {
+                        //         galleryView(gallery)
+                        //     }
+                        //     .listRowSeparator(.hidden)
+                        // } else if let state = viewModel.galleryStates[category],
+                        //           state.isLoading {
+                        //     Section {
+                        //         ProgressView()
+                        //             .frame(maxWidth: .infinity)
+                        //             .listRowSeparator(.hidden)
+                        //     }
+                        // }
                     }
+                    .listRowSeparator(.hidden)
                     .padding(.top, 20)
                     .listRowInsets(EdgeInsets())
                 }
@@ -83,11 +92,12 @@ struct GalleryView: View {
         }
     }
 
-    private func galleryView(_ gallery: GalleryResult) -> some View {
-
+    private func galleryView(
+        _ items: TrendingItemResult, isPlaceholder: Bool = false
+    ) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(alignment: .top, spacing: 12) {
-                ForEach(gallery.items, id: \.uuid) { item in
+                ForEach(items, id: \.uuid) { item in
                     Button {
                         HapticFeedback.selection()
                         router.navigate(to: .itemDetailWithItem(item: item))
@@ -103,6 +113,8 @@ struct GalleryView: View {
                             .frame(width: coverWidth)
                         }
                     }
+                    .disabled(isPlaceholder)
+                    .redacted(reason: isPlaceholder ? .placeholder : [])
                     .buttonStyle(.plain)
                 }
             }

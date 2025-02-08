@@ -33,7 +33,7 @@ struct GalleryResult: Codable, Identifiable {
             return .podcast
         case "trending_performance":
             return .performance
-        default:
+        default: 
             return nil
         }
     }

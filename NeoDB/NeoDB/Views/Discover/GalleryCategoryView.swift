@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct GalleryCategoryView: View {
-    let galleryState: GalleryState
+    let galleryState: GalleryViewModel.State
     @EnvironmentObject private var router: Router
     
     var body: some View {

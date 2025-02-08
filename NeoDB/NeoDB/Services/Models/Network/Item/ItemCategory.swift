@@ -301,8 +301,6 @@ extension ItemCategory {
             }
         }
 
-        var availableCategories: [galleryCategory] {
-            return [.book, .movie, .tv, .music, .game, .podcast]
-        }
+        static let availableCategories: [galleryCategory] = [.book, .movie, .tv, .music, .game, .podcast]
     }
 }

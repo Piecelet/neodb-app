@@ -9,8 +9,20 @@
 import Foundation
 import OSLog
 
+// MARK: - Gallery State
+
 @MainActor
 class GalleryViewModel: ObservableObject {
+
+    struct State {
+        var galleryCategory: ItemCategory.galleryCategory
+        var trendingGallery: TrendingItemResult? = nil
+        var isLoading = false
+        var isRefreshing = false
+        var error: Error?
+        var lastRefreshTime: Date?
+    }
+
     private let logger = Logger.views.discover.gallery
     private let cacheService = CacheService.shared
     
@@ -21,12 +33,12 @@ class GalleryViewModel: ObservableObject {
     private var loadTasks: [ItemCategory.galleryCategory: Task<Void, Never>] = [:]
     
     // MARK: - Published Properties
-    @Published private(set) var galleryStates: [ItemCategory.galleryCategory: GalleryState] = [:]
+    @Published private(set) var galleryStates: [ItemCategory.galleryCategory: State] = [:]
     
     init() {
         // Initialize states for all categories
         for category in ItemCategory.galleryCategory.allCases {
-            galleryStates[category] = GalleryState(galleryCategory: category)
+            galleryStates[category] = State(galleryCategory: category)
         }
     }
     
@@ -96,8 +108,8 @@ class GalleryViewModel: ObservableObject {
         await loadTasks[category]?.value
     }
     
-    private func updateState(for category: ItemCategory.galleryCategory, update: (inout GalleryState) -> Void) {
-        var state = galleryStates[category] ?? GalleryState(galleryCategory: category)
+    private func updateState(for category: ItemCategory.galleryCategory, update: (inout State) -> Void) {
+        var state = galleryStates[category] ?? State(galleryCategory: category)
         update(&state)
         galleryStates[category] = state
     }
@@ -116,14 +128,4 @@ class GalleryViewModel: ObservableObject {
         loadTasks.values.forEach { $0.cancel() }
         loadTasks.removeAll()
     }
-}
-
-// MARK: - Gallery State
-struct GalleryState {
-    var galleryCategory: ItemCategory.galleryCategory
-    var trendingGallery: TrendingItemResult? = nil
-    var isLoading = false
-    var isRefreshing = false
-    var error: Error?
-    var lastRefreshTime: Date?
 }
