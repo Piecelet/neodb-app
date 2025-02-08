@@ -10,8 +10,21 @@ import Foundation
 
 struct MastodonTimelinesState: Equatable {
     var statuses: [MastodonStatus] = []
-    var isLoading = false
-    var isRefreshing = false
+    var isInited = false
+    var isLoading = false {
+        didSet {
+            if isLoading {
+                error = nil
+            }
+        }
+    }
+    var isRefreshing = false {
+        didSet {
+            if isRefreshing {
+                error = nil
+            }
+        }
+    }
     var error: Error?
     
     // Pagination

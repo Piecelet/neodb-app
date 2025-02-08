@@ -359,7 +359,10 @@ struct SettingsView: View {
         EmptyStateView(
             String(localized: "profile_error_title", table: "Settings"),
             systemImage: "exclamationmark.triangle",
-            description: Text(error)
+            description: Text(error),
+            actions: {
+                logoutButton
+            }
         )
     }
 
@@ -585,6 +588,11 @@ struct SettingsView: View {
 
     private var logoutSection: some View {
         Section {
+            logoutButton
+        }
+    }
+
+    private var logoutButton: some View {
             Button(role: .destructive) {
                 withAnimation {
                     viewModel.logout()
@@ -594,6 +602,6 @@ struct SettingsView: View {
                 Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)
             }
-        }
     }
+    
 }

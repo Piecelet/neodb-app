@@ -80,6 +80,7 @@ final class MastodonTimelinesViewModel: ObservableObject {
                     state.hasMore = !newStatuses.isEmpty
                     state.lastRefreshTime = Date()
                     state.error = nil
+                    state.isInited = true
                 }
                 
                 // Cache only if it's a refresh or first load
@@ -89,9 +90,11 @@ final class MastodonTimelinesViewModel: ObservableObject {
                         key: "\(accountsManager.currentAccount.id)_\(type.rawValue)")
                 }
             } catch {
-                updateState(for: type) { state in
-                    state.error = error
-                    logger.error("Timeline load error: \(error.localizedDescription)")
+                if !Task.isCancelled {
+                    updateState(for: type) { state in
+                        state.error = error
+                        logger.error("Timeline load error: \(error.localizedDescription)")
+                    }
                 }
             }
         }

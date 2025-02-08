@@ -11,19 +11,27 @@ struct EmptyStateView: View {
     let title: String
     let systemImage: String
     let description: Text
+    let actions: AnyView
     
-    init(_ title: String, systemImage: String, description: Text) {
+    init(_ title: String, systemImage: String, description: Text, @ViewBuilder actions: () -> some View = { EmptyView() }) {
         self.title = title
         self.systemImage = systemImage
         self.description = description
+        self.actions = AnyView(actions())
     }
     
     var body: some View {
         if #available(iOS 17.0, macOS 14.0, *) {
             ContentUnavailableView(
-                title,
-                systemImage: systemImage,
-                description: description
+                label: {
+                    Label(title, systemImage: systemImage)
+                },
+                description: {
+                    description
+                },
+                actions: {
+                    actions
+                }
             )
         } else {
             VStack(spacing: 16) {
@@ -39,6 +47,8 @@ struct EmptyStateView: View {
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+
+                actions
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .padding()

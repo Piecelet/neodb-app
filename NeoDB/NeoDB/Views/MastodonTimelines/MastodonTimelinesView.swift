@@ -9,16 +9,16 @@
 import OSLog
 import SwiftUI
 
-fileprivate struct HorizontalDivider: View {
-    
+private struct HorizontalDivider: View {
+
     let color: Color
     let height: CGFloat
-    
+
     init(color: Color, height: CGFloat = 0.5) {
         self.color = color
         self.height = height
     }
-    
+
     var body: some View {
         color
             .frame(height: height)
@@ -29,23 +29,26 @@ struct MastodonTimelinesView: View {
     @StateObject private var viewModel = MastodonTimelinesViewModel()
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @AppStorage("selectedTimelineType") private var selectedTimelineType: MastodonTimelinesFilter = .local
+    @AppStorage("selectedTimelineType") private var selectedTimelineType:
+        MastodonTimelinesFilter = .local
     @Environment(\.colorScheme) private var colorScheme
-    
+
     let statusBarHeight: CGFloat = {
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+        if let windowScene = UIApplication.shared.connectedScenes.first
+            as? UIWindowScene
+        {
             return windowScene.statusBarManager?.statusBarFrame.height ?? 0
         }
         return 0
     }()
-    let topTabBarHeight: CGFloat = 32
+    let topTabBarHeight: CGFloat = 36
     let navBarHeight: CGFloat
     let tabBarHeight: CGFloat = 92
-    
+
     init() {
         navBarHeight = UINavigationController().navigationBar.frame.height
     }
-    
+
     var body: some View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
@@ -54,23 +57,32 @@ struct MastodonTimelinesView: View {
             }
             GeometryReader { geometry in
                 TabView(selection: $selectedTimelineType) {
-                    ForEach(MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated), id: \.self) { type in
+                    ForEach(
+                        MastodonTimelinesFilter.availableTimeline(
+                            isAuthenticated: accountsManager.isAuthenticated),
+                        id: \.self
+                    ) { type in
                         Group {
                             if #available(iOS 17.0, *) {
                                 List {
-                                    timelineContent(for: type)
+                                    timelineContent(for: type, geometry: geometry)
                                 }
-                                .safeAreaPadding(.top, topTabBarHeight + navBarHeight + statusBarHeight)
+                                .safeAreaPadding(
+                                    .top,
+                                    topTabBarHeight + navBarHeight
+                                        + statusBarHeight
+                                )
                                 .safeAreaPadding(.bottom, tabBarHeight)
                             } else {
                                 List {
-                                    timelineContent(for: type)
+                                    timelineContent(for: type, geometry: geometry)
                                 }
                             }
                         }
                         .listStyle(.plain)
                         .refreshable {
-                            await viewModel.loadTimeline(type: type, refresh: true)
+                            await viewModel.loadTimeline(
+                                type: type, refresh: true)
                         }
                         .tag(type)
                     }
@@ -82,13 +94,16 @@ struct MastodonTimelinesView: View {
         .toolbarBackground(.visible, for: .tabBar)
         .modifier(IgnoreSafeAreaModifier())
         .safeAreaInset(edge: .top) {
-            VStack(spacing:0) {
+            VStack(spacing: 0) {
                 TopTabBarView(
-                    items: MastodonTimelinesFilter.availableTimeline(isAuthenticated: accountsManager.isAuthenticated),
+                    items: MastodonTimelinesFilter.availableTimeline(
+                        isAuthenticated: accountsManager.isAuthenticated),
                     selection: $selectedTimelineType
                 ) { item in item.displayName }
-                    .padding(.bottom, 4)
-                HorizontalDivider(color: .grayBackground, height: colorScheme == .dark ? 0.5 : 1)
+                .padding(.bottom, 4)
+                HorizontalDivider(
+                    color: .grayBackground,
+                    height: colorScheme == .dark ? 0.5 : 1)
             }
             .background(Material.bar)
         }
@@ -127,40 +142,56 @@ struct MastodonTimelinesView: View {
         }
         .enableInjection()
     }
-    
+
     @ViewBuilder
-    private func timelineContent(for type: MastodonTimelinesFilter, geometry: GeometryProxy? = nil) -> some View {
+    private func timelineContent(
+        for type: MastodonTimelinesFilter, geometry: GeometryProxy? = nil
+    ) -> some View {
         let state = viewModel.timelineStates[type] ?? MastodonTimelinesState()
-        
+
         if let error = state.error {
             EmptyStateView(
                 String(localized: "timelines_error_title", table: "Timelines"),
                 systemImage: "exclamationmark.triangle",
                 description: Text(error.localizedDescription)
             )
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .padding(.top, (geometry?.size.height ?? 0) / 4)
+            .listRowInsets(EdgeInsets())
+            .listRowSeparator(.hidden)
+            .listRowBackground(Color.clear)
+            .padding(.top, (geometry?.size.height ?? 0) / 4)
         } else if state.statuses.isEmpty {
-            if state.isLoading || state.isRefreshing {
-                timelineSkeletonContent
+            if state.isLoading || state.isRefreshing || !state.isInited {
+                ForEach(0..<MastodonStatus.placeholders().count, id: \.self) { _ in
+                    StatusView(status: MastodonStatus.placeholder(), mode: .timeline)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .alignmentGuide(.listRowSeparatorLeading) { _ in
+                            return 4
+                        }
+                        .redacted(reason: .placeholder)
+                }
             } else {
                 EmptyStateView(
-                    String(localized: "timelines_no_posts_title", table: "Timelines"),
+                    String(
+                        localized: "timelines_no_posts_title",
+                        table: "Timelines"),
                     systemImage: "text.bubble",
-                    description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
+                    description: Text(
+                        String(
+                            localized: "timelines_no_posts_description",
+                            table: "Timelines"))
                 )
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .listRowBackground(Color.clear)
-                    .padding(.top, (geometry?.size.height ?? 0) / 4)
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+                .listRowBackground(Color.clear)
+                .padding(.top, (geometry?.size.height ?? 0) / 4)
             }
         } else {
             ForEach(state.statuses, id: \.id) { status in
                 Group {
                     Button {
-                        router.navigate(to: .statusDetailWithStatus(status: status))
+                        router.navigate(
+                            to: .statusDetailWithStatus(status: status))
                     } label: {
                         StatusView(status: status, mode: .timeline)
                     }
@@ -173,12 +204,13 @@ struct MastodonTimelinesView: View {
                         }
                     }
                 }
+                .listRowBackground(Color.clear)
                 .alignmentGuide(.listRowSeparatorLeading) { _ in
                     return 4
                 }
                 .listRowInsets(EdgeInsets())
             }
-            
+
             if state.isLoading && !state.isRefreshing {
                 HStack {
                     Spacer()
@@ -191,47 +223,6 @@ struct MastodonTimelinesView: View {
                 .padding()
             }
         }
-    }
-    
-    private let skeletonCount = 5
-    
-    private var timelineSkeletonContent: some View {
-        ForEach(0..<skeletonCount, id: \.self) { _ in
-            statusSkeletonView
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-        }
-    }
-    
-    private var statusSkeletonView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Avatar and name
-            HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 40, height: 40)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 120, height: 16)
-                    
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 80, height: 12)
-                }
-            }
-            
-            // Content placeholder
-            VStack(alignment: .leading, spacing: 4) {
-                ForEach(0..<3, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(height: 12)
-                }
-            }
-        }
-        .padding()
     }
 
     #if DEBUG
@@ -247,7 +238,7 @@ struct MastodonTimelinesView: View {
     }
 }
 
-fileprivate struct IgnoreSafeAreaModifier: ViewModifier {
+private struct IgnoreSafeAreaModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             content.ignoresSafeArea(edges: .top)
