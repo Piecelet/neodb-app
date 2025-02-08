@@ -40,3 +40,5 @@ struct GalleryResult: Codable, Identifiable {
         return itemCategory?.displayName ?? name
     }
 }
+
+typealias TrendingGalleryResult = [any ItemProtocol]

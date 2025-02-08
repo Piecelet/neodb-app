@@ -15,7 +15,6 @@
 		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
 		243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 243C39242D3E7ABA00EB356A /* SFSafeSymbols */; };
 		2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 2446C0C82D41712F00504129 /* SwiftSoup */; };
-		24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 24506C5A2D38D49000B50EDB /* NeoDB.xcconfig */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 2475428B2D51215D006F032F /* TelemetryDeck */; };
 		2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2477BCD62D4D52AC00E39E1A /* ButtonKit */; };
@@ -315,7 +314,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				24506C5B2D38D49000B50EDB /* NeoDB.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -379,6 +377,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -443,6 +442,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
