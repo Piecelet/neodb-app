@@ -37,8 +37,12 @@ class Router: ObservableObject {
         )
     }
     
-    func navigate(to destination: RouterDestination) {
-        paths[selectedTab]?.append(destination)
+    func navigate(to destination: RouterDestination, for tab: TabDestination? = nil) {
+        if let tab = tab {
+            paths[tab]?.append(destination)
+        } else {
+            paths[selectedTab]?.append(destination)
+        }
         
         // Store item for loading if navigating to item detail
         if case .itemDetailWithItem(let item) = destination {

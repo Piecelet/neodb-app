@@ -11,12 +11,10 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @EnvironmentObject var storeManager: StoreManager
-    @StateObject private var router = Router()
 
     var body: some View {
         MainTabView()
             .tint(.accentColor)
-            .environmentObject(router)
             .enableInjection()
             .whatsNewSheet()
     }

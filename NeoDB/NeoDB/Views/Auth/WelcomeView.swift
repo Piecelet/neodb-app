@@ -10,6 +10,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
 
     // Animation states
     @State private var logoScale = 0.5
@@ -17,7 +18,7 @@ struct WelcomeView: View {
     @State private var titleOffset = CGFloat(50)
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: router.path(for: .auth)) {
             VStack(spacing: 16) {
                 Spacer()
                 VStack(spacing: 16) {
@@ -49,8 +50,9 @@ struct WelcomeView: View {
 
                 Spacer()
 
-                NavigationLink {
-                    InstanceView()
+                Button {
+                    HapticFeedback.impact()
+                    router.navigate(to: .instance, for: .auth)
                 } label: {
                     Text("welcome_get_started", tableName: "Settings")
                         .font(.headline)
@@ -60,11 +62,6 @@ struct WelcomeView: View {
                         .foregroundColor(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
-                .simultaneousGesture(TapGesture().onEnded {
-                    Task {
-                        HapticFeedback.impact()
-                    }
-                })
                 .opacity(contentOpacity)
 
                 HStack(spacing: 16) {
@@ -87,6 +84,9 @@ struct WelcomeView: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .opacity(contentOpacity)
+            }
+            .navigationDestination(for: RouterDestination.self) { destination in
+                destination.destinationView
             }
             .padding()
         }

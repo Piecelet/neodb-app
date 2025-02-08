@@ -14,20 +14,19 @@ struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var showMastodonLogin = false
+    @Environment(\.isAddingAccount) private var isAddingAccount
     let instance: MastodonInstance?
     let instanceAddress: String
-    let isAddingAccount: Bool
     @State private var canDismiss = false
     private let logger = Logger.views.login
 
     // Animation states
     @State private var buttonScale = 1.0
 
-    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil, isAddingAccount: Bool = false) {
+    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
         self.instance = instance
         self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
-        self.isAddingAccount = isAddingAccount
-        logger.debug("LoginView initialized with isAddingAccount: \(isAddingAccount), instance: \(String(describing: instance))")
+        logger.debug("LoginView initialized with instance: \(String(describing: instance))")
     }
 
     private var signInButton: some View {

@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 import OSLog
 
+@MainActor
 final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var client: NetworkClient?
@@ -20,9 +21,7 @@ final class InstanceViewModel: ObservableObject {
     @Published var instanceInfo: MastodonInstance?
     @Published var error: Error?
     @Published var showIncompatibleAlert = false
-    @Published var isLoginActive = false
-    @Published var selectedInstance: MastodonInstance?
-    @Published var selectedInstanceAddress: String?
+    @EnvironmentObject private var router: Router
     
     var disableInteractiveDismiss = false
 
@@ -69,19 +68,15 @@ final class InstanceViewModel: ObservableObject {
         }
     }
     
-    func selectMastodonInstance(instance: MastodonInstance, address: String) {
-        logger.debug("Selecting Mastodon instance: \(address)")
-        selectedInstance = instance
-        selectedInstanceAddress = address
-        isLoginActive = true
-    }
-    
-    func selectAppInstance(instance: AppInstance) {
-        logger.debug("Selecting app instance: \(instance.host)")
-        selectedInstance = nil
-        selectedInstanceAddress = instance.host
-        isLoginActive = true
-    }
+//    func selectMastodonInstance(instance: MastodonInstance, address: String) {
+//        logger.debug("Selecting Mastodon instance: \(address)")
+//        router.navigate(to: .loginWithInstance(instance: instance, instanceAddress: address))
+//    }
+//    
+//    func selectAppInstance(instance: AppInstance) {
+//        logger.debug("Selecting app instance: \(instance.host)")
+//        router.navigate(to: .login(instance: instance.host))
+//    }
     
     func showIncompatibleInstanceAlert() {
         showIncompatibleAlert = true

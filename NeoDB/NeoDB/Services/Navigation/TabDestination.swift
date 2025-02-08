@@ -14,6 +14,7 @@ enum TabDestination: String, CaseIterable {
     case search
     case library
     case profile
+    case auth
 
     var title: String {
         switch self {
@@ -25,6 +26,8 @@ enum TabDestination: String, CaseIterable {
             String(localized: "library_title", table: "Library")
         case .profile:
             String(localized: "settings_title", table: "Settings")
+        case .auth:
+            ""
         }
     }
 
@@ -34,8 +37,11 @@ enum TabDestination: String, CaseIterable {
         case .search: "magnifyingglass"
         case .library: "books.vertical.fill"
         case .profile: "gear"
+        case .auth: ""
         }
     }
+
+    static let availableBottomTabs: [TabDestination] = [.home, .search, .library, .profile]
 }
 
 // MARK: - View Builder
@@ -59,6 +65,8 @@ extension TabDestination {
             LibraryView()
         case .profile:
             SettingsView()
+        case .auth:
+            EmptyView()
         }
     }
 }
@@ -83,7 +91,7 @@ struct MainTabView: View {
                 }
             }
         ) {
-            ForEach(TabDestination.allCases, id: \.self) { tab in
+            ForEach(TabDestination.availableBottomTabs, id: \.self) { tab in
                 NavigationStack(path: router.path(for: tab)) {
                     tab.tabContent
                 }

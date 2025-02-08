@@ -24,7 +24,6 @@ struct NeoDBApp: App {
             Group {
                 if accountsManager.isAppAuthenticated {
                     ContentView()
-                        .environmentObject(router)
                         .environment(
                             \.whatsNew,
                             WhatsNewEnvironment(
@@ -38,6 +37,7 @@ struct NeoDBApp: App {
                     WelcomeView()
                 }
             }
+            .environmentObject(router)
             .environmentObject(accountsManager)
             .environmentObject(storeManager)
             .onOpenURL { url in

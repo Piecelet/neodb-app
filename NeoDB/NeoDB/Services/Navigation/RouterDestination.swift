@@ -33,6 +33,11 @@ enum RouterDestination: Hashable {
     case purchase
     case purchaseWithFeature(feature: StoreConfig.Features)
 
+    // Login
+    case instance
+    case login(instanceAddress: String)
+    case loginWithInstance(instance: MastodonInstance, instanceAddress: String)
+
     func hash(into hasher: inout Hasher) {
         switch self {
         case .itemDetail(let id):
@@ -77,6 +82,14 @@ enum RouterDestination: Hashable {
         case .purchaseWithFeature(let feature):
             hasher.combine(13)
             hasher.combine(feature)
+        case .instance:
+            hasher.combine(14)
+        case .login(let instanceAddress):
+            hasher.combine(15)
+            hasher.combine(instanceAddress)
+        case .loginWithInstance(let instance, _):
+            hasher.combine(16)
+            hasher.combine(instance.title)
         }
     }
 
@@ -158,6 +171,12 @@ extension RouterDestination {
             PurchaseView()
         case .purchaseWithFeature(let feature):
             PurchaseView(scrollToFeature: feature)
+        case .instance:
+            InstanceView()
+        case .login(let instanceAddress):
+            LoginView(instanceAddress: instanceAddress)
+        case .loginWithInstance(let instance, let instanceAddress):
+            LoginView(instance: instance, instanceAddress: instanceAddress)
         }
     }
 }
