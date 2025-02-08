@@ -24,17 +24,6 @@ enum ItemCategory: String, Codable, CaseIterable {
     case exhibition
     case collection
     
-//    var rawValue: String {
-//        switch self {
-//        case .tvSeason, .tvEpisode:
-//            return "tv"
-//        case .performanceProduction:
-//            return "performance"
-//        default:
-//            return String(describing: self)
-//        }
-//    }
-    
     var urlPath: String {
         switch self {
         case .tvSeason, .tvEpisode:
@@ -45,110 +34,6 @@ enum ItemCategory: String, Codable, CaseIterable {
             return "podcast"
         default:
             return self.rawValue
-        }
-    }
-
-    enum shelfAvailable: String, CaseIterable, Codable {
-        case allItems
-        case book
-        case movie
-        case tv
-        case music
-        case game
-        case podcast
-        case performance
-
-        var itemCategory: ItemCategory? {
-            switch self {
-            case .allItems: return nil
-            case .book: return .book
-            case .movie: return .movie
-            case .tv: return .tv
-            case .music: return .music
-            case .game: return .game
-            case .podcast: return .podcast
-            case .performance: return .performance
-            }
-        }
-
-        var symbolImage: Symbol {
-            switch self {
-            case .allItems: return .sfSymbol(.squareGrid2x2)
-            default: return self.itemCategory?.symbolImage ?? .systemSymbol(self.rawValue)
-            }
-        }
-
-        var symbolImageFill: Symbol {
-            switch self {
-            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
-            default: return self.itemCategory?.symbolImageFill ?? .systemSymbol(self.rawValue)
-            }
-        }
-
-        var displayName: String {
-            switch self {
-            case .allItems: return String(localized: "category_all", table: "Item")
-            default: return self.itemCategory?.displayName ?? self.rawValue
-            }
-        }
-
-        var color: Color {
-            switch self {
-            case .allItems: return Color.accentColor
-            default: return self.itemCategory?.color ?? .gray
-            }
-        }
-    }
-
-    enum searchable: String, CaseIterable, Codable {
-        case allItems
-        case book
-        case movieAndTv = "movie,tv"
-        case music
-        case game
-        case podcast
-        case performance
-        
-        var itemCategory: ItemCategory? {
-            switch self {
-            case .book: return .book
-            case .music: return .music
-            case .game: return .game
-            case .podcast: return .podcast
-            case .performance: return .performance
-            default: return nil
-            }
-        }
-
-        var displayName: String {
-            switch self {
-            case .allItems: return String(localized: "category_all", table: "Item")
-            case .movieAndTv: return String(localized: "category_movie_and_tv", table: "Item")
-            default: return itemCategory?.displayName ?? self.rawValue
-            }
-        }
-
-        var symbolImage: Symbol {
-            switch self {
-            case .movieAndTv: return .sfSymbol(.film)
-            case .allItems: return .sfSymbol(.squareGrid2x2)
-            default: return self.itemCategory?.symbolImage ?? .sfSymbol(.squareGrid2x2)
-            }
-        }
-
-        var symbolImageFill: Symbol {
-            switch self {
-            case .movieAndTv: return .sfSymbol(.filmFill)
-            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
-            default: return self.itemCategory?.symbolImageFill ?? .sfSymbol(.squareGrid2x2Fill)
-            }
-        }
-
-        var color: Color {
-            switch self {
-            case .allItems: return Color.accentColor
-            default: return self.itemCategory?.color ?? .gray
-            }
         }
     }
 
@@ -243,6 +128,8 @@ enum ItemCategory: String, Codable, CaseIterable {
     }
 }
 
+// MARK: - Item Type
+
 extension ItemCategory {
     var type: ItemType {
         switch self {
@@ -257,6 +144,149 @@ extension ItemCategory {
         case .game: return .game
         case .performance: return .performance
         case .performanceProduction: return .performanceProduction
+        }
+    }
+}
+
+// MARK: - Shelf Available
+
+extension ItemCategory {
+    enum shelfAvailable: String, CaseIterable, Codable {
+        case allItems
+        case book
+        case movie
+        case tv
+        case music
+        case game
+        case podcast
+        case performance
+
+        var itemCategory: ItemCategory? {
+            switch self {
+            case .allItems: return nil
+            case .book: return .book
+            case .movie: return .movie
+            case .tv: return .tv
+            case .music: return .music
+            case .game: return .game
+            case .podcast: return .podcast
+            case .performance: return .performance
+            }
+        }
+
+        var symbolImage: Symbol {
+            switch self {
+            case .allItems: return .sfSymbol(.squareGrid2x2)
+            default: return self.itemCategory?.symbolImage ?? .systemSymbol(self.rawValue)
+            }
+        }
+
+        var symbolImageFill: Symbol {
+            switch self {
+            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
+            default: return self.itemCategory?.symbolImageFill ?? .systemSymbol(self.rawValue)
+            }
+        }
+
+        var displayName: String {
+            switch self {
+            case .allItems: return String(localized: "category_all", table: "Item")
+            default: return self.itemCategory?.displayName ?? self.rawValue
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .allItems: return Color.accentColor
+            default: return self.itemCategory?.color ?? .gray
+            }
+        }
+    }
+}
+
+// MARK: - Searchable
+
+extension ItemCategory {
+
+    enum searchable: String, CaseIterable, Codable {
+        case allItems
+        case book
+        case movieAndTv = "movie,tv"
+        case music
+        case game
+        case podcast
+        case performance
+        
+        var itemCategory: ItemCategory? {
+            switch self {
+            case .book: return .book
+            case .music: return .music
+            case .game: return .game
+            case .podcast: return .podcast
+            case .performance: return .performance
+            default: return nil
+            }
+        }
+
+        var displayName: String {
+            switch self {
+            case .allItems: return String(localized: "category_all", table: "Item")
+            case .movieAndTv: return String(localized: "category_movie_and_tv", table: "Item")
+            default: return itemCategory?.displayName ?? self.rawValue
+            }
+        }
+
+        var symbolImage: Symbol {
+            switch self {
+            case .movieAndTv: return .sfSymbol(.film)
+            case .allItems: return .sfSymbol(.squareGrid2x2)
+            default: return self.itemCategory?.symbolImage ?? .sfSymbol(.squareGrid2x2)
+            }
+        }
+
+        var symbolImageFill: Symbol {
+            switch self {
+            case .movieAndTv: return .sfSymbol(.filmFill)
+            case .allItems: return .sfSymbol(.squareGrid2x2Fill)
+            default: return self.itemCategory?.symbolImageFill ?? .sfSymbol(.squareGrid2x2Fill)
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .allItems: return Color.accentColor
+            default: return self.itemCategory?.color ?? .gray
+            }
+        }
+    }
+}
+
+// MARK: - Gallery Category
+
+extension ItemCategory {
+    enum galleryCategory: String, CaseIterable, Codable {
+        case book
+        case movie
+        case tv
+        case music
+        case game
+        case podcast
+        case collection
+
+        var itemCategory: ItemCategory {
+            switch self {
+            case .book: return .book
+            case .movie: return .movie
+            case .tv: return .tv
+            case .music: return .music
+            case .game: return .game
+            case .podcast: return .podcast
+            case .collection: return .collection
+            }
+        }
+
+        var displayName: String {
+            itemCategory.displayName
         }
     }
 }

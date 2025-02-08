@@ -36,6 +36,10 @@ extension CacheService {
         static func gallery(instance: String? = nil) -> String {
             "gallery_\(instance ?? "default")"
         }
+
+        static func gallery(instance: String = "default.instance", category: ItemCategory) -> String {
+            "gallery_\(instance)"
+        }
         
         // Search related
         static func search(query: String, page: Int, instance: String? = nil) -> String {
