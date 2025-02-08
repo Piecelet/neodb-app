@@ -11,7 +11,7 @@ import OSLog
 
 @MainActor
 protocol MarkDataControlling {
-    func updateMark(for mark: MarkInSchema) async throws
+    func updateMark(changedTime: ServerDate?, postToFediverse: Bool?) async throws
     func deleteMark(for UUID: String) async throws
 }
 
@@ -68,7 +68,7 @@ final class MarkDataController: MarkDataControlling {
     private let logger = Logger.dataControllers.markDataController
 
     @Published var mark: MarkSchema?
-    @Published var shelfType: ShelfType = .wishlist
+    @Published var shelfType: ShelfType? = nil
     @Published var commentText: String = ""
     @Published var ratingGrade: Int?
     @Published var visibility: MarkVisibility = .pub
@@ -122,6 +122,7 @@ final class MarkDataController: MarkDataControlling {
         }
     }
 
+    @available(*, deprecated, message: "Use updateMark(changedTime:postToFediverse:) instead")
     func updateMark(for mark: MarkInSchema) async throws {
         let previousMark = self.mark
 
@@ -171,11 +172,10 @@ final class MarkDataController: MarkDataControlling {
     }
 
     func updateMark(changedTime: ServerDate? = nil, postToFediverse: Bool? = nil) async throws {
-
         do {
-            if let ratingGrade = self.ratingGrade {
+            if let shelfType = self.shelfType {
                 let markIn = MarkInSchema(
-                    shelfType: self.shelfType,
+                    shelfType: shelfType,
                     visibility: self.visibility,
                     commentText: self.commentText,
                     ratingGrade: ratingGrade == 0 ? nil : ratingGrade,
@@ -186,6 +186,12 @@ final class MarkDataController: MarkDataControlling {
                 )
                 let markEndpoint = MarkEndpoint.mark(itemUUID: uuid, mark: markIn)
                 _ = try await appAccountsManager.currentClient.fetch(markEndpoint, type: MessageSchema.self)
+
+                if changedTime == nil {
+                    self.createdTime = ServerDate.now
+                } else {
+                    self.createdTime = changedTime
+                }
 
                 if let previousMark = self.mark {
                     let newMark = MarkSchema(
@@ -214,7 +220,14 @@ final class MarkDataController: MarkDataControlling {
     func deleteMark(for UUID: String) async throws {
         do {
             let endpoint = MarkEndpoint.delete(itemUUID: UUID)
-            _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MarkSchema.self)
+            _ = try await appAccountsManager.currentClient.fetch(endpoint, type: MessageSchema.self)
+            self.mark = nil
+            self.shelfType = nil
+            self.commentText = ""
+            self.ratingGrade = nil
+            self.visibility = .pub
+            self.createdTime = nil
+            self.tags = []
         } catch {
             logger.error("Failed to delete mark: \(error.localizedDescription)")
             throw error

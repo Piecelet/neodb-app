@@ -48,81 +48,86 @@ struct ItemMarkView: View {
     var showEditButton: Bool = false
 
     var body: some View {
-        Group {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: size.spacing) {
-                    if let rating = markController.ratingGrade {
-                        markRatingView(rating)
-                        Spacer()
-                        Text(
-                            markController.createdTime?.relativeFormatted ?? ""
-                        )
-                        .foregroundStyle(.secondary)
-                        Image(symbol: markController.shelfType.symbolImage)
+        if let shelfType = markController.shelfType {
+            Group {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: size.spacing) {
+                        if let rating = markController.ratingGrade {
+                            markRatingView(rating)
+                            Spacer()
+                            Text(
+                                markController.createdTime?.relativeFormatted ?? ""
+                            )
                             .foregroundStyle(.secondary)
-                    } else {
-                        Image(symbol: markController.shelfType.symbolImage)
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                            Text(
+                                markController.createdTime?.relativeFormatted ?? ""
+                            )
                             .foregroundStyle(.secondary)
-                        Text(
-                            markController.createdTime?.relativeFormatted ?? ""
-                        )
-                        .foregroundStyle(.secondary)
+                        }
                     }
-                }
-                .font(size.font)
-
-                if !markController.commentText.isEmpty {
-                    Text(markController.commentText)
-                        .font(size.font)
-                        .lineLimit(brief ? 2 : nil)
-                }
-
-                if !markController.tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: size.spacing) {
-                            ForEach(markController.tags, id: \.self) { tag in
-                                Text("#\(tag)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(Capsule())
+                    .font(size.font)
+                    
+                    if !markController.commentText.isEmpty {
+                        Text(markController.commentText)
+                            .font(size.font)
+                            .lineLimit(brief ? 2 : nil)
+                    }
+                    
+                    if !markController.tags.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: size.spacing) {
+                                ForEach(markController.tags, id: \.self) { tag in
+                                    Text("#\(tag)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color(.systemGray5))
+                                        .clipShape(Capsule())
+                                }
                             }
                         }
                     }
                 }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(size.padding)
-            .padding(
-                .bottom,
-                (showEditButton && markController.ratingGrade != nil
-                 && markController.commentText.isEmpty) ? 20 : 0
-            )
-            .background(Color.grayBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .overlay(alignment: .bottomTrailing) {
-            if showEditButton, let mark = markController.mark {
-                Button(
-                    "Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")",
-                    systemSymbol: .ellipsis
-                ) {
-                    router.presentSheet(.editShelfItem(mark: mark))
-                    HapticFeedback.impact()
-                }
-                .buttonStyle(.borderless)
-                .accentColor(.gray)
-                .foregroundStyle(.secondary)
-                .frame(width: 40, height: (markController.ratingGrade != nil
-                                           && markController.commentText.isEmpty) ? 28 : 32)
-                .labelStyle(.iconOnly)
-                // .background(.grayBackground)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(size.padding)
+                .padding(
+                    .bottom,
+                    (showEditButton && markController.ratingGrade != nil
+                     && markController.commentText.isEmpty) ? 20 : 0
+                )
+                .background(Color.grayBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
             }
+            .overlay(alignment: .bottomTrailing) {
+                if showEditButton, let mark = markController.mark {
+                    Button(
+                        "Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")",
+                        systemSymbol: .ellipsis
+                    ) {
+                        router.presentSheet(.editShelfItem(mark: mark))
+                        HapticFeedback.impact()
+                    }
+                    .buttonStyle(.borderless)
+                    .accentColor(.gray)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 40, height: (markController.ratingGrade != nil
+                                               && markController.commentText.isEmpty) ? 28 : 32)
+                    .labelStyle(.iconOnly)
+                    // .background(.grayBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                }
+            }
+            .enableInjection()
+        } else {
+            EmptyView()
+                .enableInjection()
         }
-        .enableInjection()
     }
 
     #if DEBUG
