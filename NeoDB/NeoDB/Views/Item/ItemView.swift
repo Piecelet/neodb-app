@@ -95,9 +95,6 @@ struct ItemView: View {
                 .padding(.horizontal)
                 .padding(.top)
 
-            Divider()
-                .padding(.vertical)
-
             ItemViewDescription(item: viewModel.item)
 
             if let item = viewModel.item {
