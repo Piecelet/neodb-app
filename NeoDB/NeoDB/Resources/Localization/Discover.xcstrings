@@ -1,6 +1,21 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "discover_gallery_empty_description" : {
+      "comment" : "Empty state description for gallery category",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "No items in %@"
+          }
+        }
+      }
+    },
+    "discover_gallery_error_title" : {
+
+    },
     "discover_search_clear_all" : {
       "localizations" : {
         "da" : {

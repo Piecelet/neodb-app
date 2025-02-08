@@ -73,20 +73,17 @@ struct GalleryView: View {
                                 )
                             } else {
                                 EmptyStateView(
-                                    String(
-                                        localized:
-                                            "discover_gallery_empty_title",
-                                        table: "Discover"),
-                                    systemImage: "text.bubble",
                                     description: Text(
                                         String(
-                                            localized:
-                                                "discover_gallery_empty_description",
-                                            table: "Discover",
-                                            defaultValue: "No items in %@",
-                                            comment:
-                                                "Empty state description for gallery category"
-                                        ), state.galleryCategory.displayName))
+                                            format: String(
+                                                localized: "discover_gallery_empty_description",
+                                                defaultValue: "No %@", table: "Discover",
+                                                comment: "Empty state description for gallery category"
+                                            ),
+                                            state.galleryCategory.displayName
+                                        )
+                                    )
+                                )
                             }
                         } else {
                             galleryView(state.trendingGallery)
