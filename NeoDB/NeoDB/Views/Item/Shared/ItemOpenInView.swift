@@ -37,16 +37,18 @@ struct ItemOpenInView: View {
         Group {
             if let shareURL = shareURL {
                 Section {
-                    Button(
+                    Link(
+                        destination: shareURL
+                    ) {
+                        Label(
                         String(
                             format: String(
                                 localized: "item_open_in_website",
                                 table: "Item"),
                             accountsManager?.currentAccount.instance ?? "Safari"
                         ),
-                        systemSymbol: .arrowUpRight
-                    ) {
-                        openURL(shareURL)
+                        systemSymbol: .safari)
+                            .labelStyle(.iconOnly)
                     }
                 }
             }
@@ -100,9 +102,7 @@ struct ItemOpenInView: View {
     }
 
     func websiteView(_ resource: ItemExternalResourceSchema) -> some View {
-        Button(role: .none) {
-            openURL(resource.url)
-        } label: {
+        Link(destination: resource.url) {
             Label(resource.name, systemImage: resource.icon)
         }
     }
@@ -111,9 +111,7 @@ struct ItemOpenInView: View {
         Group {
             if !appSchemes.isEmpty {
                 ForEach(appSchemes, id: \.scheme.absoluteString) { pair in
-                    Button {
-                        openURL(pair.scheme)
-                    } label: {
+                    Link(destination: pair.scheme) {
                         Label(
                             pair.resource.name, systemImage: pair.resource.icon)
                     }

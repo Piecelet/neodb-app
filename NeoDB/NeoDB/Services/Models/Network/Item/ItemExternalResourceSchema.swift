@@ -392,7 +392,7 @@ extension ItemExternalResourceSchema {
             }
             return scheme
         case .goodreads:
-            let path = url.pathComponents.joined(separator: "/")
+            let path = url.pathComponents.filter { $0 != "/" }.joined(separator: "/")
             let scheme = URL(string: "\(self.type.scheme ?? "goodreads://")\(path)")
             if path.isEmpty || !canOpenURL() {
                 return nil
@@ -412,7 +412,7 @@ extension ItemExternalResourceSchema {
         case .tmdb:
             return nil
         case .bangumi:
-            let path: String = url.pathComponents.joined(separator: "/")
+            let path: String = url.pathComponents.filter { $0 != "/" }.joined(separator: "/")
             let scheme = URL(string: "\(self.type.scheme ?? "bangumi://")\(path)")
             if path.isEmpty || !canOpenURL() {
                 return nil
@@ -423,13 +423,19 @@ extension ItemExternalResourceSchema {
             // ref https://hisaac.net/blog/deep-linking-in-the-bandcamp-ios-app/
             return nil
         case .spotify:
-            let path: String = url.pathComponents.joined(separator: ":")
+            let path: String = url.pathComponents.filter { $0 != "/" }.joined(separator: ":")
             let scheme = URL(string: "\(self.type.scheme ?? "spotify:")\(path)")
             if path.isEmpty || !canOpenURL() {
                 return nil
             }
             return scheme
         case .appleMusic:
+            if var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+                components.scheme = "music"
+                if let musicURL = components.url, canOpenURL() {
+                    return musicURL
+                }
+            }
             return nil
         case .discogs:
             return nil
