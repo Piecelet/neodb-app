@@ -157,16 +157,12 @@ struct ItemView: View {
                 ItemDescriptionView(
                     item: viewModel.item,
                     mode: .metadata,
-                    size: .large
+                    size: .large,
+                    action: {
+                        HapticService.shared.selection()
+                        router.presentSheet(.itemDetails(item: viewModel.item!))
+                    }
                 )
-
-                Button {
-                    router.presentSheet(.itemDetails(item: viewModel.item!))
-                } label: {
-                    Text("item_view_details", tableName: "Item")
-                        .font(.caption)
-                        .foregroundStyle(.accent)
-                }
             }
         }
     }

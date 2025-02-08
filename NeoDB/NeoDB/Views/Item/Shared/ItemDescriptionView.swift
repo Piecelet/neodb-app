@@ -45,6 +45,7 @@ struct ItemDescriptionView: View {
     let item: (any ItemProtocol)?
     let mode: ItemDescriptionMode
     let size: ItemDescriptionSize
+    var action: (() -> Void)? = nil
 
     private var metadata: [String] {
         guard let item else { return [] }
@@ -79,18 +80,40 @@ struct ItemDescriptionView: View {
 
     var body: some View {
         Group {
+            if let action = action {
+                Button(action: action) {
+                    coreView
+                }
+                .tint(Color.secondary)
+            } else {
+                coreView
+            }
+        }
+        .enableInjection()
+    }
+
+    var coreView: some View {
+        Group {
             if let item = item {
                 switch mode {
                 case .metadata:
-                    Text(metadataText)
+                    (
+                        Text(metadataText)
+                        +
+                        Text(verbatim: " ")
+                        +
+                        Text(Image(systemSymbol: .chevronRight))
+                    )
                 case .brief:
                     Text(item.description ?? "")
                 case .metadataAndBrief:
                     VStack(alignment: .leading, spacing: 4) {
-                        if (!metadata.isEmpty) {
+                        if !metadata.isEmpty {
                             Text(metadataText)
                         }
-                        if let description = item.description, !description.isEmpty {
+                        if let description = item.description,
+                            !description.isEmpty
+                        {
                             Text(description)
                         }
                     }
@@ -100,9 +123,9 @@ struct ItemDescriptionView: View {
         .font(size.font)
         .foregroundStyle(.secondary)
         .lineLimit(size.lineLimit)
+        .multilineTextAlignment(.leading)
         .enableInjection()
     }
-
 
     #if DEBUG
         @ObserveInjection var forceRedraw
