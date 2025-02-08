@@ -168,23 +168,23 @@ extension CacheService {
     
     // MARK: - Gallery Caching
     
-    @available(*, deprecated, message: "Use cacheGallery(_:category:instance:) instead")
-    func cacheGallery(_ gallery: [GalleryResult], instance: String? = nil) async throws {
-        let key = Keys.gallery(instance: instance)
-        try await cache(gallery, forKey: key, type: [GalleryResult].self)
-    }
+    // @available(*, deprecated, message: "Use cacheGallery(_:category:instance:) instead")
+    // func cacheGallery(_ gallery: [GalleryResult], instance: String? = nil) async throws {
+    //     let key = Keys.gallery(instance: instance)
+    //     try await cache(gallery, forKey: key, type: [GalleryResult].self)
+    // }
 
-    @available(*, deprecated, message: "Use retrieveGallery(category:instance:) instead")
-    func retrieveGallery(instance: String? = nil) async throws -> [GalleryResult]? {
-        let key = Keys.gallery(instance: instance)
-        return try await retrieve(forKey: key, type: [GalleryResult].self)
-    }
+    // @available(*, deprecated, message: "Use retrieveGallery(category:instance:) instead")
+    // func retrieveGallery(instance: String? = nil) async throws -> [GalleryResult]? {
+    //     let key = Keys.gallery(instance: instance)
+    //     return try await retrieve(forKey: key, type: [GalleryResult].self)
+    // }
 
-    @available(*, deprecated, message: "Use removeGallery(category:instance:) instead")
-    func removeGallery(instance: String? = nil) async throws {
-        let key = Keys.gallery(instance: instance)
-        try await remove(forKey: key, type: [GalleryResult].self)
-    }
+    // @available(*, deprecated, message: "Use removeGallery(category:instance:) instead")
+    // func removeGallery(instance: String? = nil) async throws {
+    //     let key = Keys.gallery(instance: instance)
+    //     try await remove(forKey: key, type: [GalleryResult].self)
+    // }
 
     func cacheGallery(_ gallery: TrendingItemResult, category: ItemCategory.galleryCategory, instance: String) async throws {
         let key = Keys.gallery(instance: instance, category: category)

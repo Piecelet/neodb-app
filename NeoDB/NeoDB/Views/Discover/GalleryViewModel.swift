@@ -97,13 +97,11 @@ class GalleryViewModel: ObservableObject {
                 }
                 
                 // Cache only if it's a refresh or first load
-                if refresh || galleryStates[category]?.trendingGallery == nil {
                     try? await cacheService.cacheGallery(
                         result,
                         category: category,
                         instance: accountsManager.currentAccount.instance
                     )
-                }
             } catch {
                 if !Task.isCancelled {
                     updateState(for: category) { state in
@@ -197,13 +195,11 @@ class GalleryViewModel: ObservableObject {
                     }
 
                     // Cache results
-                    if refresh || galleryStates[category]?.trendingGallery == nil {
                         try? await cacheService.cacheGallery(
                             result,
                             category: category,
                             instance: accountsManager.currentAccount.instance
                         )
-                    }
                 }
             }
         } catch {

@@ -45,9 +45,6 @@ struct SearchView: View {
             }
             .onAppear {
                 viewModel.accountsManager = accountsManager
-                Task {
-                    await viewModel.loadGallery()
-                }
             }
             .onDisappear {
                 viewModel.cleanup()
