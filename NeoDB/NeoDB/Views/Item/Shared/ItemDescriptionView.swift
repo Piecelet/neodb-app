@@ -97,13 +97,17 @@ struct ItemDescriptionView: View {
             if let item = item {
                 switch mode {
                 case .metadata:
+                    if action != nil {
                     (
                         Text(metadataText)
                         +
                         Text(verbatim: " ")
                         +
                         Text(Image(systemSymbol: .chevronRight))
-                    )
+                        )
+                    } else {
+                        Text(metadataText)
+                    }
                 case .brief:
                     Text(item.description ?? "")
                 case .metadataAndBrief:

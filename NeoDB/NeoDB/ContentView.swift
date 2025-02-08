@@ -15,10 +15,10 @@ struct ContentView: View {
 
     var body: some View {
         MainTabView()
+            .tint(.accentColor)
             .environmentObject(router)
             .enableInjection()
             .whatsNewSheet()
-            .tint(.accentColor)
     }
 
     #if DEBUG
