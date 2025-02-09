@@ -16,7 +16,7 @@ struct StarView: View {
             ForEach(0..<maxRating, id: \.self) { index in
                 let fillLevel = rating - Double(index)
                 Image(symbol: starType(for: fillLevel))
-                    .foregroundStyle(.orange.opacity(0.8))
+                    .foregroundStyle(.ratingPrimary)
             }
         }
         .enableInjection()
@@ -80,7 +80,7 @@ struct ItemRatingView: View {
                                 Image(systemName: "star.fill")
                             }
                         }
-                        .foregroundStyle(.orange.opacity(0.8))
+                        .foregroundStyle(.ratingPrimary)
                         Text(String(format: "%.1f", rating))
                         if let count = item.ratingCount, !hideRatingCount {
                             Text("(\(count))")
