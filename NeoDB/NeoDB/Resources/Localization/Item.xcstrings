@@ -2,7 +2,15 @@
   "sourceLanguage" : "en",
   "strings" : {
     "Bandcamp" : {
-      "comment" : "Item External Resource Name - Bandcamp"
+      "comment" : "Item External Resource Name - Bandcamp",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandcamp"
+          }
+        }
+      }
     },
     "category_all" : {
       "localizations" : {
@@ -285,7 +293,20 @@
       }
     },
     "item_description_empty_description" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing so far."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无内容。"
+          }
+        }
+      }
     },
     "item_details_title" : {
       "localizations" : {
@@ -380,6 +401,12 @@
             "state" : "new",
             "value" : "AO3"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AO3"
+          }
         }
       }
     },
@@ -390,6 +417,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Apple Music"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Apple Music"
           }
         }
@@ -404,6 +437,24 @@
             "state" : "new",
             "value" : "Apple Podcasts"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Podcasts"
+          }
+        }
+      }
+    },
+    "item_external_resource_bandcamp" : {
+      "comment" : "Item External Resource Name - Bandcamp",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bandcamp"
+          }
         }
       }
     },
@@ -416,6 +467,12 @@
             "state" : "new",
             "value" : "Bangumi"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bangumi 番组计划"
+          }
         }
       }
     },
@@ -426,6 +483,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Board Game Geek"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Board Game Geek"
           }
         }
@@ -440,6 +503,12 @@
             "state" : "new",
             "value" : "Bilibili"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哔哩哔哩"
+          }
         }
       }
     },
@@ -452,6 +521,12 @@
             "state" : "new",
             "value" : "BooksTW"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "博客来"
+          }
         }
       }
     },
@@ -462,6 +537,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Discogs"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Discogs"
           }
         }
@@ -476,6 +557,12 @@
             "state" : "new",
             "value" : "Douban"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "豆瓣"
+          }
         }
       }
     },
@@ -488,6 +575,12 @@
             "state" : "new",
             "value" : "Fediverse"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "联邦宇宙"
+          }
         }
       }
     },
@@ -498,6 +591,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Goodreads"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Goodreads"
           }
         }
@@ -512,6 +611,12 @@
             "state" : "new",
             "value" : "Google Books"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google Books"
+          }
         }
       }
     },
@@ -522,6 +627,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "IGDB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "IGDB"
           }
         }
@@ -536,6 +647,12 @@
             "state" : "new",
             "value" : "IMDb"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDb"
+          }
         }
       }
     },
@@ -547,6 +664,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "JinJiang"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晋江"
           }
         }
       }
@@ -560,6 +683,12 @@
             "state" : "new",
             "value" : "Qidian"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起点"
+          }
         }
       }
     },
@@ -570,6 +699,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "RSS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "RSS"
           }
         }
@@ -584,6 +719,12 @@
             "state" : "new",
             "value" : "Spotify"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotify"
+          }
         }
       }
     },
@@ -594,6 +735,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Steam"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Steam"
           }
         }
@@ -608,6 +755,12 @@
             "state" : "new",
             "value" : "TMDB"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDB"
+          }
         }
       }
     },
@@ -620,6 +773,12 @@
             "state" : "new",
             "value" : "Unknown"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知"
+          }
         }
       }
     },
@@ -630,6 +789,12 @@
         "en" : {
           "stringUnit" : {
             "state" : "new",
+            "value" : "Ypshuo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
             "value" : "Ypshuo"
           }
         }
@@ -664,16 +829,68 @@
       }
     },
     "item_posts_comments" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comments"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长评"
+          }
+        }
+      }
     },
     "item_posts_comments_empty" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Comments"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有人评价。"
+          }
+        }
+      }
     },
     "item_posts_reviews" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reviews"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短评"
+          }
+        }
+      }
     },
     "item_posts_reviews_empty" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Reviews"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有人评价。"
+          }
+        }
+      }
     },
     "item_rating_na" : {
       "localizations" : {

@@ -207,7 +207,7 @@ enum ItemKnownExternalResource: String {
                 comment: "Item External Resource Name - Bangumi")
         case .bandcamp:
             return String(
-                localized: "Bandcamp", defaultValue: "Bandcamp", table: "Item",
+                localized: "item_external_resource_bandcamp", defaultValue: "Bandcamp", table: "Item",
                 comment: "Item External Resource Name - Bandcamp")
         case .spotify:
             return String(

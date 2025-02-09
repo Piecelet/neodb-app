@@ -16,6 +16,10 @@ extension CacheService {
         static func item(id: String) -> String {
             "item_\(id)"
         }
+
+        static func itemPosts(id: String, type: ItemPostType) -> String {
+            "itemPosts_\(id)_\(type.rawValue)"
+        }
         
         // User related
         static func currentUser(key: String) -> String {
@@ -113,6 +117,23 @@ extension CacheService {
         let key = Keys.item(id: id)
         let type = ItemSchema.makeType(category: category)
         try await remove(forKey: key, type: type)
+    }
+
+    // MARK: - Item Posts Caching
+
+    func cacheItemPosts(_ posts: [NeoDBPost], id: String, type: ItemPostType) async throws {
+        let key = Keys.itemPosts(id: id, type: type)
+        try await cache(posts, forKey: key, type: [NeoDBPost].self)
+    }
+
+    func retrieveItemPosts(id: String, type: ItemPostType) async throws -> [NeoDBPost]? {
+        let key = Keys.itemPosts(id: id, type: type)
+        return try await retrieve(forKey: key, type: [NeoDBPost].self)
+    }
+    
+    func removeItemPosts(id: String, type: ItemPostType) async throws {
+        let key = Keys.itemPosts(id: id, type: type)
+        try await remove(forKey: key, type: [NeoDBPost].self)
     }
     
     // MARK: - User Caching
