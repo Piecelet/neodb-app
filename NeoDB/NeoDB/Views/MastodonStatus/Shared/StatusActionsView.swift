@@ -12,6 +12,15 @@ struct StatusActionsView: View {
     enum Size {
         case regular
         case compact
+        
+        var font: Font {
+            switch self {
+            case .regular:
+                return .subheadline
+            case .compact:
+                return .footnote
+            }
+        }
     }
 
     enum Action {
@@ -156,6 +165,7 @@ struct StatusActionsView: View {
                 }
             }
         }
+        .font(size.font)
         .padding(.vertical, -6)
         .padding(.horizontal, size == .compact ? 0 : 16)
         .font(.subheadline)

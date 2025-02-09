@@ -51,6 +51,10 @@ struct StatusView: View {
         }
     }
 
+    var isTimeline: Bool {
+        mode == .timeline || mode == .timelineWithItem
+    }
+
     var body: some View {
         Group {
             switch mode {
@@ -86,6 +90,7 @@ struct StatusView: View {
                                     Text(
                                         neodbStatusLineAttributedStringWithoutRating
                                     )
+                                    .lineLimit(isTimeline ? 5 : nil)
                                     .padding(.top, 2)
                                 }
                                 if let rating = status.content.rating {
@@ -107,7 +112,7 @@ struct StatusView: View {
                                     }
                                 )
                                 .textSelection(.enabled)
-                                .lineLimit(mode == .timeline ? 5 : nil)
+                                .lineLimit(isTimeline ? 5 : nil)
                         }
 
                         if let item = status.content.links.compactMap(
@@ -203,7 +208,6 @@ struct StatusView: View {
                                 .asSafeMarkdownAttributedStringWithoutNeoDBStatus
                         )
                         .font(.callout)
-                        .foregroundStyle(.secondary)
 
                         StatusActionsView(
                             status: status, accountsManager: accountsManager,
@@ -214,6 +218,7 @@ struct StatusView: View {
                         .padding(.horizontal, -6)
                     }
                 }
+                .contentShape(Rectangle())
                 .padding(.top, 8)
                 .padding(.bottom, 4)
             }
