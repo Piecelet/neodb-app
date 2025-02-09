@@ -122,7 +122,7 @@ struct StatusView: View {
                     .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        VStack(alignment: .leading, spacing: 1) {
+                        VStack(alignment: .leading, spacing: 0) {
                             HStack {
                                 Text(
                                     status.account.displayName
@@ -136,15 +136,25 @@ struct StatusView: View {
                                     .foregroundStyle(.secondary)
                             }
                             
-                            if let rating = status.content.rating {
-                                StarView(rating: rating / 2)
-                                    .font(ItemRatingView.Size.small.font)
+                            HStack(alignment: .center, spacing: 2) {
+                                if let neodbStatusLineAttributedStringWithoutRating = status.content.neodbStatusLineAttributedStringWithoutRating {
+                                    Text(neodbStatusLineAttributedStringWithoutRating)
+                                        .padding(.top, 2)
+                                }
+                                if let rating = status.content.rating {
+                                    StarView(rating: rating / 2)
+                                }
                             }
+                            .foregroundStyle(.gray)
+                            .font(ItemRatingView.Size.small.font)
                         }
 
-                        Text(status.content.asSafeMarkdownAttributedStringWithoutRating)
+                        Text(status.content.asSafeMarkdownAttributedStringWithoutNeoDBStatus)
                             .font(.callout)
                             .foregroundStyle(.secondary)
+                            .task {
+                                print(status.content.asMarkdown)
+                            }
 
                         StatusActionsView(
                             status: status, accountsManager: accountsManager,

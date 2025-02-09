@@ -24,6 +24,55 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
     private(set) var links = [Link]()
 
     var asSafeMarkdownAttributedString: AttributedString = .init()
+    
+    // 获取第一行（如果包含 ~neodb~）
+    var neodbStatusLine: String? {
+        let lines = asMarkdown.split(separator: "\n", maxSplits: 1)
+        guard let firstLine = lines.first,
+              firstLine.contains("~neodb~") else {
+            return nil
+        }
+        return String(firstLine)
+    }
+    
+    // 获取第一行的 AttributedString（如果是 NeoDB 状态行）
+    var neodbStatusLineAttributedString: AttributedString? {
+        guard let statusLine = neodbStatusLine else {
+            return nil
+        }
+        return (try? AttributedString(markdown: statusLine)) ?? AttributedString(statusLine)
+    }
+    
+    // 获取不包含评分的 NeoDB 状态行
+    var neodbStatusLineAttributedStringWithoutRating: AttributedString? {
+        guard let statusLine = neodbStatusLine else {
+            return nil
+        }
+        // 移除评分字符
+        var text = statusLine
+        let ratingPattern = "[🌕🌗🌑]+"
+        if let regex = try? NSRegularExpression(pattern: ratingPattern) {
+            text = regex.stringByReplacingMatches(
+                in: text,
+                range: NSRange(text.startIndex..., in: text),
+                withTemplate: ""
+            )
+        }
+        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+    
+    // 获取不包含 NeoDB 状态行的内容
+    var asSafeMarkdownAttributedStringWithoutNeoDBStatus: AttributedString {
+        var text = asMarkdown
+        if neodbStatusLine != nil {
+            // 如果存在 NeoDB 状态行，移除第一行（包括换行符）
+            if let newlineIndex = text.firstIndex(of: "\n") {
+                text = String(text[text.index(after: newlineIndex)...])
+            }
+        }
+        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+    
     var asSafeMarkdownAttributedStringWithoutRating: AttributedString {
         var text = asMarkdown
         // 移除评分字符
