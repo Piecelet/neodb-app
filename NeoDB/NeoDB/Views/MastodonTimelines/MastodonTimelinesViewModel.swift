@@ -26,6 +26,8 @@ final class MastodonTimelinesViewModel: ObservableObject {
     
     var accountsManager: AppAccountsManager?
     
+    private let minimumRefreshInterval: TimeInterval = 60 // 1 minute
+    
     // MARK: - Methods
     func loadTimeline(type: MastodonTimelinesFilter, refresh: Bool = false) async {
         loadTasks[type]?.cancel()
@@ -33,6 +35,15 @@ final class MastodonTimelinesViewModel: ObservableObject {
         loadTasks[type] = Task {
             guard let accountsManager = accountsManager else {
                 logger.debug("No accountsManager available")
+                return
+            }
+            
+            // Check refresh time if not a forced refresh
+            if !refresh,
+               let state = timelineStates[type],
+               let lastRefresh = state.lastRefreshTime,
+               !state.statuses.isEmpty,
+               Date().timeIntervalSince(lastRefresh) < minimumRefreshInterval {
                 return
             }
             
