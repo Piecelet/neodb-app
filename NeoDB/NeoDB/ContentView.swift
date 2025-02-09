@@ -13,6 +13,7 @@ struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @EnvironmentObject var storeManager: StoreManager
     @StateObject private var router = Router()
+    @StateObject private var itemRepository = ItemRepository()
     @State private var isSearchActive = false
     private let logger = Logger.views.contentView
 
@@ -92,6 +93,7 @@ struct ContentView: View {
         }
         .tint(.accentColor)
         .environmentObject(router)
+        .environmentObject(itemRepository)
         .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
             logger.debug("shouldShowPurchase changed to \(shouldShow)")
             if shouldShow, !storeManager.isPlus {

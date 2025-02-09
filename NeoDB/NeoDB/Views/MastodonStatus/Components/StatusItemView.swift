@@ -18,6 +18,7 @@ struct StatusItemView: View {
     @StateObject private var viewModel: StatusItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var itemRepository: ItemRepository  // 注入全局仓库
 
     init(item: any ItemProtocol, mode: Mode = .card) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
@@ -27,7 +28,8 @@ struct StatusItemView: View {
     var body: some View {
         Button {
             router.navigate(
-                to: .itemDetailWithItem(item: viewModel.item.toItemSchema))
+                to: .itemDetailWithItem(item: viewModel.item.toItemSchema)
+            )
         } label: {
             LazyVStack {
                 HStack(spacing: 12) {
@@ -49,7 +51,8 @@ struct StatusItemView: View {
                             ItemRatingView(
                                 item: viewModel.item, size: .small,
                                 hideRatingCount: true,
-                                showCategory: true)
+                                showCategory: true
+                            )
                         }
                         .font(.caption)
 
@@ -81,22 +84,31 @@ struct StatusItemView: View {
         }
         .buttonStyle(.plain)
         .alert("Error", isPresented: .constant(false)) {
-            Button("OK", role: .cancel) {}
+            Button("OK", role: .cancel) { }
         } message: {
             if let error = viewModel.error {
                 Text(error.localizedDescription)
             }
         }
         .task {
+            // 首先设置 accountsManager（用于网络请求和认证检查）
             viewModel.accountsManager = accountsManager
+            
+            // 使用全局 ItemRepository 加载数据
+            if let fetched = await itemRepository.fetchItem(
+                for: viewModel.item,
+                refresh: false,
+                accountsManager: accountsManager
+            ) {
+                // 当仓库成功加载到完整数据后，将数据更新到 ViewModel 中，
+                // 这样 StatusItemView 会直接显示最新的 item 内容。
+                viewModel.item = fetched
+            }
         }
-//        .onDisappear {
-//            viewModel.cleanup()
-//        }
         .enableInjection()
     }
 
     #if DEBUG
-        @ObserveInjection var forceRedraw
+    @ObserveInjection var forceRedraw
     #endif
 }
