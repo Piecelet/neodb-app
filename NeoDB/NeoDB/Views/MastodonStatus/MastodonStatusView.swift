@@ -77,12 +77,12 @@ struct MastodonStatusView: View {
     private func statusContent(_ status: MastodonStatus) -> some View {
         ScrollView {
             VStack(spacing: 0) {
-                if let item = item {
-                    StatusItemView(item: item, mode: .indicator)
-                }
-
                 // Status Content
                 StatusView(status: status, mode: item != nil ? .detailWithItem : .detail)
+                
+                    if let item = item {
+                        StatusItemView(item: item, mode: .indicator)
+                    }
                 
                 Divider()
                 

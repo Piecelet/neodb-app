@@ -70,7 +70,16 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                 text = String(text[text.index(after: newlineIndex)...])
             }
         }
-        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+        // 移除开头和结尾的换行符，但保留内容中的换行
+        text = text.trimmingCharacters(in: .newlines)
+        do {
+            let options = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            return try AttributedString(markdown: text, options: options)
+        } catch {
+            return AttributedString(text)
+        }
     }
     
     var asSafeMarkdownAttributedStringWithoutRating: AttributedString {

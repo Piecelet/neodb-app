@@ -11,14 +11,16 @@ import SwiftUI
 
 enum StatusViewMode {
     case timeline
+    case timelineWithItem
     case detail
     case detailWithItem
     case itemPost
 
     var actions: [StatusActionsView.Action] {
         switch self {
-        case .timeline: return [.reply, .reblog, .favorite, .bookmark, .share]
-        case .detail, .detailWithItem: return [.reply, .reblog, .favorite, .bookmark]
+        case .timeline, .timelineWithItem: return [.reply, .reblog, .favorite, .bookmark, .share]
+        case .detail, .detailWithItem:
+            return [.reply, .reblog, .favorite, .bookmark]
         case .itemPost: return [.favorite]
         }
     }
@@ -38,10 +40,20 @@ struct StatusView: View {
         self.mode = mode
     }
 
+    var content: AttributedString {
+        switch mode {
+        case .timelineWithItem, .itemPost, .detailWithItem:
+            return status.content
+                .asSafeMarkdownAttributedStringWithoutNeoDBStatus
+        case .timeline, .detail:
+            return status.content.asSafeMarkdownAttributedString
+        }
+    }
+
     var body: some View {
         Group {
             switch mode {
-            case .timeline, .detail, .detailWithItem:
+            case .timeline, .timelineWithItem, .detail, .detailWithItem:
                 HStack {
                     VStack(alignment: .leading, spacing: 12) {
                         // Header
@@ -63,16 +75,39 @@ struct StatusView: View {
                                 .foregroundStyle(.secondary)
                         }
 
-                        Text(status.content.asSafeMarkdownAttributedString)
-                            .environment(
-                                \.openURL,
-                                OpenURLAction { url in
-                                    handleURL(url)
-                                    return .handled
+                        if mode == .detailWithItem || mode == .timelineWithItem {
+                            HStack(alignment: .center, spacing: 4) {
+                                if let
+                                    neodbStatusLineAttributedStringWithoutRating =
+                                    status.content
+                                    .neodbStatusLineAttributedStringWithoutRating
+                                {
+                                    Text(
+                                        neodbStatusLineAttributedStringWithoutRating
+                                    )
+                                    .padding(.top, 2)
                                 }
-                            )
-                            .textSelection(.enabled)
-                            .lineLimit(mode == .timeline ? 5 : nil)
+                                if let rating = status.content.rating {
+                                    StarView(rating: rating / 2)
+                                }
+                            }
+                            .foregroundStyle(.gray)
+                            .font(ItemRatingView.Size.small.font)
+                        }
+
+                        if !content.characters.isEmpty {
+
+                            Text(content)
+                                .environment(
+                                    \.openURL,
+                                    OpenURLAction { url in
+                                        handleURL(url)
+                                        return .handled
+                                    }
+                                )
+                                .textSelection(.enabled)
+                                .lineLimit(mode == .timeline ? 5 : nil)
+                        }
 
                         if let item = status.content.links.compactMap(
                             \.neodbItem
@@ -124,22 +159,33 @@ struct StatusView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         VStack(alignment: .leading, spacing: 0) {
                             HStack {
-                                Text(
-                                    status.account.displayName
-                                    ?? status.account.username
-                                )
-                                .font(.subheadline)
-                                .fontWeight(.medium)
+                                Button {
+                                    router.navigate(
+                                        to: .userProfile(id: status.account.id))
+                                } label: {
+                                    Text(
+                                        status.account.displayName
+                                            ?? status.account.username
+                                    )
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                }
                                 Spacer()
                                 Text(status.createdAt.relativeFormatted)
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
-                            
-                            HStack(alignment: .center, spacing: 2) {
-                                if let neodbStatusLineAttributedStringWithoutRating = status.content.neodbStatusLineAttributedStringWithoutRating {
-                                    Text(neodbStatusLineAttributedStringWithoutRating)
-                                        .padding(.top, 2)
+
+                            HStack(alignment: .center, spacing: 4) {
+                                if let
+                                    neodbStatusLineAttributedStringWithoutRating =
+                                    status.content
+                                    .neodbStatusLineAttributedStringWithoutRating
+                                {
+                                    Text(
+                                        neodbStatusLineAttributedStringWithoutRating
+                                    )
+                                    .padding(.top, 2)
                                 }
                                 if let rating = status.content.rating {
                                     StarView(rating: rating / 2)
@@ -149,10 +195,13 @@ struct StatusView: View {
                             .font(ItemRatingView.Size.small.font)
                         }
 
-                        Text(status.content.asSafeMarkdownAttributedStringWithoutNeoDBStatus)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                        
+                        Text(
+                            status.content
+                                .asSafeMarkdownAttributedStringWithoutNeoDBStatus
+                        )
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+
                         StatusActionsView(
                             status: status, accountsManager: accountsManager,
                             size: .compact,

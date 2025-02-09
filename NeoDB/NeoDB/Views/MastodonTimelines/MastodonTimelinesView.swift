@@ -9,7 +9,7 @@
 import OSLog
 import SwiftUI
 
-fileprivate struct HorizontalDivider: View {
+private struct HorizontalDivider: View {
     let color: Color
     let height: CGFloat
 
@@ -21,11 +21,11 @@ fileprivate struct HorizontalDivider: View {
     var body: some View {
         color
             .frame(height: height)
-        .enableInjection()
+            .enableInjection()
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -69,7 +69,8 @@ struct MastodonTimelinesView: View {
                         Group {
                             if #available(iOS 17.0, *) {
                                 List {
-                                    timelineContent(for: type, geometry: geometry)
+                                    timelineContent(
+                                        for: type, geometry: geometry)
                                 }
                                 .safeAreaPadding(
                                     .top,
@@ -79,7 +80,8 @@ struct MastodonTimelinesView: View {
                                 .safeAreaPadding(.bottom, tabBarHeight)
                             } else {
                                 List {
-                                    timelineContent(for: type, geometry: geometry)
+                                    timelineContent(
+                                        for: type, geometry: geometry)
                                 }
                             }
                         }
@@ -105,7 +107,7 @@ struct MastodonTimelinesView: View {
                             isAuthenticated: accountsManager.isAuthenticated),
                         selection: $selectedTimelineType
                     ) { item in item.displayName }
-                        .padding(.bottom, 4)
+                    .padding(.bottom, 4)
                     HorizontalDivider(
                         color: .grayBackground,
                         height: colorScheme == .dark ? 0.5 : 1)
@@ -118,7 +120,7 @@ struct MastodonTimelinesView: View {
                             isAuthenticated: accountsManager.isAuthenticated),
                         selection: $selectedTimelineType
                     ) { item in item.displayName }
-                        .padding(.bottom, -12)
+                    .padding(.bottom, -12)
                 }
             }
         }
@@ -176,14 +178,17 @@ struct MastodonTimelinesView: View {
             .padding(.top, (geometry?.size.height ?? 0) / 4)
         } else if state.statuses.isEmpty {
             if state.isLoading || state.isRefreshing || !state.isInited {
-                ForEach(0..<MastodonStatus.placeholders().count, id: \.self) { _ in
-                    StatusView(status: MastodonStatus.placeholder(), mode: .timeline)
-                        .listRowInsets(EdgeInsets())
-                        .listRowBackground(Color.clear)
-                        .alignmentGuide(.listRowSeparatorLeading) { _ in
-                            return 4
-                        }
-                        .redacted(reason: .placeholder)
+                ForEach(0..<MastodonStatus.placeholders().count, id: \.self) {
+                    _ in
+                    StatusView(
+                        status: MastodonStatus.placeholder(), mode: .timeline
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .alignmentGuide(.listRowSeparatorLeading) { _ in
+                        return 4
+                    }
+                    .redacted(reason: .placeholder)
                 }
             } else {
                 EmptyStateView(
@@ -204,18 +209,30 @@ struct MastodonTimelinesView: View {
         } else {
             ForEach(state.statuses, id: \.id) { status in
                 Group {
-                    Button {
-                        router.navigate(
-                            to: .statusDetailWithStatus(status: status))
-                    } label: {
-                        StatusView(status: status, mode: .timeline)
+                    if let item = status.content.links.compactMap(
+                        \.neodbItem
+                    ).first {
+                        Button {
+                            router.navigate(
+                                to: .statusDetailWithStatusAndItem(
+                                    status: status, item: item))
+                        } label: {
+                            StatusView(status: status, mode: .timelineWithItem)
+                        }
+                    } else {
+                        Button {
+                            router.navigate(
+                                to: .statusDetailWithStatus(status: status))
+                        } label: {
+                            StatusView(status: status, mode: .timeline)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .onAppear {
-                        if status == state.statuses.last && state.hasMore {
-                            Task {
-                                await viewModel.loadTimeline(type: type)
-                            }
+                }
+                .buttonStyle(.plain)
+                .onAppear {
+                    if status == state.statuses.last && state.hasMore {
+                        Task {
+                            await viewModel.loadTimeline(type: type)
                         }
                     }
                 }
