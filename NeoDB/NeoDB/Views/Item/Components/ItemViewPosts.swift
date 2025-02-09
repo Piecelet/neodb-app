@@ -15,7 +15,8 @@ final class ItemViewPostsViewModel: ObservableObject {
     private let logger = Logger.views.item
 
     // MARK: - Published Properties
-    @Published private(set) var posts: [NeoDBPost] = []
+    @Published private(set) var reviews: [NeoDBPost] = []
+    @Published private(set) var comments: [NeoDBPost] = []
     @Published private(set) var isLoading = false
     @Published var error: Error?
     @Published var showError = false
@@ -38,11 +39,17 @@ final class ItemViewPostsViewModel: ObservableObject {
         defer { isLoading = false }
 
         do {
-            let endpoint = ItemEndpoint.post(
-                uuid: item.uuid, types: [.review, .comment])
-            let result = try await accountsManager.currentClient.fetch(
-                endpoint, type: PaginatedPostList.self)
-            posts = result.data
+            let reviewEndpoint = ItemEndpoint.post(
+                uuid: item.uuid, types: [.review])
+            let reviewResult = try await accountsManager.currentClient.fetch(
+                reviewEndpoint, type: PaginatedPostList.self)
+            reviews = reviewResult.data
+
+            let commentEndpoint = ItemEndpoint.post(
+                uuid: item.uuid, types: [.comment])
+            let commentResult = try await accountsManager.currentClient.fetch(
+                commentEndpoint, type: PaginatedPostList.self)
+            comments = commentResult.data
         } catch {
             self.error = error
             self.showError = true
@@ -62,33 +69,9 @@ struct ItemViewPosts: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("item_posts_comments", tableName: "Item")
-                .font(.headline)
-
-            if viewModel.isLoading {
-                ProgressView()
-                    .frame(maxWidth: .infinity)
-            } else if viewModel.posts.isEmpty {
-                Text("item_posts_comments_empty", tableName: "Item")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-            } else {
-                ForEach(viewModel.posts, id: \.id) { post in
-                    Button {
-                        router.navigate(
-                            to: .statusDetailWithStatusAndItem(
-                                status: post, item: viewModel.item))
-                    } label: {
-                        StatusView(status: post, mode: .itemPost)
-                    }
-                    .buttonStyle(.plain)
-
-                    if post.id != viewModel.posts.last?.id {
-                        Divider()
-                    }
-                }
-            }
+        Group {
+            commentsView
+            reviewsView
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
@@ -103,6 +86,76 @@ struct ItemViewPosts: View {
             Button("OK", role: .cancel) {}
         }
         .enableInjection()
+    }
+
+    var commentsView: some View {
+        Group {
+            Divider()
+                .padding(.vertical)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("item_posts_comments", tableName: "Item")
+                    .font(.headline)
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                } else if viewModel.comments.isEmpty {
+                    Text("item_posts_comments_empty", tableName: "Item")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(viewModel.comments, id: \.id) { comment in
+                        Button {
+                            router.navigate(
+                                to: .statusDetailWithStatusAndItem(
+                                    status: comment, item: viewModel.item))
+                        } label: {
+                            StatusView(status: comment, mode: .itemPost)
+                        }
+                        .buttonStyle(.plain)
+
+                        if comment.id != viewModel.comments.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    var reviewsView: some View {
+        Group {
+            Divider()
+                .padding(.vertical)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("item_posts_reviews", tableName: "Item")
+                    .font(.headline)
+
+                if viewModel.isLoading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                } else if viewModel.reviews.isEmpty {
+                    Text("item_posts_reviews_empty", tableName: "Item")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(viewModel.reviews, id: \.id) { review in
+                        Button {
+                            router.navigate(
+                                to: .statusDetailWithStatusAndItem(
+                                    status: review, item: viewModel.item))
+                        } label: {
+                            StatusView(status: review, mode: .itemPost)
+                        }
+                        .buttonStyle(.plain)
+
+                        if review.id != viewModel.reviews.last?.id {
+                            Divider()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     #if DEBUG

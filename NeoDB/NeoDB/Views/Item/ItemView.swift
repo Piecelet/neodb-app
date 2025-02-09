@@ -98,9 +98,6 @@ struct ItemView: View {
             ItemViewDescription(item: viewModel.item)
 
             if let item = viewModel.item {
-                Divider()
-                    .padding(.vertical)
-
                 ItemViewPosts(item: item)
             }
         }

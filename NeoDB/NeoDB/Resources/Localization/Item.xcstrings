@@ -284,6 +284,9 @@
         }
       }
     },
+    "item_description_empty_description" : {
+
+    },
     "item_details_title" : {
       "localizations" : {
         "da" : {
@@ -664,6 +667,12 @@
 
     },
     "item_posts_comments_empty" : {
+
+    },
+    "item_posts_reviews" : {
+
+    },
+    "item_posts_reviews_empty" : {
 
     },
     "item_rating_na" : {

@@ -23,22 +23,27 @@ struct ItemViewDescription: View {
 
     var body: some View {
         Group {
-            if !description.isEmpty {
-                Divider()
-                    .padding(.vertical)
+            Divider()
+                .padding(.vertical)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("item_description", tableName: "Item")
-                        .font(.headline)
-
+            VStack(alignment: .leading, spacing: 8) {
+                Text("item_description", tableName: "Item")
+                    .font(.headline)
+                if !description.isEmpty {
                     ExpandableText(description)
                         .font(.callout)
                         .foregroundStyle(.secondary)
                         .lineLimit(4)
+                } else {
+                    Text(
+                        "item_description_empty_description", tableName: "Item"
+                    )
+                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
 
             if !trackList.isEmpty {
                 Divider()
@@ -57,5 +62,10 @@ struct ItemViewDescription: View {
                 .padding(.horizontal)
             }
         }
+        .enableInjection()
     }
+
+    #if DEBUG
+    @ObserveInjection var forceRedraw
+    #endif
 }
