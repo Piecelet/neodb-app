@@ -152,10 +152,7 @@ struct StatusView: View {
                         Text(status.content.asSafeMarkdownAttributedStringWithoutNeoDBStatus)
                             .font(.callout)
                             .foregroundStyle(.secondary)
-                            .task {
-                                print(status.content.asMarkdown)
-                            }
-
+                        
                         StatusActionsView(
                             status: status, accountsManager: accountsManager,
                             size: .compact,

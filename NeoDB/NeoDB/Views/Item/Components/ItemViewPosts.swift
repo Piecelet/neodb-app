@@ -132,7 +132,14 @@ final class ItemViewPostsViewModel: ObservableObject {
             
         } catch {
             self.error = error
-            self.showError = true
+            if let error = error as? NetworkError {
+                switch error {
+                case .cancelled:
+                    break
+                default:
+                    self.showError = true
+                }
+            }
             reviewsState.error = error
             commentsState.error = error
             logger.error("Failed to load posts: \(error.localizedDescription)")
@@ -174,70 +181,55 @@ struct ItemViewPosts: View {
     }
 
     var commentsView: some View {
-        Group {
-            Divider()
-                .padding(.vertical)
-            VStack(alignment: .leading, spacing: 8) {
-                Text("item_posts_comments", tableName: "Item")
-                    .font(.headline)
-
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                } else if viewModel.comments.isEmpty {
-                    Text("item_posts_comments_empty", tableName: "Item")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(viewModel.comments, id: \.id) { comment in
-                        Button {
-                            router.navigate(
-                                to: .statusDetailWithStatusAndItem(
-                                    status: comment, item: viewModel.item))
-                        } label: {
-                            StatusView(status: comment, mode: .itemPost)
-                        }
-                        .buttonStyle(.plain)
-
-                        if comment.id != viewModel.comments.last?.id {
-                            Divider()
-                        }
-                    }
-                }
-            }
-        }
+        postsView(
+            state: viewModel.commentsState,
+            title: String(localized: "item_posts_comments", defaultValue: "Comments", table: "Item", comment: "Item Detail Comments"),
+            emptyText: String(localized: "item_posts_comments_empty", defaultValue: "No comments", table: "Item", comment: "Item Detail Comments Empty")
+        )
     }
 
     var reviewsView: some View {
+        postsView(
+            state: viewModel.reviewsState,
+            title: String(localized: "item_posts_reviews", defaultValue: "Reviews", table: "Item", comment: "Item Detail Reviews"),
+            emptyText: String(localized: "item_posts_reviews_empty", defaultValue: "No reviews", table: "Item", comment: "Item Detail Reviews Empty")
+        )
+    }
+
+    func postsView(state: ItemViewPostsState, title: String, emptyText: String) -> some View {
         Group {
             Divider()
                 .padding(.vertical)
             VStack(alignment: .leading, spacing: 8) {
-                Text("item_posts_reviews", tableName: "Item")
+                Text(title)
                     .font(.headline)
 
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                } else if viewModel.reviews.isEmpty {
-                    Text("item_posts_reviews_empty", tableName: "Item")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(viewModel.reviews, id: \.id) { review in
+                if !state.posts.isEmpty {
+                    ForEach(state.posts, id: \.id) { post in
                         Button {
                             router.navigate(
                                 to: .statusDetailWithStatusAndItem(
-                                    status: review, item: viewModel.item))
+                                    status: post, item: viewModel.item))
                         } label: {
-                            StatusView(status: review, mode: .itemPost)
+                            StatusView(status: post, mode: .itemPost)
                         }
                         .buttonStyle(.plain)
 
-                        if review.id != viewModel.reviews.last?.id {
+                        if post.id != state.posts.last?.id {
                             Divider()
                         }
                     }
+                } else if state.isLoading {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                } else if state.error != nil {
+                    Text(state.error?.localizedDescription ?? "Unknown error")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text(emptyText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
