@@ -24,6 +24,52 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
     private(set) var links = [Link]()
 
     var asSafeMarkdownAttributedString: AttributedString = .init()
+    var asSafeMarkdownAttributedStringWithoutRating: AttributedString {
+        var text = asMarkdown
+        // 移除评分字符
+        let ratingPattern = "[🌕🌗🌑]+"
+        if let regex = try? NSRegularExpression(pattern: ratingPattern) {
+            text = regex.stringByReplacingMatches(
+                in: text,
+                range: NSRange(text.startIndex..., in: text),
+                withTemplate: ""
+            )
+        }
+        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+    
+    var rating: Double? {
+        // 查找评分字符串
+        let ratingPattern = "[🌕🌗🌑]+"
+        guard let regex = try? NSRegularExpression(pattern: ratingPattern),
+              let match = regex.firstMatch(
+                in: asMarkdown,
+                range: NSRange(asMarkdown.startIndex..., in: asMarkdown)
+              ),
+              let range = Range(match.range, in: asMarkdown) else {
+            return nil
+        }
+        
+        let ratingString = String(asMarkdown[range])
+        
+        // 计算评分
+        var score = 0.0
+        for char in ratingString {
+            switch char {
+            case "🌕":
+                score += 2.0
+            case "🌗":
+                score += 1.0
+            case "🌑":
+                score += 0.0
+            default:
+                continue
+            }
+        }
+        
+        return score
+    }
+    
     private var main_regex: NSRegularExpression?
     private var underscore_regex: NSRegularExpression?
     init(from decoder: Decoder) {

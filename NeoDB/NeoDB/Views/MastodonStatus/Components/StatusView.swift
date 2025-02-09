@@ -122,20 +122,27 @@ struct StatusView: View {
                     .buttonStyle(.plain)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            Text(
-                                status.account.displayName
+                        VStack(alignment: .leading, spacing: 1) {
+                            HStack {
+                                Text(
+                                    status.account.displayName
                                     ?? status.account.username
-                            )
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            Spacer()
-                            Text(status.createdAt.relativeFormatted)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+                                )
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                Spacer()
+                                Text(status.createdAt.relativeFormatted)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            if let rating = status.content.rating {
+                                StarView(rating: rating / 2)
+                                    .font(ItemRatingView.Size.small.font)
+                            }
                         }
 
-                        Text(status.content.asSafeMarkdownAttributedString)
+                        Text(status.content.asSafeMarkdownAttributedStringWithoutRating)
                             .font(.callout)
                             .foregroundStyle(.secondary)
 
