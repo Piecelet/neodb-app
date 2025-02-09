@@ -16,6 +16,20 @@ final class MastodonTimelinesViewModel: ObservableObject {
     private let logger = Logger.views.timelines
     private let cacheService = CacheService.shared
     private var loadTasks: [MastodonTimelinesFilter: Task<Void, Never>] = [:]
+
+    @AppStorage("selectedTimelineType") private var selectedTimelineTypeStorage:
+        MastodonTimelinesFilter = .local
+
+    var selectedTimelineType: MastodonTimelinesFilter = .local {
+        didSet {
+            if selectedTimelineType != oldValue {
+                selectedTimelineTypeStorage = selectedTimelineType
+                Task {
+                    await loadTimeline(type: selectedTimelineType, refresh: true)
+                }
+            }
+        }
+    }
     
     @Published private(set) var timelineStates: [MastodonTimelinesFilter: MastodonTimelinesState] = [
         .following: MastodonTimelinesState(),

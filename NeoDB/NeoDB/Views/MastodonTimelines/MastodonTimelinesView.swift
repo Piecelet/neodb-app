@@ -13,15 +13,13 @@ struct MastodonTimelinesView: View {
     @StateObject private var viewModel = MastodonTimelinesViewModel()
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @AppStorage("selectedTimelineType") private var selectedTimelineType:
-        MastodonTimelinesFilter = .local
 
     var body: some View {
         VStack {
             // Without this, the tab bar will be transparent without any blur
             Text(verbatim: " ").frame(width: 0.01, height: 0.01)
             GeometryReader { geometry in
-                TabView(selection: $selectedTimelineType) {
+                TabView(selection: $viewModel.selectedTimelineType) {
                     ForEach(
                         MastodonTimelinesFilter.availableTimeline(
                             isAuthenticated: accountsManager.isAuthenticated),
@@ -51,7 +49,7 @@ struct MastodonTimelinesView: View {
                 TopTabBarView(
                     items: MastodonTimelinesFilter.availableTimeline(
                         isAuthenticated: accountsManager.isAuthenticated),
-                    selection: $selectedTimelineType
+                    selection: $viewModel.selectedTimelineType
                 ) { item in item.displayName }
                 .padding(.bottom, -12)
             }
@@ -60,14 +58,7 @@ struct MastodonTimelinesView: View {
             viewModel.accountsManager = accountsManager
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 Task {
-                    await viewModel.loadTimeline(type: selectedTimelineType)
-                }
-            }
-        }
-        .onChange(of: selectedTimelineType) { type in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                Task {
-                    await viewModel.loadTimeline(type: type, refresh: true)
+                    await viewModel.loadTimeline(type: viewModel.selectedTimelineType)
                 }
             }
         }
