@@ -187,6 +187,11 @@ enum NetworkError: LocalizedError {
                 "Failed to construct URL for endpoint: \(endpoint.path)")
             throw NetworkError.invalidURL
         }
+
+        guard url.host?.contains("piecelet.internal") == false else {
+            logger.info("Not requesting internal URL: \(url.absoluteString)")
+            throw NetworkError.invalidURL
+        }
         return url
     }
 

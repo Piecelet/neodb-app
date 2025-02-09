@@ -800,6 +800,23 @@
         }
       }
     },
+    "item_open_in_open_links" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open Links"
+          }
+        }
+      }
+    },
+    "item_open_in_section_title_apps" : {
+
+    },
+    "item_open_in_section_title_websites" : {
+
+    },
     "item_open_in_website" : {
       "localizations" : {
         "da" : {
@@ -829,6 +846,7 @@
       }
     },
     "item_posts_comments" : {
+      "comment" : "Item Detail Comments",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -839,12 +857,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "长评"
+            "value" : "短评"
           }
         }
       }
     },
     "item_posts_comments_empty" : {
+      "comment" : "Item Detail Comments Empty",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -861,6 +880,7 @@
       }
     },
     "item_posts_reviews" : {
+      "comment" : "Item Detail Reviews",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -871,12 +891,13 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "短评"
+            "value" : "长评"
           }
         }
       }
     },
     "item_posts_reviews_empty" : {
+      "comment" : "Item Detail Reviews Empty",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -891,6 +912,12 @@
           }
         }
       }
+    },
+    "item_posts_service_internal_error" : {
+
+    },
+    "item_posts_service_unsupported" : {
+
     },
     "item_rating_na" : {
       "localizations" : {

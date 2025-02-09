@@ -58,6 +58,9 @@ struct AccountAvatarView: View {
         if let account = account {
             return account.haveAvatar
         }
+        if avatarURL?.host?.contains("piecelet.internal/placeholder") == true {
+            return false
+        }
         return user?.avatar != nil
     }
 
