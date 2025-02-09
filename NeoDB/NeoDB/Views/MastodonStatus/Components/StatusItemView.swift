@@ -31,7 +31,7 @@ struct StatusItemView: View {
                 to: .itemDetailWithItem(item: viewModel.item.toItemSchema)
             )
         } label: {
-            LazyVStack {
+            VStack {
                 HStack(spacing: 12) {
                     // Cover Image
                     ItemCoverView(
@@ -64,6 +64,7 @@ struct StatusItemView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
+                    
                     Button {
                         router.presentSheet(.addToShelf(item: viewModel.item.toItemSchema))
                         HapticFeedback.impact(.medium)
@@ -77,6 +78,8 @@ struct StatusItemView: View {
                 }
             }
             .frame(maxWidth: .infinity)
+            .frame(minHeight: 64, maxHeight: 128)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, mode == .card ? 12 : 20)
             .padding(.vertical, 12)
             .background(Color.grayBackground)
