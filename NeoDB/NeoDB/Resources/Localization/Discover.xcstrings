@@ -10,11 +10,30 @@
             "state" : "new",
             "value" : "No %@"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有 %@"
+          }
         }
       }
     },
     "discover_gallery_error_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something Wrong"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "出错了"
+          }
+        }
+      }
     },
     "discover_search_clear_all" : {
       "localizations" : {

@@ -44,6 +44,8 @@ class Router: ObservableObject {
         if case .itemDetailWithItem(let item) = destination {
             itemToLoad = item
         }
+
+        dismissAllSheets()
         
         // logger.debug("Navigated to: \(String(describing: destination)) in tab: \(self.selectedTab.rawValue)")
     }

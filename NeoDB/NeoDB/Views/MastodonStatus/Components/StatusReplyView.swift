@@ -31,19 +31,26 @@ struct StatusReplyView: View {
                 }
             }
             .padding()
-            Text("timelines_status_reply_development", tableName: "Timelines")
 
-            Button(action: {
-                router.presentSheet(.purchase)
-            }) {
-                Text("store_plus_purchase_to_get_faster_development", tableName: "Settings")
-            }
-            .buttonStyle(.borderedProminent)
-            .padding()
+            EmptyStateView(
+                String(localized: "status_reply_in_development", table: "Timelines"),
+                systemImage: "bubble.left.and.text.bubble.right",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                            .font(.body)
+                    }
+                }
+            )
+            .padding(.bottom, 30)
+            
             Spacer()
         }
         .background(.ultraThinMaterial)
-        .presentationDetents([.fraction(0.25)])
+        .presentationDetents([.fraction(0.45)])
         .presentationDragIndicator(.visible)
         .enableInjection()
     }

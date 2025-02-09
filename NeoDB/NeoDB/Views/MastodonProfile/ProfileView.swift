@@ -150,6 +150,23 @@ struct ProfileView: View {
                         }
                         .padding(.horizontal)
                     }
+                    
+                    Divider()
+
+                    EmptyStateView(
+                        String(localized: "profile_in_development", table: "Timelines"),
+                        systemImage: "bubble.left.and.text.bubble.right",
+                        description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                        actions: {
+                            Button {
+                                router.navigate(to: .purchase)
+                            } label: {
+                                Text("store_plus_subscription_button", tableName: "Settings")
+                                    .font(.body)
+                            }
+                        }
+                    )
+                    .padding(.vertical, 30)
                 }
                 .refreshable {
                     await viewModel.loadAccount(id: id, refresh: true)

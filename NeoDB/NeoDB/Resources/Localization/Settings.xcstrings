@@ -2582,24 +2582,34 @@
         }
       }
     },
-    "store_plus_purchase_to_get_faster_development" : {
+    "store_plus_subscription_button" : {
       "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonnér på Piecelet+ og hjælp udviklerne udvikle hurtigere"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Subscribe to Piecelet+ to help developers develop faster"
+            "value" : "Subscribe to Piecelet+"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "订阅 Piecelet+ 以帮助开发者更快地开发"
+            "value" : "订阅 Piecelet+"
+          }
+        }
+      }
+    },
+    "store_plus_subscription_to_get_faster_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet is being built by a solo student developer. Subscribe to Piecelet+ to support the development."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet 由一名学生开发者独自制作。订阅 Piecelet+ 以支持创作者开发。"
           }
         }
       }

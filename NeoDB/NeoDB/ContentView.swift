@@ -191,9 +191,31 @@ struct ContentView: View {
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):
-            Text("Followers: \(id)")  // TODO: Implement FollowersView
+            EmptyStateView(
+                String(localized: "relation_followers_in_development", table: "Timelines"),
+                systemImage: "person.3.fill",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                    }
+                }
+            )
         case .following(let id):
-            Text("Following: \(id)")  // TODO: Implement FollowingView
+            EmptyStateView(
+                String(localized: "relation_following_in_development", table: "Timelines"),
+                systemImage: "person.3.fill",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                    }
+                }
+            )
         case .galleryCategory(let galleryState):
             GalleryCategoryView(galleryState: galleryState)
         case .purchase:

@@ -1,6 +1,86 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "profile_in_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile is Under Development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户页现正开发中"
+          }
+        }
+      }
+    },
+    "relation_followers_in_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Followers is Under Development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关注者页现正开发中"
+          }
+        }
+      }
+    },
+    "relation_following_in_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Following is Under Development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关注页先整开发中"
+          }
+        }
+      }
+    },
+    "status_replies_in_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Replies is Under Development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "回复列表现正开发中"
+          }
+        }
+      }
+    },
+    "status_reply_in_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply is Under Development"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "评论现正开发中"
+          }
+        }
+      }
+    },
     "timelines_error_title" : {
       "localizations" : {
         "da" : {
@@ -353,28 +433,6 @@
         }
       }
     },
-    "timelines_status_reply_development" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Svar er under udvikling"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reply is under development"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "回复功能开发中"
-          }
-        }
-      }
-    },
     "timelines_status_title" : {
       "localizations" : {
         "da" : {
@@ -472,23 +530,6 @@
             "state" : "new",
             "value" : "Federated"
           }
-        }
-      }
-    },
-    "timelines_type_fediverse" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fødivers"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fediverse"
-          }
         },
         "zh-Hans" : {
           "stringUnit" : {
@@ -506,51 +547,11 @@
             "state" : "new",
             "value" : "Following"
           }
-        }
-      }
-    },
-    "timelines_type_friends" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Venner"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Friends"
-          }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "友邻"
-          }
-        }
-      }
-    },
-    "timelines_type_home" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hjem"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Home"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "主页"
           }
         }
       }
@@ -563,6 +564,12 @@
             "state" : "new",
             "value" : "Latest"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最新"
+          }
         }
       }
     },
@@ -574,28 +581,11 @@
             "state" : "new",
             "value" : "Local"
           }
-        }
-      }
-    },
-    "timelines_type_popular" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Populær"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Popular"
-          }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "热门"
+            "value" : "本站"
           }
         }
       }
@@ -608,6 +598,12 @@
             "state" : "new",
             "value" : "Resume"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "恢复位置"
+          }
         }
       }
     },
@@ -618,6 +614,12 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Trending"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "热门"
           }
         }
       }

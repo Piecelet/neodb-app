@@ -1,17 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "Bandcamp" : {
-      "comment" : "Item External Resource Name - Bandcamp",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bandcamp"
-          }
-        }
-      }
-    },
     "category_all" : {
       "localizations" : {
         "da" : {
@@ -455,6 +444,12 @@
             "state" : "new",
             "value" : "Bandcamp"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandcamp"
+          }
         }
       }
     },
@@ -808,14 +803,46 @@
             "state" : "new",
             "value" : "Open Links"
           }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开链接"
+          }
         }
       }
     },
     "item_open_in_section_title_apps" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 App 中打开"
+          }
+        }
+      }
     },
     "item_open_in_section_title_websites" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Websites"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在网页中打开"
+          }
+        }
+      }
     },
     "item_open_in_website" : {
       "localizations" : {
@@ -914,10 +941,36 @@
       }
     },
     "item_posts_service_internal_error" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is an internal error with your instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的站点出现了内部错误。"
+          }
+        }
+      }
     },
     "item_posts_service_unsupported" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your instance isn't supported."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的站点不支持此功能。"
+          }
+        }
+      }
     },
     "item_rating_na" : {
       "localizations" : {
@@ -971,35 +1024,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂无评分"
-          }
-        }
-      }
-    },
-    "item_view_details" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vis detaljer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Details"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ver detalhes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查看详情"
           }
         }
       }

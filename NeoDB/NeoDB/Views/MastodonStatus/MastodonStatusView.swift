@@ -118,7 +118,26 @@ struct MastodonStatusView: View {
                 }
                 .padding()
                 .padding(.horizontal)
+                
+                Divider()
             }
+
+            EmptyStateView(
+                String(localized: "status_replies_in_development", table: "Timelines"),
+                systemImage: "bubble.left.and.text.bubble.right",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                            .font(.body)
+                    }
+                    .foregroundStyle(.accent)
+                }
+            )
+            .padding(.vertical, 30)
+            .foregroundStyle(.secondary)
         }
         .refreshable {
             await viewModel.loadStatus(id: id, refresh: true)
