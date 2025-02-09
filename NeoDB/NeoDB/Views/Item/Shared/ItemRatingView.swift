@@ -46,7 +46,7 @@ struct ItemRatingView: View {
         var font: Font {
             switch self {
             case .small:
-                return .subheadline
+                return .footnote
             case .medium:
                 return .subheadline
             case .large:

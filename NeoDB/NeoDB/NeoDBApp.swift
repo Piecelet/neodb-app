@@ -32,7 +32,6 @@ struct NeoDBApp: App {
                                 whatsNewCollection: self
                             )
                         )
-            .environmentObject(router)
                 } else {
                     WelcomeView()
                 }

@@ -8,6 +8,7 @@
 import Kingfisher
 import OSLog
 import SwiftUI
+import WrappingHStack
 
 enum StatusViewMode {
     case timeline
@@ -76,7 +77,7 @@ struct StatusView: View {
                         }
 
                         if mode == .detailWithItem || mode == .timelineWithItem {
-                            HStack(alignment: .center, spacing: 4) {
+                            WrappingHStack(alignment: .leading, spacing: .constant(4), lineSpacing: 0) {
                                 if let
                                     neodbStatusLineAttributedStringWithoutRating =
                                     status.content
@@ -176,7 +177,7 @@ struct StatusView: View {
                                     .foregroundStyle(.secondary)
                             }
 
-                            HStack(alignment: .center, spacing: 4) {
+                            WrappingHStack(alignment: .leading, spacing: .dynamic(minSpacing: 4), lineSpacing: 0) {
                                 if let
                                     neodbStatusLineAttributedStringWithoutRating =
                                     status.content
@@ -189,6 +190,8 @@ struct StatusView: View {
                                 }
                                 if let rating = status.content.rating {
                                     StarView(rating: rating / 2)
+                                        .padding(.vertical, 2)
+                                        .font(.caption)
                                 }
                             }
                             .foregroundStyle(.gray)

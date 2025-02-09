@@ -213,9 +213,9 @@ struct MastodonTimelinesView: View {
                         \.neodbItem
                     ).first {
                         Button {
-                            router.navigate(
-                                to: .statusDetailWithStatusAndItem(
-                                    status: status, item: item))
+//                            router.navigate(
+//                                to: .statusDetailWithStatusAndItem(
+//                                    status: status, item: item))
                         } label: {
                             StatusView(status: status, mode: .timelineWithItem)
                         }

@@ -15,6 +15,7 @@
 		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
 		243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 243C39242D3E7ABA00EB356A /* SFSafeSymbols */; };
 		2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 2446C0C82D41712F00504129 /* SwiftSoup */; };
+		2456330D2D58BCFF005D39E1 /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 2456330C2D58BCFF005D39E1 /* WrappingHStack */; };
 		245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 245FD2122D2A817A005B55B3 /* KeychainSwift */; };
 		2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 2475428B2D51215D006F032F /* TelemetryDeck */; };
 		2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2477BCD62D4D52AC00E39E1A /* ButtonKit */; };
@@ -95,6 +96,7 @@
 				24895F532D4BDCEA008EDD4C /* Perception in Frameworks */,
 				2405C5DD2D42717400457DF5 /* BetterSafariView in Frameworks */,
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
+				2456330D2D58BCFF005D39E1 /* WrappingHStack in Frameworks */,
 				24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */,
 				2405C5E32D42757100457DF5 /* WebView in Frameworks */,
 				24BABF592D40309800785306 /* WishKit in Frameworks */,
@@ -195,6 +197,7 @@
 				2477BCD62D4D52AC00E39E1A /* ButtonKit */,
 				2475428B2D51215D006F032F /* TelemetryDeck */,
 				24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */,
+				2456330C2D58BCFF005D39E1 /* WrappingHStack */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -296,6 +299,7 @@
 				2477BCD52D4D52AC00E39E1A /* XCRemoteSwiftPackageReference "ButtonKit" */,
 				2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 				24CDA87A2D56859E0010C589 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
+				2456330B2D58BCFF005D39E1 /* XCRemoteSwiftPackageReference "WrappingHStack" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -777,6 +781,14 @@
 				minimumVersion = 2.7.6;
 			};
 		};
+		2456330B2D58BCFF005D39E1 /* XCRemoteSwiftPackageReference "WrappingHStack" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/dkk/WrappingHStack";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.2.11;
+			};
+		};
 		245FD2112D2A817A005B55B3 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
@@ -890,6 +902,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2446C0C72D41712F00504129 /* XCRemoteSwiftPackageReference "SwiftSoup" */;
 			productName = SwiftSoup;
+		};
+		2456330C2D58BCFF005D39E1 /* WrappingHStack */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2456330B2D58BCFF005D39E1 /* XCRemoteSwiftPackageReference "WrappingHStack" */;
+			productName = WrappingHStack;
 		};
 		245FD2122D2A817A005B55B3 /* KeychainSwift */ = {
 			isa = XCSwiftPackageProductDependency;
