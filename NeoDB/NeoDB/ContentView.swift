@@ -186,6 +186,8 @@ struct ContentView: View {
             MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):
             MastodonStatusView(id: status.id, status: status)
+        case .statusDetailWithStatusAndItem(let status, let item):
+            MastodonStatusView(id: status.id, status: status, item: item)
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):

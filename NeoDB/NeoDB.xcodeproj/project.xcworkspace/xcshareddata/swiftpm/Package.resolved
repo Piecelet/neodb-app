@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TelemetryDeck/SwiftSDK",
       "state" : {
-        "revision" : "df7d3ebb74c489eeb019c44e54f518c67f46f27f",
-        "version" : "2.7.1"
+        "revision" : "3119395c02e7350f86f4ee0b5335bca22eb4ff0a",
+        "version" : "2.7.2"
       }
     },
     {

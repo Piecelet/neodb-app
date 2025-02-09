@@ -216,9 +216,9 @@ struct ItemViewPosts: View {
                 if !state.posts.isEmpty {
                     ForEach(state.posts, id: \.id) { post in
                         Button {
-//                            router.navigate(
-//                                to: .statusDetailWithStatusAndItem(
-//                                    status: post, item: viewModel.item))
+                           router.navigate(
+                               to: .statusDetailWithStatusAndItem(
+                                   status: post, item: viewModel.item))
                         } label: {
                             StatusView(status: post, mode: .itemPost)
                         }
