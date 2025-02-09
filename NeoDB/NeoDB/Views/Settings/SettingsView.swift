@@ -338,13 +338,7 @@ struct SettingsView: View {
     @ViewBuilder
     private var contentView: some View {
         Group {
-            if viewModel.isLoading && viewModel.user == nil {
-                loadingView
-            } else if let error = viewModel.error {
-                errorView(error)
-            } else {
-                profileContent
-            }
+            profileContent
         }
         .animation(.smooth, value: viewModel.isLoading)
         .animation(.smooth, value: viewModel.error)
@@ -368,10 +362,18 @@ struct SettingsView: View {
 
     private var profileContent: some View {
         List {
+            if viewModel.isLoading && viewModel.user == nil {
+                loadingView
+            } else if let error = viewModel.error {
+                errorView(error)
+            } else {
             profileHeaderSection
+            }
             purchaseSection
             accountManagementSection
-            accountInformationSection
+            if viewModel.error == nil {
+                accountInformationSection
+            }
             appSection
             cacheManagementSection
             logoutSection
