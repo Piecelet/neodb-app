@@ -18,7 +18,7 @@ struct StatusItemView: View {
     @StateObject private var viewModel: StatusItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @EnvironmentObject private var itemRepository: ItemRepository  // 注入全局仓库
+    @EnvironmentObject private var itemRepository: ItemRepository
 
     init(item: any ItemProtocol, mode: Mode = .card) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
@@ -36,8 +36,7 @@ struct StatusItemView: View {
                     // Cover Image
                     ItemCoverView(
                         item: viewModel.item,
-                        size: .small,
-                        showSkeleton: viewModel.showSkeleton
+                        size: .small
                     )
 
                     VStack(alignment: .leading, spacing: 2) {
