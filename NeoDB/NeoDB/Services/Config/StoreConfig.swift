@@ -50,7 +50,7 @@ enum StoreConfig {
         }
     }
     
-    enum Features: CaseIterable {
+    enum Features: String, CaseIterable, Hashable {
         case smooth
         case unlimited
         case discovery

@@ -66,6 +66,7 @@ struct StatusView: View {
                             Button {
                                 router.navigate(
                                     to: .userProfile(id: status.account.id))
+                                TelemetryService.shared.trackMastodonProfileView()
                             } label: {
                                 AccountAvatarView(account: status.account)
 
@@ -157,6 +158,7 @@ struct StatusView: View {
                     Button {
                         router.navigate(
                             to: .userProfile(id: status.account.id))
+                        TelemetryService.shared.trackMastodonProfileView()
                     } label: {
                         AccountAvatarView(account: status.account, size: .small)
                     }
@@ -168,6 +170,7 @@ struct StatusView: View {
                                 Button {
                                     router.navigate(
                                         to: .userProfile(id: status.account.id))
+                                    TelemetryService.shared.trackMastodonProfileView()
                                 } label: {
                                     Text(
                                         status.account.displayName

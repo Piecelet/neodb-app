@@ -280,6 +280,10 @@ struct MarkView: View {
                 Task {
                     await viewModel.deleteMark()
                 }
+                TelemetryService.shared.trackMarkDelete(
+                    itemId: viewModel.item.id,
+                    category: viewModel.item.category,
+                    shelfType: viewModel.shelfType)
             } label: {
                 Label(
                     String(
@@ -310,6 +314,13 @@ struct MarkView: View {
             Task {
                 await viewModel.saveMark()
             }
+            TelemetryService.shared.trackMarkSubmit(
+                itemId: viewModel.item.id,
+                category: viewModel.item.category,
+                shelfType: viewModel.shelfType,
+                postToFediverse: viewModel.postToFediverse,
+                changeTime: viewModel.changeTime,
+                isRated: viewModel.rating != nil)
         } label: {
             Text("mark_save_button", tableName: "Item")
                 .frame(maxWidth: .infinity)

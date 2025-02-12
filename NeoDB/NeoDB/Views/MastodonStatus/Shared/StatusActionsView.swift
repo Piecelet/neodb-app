@@ -66,6 +66,7 @@ struct StatusActionsView: View {
                 Button {
                     HapticService.shared.selection()
                     router.presentSheet(.replyToStatus(status: status))
+                    TelemetryService.shared.trackMastodonStatusReply()
                 } label: {
                     Label(
                         "\(dataController.repliesCount)",
@@ -86,6 +87,7 @@ struct StatusActionsView: View {
                         await dataController.toggleReblog(
                             remoteStatus: status.id)
                     }
+                    TelemetryService.shared.trackMastodonStatusRepost()
                 } label: {
                     Label(
                         "\(dataController.reblogsCount)",
@@ -110,6 +112,7 @@ struct StatusActionsView: View {
                         await dataController.toggleFavorite(
                             remoteStatus: status.id)
                     }
+                    TelemetryService.shared.trackMastodonStatusLike()
                 } label: {
                     Label(
                         "\(dataController.favoritesCount)",
@@ -136,6 +139,7 @@ struct StatusActionsView: View {
                             await dataController.toggleBookmark(
                                 remoteStatus: status.id)
                         }
+                        TelemetryService.shared.trackMastodonStatusBookmark()
                     } label: {
                         Label(
                             "Bookmark",
@@ -158,6 +162,7 @@ struct StatusActionsView: View {
                     .padding(6)
                     .simultaneousGesture(TapGesture().onEnded {
                         HapticService.shared.impact(.medium)
+                        TelemetryService.shared.trackMastodonStatusShare()
                     })
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)

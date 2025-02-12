@@ -55,6 +55,7 @@ struct MastodonStatusView: View {
             if status == nil {
                 await viewModel.loadStatus(id: id)
             }
+            TelemetryService.shared.trackMastodonStatusDetailView()
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

@@ -18,7 +18,15 @@ final class MastodonTimelinesViewModel: ObservableObject {
     private var loadTasks: [MastodonTimelinesFilter: Task<Void, Never>] = [:]
 
     @AppStorage("selectedTimelineType") private var selectedTimelineTypeStorage:
-        MastodonTimelinesFilter = .local
+        MastodonTimelinesFilter = .local {
+            didSet {
+                if selectedTimelineTypeStorage != oldValue {
+                    TelemetryService.shared.trackMastodonTimelinesTypeChange(
+                        timelineType: selectedTimelineTypeStorage,
+                        currentTimelineType: oldValue)
+                }
+            }
+        }
 
     var selectedTimelineType: MastodonTimelinesFilter = .local {
         didSet {

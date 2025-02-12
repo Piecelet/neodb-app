@@ -75,6 +75,7 @@ struct ProfileView: View {
                                 Button {
                                     router.navigate(
                                         to: .following(id: account.id))
+                                    TelemetryService.shared.trackMastodonProfileFollowingView()
                                 } label: {
                                     VStack {
                                         Text("\(account.followingCount ?? 0)")
@@ -91,6 +92,7 @@ struct ProfileView: View {
                                 Button {
                                     router.navigate(
                                         to: .followers(id: account.id))
+                                    TelemetryService.shared.trackMastodonProfileFollowersView()
                                 } label: {
                                     VStack {
                                         Text("\(account.followersCount ?? 0)")

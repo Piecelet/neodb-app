@@ -59,6 +59,9 @@ struct ItemView: View {
         .task {
             viewModel.accountsManager = accountsManager
             await viewModel.loadItemDetail(id: id, category: category)
+            TelemetryService.shared.trackItemView(
+                id: viewModel.item?.id,
+                category: viewModel.item?.category)
         }
         .onDisappear {
             viewModel.cleanup()
@@ -156,6 +159,9 @@ struct ItemView: View {
                     action: {
                         HapticService.shared.selection()
                         router.presentSheet(.itemDetails(item: viewModel.item!))
+                        TelemetryService.shared.trackItemShowDetail(
+                            itemId: viewModel.item?.id,
+                            category: viewModel.item?.category)
                     }
                 )
             }
@@ -196,6 +202,10 @@ struct ItemView: View {
                                         mark: mark, shelfType: type,
                                         detentLevel: .detailed))
                                 HapticFeedback.impact(.medium)
+                                TelemetryService.shared.trackItemEditMark(
+                                    itemId: item.id,
+                                    category: item.category,
+                                    shelfType: type)
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(
@@ -217,6 +227,10 @@ struct ItemView: View {
                                         item: item, shelfType: type,
                                         detentLevel: .detailed))
                                 HapticFeedback.impact(.medium)
+                                TelemetryService.shared.trackItemAddMark(
+                                    itemId: item.id,
+                                    category: item.category,
+                                    shelfType: type)
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(symbol: type.symbolImage)

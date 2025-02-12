@@ -35,6 +35,8 @@ struct GalleryView: View {
                 Section {
                     VStack(alignment: .leading) {
                         Button {
+                            TelemetryService.shared.trackGalleryCategoryClick(
+                                category: category.itemCategory)
                             if let state = viewModel.galleryStates[category] {
                                 router.navigate(
                                     to: .galleryCategory(
@@ -104,6 +106,9 @@ struct GalleryView: View {
                 ForEach(items, id: \.uuid) { item in
                     Button {
                         HapticFeedback.selection()
+                        TelemetryService.shared.trackGalleryItemClick(
+                            itemId: item.id,
+                            category: item.category)
                         router.navigate(to: .itemDetailWithItem(item: item))
                     } label: {
                         galleryItemView(item: item)

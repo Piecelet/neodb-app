@@ -233,6 +233,11 @@ struct LibraryView: View {
             Section {
                 ForEach(state.items) { item in
                     Button {
+                        TelemetryService.shared.trackLibraryItemClick(
+                            itemId: item.mark.item.id,
+                            category: item.mark.item.category,
+                            currentShelfType: type,
+                            currentShelfCategory: viewModel.selectedCategory.itemCategory)
                         router.navigate(
                             to: .itemDetailWithItem(item: item.mark.item))
                     } label: {

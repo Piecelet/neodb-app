@@ -44,10 +44,9 @@ class Router: ObservableObject {
     
     func navigate(to destination: RouterDestination) {
         paths[selectedTab]?.append(destination)
-        
-        // Store item for loading if navigating to item detail
-        if case .itemDetailWithItem(let item) = destination {
-            itemToLoad = item
+
+        if case .purchaseWithFeature(let feature) = destination {
+            TelemetryService.shared.trackPurchaseWithFeature(feature: feature)
         }
 
         dismissAllSheets()

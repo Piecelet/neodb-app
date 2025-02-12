@@ -223,11 +223,13 @@ struct AccountRow: View {
         .contentShape(Rectangle())
         .onTapGesture {
             switchToAccount(account)
+            TelemetryService.shared.trackSettingsSwitchAccount(to: account.instance)
         }
         .swipeActions(edge: .trailing) {
             if account.id != accountsManager.currentAccount.id {
                 Button(role: .destructive) {
                     deleteAccount(account)
+                    TelemetryService.shared.trackSettingsDeleteAccount(from: account.instance)
                 } label: {
                     Label("Remove", systemImage: "trash")
                 }
@@ -330,6 +332,9 @@ struct SettingsView: View {
                     .padding(.leading, 2)
                     .hidden()
             }
+        }
+        .task {
+            TelemetryService.shared.trackSettingsView()
         }
         #if DEBUG
             .enableInjection()
@@ -577,6 +582,7 @@ struct SettingsView: View {
         Section {
             Button(role: .destructive) {
                 viewModel.showClearCacheConfirmation = true
+                TelemetryService.shared.trackSettingsClearCache()
             } label: {
                 HStack {
                     if viewModel.isCacheClearing {
@@ -607,6 +613,7 @@ struct SettingsView: View {
                     viewModel.logout()
                     dismiss()
                 }
+                TelemetryService.shared.trackSettingsSignOut()
             } label: {
                 Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)

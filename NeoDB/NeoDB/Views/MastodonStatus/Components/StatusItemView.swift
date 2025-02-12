@@ -30,6 +30,7 @@ struct StatusItemView: View {
             router.navigate(
                 to: .itemDetailWithItem(item: viewModel.item.toItemSchema)
             )
+            TelemetryService.shared.trackItemViewFromStatus()
         } label: {
             VStack {
                 HStack(spacing: 12) {

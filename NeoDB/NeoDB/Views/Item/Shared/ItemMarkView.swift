@@ -114,6 +114,9 @@ struct ItemMarkView: View {
                     ) {
                         router.presentSheet(.editShelfItem(mark: mark))
                         HapticFeedback.impact()
+                        TelemetryService.shared.trackItemMarkEdit(
+                            itemId: mark.item.id,
+                            category: mark.item.category)
                     }
                     .buttonStyle(.borderless)
                     .accentColor(.gray)

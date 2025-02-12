@@ -101,8 +101,296 @@ class TelemetryService: ObservableObject {
         TelemetryDeck.signal("discover.search.url.submit")
         logger.debug("Tracked search URL submit")
     }
+
+    func trackGalleryItemClick(itemId: String, category: ItemCategory) {
+        TelemetryDeck.signal("discover.gallery.item.click", parameters: [
+            "itemId": itemId,
+            "category": category.rawValue
+        ])
+        logger.debug("Tracked gallery item click: \(itemId)")
+    }
+
+    func trackGalleryCategoryClick(category: ItemCategory) {
+        TelemetryDeck.signal("discover.gallery.category.click", parameters: [
+            "category": category.rawValue
+        ])
+        logger.debug("Tracked gallery category click: \(category.rawValue)")
+    }
+
+    // MARK: - Library Events
+
+    func trackLibraryItemClick(itemId: String, category: ItemCategory, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        var parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue
+        ]
+        if let currentShelfType = currentShelfType {
+            parameters["currentShelfType"] = currentShelfType.rawValue
+        }
+        if let currentShelfCategory = currentShelfCategory {
+            parameters["currentShelfCategory"] = currentShelfCategory.rawValue
+        }
+        TelemetryDeck.signal("library.item.click", parameters: parameters)
+        logger.debug("Tracked library item click: \(itemId)")
+    }
+
+    func trackLibraryCategoryChange(category: ItemCategory.shelfAvailable, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        var parameters: [String: String] = [
+            "category": category.rawValue
+        ]
+        if let currentShelfType = currentShelfType {
+            parameters["currentShelfType"] = currentShelfType.rawValue
+        }
+        if let currentShelfCategory = currentShelfCategory {
+            parameters["currentShelfCategory"] = currentShelfCategory.rawValue
+        }
+        logger.debug("Tracked library category change: \(category.rawValue)")
+    }
+
+    func trackLibraryShelfTypeChange(shelfType: ShelfType, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        var parameters: [String: String] = [
+            "shelfType": shelfType.rawValue
+        ]
+        if let currentShelfType = currentShelfType {
+            parameters["currentShelfType"] = currentShelfType.rawValue
+        }
+        if let currentShelfCategory = currentShelfCategory {
+            parameters["currentShelfCategory"] = currentShelfCategory.rawValue
+        }
+        TelemetryDeck.signal("library.shelf.type.change", parameters: parameters)
+        logger.debug("Tracked library shelf type change: \(shelfType.rawValue)")
+    }
     
+    // MARK: - Item Events
+
+    func trackItemMarkEdit(itemId: String, category: ItemCategory) {
+        let parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue
+        ]
+        TelemetryDeck.signal("item.mark.edit", parameters: parameters)
+        logger.debug("Tracked item mark edit: \(itemId)")
+    }
+
+    func trackItemShowDetail(itemId: String? = nil, category: ItemCategory? = nil) {
+        var parameters: [String: String] = [:]
+        if let category = category {
+            parameters["category"] = category.rawValue
+        }
+        if let itemId = itemId {
+            parameters["itemId"] = itemId
+        }
+        TelemetryDeck.signal("item.show.detail", parameters: parameters)
+    }
+
+    func trackItemAddMark(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        let parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue,
+            "shelfType": shelfType.rawValue
+        ]
+        TelemetryDeck.signal("item.add.mark", parameters: parameters)
+        logger.debug("Tracked item add mark: \(itemId)")
+    }
+
+    func trackItemEditMark(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        let parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue,
+            "shelfType": shelfType.rawValue
+        ]
+        TelemetryDeck.signal("item.edit.mark", parameters: parameters)
+        logger.debug("Tracked item edit mark: \(itemId)")
+    }
     
+    func trackItemView(id: String? = nil, category: ItemCategory? = nil) {
+        var parameters: [String: String] = [:]
+        if let category = category {
+            parameters["category"] = category.rawValue
+        }
+        if let id = id {
+            parameters["itemId"] = id
+        }
+        TelemetryDeck.signal("item.viewed", parameters: parameters)
+        logger.debug("Tracked item view: \(id ?? "none")")
+    }
+
+    func trackItemViewFromStatus() {
+        TelemetryDeck.signal("item.viewed.from.status")
+        logger.debug("Tracked item view from status")
+    }
+
+    // MARK: - Mark Events
+
+    func trackMarkDelete(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        let parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue,
+            "shelfType": shelfType.rawValue
+        ]
+        TelemetryDeck.signal("mark.delete", parameters: parameters)
+        logger.debug("Tracked mark delete: \(itemId)")
+    }
+
+    func trackMarkSubmit(itemId: String, category: ItemCategory, shelfType: ShelfType, postToFediverse: Bool? = nil, changeTime: Bool? = nil, isRated: Bool? = nil) {
+        var parameters: [String: String] = [
+            "itemId": itemId,
+            "category": category.rawValue,
+            "shelfType": shelfType.rawValue
+        ]
+        if let postToFediverse = postToFediverse {
+            parameters["postToFediverse"] = postToFediverse.description
+        }
+        if let changeTime = changeTime {
+            parameters["changeTime"] = changeTime.description
+        }
+        if let isRated = isRated {
+            parameters["isRated"] = isRated.description
+        }
+        TelemetryDeck.signal("mark.submit", parameters: parameters)
+        logger.debug("Tracked mark submit: \(itemId)")
+    }
+
+    // MARK: - Mastodon Status Events
+
+    func trackMastodonStatusLike(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.like", parameters: parameters)
+        logger.debug("Tracked mastodon status like: \(statusId ?? "none")")
+    }
+
+    func trackMastodonStatusReply(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.reply", parameters: parameters)
+        logger.debug("Tracked mastodon status reply: \(statusId ?? "none")")
+    }
+
+    func trackMastodonStatusRepost(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.repost", parameters: parameters)
+        logger.debug("Tracked mastodon status repost: \(statusId ?? "none")")
+    }
+
+    func trackMastodonStatusBookmark(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.bookmark", parameters: parameters)
+        logger.debug("Tracked mastodon status bookmark: \(statusId ?? "none")")
+    }
+
+    func trackMastodonStatusShare(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.share", parameters: parameters)
+        logger.debug("Tracked mastodon status share: \(statusId ?? "none")")
+    }
+
+    func trackMastodonStatusDetailView(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.detail.view", parameters: parameters)
+        logger.debug("Tracked mastodon status detail view: \(statusId ?? "none")")
+    }
+
+    // MARK: - Mastodon Profile Events
+
+    func trackMastodonProfileView(profileId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let profileId = profileId {
+            parameters["profileId"] = profileId
+        }
+        TelemetryDeck.signal("mastodon.profile.view", parameters: parameters)
+        logger.debug("Tracked mastodon profile view: \(profileId ?? "none")")
+    }
+
+    func trackMastodonProfileFollowingView(profileId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let profileId = profileId {
+            parameters["profileId"] = profileId
+        }
+        TelemetryDeck.signal("mastodon.profile.following.view", parameters: parameters)
+        logger.debug("Tracked mastodon profile following view: \(profileId ?? "none")")
+    }
+
+    func trackMastodonProfileFollowersView(profileId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let profileId = profileId {
+            parameters["profileId"] = profileId
+        }
+        TelemetryDeck.signal("mastodon.profile.followers.view", parameters: parameters)
+        logger.debug("Tracked mastodon profile followers view: \(profileId ?? "none")")
+    }
+
+    // MARK: - Mastodon Timelines Events
+
+    func trackMastodonTimelinesTypeChange(timelineType: MastodonTimelinesFilter, currentTimelineType: MastodonTimelinesFilter? = nil) {
+        var parameters: [String: String] = [:]
+        parameters["timelineType"] = timelineType.rawValue
+        if let currentTimelineType = currentTimelineType {
+            parameters["currentTimelineType"] = currentTimelineType.rawValue
+        }
+        TelemetryDeck.signal("mastodon.timelines.type.change", parameters: parameters)
+        logger.debug("Tracked mastodon timelines type change: \(timelineType.rawValue)")
+    }
+
+    // MARK: - Settings Events
+
+    func trackSettingsView() {
+        TelemetryDeck.signal("settings.view")
+        logger.debug("Tracked settings view")
+    }
+
+    func trackSettingsCustomizeDefaultTab(to tab: TabDestination.Configurable) {
+        TelemetryDeck.signal("settings.customize.defaultTab", parameters: ["tab": tab.rawValue])
+        logger.debug("Tracked settings view customize default tab to: \(tab.rawValue)")
+    }
+
+    func trackSettingsSignOut() {
+        TelemetryDeck.signal("settings.signOut")
+        logger.debug("Tracked settings sign out")
+    }
+
+    func trackSettingsClearCache() {
+        TelemetryDeck.signal("settings.clearCache")
+        logger.debug("Tracked settings clear cache")
+    }
+
+    func trackSettingsSwitchAccount(to newInstance: String) {
+        TelemetryDeck.signal("settings.switchAccount", parameters: ["newInstance": newInstance])
+        logger.debug("Tracked settings switch account to: \(newInstance)")
+    }
+
+    func trackSettingsDeleteAccount(from oldInstance: String) {
+        TelemetryDeck.signal("settings.deleteAccount", parameters: ["oldInstance": oldInstance])
+        logger.debug("Tracked settings delete account from: \(oldInstance)")
+    }
+
+    // MARK: - Router Events
+
+    func trackPurchaseWithFeature(feature: StoreConfig.Features? = nil) {
+        var parameters: [String: String] = [:]
+        if let feature = feature {
+            parameters["feature"] = feature.rawValue
+        }
+        TelemetryDeck.signal("purchase.withFeature", parameters: parameters)
+        logger.debug("Tracked purchase with feature: \(feature?.rawValue ?? "none")")
+    }
+
     // MARK: - Feature Usage Events
     
     func trackSearch(query: String, category: ItemCategory?) {
@@ -112,14 +400,6 @@ class TelemetryService: ObservableObject {
         }
         TelemetryDeck.signal("search.performed", parameters: parameters)
         logger.debug("Tracked search with category: \(category?.rawValue ?? "none")")
-    }
-    
-    func trackItemView(id: String, category: ItemCategory) {
-        TelemetryDeck.signal("item.viewed", parameters: [
-            "itemId": id,
-            "category": category.rawValue
-        ])
-        logger.debug("Tracked item view: \(id)")
     }
     
     // MARK: - Store Events

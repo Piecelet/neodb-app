@@ -22,6 +22,7 @@ struct SettingsViewCustomizeHome: View {
                         if storeManager.isPlus {
                             defaultTab = .timelines
                             HapticFeedback.selection()
+                            TelemetryService.shared.trackSettingsCustomizeDefaultTab(to: .timelines)
                         } else {
                             router.presentSheet(
                                 .purchaseWithFeature(feature: .customize)
@@ -106,6 +107,7 @@ struct SettingsViewCustomizeHome: View {
                         if storeManager.isPlus {
                             defaultTab = .discover
                             HapticFeedback.selection()
+                            TelemetryService.shared.trackSettingsCustomizeDefaultTab(to: .discover)
                         } else {
                             router.presentSheet(
                                 .purchaseWithFeature(feature: .customize)

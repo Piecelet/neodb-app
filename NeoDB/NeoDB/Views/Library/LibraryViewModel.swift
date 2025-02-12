@@ -42,6 +42,10 @@ final class LibraryViewModel: ObservableObject {
                 Task {
                     await loadShelfItems(type: selectedShelfType, refresh: true)
                 }
+                TelemetryService.shared.trackLibraryShelfTypeChange(
+                    shelfType: selectedShelfType,
+                    currentShelfType: oldValue,
+                    currentShelfCategory: selectedCategory)
             }
         }
     }
@@ -50,6 +54,10 @@ final class LibraryViewModel: ObservableObject {
             if oldValue != selectedCategory {
                 initShelfStates()
                 loadAllShelfItems()
+                TelemetryService.shared.trackLibraryCategoryChange(
+                    category: selectedCategory,
+                    currentShelfType: selectedShelfType,
+                    currentShelfCategory: oldValue)
             }
         }
     }
