@@ -812,6 +812,22 @@
         }
       }
     },
+    "item_open_in_search_format" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search on %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "在 %@ 搜索"
+          }
+        }
+      }
+    },
     "item_open_in_section_title_apps" : {
       "localizations" : {
         "en" : {
@@ -824,6 +840,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 App 中打开"
+          }
+        }
+      }
+    },
+    "item_open_in_section_title_search" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 App 中搜索"
           }
         }
       }

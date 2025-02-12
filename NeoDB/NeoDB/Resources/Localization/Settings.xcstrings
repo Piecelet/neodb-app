@@ -2128,6 +2128,12 @@
         }
       }
     },
+    "store_feature_integration_description" : {
+
+    },
+    "store_feature_integration_title" : {
+
+    },
     "store_feature_search_description" : {
       "localizations" : {
         "da" : {

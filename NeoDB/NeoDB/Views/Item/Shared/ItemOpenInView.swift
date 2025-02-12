@@ -11,6 +11,8 @@ import SwiftUI
 struct ItemOpenInView: View {
     let item: any ItemProtocol
     var accountsManager: AppAccountsManager? = nil
+    var router: Router? = nil
+    var storeManager: StoreManager? = nil
 
     @Environment(\.openURL) private var openURL
 
@@ -33,6 +35,15 @@ struct ItemOpenInView: View {
         } ?? []
     }
 
+    private var searchAppScheme: [(resource: ItemExternalResourceSchema, scheme: URL)] {
+        return item.externalResources?.compactMap { resource in
+            if let scheme = resource.makeAppSearchScheme(query: item.title ?? ""), resource.type == .douban {
+                return (resource: resource, scheme: scheme)
+            }
+            return nil
+        } ?? []
+    }
+
     var body: some View {
         Group {
             if let shareURL = shareURL {
@@ -41,14 +52,16 @@ struct ItemOpenInView: View {
                         destination: shareURL
                     ) {
                         Label(
-                        String(
-                            format: String(
-                                localized: "item_open_in_website",
-                                table: "Item"),
-                            accountsManager?.currentAccount.instance ?? "Safari"
-                        ),
-                        systemSymbol: .safari)
-                            .labelStyle(.iconOnly)
+                            String(
+                                format: String(
+                                    localized: "item_open_in_website",
+                                    table: "Item"),
+                                accountsManager?.currentAccount.instance
+                                    ?? "Safari"
+                            ),
+                            systemSymbol: .safari
+                        )
+                        .labelStyle(.iconOnly)
                     }
                 }
             }
@@ -56,16 +69,27 @@ struct ItemOpenInView: View {
                 Section {
                     availableAppsView
                 } header: {
-                    Text("item_open_in_section_title_apps",
-                         tableName: "Item")
+                    Text(
+                        "item_open_in_section_title_apps",
+                        tableName: "Item")
+                }
+            }
+            if let title = item.title, !title.isEmpty {
+                Section {
+                    searchAppView
+                } header: {
+                    Text(
+                        "item_open_in_section_title_search",
+                        tableName: "Item")
                 }
             }
             if !websiteResources.isEmpty {
                 Section {
                     availableWebsitesView
                 } header: {
-                    Text("item_open_in_section_title_websites",
-                         tableName: "Item")
+                    Text(
+                        "item_open_in_section_title_websites",
+                        tableName: "Item")
                 }
             }
         }
@@ -80,8 +104,13 @@ struct ItemOpenInView: View {
         Menu {
             self.body
         } label: {
-            Label(String(localized: "item_open_in_open_links", defaultValue: "Open Links", table: "Item"), symbol: .sfSymbol(.arrowUpForwardApp))
-                .labelStyle(.iconOnly)
+            Label(
+                String(
+                    localized: "item_open_in_open_links",
+                    defaultValue: "Open Links", table: "Item"),
+                symbol: .sfSymbol(.arrowUpForwardApp)
+            )
+            .labelStyle(.iconOnly)
         }
         .enableInjection()
     }
@@ -106,10 +135,40 @@ struct ItemOpenInView: View {
         Group {
             if !appSchemes.isEmpty {
                 ForEach(appSchemes, id: \.scheme.absoluteString) { pair in
-                    Link(destination: pair.scheme) {
-                        Label(
-                            pair.resource.name, symbol: pair.resource.symbolImage)
+                    Group {
+                        if let storeManager = storeManager, storeManager.isPlus {
+                            Link(destination: pair.scheme) {
+                                Label(
+                                    pair.resource.name,
+                                    symbol: pair.resource.symbolImage)
+                            }
+                        } else {
+                            Button {
+                                router?.presentSheet(
+                                    .purchaseWithFeature(feature: .integration))
+                            } label: {
+                                Label(
+                                    pair.resource.name,
+                                    symbol: pair.resource.symbolImage)
+                            }
+                        }
                     }
+                }
+            }
+        }
+    }
+
+    var searchAppView: some View {
+        Group {
+            ForEach(searchAppScheme, id: \.scheme.absoluteString) { pair in
+                Link(destination: pair.scheme) {
+                    Label(
+                        String(
+                            format: String(
+                                localized: "item_open_in_search_format",
+                                table: "Item"),
+                            pair.resource.name),
+                        symbol: pair.resource.symbolImage)
                 }
             }
         }

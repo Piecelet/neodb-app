@@ -14,6 +14,7 @@ struct ItemView: View {
     @StateObject private var viewModel: ItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.openURL) private var openURL
 
     let id: String
@@ -244,7 +245,7 @@ struct ItemView: View {
             HStack(spacing: 16) {
                 if let item = viewModel.item {
                     ItemOpenInView(
-                        item: item, accountsManager: accountsManager
+                        item: item, accountsManager: accountsManager, router: router, storeManager: storeManager
                     ).bodyMenu
                 }
                 if let url = viewModel.shareURL {

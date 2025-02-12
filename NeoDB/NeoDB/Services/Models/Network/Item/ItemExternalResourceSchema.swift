@@ -280,6 +280,8 @@ enum ItemKnownExternalResource: String {
     }
 }
 
+// MARK: - Identify Resource
+
 extension ItemExternalResourceSchema: Hashable {
     var type: ItemKnownExternalResource {
         let host = url.host?.lowercased() ?? ""
@@ -416,6 +418,8 @@ extension ItemExternalResourceSchema: Hashable {
     }
 }
 
+// MARK: - App Scheme
+
 extension ItemExternalResourceSchema {
     func canOpenURL() -> Bool {
         if let scheme = self.type.scheme {
@@ -495,7 +499,19 @@ extension ItemExternalResourceSchema {
             return nil
         case .steam:
             return nil
-            
+        default: return nil
+        }
+    }
+}
+
+extension ItemExternalResourceSchema {
+    func makeAppSearchScheme(query: String) -> URL? {
+        if !canOpenURL() {
+            return nil
+        }
+        switch self.type {
+        case .douban:
+            return URL(string: "\(self.type.scheme ?? "douban://")/search?q=\(query)")
         default: return nil
         }
     }
