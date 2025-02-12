@@ -170,6 +170,11 @@ class TelemetryService: ObservableObject {
         TelemetryDeck.signal("library.shelf.type.change", parameters: parameters)
         logger.debug("Tracked library shelf type change: \(shelfType.rawValue)")
     }
+
+    func trackLibraryRefresh() {
+        TelemetryDeck.signal("library.refresh")
+        logger.debug("Tracked library refresh")
+    }
     
     // MARK: - Item Events
 
@@ -317,6 +322,14 @@ class TelemetryService: ObservableObject {
         logger.debug("Tracked mastodon status detail view: \(statusId ?? "none")")
     }
 
+    func trackMastodonStatusItemMark(statusId: String? = nil) {
+        var parameters: [String: String] = [:]
+        if let statusId = statusId {
+            parameters["statusId"] = statusId
+        }
+        TelemetryDeck.signal("mastodon.status.item.mark", parameters: parameters)
+    }
+
     // MARK: - Mastodon Profile Events
 
     func trackMastodonProfileView(profileId: String? = nil) {
@@ -356,6 +369,11 @@ class TelemetryService: ObservableObject {
         }
         TelemetryDeck.signal("mastodon.timelines.type.change", parameters: parameters)
         logger.debug("Tracked mastodon timelines type change: \(timelineType.rawValue)")
+    }
+
+    func trackMastodonTimelinesRefresh() {
+        TelemetryDeck.signal("mastodon.timelines.refresh")
+        logger.debug("Tracked mastodon timelines refresh")
     }
 
     // MARK: - Settings Events

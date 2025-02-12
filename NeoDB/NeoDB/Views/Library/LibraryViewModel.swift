@@ -95,6 +95,9 @@ final class LibraryViewModel: ObservableObject {
     
     // MARK: - Public Methods
     func loadShelfItems(type: ShelfType, refresh: Bool = false) async {
+        if refresh {
+            TelemetryService.shared.trackLibraryRefresh()
+        }
         // Cancel existing task for this shelf type
         loadTasks[type]?.cancel()
         

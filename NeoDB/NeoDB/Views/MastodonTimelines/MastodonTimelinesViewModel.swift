@@ -52,6 +52,9 @@ final class MastodonTimelinesViewModel: ObservableObject {
     
     // MARK: - Methods
     func loadTimeline(type: MastodonTimelinesFilter, refresh: Bool = false) async {
+        if refresh {
+            TelemetryService.shared.trackMastodonTimelinesRefresh()
+        }
         loadTasks[type]?.cancel()
         
         loadTasks[type] = Task {

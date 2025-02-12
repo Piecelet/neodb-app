@@ -64,6 +64,7 @@ struct StatusItemView: View {
                     Button {
                         router.presentSheet(
                             .addToShelf(item: viewModel.item.toItemSchema))
+                        TelemetryService.shared.trackMastodonStatusItemMark()
                         HapticFeedback.impact(.medium)
                     } label: {
                         Image(systemSymbol: .plusSquareDashed)
