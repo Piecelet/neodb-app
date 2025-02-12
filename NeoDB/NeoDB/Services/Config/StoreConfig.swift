@@ -54,6 +54,7 @@ enum StoreConfig {
         case smooth
         case unlimited
         case discovery
+        case customize
         case multipleAccounts
         case supportDev
         case supportCommunity
@@ -70,6 +71,13 @@ enum StoreConfig {
                     icon: .sfSymbol(.personCropCircle),
                     title: String(localized: "store_feature_accounts_title", table: "Settings"),
                     description: String(localized: "store_feature_accounts_description", table: "Settings"),
+                    color: .blue
+                )
+            case .customize:
+                return Feature(
+                    icon: .sfSymbol(.sparkles),
+                    title: String(localized: "store_feature_customize_title", table: "Settings"),
+                    description: String(localized: "store_feature_customize_description", table: "Settings"),
                     color: .blue
                 )
             case .smooth:

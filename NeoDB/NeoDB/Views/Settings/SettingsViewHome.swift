@@ -6,26 +6,28 @@
 //  Copyright © 2025 https://github.com/lcandy2. All Rights Reserved.
 //
 
-import SwiftUI
 import Defaults
+import SwiftUI
 
 struct SettingsViewHome: View {
     @Default(.defaultTab) private var defaultTab
     @EnvironmentObject private var storeManager: StoreManager
     @EnvironmentObject private var router: Router
-    
+
     var body: some View {
         Section {
             HStack(spacing: 12) {
                 Button {
                     if defaultTab != .timelines {
-                    if storeManager.isPlus {
-                        defaultTab = .timelines
-                        HapticFeedback.selection()
-                    } else {
-                        router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
-                        HapticFeedback.error()
-                    }
+                        if storeManager.isPlus {
+                            defaultTab = .timelines
+                            HapticFeedback.selection()
+                        } else {
+                            router.presentSheet(
+                                .purchaseWithFeature(feature: .customize)
+                            )
+                            HapticFeedback.error()
+                        }
                     }
                 } label: {
                     VStack(spacing: 8) {
@@ -36,16 +38,23 @@ struct SettingsViewHome: View {
                             .offset(y: 15)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .strokeBorder(defaultTab == .timelines ? Color.accentColor : .clear, lineWidth: 2)
+                                    .strokeBorder(
+                                        defaultTab == .timelines
+                                            ? Color.accentColor : .clear,
+                                        lineWidth: 2)
                             )
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
-                                        colors: [.clear, .black.opacity(0.1), .black.opacity(0.45), .black.opacity(0.6)],
+                                        colors: [
+                                            .clear, .black.opacity(0.1),
+                                            .black.opacity(0.45),
+                                            .black.opacity(0.6),
+                                        ],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
-                                    
+
                                     Text("Timelines")
                                         .font(.headline)
                                         .foregroundStyle(.white)
@@ -55,7 +64,7 @@ struct SettingsViewHome: View {
                                 .frame(height: 80)
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
+
                         HStack {
                             if defaultTab == .timelines {
                                 Circle()
@@ -70,7 +79,10 @@ struct SettingsViewHome: View {
                             } else {
                                 if storeManager.isPlus {
                                     Circle()
-                                        .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                        .strokeBorder(
+                                            .secondary.opacity(0.3),
+                                            lineWidth: 1.5
+                                        )
                                         .frame(width: 24, height: 24)
                                 } else {
                                     Circle()
@@ -88,14 +100,16 @@ struct SettingsViewHome: View {
                 }
                 .buttonStyle(.plain)
                 .frame(maxWidth: .infinity)
-                
+
                 Button {
                     if defaultTab != .discover {
-                    if storeManager.isPlus {
-                        defaultTab = .discover
-                        HapticFeedback.selection()
-                    } else {
-                        router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
+                        if storeManager.isPlus {
+                            defaultTab = .discover
+                            HapticFeedback.selection()
+                        } else {
+                            router.presentSheet(
+                                .purchaseWithFeature(feature: .customize)
+                            )
                             HapticFeedback.error()
                         }
                     }
@@ -110,16 +124,23 @@ struct SettingsViewHome: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .strokeBorder(defaultTab == .discover ? Color.accentColor : .clear, lineWidth: 2)
+                                    .strokeBorder(
+                                        defaultTab == .discover
+                                            ? Color.accentColor : .clear,
+                                        lineWidth: 2)
                             )
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
-                                        colors: [.clear, .black.opacity(0.1), .black.opacity(0.45), .black.opacity(0.6)],
+                                        colors: [
+                                            .clear, .black.opacity(0.1),
+                                            .black.opacity(0.45),
+                                            .black.opacity(0.6),
+                                        ],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
-                                    
+
                                     Text("Discover")
                                         .font(.headline)
                                         .foregroundStyle(.white)
@@ -129,7 +150,7 @@ struct SettingsViewHome: View {
                                 .frame(height: 80)
                             }
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                        
+
                         HStack {
                             if defaultTab == .discover {
                                 Circle()
@@ -144,7 +165,10 @@ struct SettingsViewHome: View {
                             } else {
                                 if storeManager.isPlus {
                                     Circle()
-                                        .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                        .strokeBorder(
+                                            .secondary.opacity(0.3),
+                                            lineWidth: 1.5
+                                        )
                                         .frame(width: 24, height: 24)
                                 } else {
                                     Circle()
@@ -164,7 +188,8 @@ struct SettingsViewHome: View {
                 .frame(maxWidth: .infinity)
             }
             .padding(.vertical, 4)
-            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+            .listRowInsets(
+                EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         } header: {
             Text("Default Home Screen")
         } footer: {
@@ -174,7 +199,7 @@ struct SettingsViewHome: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
@@ -183,4 +208,3 @@ struct SettingsViewHome: View {
         SettingsViewHome()
     }
 }
-

@@ -1988,6 +1988,12 @@
         }
       }
     },
+    "store_feature_customize_description" : {
+
+    },
+    "store_feature_customize_title" : {
+
+    },
     "store_feature_discovery_description" : {
       "localizations" : {
         "da" : {
