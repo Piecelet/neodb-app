@@ -24,6 +24,7 @@ struct SettingsViewHome: View {
                             .resizable()
                             .aspectRatio(1 / 1, contentMode: .fill)
                             .frame(width: 140, height: 120)
+                            .offset(y: 15)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .strokeBorder(defaultTab == .timelines ? Color.accentColor : .clear, lineWidth: 2)
@@ -77,6 +78,8 @@ struct SettingsViewHome: View {
                             .resizable()
                             .aspectRatio(1 / 1, contentMode: .fill)
                             .frame(width: 140, height: 120)
+                            .offset(y: 15)
+                            .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
