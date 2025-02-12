@@ -16,23 +16,27 @@ class TelemetryService: ObservableObject {
     static let shared = TelemetryService()
     
     private let logger = Logger.services.telemetry.telemetry
+
+    private let config = TelemetryDeck.Config(appID: AppConfig.telemetryDeckAppID)
     
     private init() {
         configure()
     }
     
     private func configure() {
-        let config = TelemetryDeck.Config(appID: AppConfig.telemetryDeckAppID)
-        
-        // Add default signal prefix for better organization
         config.defaultSignalPrefix = "App."
-        
         TelemetryDeck.initialize(config: config)
         logger.debug("TelemetryDeck initialized")
     }
 
     func updateDefaultUserID(to id: String?) {
         TelemetryDeck.updateDefaultUserID(to: id)
+    }
+
+    func updateInstance(to instance: String) {
+        config.defaultParameters = { ["instance": instance] }
+        TelemetryDeck.initialize(config: config)
+        logger.debug("TelemetryDeck initialized with instance: \(instance)")
     }
     
     // MARK: - App Lifecycle Events

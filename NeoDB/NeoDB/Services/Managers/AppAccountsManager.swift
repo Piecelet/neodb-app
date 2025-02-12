@@ -37,6 +37,8 @@ class AppAccountsManager: ObservableObject {
             // 如果切换到新账号，清除错误状态
             error = nil
             isAuthenticating = false
+            
+            TelemetryService.shared.updateInstance(to: currentAccount.instance)
         }
     }
 
@@ -123,6 +125,8 @@ class AppAccountsManager: ObservableObject {
                 }
             }
         }
+        
+        TelemetryService.shared.updateInstance(to: currentAccount.instance)
     }
 
     // 删除所有匿名账户并更新可用账户列表
