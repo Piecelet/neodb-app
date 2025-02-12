@@ -257,6 +257,11 @@ class GalleryViewModel: ObservableObject {
             }
         } catch {
             logger.error("Failed to load galleries: \(error.localizedDescription)")
+            if case .httpError(let code, _) = error as? NetworkError, code == 404 {
+                isLegacy = true
+                logger.info("Gallery is legacy, reload galleries.")
+                await loadAllGalleries(refresh: refresh)
+            }
             // Update error state for all categories
             for category in ItemCategory.galleryCategory.availableCategories {
                 updateState(for: category) { state in
