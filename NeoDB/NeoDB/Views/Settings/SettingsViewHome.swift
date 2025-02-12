@@ -55,7 +55,7 @@ struct SettingsViewHome: View {
                                         endPoint: .bottom
                                     )
 
-                                    Text("Timelines")
+                                    Text("customize_home_timelines_label", tableName: "Settings")
                                         .font(.headline)
                                         .foregroundStyle(.white)
                                         .padding(.vertical, 14)
@@ -141,7 +141,7 @@ struct SettingsViewHome: View {
                                         endPoint: .bottom
                                     )
 
-                                    Text("Discover")
+                                    Text("customize_home_discover_label", tableName: "Settings")
                                         .font(.headline)
                                         .foregroundStyle(.white)
                                         .padding(.vertical, 14)

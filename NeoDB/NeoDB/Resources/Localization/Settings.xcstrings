@@ -1989,10 +1989,36 @@
       }
     },
     "store_feature_customize_description" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalize Piecelet to your needs."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化 Piecelet 以满足您的需求。"
+          }
+        }
+      }
     },
     "store_feature_customize_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Customize"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化"
+          }
+        }
+      }
     },
     "store_feature_discovery_description" : {
       "localizations" : {
