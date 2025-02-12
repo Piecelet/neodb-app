@@ -73,6 +73,16 @@ class TelemetryService: ObservableObject {
         logger.debug("Tracked tab change to: \(tab.rawValue)")
     }
 
+    func trackPurchaseWithFeature(feature: StoreConfig.Features? = nil) {
+        var parameters: [String: String] = [:]
+        if let feature = feature {
+            parameters["feature"] = feature.rawValue
+        }
+        TelemetryDeck.signal("purchase.withFeature", parameters: parameters)
+        logger.debug("Tracked purchase with feature: \(feature?.rawValue ?? "none")")
+    }
+
+
     // MARK - Discover Events
     func trackSearchSubmit(category: ItemCategory? = nil) {
         var parameters: [String: String] = [:]
@@ -380,15 +390,9 @@ class TelemetryService: ObservableObject {
         logger.debug("Tracked settings delete account from: \(oldInstance)")
     }
 
-    // MARK: - Router Events
-
-    func trackPurchaseWithFeature(feature: StoreConfig.Features? = nil) {
-        var parameters: [String: String] = [:]
-        if let feature = feature {
-            parameters["feature"] = feature.rawValue
-        }
-        TelemetryDeck.signal("purchase.withFeature", parameters: parameters)
-        logger.debug("Tracked purchase with feature: \(feature?.rawValue ?? "none")")
+    func trackSettingsPurchase() {
+        TelemetryDeck.signal("settings.purchase")
+        logger.debug("Tracked settings purchase")
     }
 
     // MARK: - Feature Usage Events
@@ -420,6 +424,21 @@ class TelemetryService: ObservableObject {
             "error": error
         ])
         logger.debug("Tracked purchase error for package: \(package)")
+    }
+
+    func trackPurchaseRestore() {
+        TelemetryDeck.signal("store.purchase.restore")
+        logger.debug("Tracked purchase restore")
+    }
+
+    func trackPurchaseShowAllPlans(isShow: Bool) {
+        TelemetryDeck.signal("store.purchase.showAllPlans", parameters: ["isShow": isShow.description])
+        logger.debug("Tracked purchase show all plans: \(isShow)")
+    }
+
+    func trackPurchasePackageChange(package: String) {
+        TelemetryDeck.signal("store.purchase.package.change", parameters: ["package": package])
+        logger.debug("Tracked purchase package change: \(package)")
     }
 
     func trackPurchaseClose() {

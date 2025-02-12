@@ -237,7 +237,7 @@ struct LibraryView: View {
                             itemId: item.mark.item.id,
                             category: item.mark.item.category,
                             currentShelfType: type,
-                            currentShelfCategory: viewModel.selectedCategory.itemCategory)
+                            currentShelfCategory: viewModel.selectedCategory)
                         router.navigate(
                             to: .itemDetailWithItem(item: item.mark.item))
                     } label: {

@@ -14,8 +14,20 @@ import Perception
 class PurchaseViewModel: ObservableObject {
     @Published private(set) var purchaseError: String?
     @Published var isLoading = false
-    @Published var showAllPlans = false
-    @Published var selectedPackage: Package?
+    @Published var showAllPlans = false {
+        didSet {
+            if oldValue != showAllPlans {
+                TelemetryService.shared.trackPurchaseShowAllPlans(isShow: showAllPlans)
+            }
+        }
+    }
+    @Published var selectedPackage: Package? {
+        didSet {
+            if oldValue != selectedPackage {
+                TelemetryService.shared.trackPurchasePackageChange(package: selectedPackage?.storeProduct.productIdentifier ?? "")
+            }
+        }
+    }
     @Published var shouldDismiss = false
 
     private var storeManager: StoreManager? // 由外部注入，避免重复创建
@@ -63,21 +75,25 @@ class PurchaseViewModel: ObservableObject {
     }
 
     func purchase(_ package: Package) async {
+        TelemetryService.shared.trackPurchaseStart(package: package.storeProduct.productIdentifier)
         guard let storeManager else { return }
 
         do {
             let customerInfo = try await storeManager.purchase(package)
+            TelemetryService.shared.trackPurchaseComplete(package: package.storeProduct.productIdentifier)
             // 如果已经解锁，则可以关闭当前购买页
             if !customerInfo.entitlements.active.isEmpty {
                 shouldDismiss = true
             }
         } catch {
             // 包括用户手动取消，也会进入 catch
+            TelemetryService.shared.trackPurchaseError(package: package.storeProduct.productIdentifier, error: error.localizedDescription)
             purchaseError = error.localizedDescription
         }
     }
 
     func restorePurchases() async {
+        TelemetryService.shared.trackPurchaseRestore()
         isLoading = true
         defer { isLoading = false }
         guard let storeManager else { return }
