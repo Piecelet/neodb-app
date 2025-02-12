@@ -17,7 +17,7 @@ struct GalleryResult: Codable, Identifiable {
         name
     }
 
-    var itemCategory: ItemCategory? {
+    var itemCategory: ItemCategory.galleryCategory? {
         switch name {
         case "trending_book":
             return .book
@@ -31,8 +31,6 @@ struct GalleryResult: Codable, Identifiable {
             return .music
         case "trending_podcast":
             return .podcast
-        case "trending_performance":
-            return .performance
         default: 
             return nil
         }

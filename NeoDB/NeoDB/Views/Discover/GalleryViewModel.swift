@@ -41,6 +41,8 @@ class GalleryViewModel: ObservableObject {
     
     // MARK: - Properties
     private var lastRequestTime: Date?
+
+    private var isLegacy = false
     
     init() {
         // Initialize states for all categories
@@ -106,6 +108,9 @@ class GalleryViewModel: ObservableObject {
                 if !Task.isCancelled {
                     updateState(for: category) { state in
                         state.error = error
+                        if case .httpError(let code, _) = error as? NetworkError, code == 404 {
+                            isLegacy = true
+                        }
                         logger.error("Gallery load error: \(error.localizedDescription)")
                     }
                 }
@@ -119,6 +124,16 @@ class GalleryViewModel: ObservableObject {
         var state = galleryStates[category] ?? State(galleryCategory: category)
         update(&state)
         galleryStates[category] = state
+    }
+
+    private func updateState(galleryResult: [GalleryResult], update: (inout State) -> Void) {
+        for gallery in galleryResult.items {
+            if let category = gallery.category {
+                var state = galleryStates[category] ?? State(galleryCategory: category)
+                update(&state)
+                galleryStates[category] = state
+            }
+        }
     }
     
     private func updateLoadingState(for category: ItemCategory.galleryCategory, refresh: Bool) {
@@ -169,6 +184,15 @@ class GalleryViewModel: ObservableObject {
         do {
             // Load from cache first if not refreshing
             if !refresh {
+                if isLegacy {
+                    if let cached = try? await cacheService.retrieveGallery(
+                        instance: accountsManager.currentAccount.instance
+                    ) {
+                        updateState(galleryResult: cached) { state in
+                            state.trendingGallery = cached
+                        }
+                    }
+                } else {
                 for category in ItemCategory.galleryCategory.availableCategories {
                     if let cached = try? await cacheService.retrieveGallery(
                         category: category,
@@ -180,6 +204,7 @@ class GalleryViewModel: ObservableObject {
                             state.isInited = true
                         }
                     }
+                }
                 }
             }
 
