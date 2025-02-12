@@ -132,6 +132,7 @@ struct SearchURLView: View {
                                 PasteButton(payloadType: String.self) {
                                     strings in
                                     HapticService.shared.impact(.medium)
+                                    TelemetryService.shared.trackSearchURLPaste()
                                     guard let urlString = strings.first
                                     else { return }
                                     Task { @MainActor in
@@ -145,6 +146,7 @@ struct SearchURLView: View {
                             } else {
                                 Button {
                                     HapticService.shared.impact(.medium)
+                                    TelemetryService.shared.trackSearchURLSubmit()
                                     Task {
                                         await viewModel.fetchFromURL(
                                             viewModel.urlInput)

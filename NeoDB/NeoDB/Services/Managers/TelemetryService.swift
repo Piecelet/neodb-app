@@ -49,12 +49,20 @@ class TelemetryService: ObservableObject {
     // MARK: - Authentication Events
     
     func trackAuthLogin(instance: String? = nil) {
-        TelemetryDeck.signal("auth.login", parameters: ["instance": instance ?? "unknown"])
+        if let instance = instance {
+            TelemetryDeck.signal("auth.login", parameters: ["instance": instance])
+        } else {
+            TelemetryDeck.signal("auth.login")
+        }
         logger.debug("Tracked login for instance: \(instance ?? "unknown")")
     }
     
     func trackAuthLogout(instance: String? = nil) {
-        TelemetryDeck.signal("auth.logout", parameters: ["instance": instance ?? "unknown"])
+        if let instance = instance {
+            TelemetryDeck.signal("auth.logout", parameters: ["instance": instance])
+        } else {
+            TelemetryDeck.signal("auth.logout")
+        }
         logger.debug("Tracked logout for instance: \(instance ?? "unknown")")
     }
     
@@ -64,6 +72,36 @@ class TelemetryService: ObservableObject {
         TelemetryDeck.signal("navigation.tab", parameters: ["tab": tab.rawValue])
         logger.debug("Tracked tab change to: \(tab.rawValue)")
     }
+
+    // MARK - Discover Events
+    func trackSearchSubmit(category: ItemCategory? = nil) {
+        var parameters: [String: String] = [:]
+        if let category = category {
+            parameters["itemCategory"] = category.rawValue
+        }
+        TelemetryDeck.signal("discover.search.submit", parameters: parameters)
+        logger.debug("Tracked search submit with category: \(category?.rawValue ?? "none")")
+    }
+
+    func trackSearchCategoryChange(category: ItemCategory? = nil) {
+        var parameters: [String: String] = [:]
+        if let category = category {
+            parameters["itemCategory"] = category.rawValue
+        }
+        TelemetryDeck.signal("discover.search.category.change", parameters: parameters)
+        logger.debug("Tracked search category change to: \(category?.rawValue ?? "none")")
+    }
+
+    func trackSearchURLPaste() {
+        TelemetryDeck.signal("discover.search.url.paste")
+        logger.debug("Tracked search URL paste")
+    }
+
+    func trackSearchURLSubmit() {
+        TelemetryDeck.signal("discover.search.url.submit")
+        logger.debug("Tracked search URL submit")
+    }
+    
     
     // MARK: - Feature Usage Events
     

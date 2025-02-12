@@ -102,6 +102,8 @@ struct SearchView: View {
         )
         .onSubmit(of: .search) {
             Task {
+                TelemetryService.shared.trackSearchSubmit(
+                    category: viewModel.selectedCategory.itemCategory)
                 await viewModel.confirmSearch()
             }
         }
@@ -114,6 +116,8 @@ struct SearchView: View {
                     category in
                     Button {
                         viewModel.selectedCategory = category
+                        TelemetryService.shared.trackSearchCategoryChange(
+                            category: category.itemCategory)
                         Task {
                             await viewModel.confirmSearch()
                         }
