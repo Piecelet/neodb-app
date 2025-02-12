@@ -52,73 +52,80 @@ class GalleryViewModel: ObservableObject {
     }
     
     // MARK: - Methods
-    func loadGallery(category: ItemCategory.galleryCategory, refresh: Bool = false) async {
-        loadTasks[category]?.cancel()
+    // func loadGallery(category: ItemCategory.galleryCategory, refresh: Bool = false) async {
+    //     loadTasks[category]?.cancel()
         
-        loadTasks[category] = Task {
-            guard let accountsManager = accountsManager else {
-                logger.debug("No accountsManager available")
-                return
-            }
+    //     loadTasks[category] = Task {
+    //         guard let accountsManager = accountsManager else {
+    //             logger.debug("No accountsManager available")
+    //             return
+    //         }
+
+    //         if isLegacy {
+    //             Task {
+    //                 await loadAllGalleries(refresh: refresh)
+    //             }
+    //             loadTasks[category]?.cancel()
+    //         }
             
-            updateLoadingState(for: category, refresh: refresh)
+    //         updateLoadingState(for: category, refresh: refresh)
             
-            defer {
-                if !Task.isCancelled {
-                    updateState(for: category) { state in
-                        state.isLoading = false
-                        state.isRefreshing = false
-                    }
-                }
-            }
+    //         defer {
+    //             if !Task.isCancelled {
+    //                 updateState(for: category) { state in
+    //                     state.isLoading = false
+    //                     state.isRefreshing = false
+    //                 }
+    //             }
+    //         }
             
-            // Load from cache first if not refreshing
-            if !refresh {
-                if let cached = try? await cacheService.retrieveGallery(
-                    category: category,
-                    instance: accountsManager.currentAccount.instance
-                ) {
-                    updateState(for: category) { state in
-                        state.trendingGallery = cached
-                        state.lastRefreshTime = Date()
-                        state.isInited = true
-                    }
-                }
-            }
+    //         // Load from cache first if not refreshing
+    //         if !refresh {
+    //             if let cached = try? await cacheService.retrieveGallery(
+    //                 category: category,
+    //                 instance: accountsManager.currentAccount.instance
+    //             ) {
+    //                 updateState(for: category) { state in
+    //                     state.trendingGallery = cached
+    //                     state.lastRefreshTime = Date()
+    //                     state.isInited = true
+    //                 }
+    //             }
+    //         }
             
-            do {
-                let endpoint = category.endpoint
-                let result = try await accountsManager.currentClient.fetch(
-                    endpoint, type: [ItemSchema].self)
+    //         do {
+    //             let endpoint = category.endpoint
+    //             let result = try await accountsManager.currentClient.fetch(
+    //                 endpoint, type: [ItemSchema].self)
                     
-                updateState(for: category) { state in
-                    state.trendingGallery = result
-                    state.lastRefreshTime = Date()
-                    state.error = nil
-                    state.isInited = true
-                }
+    //             updateState(for: category) { state in
+    //                 state.trendingGallery = result
+    //                 state.lastRefreshTime = Date()
+    //                 state.error = nil
+    //                 state.isInited = true
+    //             }
                 
-                // Cache only if it's a refresh or first load
-                    try? await cacheService.cacheGallery(
-                        result,
-                        category: category,
-                        instance: accountsManager.currentAccount.instance
-                    )
-            } catch {
-                if !Task.isCancelled {
-                    updateState(for: category) { state in
-                        state.error = error
-                        if case .httpError(let code, _) = error as? NetworkError, code == 404 {
-                            isLegacy = true
-                        }
-                        logger.error("Gallery load error: \(error.localizedDescription)")
-                    }
-                }
-            }
-        }
+    //             // Cache only if it's a refresh or first load
+    //                 try? await cacheService.cacheGallery(
+    //                     result,
+    //                     category: category,
+    //                     instance: accountsManager.currentAccount.instance
+    //                 )
+    //         } catch {
+    //             if !Task.isCancelled {
+    //                 updateState(for: category) { state in
+    //                     state.error = error
+    //                     if case .httpError(let code, _) = error as? NetworkError, code == 404 {
+    //                         isLegacy = true
+    //                     }
+    //                     logger.error("Gallery load error: \(error.localizedDescription)")
+    //                 }
+    //             }
+    //         }
+    //     }
         
-        await loadTasks[category]?.value
-    }
+    //     await loadTasks[category]?.value
+    // }
     
     private func updateState(for category: ItemCategory.galleryCategory, update: (inout State) -> Void) {
         var state = galleryStates[category] ?? State(galleryCategory: category)
@@ -126,12 +133,16 @@ class GalleryViewModel: ObservableObject {
         galleryStates[category] = state
     }
 
-    private func updateState(galleryResult: [GalleryResult], update: (inout State) -> Void) {
-        for gallery in galleryResult.items {
-            if let category = gallery.category {
-                var state = galleryStates[category] ?? State(galleryCategory: category)
-                update(&state)
-                galleryStates[category] = state
+    private func updateStateFromLegacy(galleryResults: [GalleryResult]) {
+        for gallery in galleryResults {
+            if let category = gallery.itemCategory {
+                updateState(for: category) { state in
+                    state.trendingGallery = gallery.items
+                    state.lastRefreshTime = Date()
+                    state.error = nil
+                    state.isInited = true
+                    self.isLegacy = true
+                }
             }
         }
     }
@@ -188,51 +199,60 @@ class GalleryViewModel: ObservableObject {
                     if let cached = try? await cacheService.retrieveGallery(
                         instance: accountsManager.currentAccount.instance
                     ) {
-                        updateState(galleryResult: cached) { state in
-                            state.trendingGallery = cached
-                        }
+                        updateStateFromLegacy(galleryResults: cached)
                     }
                 } else {
-                for category in ItemCategory.galleryCategory.availableCategories {
-                    if let cached = try? await cacheService.retrieveGallery(
-                        category: category,
-                        instance: accountsManager.currentAccount.instance
-                    ) {
-                        updateState(for: category) { state in
-                            state.trendingGallery = cached
-                            state.lastRefreshTime = Date()
-                            state.isInited = true
+                    for category in ItemCategory.galleryCategory.availableCategories {
+                        if let cached = try? await cacheService.retrieveGallery(
+                            category: category,
+                            instance: accountsManager.currentAccount.instance
+                        ) {
+                            updateState(for: category) { state in
+                                state.trendingGallery = cached
+                                state.lastRefreshTime = Date()
+                                state.isInited = true
+                            }
                         }
                     }
-                }
                 }
             }
 
             // Concurrent fetch for all categories
-            try await withThrowingTaskGroup(of: (ItemCategory.galleryCategory, [ItemSchema]).self) { group in
-                for category in ItemCategory.galleryCategory.availableCategories {
-                    group.addTask {
-                        let result = try await accountsManager.currentClient.fetch(
-                            category.endpoint, type: [ItemSchema].self)
-                        return (category, result)
+            if isLegacy {
+                let result = try await accountsManager.currentClient.fetch(CatalogEndpoint.gallery, type: [GalleryResult].self)
+                updateStateFromLegacy(galleryResults: result)
+                
+                // Cache results
+                try? await cacheService.cacheGallery(
+                    galleryResult: result,
+                    instance: accountsManager.currentAccount.instance
+                )
+            } else {
+                try await withThrowingTaskGroup(of: (ItemCategory.galleryCategory, [ItemSchema]).self) { group in
+                    for category in ItemCategory.galleryCategory.availableCategories {
+                        group.addTask {
+                            let result = try await accountsManager.currentClient.fetch(
+                                category.endpoint, type: [ItemSchema].self)
+                            return (category, result)
+                        }
                     }
-                }
 
-                // Process results as they complete
-                for try await (category, result) in group {
-                    updateState(for: category) { state in
-                        state.trendingGallery = result
-                        state.lastRefreshTime = Date()
-                        state.error = nil
-                        state.isInited = true
+                    // Process results as they complete
+                    for try await (category, result) in group {
+                        updateState(for: category) { state in
+                            state.trendingGallery = result
+                            state.lastRefreshTime = Date()
+                            state.error = nil
+                            state.isInited = true
+                        }
+
+                        // Cache results
+                            try? await cacheService.cacheGallery(
+                                result,
+                                category: category,
+                                instance: accountsManager.currentAccount.instance
+                            )
                     }
-
-                    // Cache results
-                        try? await cacheService.cacheGallery(
-                            result,
-                            category: category,
-                            instance: accountsManager.currentAccount.instance
-                        )
                 }
             }
         } catch {
