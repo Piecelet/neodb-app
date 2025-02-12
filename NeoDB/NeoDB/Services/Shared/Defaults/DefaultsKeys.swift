@@ -11,5 +11,5 @@ import Defaults
 // MARK: - Settings
 
 extension Defaults.Keys {
-    static let defaultTab = Key<TabDestination.Configurable>("settings_defaultTab", default: .home)
+    static let defaultTab = Key<TabDestination.Configurable>("settings_defaultTab", default: .timelines)
 }

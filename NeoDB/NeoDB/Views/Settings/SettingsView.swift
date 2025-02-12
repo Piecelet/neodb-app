@@ -531,36 +531,7 @@ struct SettingsView: View {
     }
 
     private var mainInterfaceSection: some View {
-        Section {
-            NavigationLink {
-                List {
-                    ForEach(TabDestination.Configurable.allCases, id: \.self) { tab in
-                        Button {
-                            Defaults[.defaultTab] = tab
-                        } label: {
-                            HStack {
-                                Text(tab.rawValue.capitalized)
-                                Spacer()
-                                if tab == Defaults[.defaultTab] {
-                                    Image(systemName: "checkmark")
-                                        .foregroundColor(.accentColor)
-                                }
-                            }
-                        }
-                    }
-                }
-                .navigationTitle("Default Main Interface")
-            } label: {
-                HStack {
-                    Text("Default Main Interface")
-                    Spacer()
-                    Text(Defaults[.defaultTab].rawValue.capitalized)
-                        .foregroundColor(.secondary)
-                }
-            }
-        } header: {
-            Text("Main Interface")
-        }
+        SettingsViewHome()
     }
 
     private var appSection: some View {

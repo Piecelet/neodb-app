@@ -19,7 +19,7 @@ class Router: ObservableObject {
     }
     
     @Published var itemToLoad: (any ItemProtocol)?
-    @Published var selectedTab: TabDestination = .home
+    @Published var selectedTab: TabDestination = .timelines
     
     private let logger = Logger.router
     

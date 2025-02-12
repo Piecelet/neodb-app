@@ -11,21 +11,21 @@ import SwiftUI
 import Defaults
 
 enum TabDestination: String, CaseIterable, Codable {
-    case home
-    case search
+    case timelines
+    case discover
     case library
     case profile
 }
 
 extension TabDestination {
     enum Configurable: String, CaseIterable, Codable, Defaults.Serializable {
-        case home
-        case search
+        case timelines
+        case discover
         
         var tabDestination: TabDestination {
             switch self {
-            case .home: return .home
-            case .search: return .search
+            case .timelines: return .timelines
+            case .discover: return .discover
             }
         }
     }

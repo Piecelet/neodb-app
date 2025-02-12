@@ -24,13 +24,13 @@ struct ContentView: View {
                 // Track tab changes
                 TelemetryService.shared.trackTabChange(to: newTab)
                 // Only activate search when clicking search tab while already on search tab
-                if oldTab == .search && newTab == .search {
+                if oldTab == .discover && newTab == .discover {
                     isSearchActive.toggle()
                 }
             }
         ) {
             // Home Tab
-            NavigationStack(path: router.path(for: .home)) {
+            NavigationStack(path: router.path(for: .timelines)) {
                 MastodonTimelinesView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
@@ -43,10 +43,10 @@ struct ContentView: View {
                         localized: "timelines_title_home", table: "Timelines"),
                     systemImage: "house.fill")
             }
-            .tag(TabDestination.home)
+            .tag(TabDestination.timelines)
 
             // Search Tab
-            NavigationStack(path: router.path(for: .search)) {
+            NavigationStack(path: router.path(for: .discover)) {
                 SearchView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
@@ -59,7 +59,7 @@ struct ContentView: View {
                         localized: "discover_search_title", table: "Discover"),
                     systemImage: "magnifyingglass")
             }
-            .tag(TabDestination.search)
+            .tag(TabDestination.discover)
 
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
