@@ -694,6 +694,22 @@
         }
       }
     },
+    "customize_home_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose which screen to show when you open the app."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择 Piecelet 开启时展示哪个界面。"
+          }
+        }
+      }
+    },
     "customize_home_discover_label" : {
       "localizations" : {
         "en" : {

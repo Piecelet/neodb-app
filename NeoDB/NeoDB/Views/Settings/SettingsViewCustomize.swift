@@ -9,7 +9,7 @@
 import Defaults
 import SwiftUI
 
-struct SettingsViewCustomize: View {
+struct SettingsViewCustomizeHome: View {
     @Default(.defaultTab) private var defaultTab
     @EnvironmentObject private var storeManager: StoreManager
     @EnvironmentObject private var router: Router
@@ -36,13 +36,6 @@ struct SettingsViewCustomize: View {
                             .aspectRatio(1 / 1, contentMode: .fill)
                             .frame(width: 140, height: 120)
                             .offset(y: 15)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .strokeBorder(
-                                        defaultTab == .timelines
-                                            ? Color.accentColor : .clear,
-                                        lineWidth: 2)
-                            )
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
@@ -63,6 +56,13 @@ struct SettingsViewCustomize: View {
                                 }
                                 .frame(height: 80)
                             }
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .strokeBorder(
+                                        defaultTab == .timelines
+                                            ? Color.accentColor : .clear,
+                                        lineWidth: 2)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 8))
 
                         HStack {
@@ -122,13 +122,6 @@ struct SettingsViewCustomize: View {
                             .offset(y: 15)
                             .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .strokeBorder(
-                                        defaultTab == .discover
-                                            ? Color.accentColor : .clear,
-                                        lineWidth: 2)
-                            )
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
@@ -149,6 +142,13 @@ struct SettingsViewCustomize: View {
                                 }
                                 .frame(height: 80)
                             }
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .strokeBorder(
+                                        defaultTab == .discover
+                                            ? Color.accentColor : .clear,
+                                        lineWidth: 2)
+                            )
                             .clipShape(RoundedRectangle(cornerRadius: 8))
 
                         HStack {
@@ -191,9 +191,9 @@ struct SettingsViewCustomize: View {
             .listRowInsets(
                 EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
         } header: {
-            Text("Default Home Screen")
+            Text("customize_home_title", tableName: "Settings")
         } footer: {
-            Text("Choose which screen to show when you open the app")
+            Text("customize_home_description", tableName: "Settings")
         }
         .enableInjection()
     }
@@ -205,6 +205,6 @@ struct SettingsViewCustomize: View {
 
 #Preview {
     List {
-        SettingsViewCustomize()
+        SettingsViewCustomizeHome()
     }
 }
