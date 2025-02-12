@@ -531,7 +531,7 @@ struct SettingsView: View {
     }
 
     private var mainInterfaceSection: some View {
-        SettingsViewHome()
+        SettingsViewCustomizeHome()
     }
 
     private var appSection: some View {

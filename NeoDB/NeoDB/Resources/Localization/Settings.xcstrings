@@ -726,6 +726,22 @@
         }
       }
     },
+    "customize_home_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Customize"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化"
+          }
+        }
+      }
+    },
     "developer_title" : {
       "localizations" : {
         "da" : {

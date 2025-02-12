@@ -9,7 +9,7 @@
 import Defaults
 import SwiftUI
 
-struct SettingsViewHome: View {
+struct SettingsViewCustomize: View {
     @Default(.defaultTab) private var defaultTab
     @EnvironmentObject private var storeManager: StoreManager
     @EnvironmentObject private var router: Router
@@ -205,6 +205,6 @@ struct SettingsViewHome: View {
 
 #Preview {
     List {
-        SettingsViewHome()
+        SettingsViewCustomize()
     }
 }

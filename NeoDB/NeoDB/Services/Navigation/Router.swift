@@ -12,12 +12,8 @@ import Defaults
 
 @MainActor
 class Router: ObservableObject {
-    @Default(.defaultTab) var defaultTab {
-        didSet {
-            selectedTab = defaultTab.tabDestination
-        }
-    }
-    @Published var selectedTab: TabDestination = .timelines
+    // @Default(.defaultTab) var defaultTab
+    @Published var selectedTab: TabDestination
     
     @Published var paths: [TabDestination: [RouterDestination]] = [:]
     @Published var sheetStack: [SheetDestination] = []
@@ -31,7 +27,7 @@ class Router: ObservableObject {
     private let logger = Logger.router
     
     init() {
-        selectedTab = defaultTab.tabDestination
+        selectedTab = Defaults[.defaultTab].tabDestination
         
         // Initialize empty paths for each tab
         TabDestination.allCases.forEach { tab in
