@@ -31,15 +31,15 @@ struct SettingsViewHome: View {
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
-                                        colors: [.clear, .black.opacity(0.5)],
+                                        colors: [.clear, .black.opacity(0.1), .black.opacity(0.45), .black.opacity(0.6)],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                     
                                     Text("Timelines")
-                                        .font(.subheadline)
+                                        .font(.headline)
                                         .foregroundStyle(.white)
-                                        .padding(.vertical, 10)
+                                        .padding(.vertical, 14)
                                         .frame(maxWidth: .infinity)
                                 }
                                 .frame(height: 80)
@@ -75,15 +75,15 @@ struct SettingsViewHome: View {
                             .overlay(alignment: .bottom) {
                                 ZStack(alignment: .bottom) {
                                     LinearGradient(
-                                        colors: [.clear, .black.opacity(0.3)],
+                                        colors: [.clear, .black.opacity(0.1), .black.opacity(0.45), .black.opacity(0.6)],
                                         startPoint: .top,
                                         endPoint: .bottom
                                     )
                                     
                                     Text("Discover")
-                                        .font(.subheadline)
+                                        .font(.headline)
                                         .foregroundStyle(.white)
-                                        .padding(.vertical, 10)
+                                        .padding(.vertical, 14)
                                         .frame(maxWidth: .infinity)
                                 }
                                 .frame(height: 80)
