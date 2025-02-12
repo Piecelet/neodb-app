@@ -43,7 +43,7 @@ struct PurchaseView: View {
                                 .scaledToFit()
                                 .frame(width: 120, height: 120)
                             Text(
-                                String(localized: "store_title", table: "Settings")
+                                String(localized: "store_title", defaultValue: "Piecelet+", table: "Settings")
                             )
                             .font(.largeTitle)
                             .fontWeight(.bold)
@@ -51,7 +51,7 @@ struct PurchaseView: View {
                         }
                         Text(
                             String(
-                                localized: "store_description", table: "Settings")
+                                localized: "store_description", defaultValue: "Unlock a richer experience for your NeoDB journey", table: "Settings")
                         )
                         .font(.headline)
                         .foregroundStyle(.secondary)
@@ -114,18 +114,18 @@ struct PurchaseView: View {
                 }
             }
         }
-        .navigationTitle(String(localized: "store_title", table: "Settings"))
+        .navigationTitle(String(localized: "store_title", defaultValue: "Piecelet+", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(String(localized: "store_title", table: "Settings"))
+                Text(String(localized: "store_title", defaultValue: "Piecelet+", table: "Settings"))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading, 2)
                     .hidden()
             }
             ToolbarItem(placement: .topBarTrailing) {
                 AsyncButton(
-                    String(localized: "store_button_restore", table: "Settings")
+                    String(localized: "store_button_restore", defaultValue: "Restore", table: "Settings")
                 ) {
                     Task {
                         await viewModel.restorePurchases()

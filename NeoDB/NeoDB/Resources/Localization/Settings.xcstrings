@@ -1965,6 +1965,7 @@
       }
     },
     "store_feature_actions_description" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -1987,6 +1988,7 @@
       }
     },
     "store_feature_actions_title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
