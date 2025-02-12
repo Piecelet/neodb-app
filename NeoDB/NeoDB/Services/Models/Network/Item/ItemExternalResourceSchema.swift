@@ -408,6 +408,10 @@ extension ItemExternalResourceSchema: Hashable {
                 defaultValue: "Unknown", table: "Item",
                 comment: "Item External Resource Name - Unknown")
     }
+    
+    var host: String {
+        return type.host ?? url.host ?? url.absoluteString
+    }
 
     var icon: String {
         return type.icon

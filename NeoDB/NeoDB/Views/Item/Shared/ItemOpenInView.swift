@@ -131,7 +131,7 @@ struct ItemOpenInView: View {
 
     func websiteView(_ resource: ItemExternalResourceSchema) -> some View {
         Link(destination: resource.url) {
-            Label(resource.name, symbol: resource.symbolImage)
+            Label(resource.host, symbol: resource.symbolImage)
         }
     }
 
@@ -183,7 +183,11 @@ struct ItemOpenInView: View {
                                 .purchaseWithFeature(feature: .integration))
                         } label: {
                             Label(
-                                pair.resource.name,
+                                String(
+                                    format: String(
+                                        localized: "item_open_in_search_format",
+                                        table: "Item"),
+                                    pair.resource.name),
                                 symbol: pair.resource.symbolImage)
                         }
                     }
