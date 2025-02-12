@@ -7,10 +7,18 @@
 
 import SwiftUI
 import OSLog
+import Defaults
 
 
 @MainActor
 class Router: ObservableObject {
+    @Default(.defaultTab) var defaultTab {
+        didSet {
+            selectedTab = defaultTab.tabDestination
+        }
+    }
+    @Published var selectedTab: TabDestination = .timelines
+    
     @Published var paths: [TabDestination: [RouterDestination]] = [:]
     @Published var sheetStack: [SheetDestination] = []
     
@@ -19,11 +27,12 @@ class Router: ObservableObject {
     }
     
     @Published var itemToLoad: (any ItemProtocol)?
-    @Published var selectedTab: TabDestination = .timelines
     
     private let logger = Logger.router
     
     init() {
+        selectedTab = defaultTab.tabDestination
+        
         // Initialize empty paths for each tab
         TabDestination.allCases.forEach { tab in
             paths[tab] = []
