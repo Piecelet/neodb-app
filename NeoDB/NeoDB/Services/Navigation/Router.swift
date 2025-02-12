@@ -69,6 +69,10 @@ class Router: ObservableObject {
     func presentSheet(_ destination: SheetDestination) {
         logger.debug("Presenting sheet: \(destination)")
         sheetStack.append(destination)
+
+        if case .purchaseWithFeature(let feature) = destination {
+            TelemetryService.shared.trackPurchaseWithFeature(feature: feature)
+        }
     }
     
     func handleURL(_ url: URL) -> Bool {

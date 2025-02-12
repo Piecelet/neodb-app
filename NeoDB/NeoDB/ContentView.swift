@@ -15,6 +15,7 @@ struct ContentView: View {
     @StateObject private var router = Router()
     @StateObject private var itemRepository = ItemRepository()
     @State private var isSearchActive = false
+    @Environment(\.openURL) private var openURL
     private let logger = Logger.views.contentView
 
     var body: some View {
@@ -100,6 +101,13 @@ struct ContentView: View {
                 router.presentSheet(.purchase)
             }
         }
+        .environment(
+            \.openURL,
+            OpenURLAction { url in
+                handleURL(url)
+                return .handled
+            }
+        )
         .sheet(
             item: Binding(
                 get: { router.sheetStack.last },
@@ -224,6 +232,16 @@ struct ContentView: View {
             PurchaseView()
         case .purchaseWithFeature(let feature):
             PurchaseView(scrollToFeature: feature)
+        }
+    }
+    
+    private func handleURL(_ url: URL) {
+        URLHandler.handleItemURL(url) { destination in
+            if let destination = destination {
+                router.navigate(to: destination)
+            } else {
+                openURL(url)
+            }
         }
     }
 }
