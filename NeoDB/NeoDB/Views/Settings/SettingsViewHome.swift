@@ -24,16 +24,29 @@ struct SettingsViewHome: View {
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(height: 120)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .strokeBorder(defaultTab == .timelines ? Color.accentColor : .clear, lineWidth: 2)
                             )
+                            .overlay(alignment: .bottom) {
+                                ZStack(alignment: .bottom) {
+                                    LinearGradient(
+                                        colors: [.clear, .black.opacity(0.5)],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                    
+                                    Text("Timelines")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.white)
+                                        .padding(.vertical, 10)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .frame(height: 80)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         
                         HStack {
-                            Text("Timelines")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
                             if defaultTab == .timelines {
                                 Image(systemSymbol: .checkmark)
                                     .foregroundColor(.accentColor)
@@ -59,11 +72,25 @@ struct SettingsViewHome: View {
                                 RoundedRectangle(cornerRadius: 8)
                                     .strokeBorder(defaultTab == .discover ? Color.accentColor : .clear, lineWidth: 2)
                             )
+                            .overlay(alignment: .bottom) {
+                                ZStack(alignment: .bottom) {
+                                    LinearGradient(
+                                        colors: [.clear, .black.opacity(0.3)],
+                                        startPoint: .top,
+                                        endPoint: .bottom
+                                    )
+                                    
+                                    Text("Discover")
+                                        .font(.subheadline)
+                                        .foregroundStyle(.white)
+                                        .padding(.vertical, 10)
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .frame(height: 80)
+                            }
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         
                         HStack {
-                            Text("Discover")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
                             if defaultTab == .discover {
                                 Image(systemSymbol: .checkmark)
                                     .foregroundColor(.accentColor)

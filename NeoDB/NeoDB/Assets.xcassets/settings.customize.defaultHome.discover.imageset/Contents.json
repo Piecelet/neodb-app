@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Simulator Screenshot - iPhone 16 Pro - 2025-02-12 at 16.22.40.png",
+      "filename" : "Simulator Screenshot - iPhone 16 Pro - 2025-02-12 at 16.43.34 1.png",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "Simulator Screenshot - iPhone 16 Pro - 2025-02-12 at 16.43.38.png",
       "idiom" : "universal"
     }
   ],
