@@ -8,6 +8,8 @@
 import Kingfisher
 import OSLog
 import SwiftUI
+import WishKit
+import Defaults
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -374,6 +376,7 @@ struct SettingsView: View {
             if viewModel.error == nil {
                 accountInformationSection
             }
+            mainInterfaceSection
             appSection
             cacheManagementSection
             logoutSection
@@ -524,6 +527,39 @@ struct SettingsView: View {
             }
             .listRowInsets(EdgeInsets())
             .listRowBackground(Color.clear)
+        }
+    }
+
+    private var mainInterfaceSection: some View {
+        Section {
+            NavigationLink {
+                List {
+                    ForEach(TabDestination.Configurable.allCases, id: \.self) { tab in
+                        Button {
+                            Defaults[.defaultTab] = tab
+                        } label: {
+                            HStack {
+                                Text(tab.rawValue.capitalized)
+                                Spacer()
+                                if tab == Defaults[.defaultTab] {
+                                    Image(systemName: "checkmark")
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                        }
+                    }
+                }
+                .navigationTitle("Default Main Interface")
+            } label: {
+                HStack {
+                    Text("Default Main Interface")
+                    Spacer()
+                    Text(Defaults[.defaultTab].rawValue.capitalized)
+                        .foregroundColor(.secondary)
+                }
+            }
+        } header: {
+            Text("Main Interface")
         }
     }
 
