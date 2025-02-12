@@ -8,15 +8,25 @@
 import RevenueCat
 import SwiftUI
 import WhatsNewKit
+import TipKit
+import OSLog
 
 @main
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
     @StateObject private var storeManager = StoreManager()
     @StateObject private var router = Router()
+    private let logger = Logger.app
 
     init() {
         _ = TelemetryService.shared
+        if #available(iOS 17.0, *) {
+            do {
+                try Tips.configure()
+            } catch {
+                logger.error("Error initializing tips: \(error)")
+            }
+        }
     }
 
     var body: some Scene {

@@ -9,6 +9,7 @@ extension Logger {
     // MARK: - App Lifecycle
     /// Logs related to app lifecycle events
     static let lifecycle = Logger(subsystem: subsystem, category: "lifecycle")
+    static let app = Logger(subsystem: subsystem, category: "app")
 
     // MARK: - Networking
     /// Logs related to network requests and responses
