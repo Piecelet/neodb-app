@@ -22,8 +22,8 @@ struct SettingsViewHome: View {
                     VStack(spacing: 8) {
                         Image("settings.customize.defaultHome.timelines")
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 120)
+                            .aspectRatio(1 / 1, contentMode: .fill)
+                            .frame(width: 140, height: 120)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
                                     .strokeBorder(defaultTab == .timelines ? Color.accentColor : .clear, lineWidth: 2)
@@ -48,9 +48,19 @@ struct SettingsViewHome: View {
                         
                         HStack {
                             if defaultTab == .timelines {
-                                Image(systemSymbol: .checkmark)
-                                    .foregroundColor(.accentColor)
-                                    .font(.subheadline)
+                                Circle()
+                                    .fill(.accent)
+                                    .frame(width: 24, height: 24)
+                                    .overlay {
+                                        Image(systemSymbol: .checkmark)
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                    }
+                            } else {
+                                Circle()
+                                    .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                    .frame(width: 24, height: 24)
                             }
                         }
                     }
@@ -65,8 +75,8 @@ struct SettingsViewHome: View {
                     VStack(spacing: 8) {
                         Image("settings.customize.defaultHome.discover")
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(height: 120)
+                            .aspectRatio(1 / 1, contentMode: .fill)
+                            .frame(width: 140, height: 120)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
@@ -92,9 +102,19 @@ struct SettingsViewHome: View {
                         
                         HStack {
                             if defaultTab == .discover {
-                                Image(systemSymbol: .checkmark)
-                                    .foregroundColor(.accentColor)
-                                    .font(.subheadline)
+                                Circle()
+                                    .fill(.accent)
+                                    .frame(width: 24, height: 24)
+                                    .overlay {
+                                        Image(systemSymbol: .checkmark)
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                    }
+                            } else {
+                                Circle()
+                                    .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                    .frame(width: 24, height: 24)
                             }
                         }
                     }
