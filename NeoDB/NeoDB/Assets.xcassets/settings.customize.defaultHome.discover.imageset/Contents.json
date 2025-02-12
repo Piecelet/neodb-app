@@ -1,16 +1,8 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "Simulator Screenshot - iPhone 16 Pro - 2025-02-12 at 16.22.40.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {
