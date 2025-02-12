@@ -11,13 +11,22 @@ import Defaults
 
 struct SettingsViewHome: View {
     @Default(.defaultTab) private var defaultTab
+    @EnvironmentObject private var storeManager: StoreManager
+    @EnvironmentObject private var router: Router
     
     var body: some View {
         Section {
             HStack(spacing: 12) {
                 Button {
-                    defaultTab = .timelines
-                    HapticFeedback.selection()
+                    if defaultTab != .timelines {
+                    if storeManager.isPlus {
+                        defaultTab = .timelines
+                        HapticFeedback.selection()
+                    } else {
+                        router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
+                        HapticFeedback.error()
+                    }
+                    }
                 } label: {
                     VStack(spacing: 8) {
                         Image("settings.customize.defaultHome.timelines")
@@ -59,9 +68,20 @@ struct SettingsViewHome: View {
                                             .foregroundColor(.white)
                                     }
                             } else {
-                                Circle()
-                                    .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
-                                    .frame(width: 24, height: 24)
+                                if storeManager.isPlus {
+                                    Circle()
+                                        .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                        .frame(width: 24, height: 24)
+                                } else {
+                                    Circle()
+                                        .fill(.secondary.opacity(0.1))
+                                        .frame(width: 24, height: 24)
+                                        .overlay {
+                                            Image(systemSymbol: .lock)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                }
                             }
                         }
                     }
@@ -70,8 +90,15 @@ struct SettingsViewHome: View {
                 .frame(maxWidth: .infinity)
                 
                 Button {
-                    defaultTab = .discover
-                    HapticFeedback.selection()
+                    if defaultTab != .discover {
+                    if storeManager.isPlus {
+                        defaultTab = .discover
+                        HapticFeedback.selection()
+                    } else {
+                        router.presentSheet(.purchaseWithFeature(feature: .multipleAccounts))
+                            HapticFeedback.error()
+                        }
+                    }
                 } label: {
                     VStack(spacing: 8) {
                         Image("settings.customize.defaultHome.discover")
@@ -115,9 +142,20 @@ struct SettingsViewHome: View {
                                             .foregroundColor(.white)
                                     }
                             } else {
-                                Circle()
-                                    .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
-                                    .frame(width: 24, height: 24)
+                                if storeManager.isPlus {
+                                    Circle()
+                                        .strokeBorder(.secondary.opacity(0.3), lineWidth: 1.5)
+                                        .frame(width: 24, height: 24)
+                                } else {
+                                    Circle()
+                                        .fill(.secondary.opacity(0.1))
+                                        .frame(width: 24, height: 24)
+                                        .overlay {
+                                            Image(systemSymbol: .lock)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                }
                             }
                         }
                     }
