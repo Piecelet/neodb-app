@@ -113,6 +113,9 @@ struct PurchaseView: View {
                     }
                 }
             }
+            .onDisappear {
+                TelemetryService.shared.trackPurchaseClose()
+            }
         }
         .navigationTitle(String(localized: "store_title", defaultValue: "Piecelet+", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)

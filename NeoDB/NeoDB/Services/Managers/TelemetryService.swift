@@ -421,5 +421,10 @@ class TelemetryService: ObservableObject {
         ])
         logger.debug("Tracked purchase error for package: \(package)")
     }
+
+    func trackPurchaseClose() {
+        TelemetryDeck.signal("store.purchase.close")
+        logger.debug("Tracked purchase close")
+    }
 }
 
