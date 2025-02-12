@@ -20,6 +20,7 @@
 		2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */ = {isa = PBXBuildFile; productRef = 2475428B2D51215D006F032F /* TelemetryDeck */; };
 		2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2477BCD62D4D52AC00E39E1A /* ButtonKit */; };
 		24895F532D4BDCEA008EDD4C /* Perception in Frameworks */ = {isa = PBXBuildFile; productRef = 24895F522D4BDCEA008EDD4C /* Perception */; };
+		249362F02D5A31B400B60070 /* Defaults in Frameworks */ = {isa = PBXBuildFile; productRef = 249362EF2D5A31B400B60070 /* Defaults */; };
 		24BABF592D40309800785306 /* WishKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF582D40309800785306 /* WishKit */; };
 		24BABF5F2D40B0E900785306 /* WhatsNewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 24BABF5E2D40B0E900785306 /* WhatsNewKit */; };
 		24CDA87C2D56859E0010C589 /* SwiftUIIntrospect in Frameworks */ = {isa = PBXBuildFile; productRef = 24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */; };
@@ -94,6 +95,7 @@
 				2403F2762D32511E00ED4CB5 /* Cache in Frameworks */,
 				245FD2132D2A817A005B55B3 /* KeychainSwift in Frameworks */,
 				24895F532D4BDCEA008EDD4C /* Perception in Frameworks */,
+				249362F02D5A31B400B60070 /* Defaults in Frameworks */,
 				2405C5DD2D42717400457DF5 /* BetterSafariView in Frameworks */,
 				243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */,
 				2456330D2D58BCFF005D39E1 /* WrappingHStack in Frameworks */,
@@ -198,6 +200,7 @@
 				2475428B2D51215D006F032F /* TelemetryDeck */,
 				24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */,
 				2456330C2D58BCFF005D39E1 /* WrappingHStack */,
+				249362EF2D5A31B400B60070 /* Defaults */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -300,6 +303,7 @@
 				2475428A2D51215D006F032F /* XCRemoteSwiftPackageReference "SwiftSDK" */,
 				24CDA87A2D56859E0010C589 /* XCRemoteSwiftPackageReference "swiftui-introspect" */,
 				2456330B2D58BCFF005D39E1 /* XCRemoteSwiftPackageReference "WrappingHStack" */,
+				249362EE2D5A31B400B60070 /* XCRemoteSwiftPackageReference "Defaults" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 24CEACF02D0DA6200083D4BA /* Products */;
@@ -821,6 +825,14 @@
 				minimumVersion = 1.4.2;
 			};
 		};
+		249362EE2D5A31B400B60070 /* XCRemoteSwiftPackageReference "Defaults" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/Defaults";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.1;
+			};
+		};
 		24AFFC8E2D2A9F040085A6D0 /* XCRemoteSwiftPackageReference "Inject" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/krzysztofzablocki/Inject.git";
@@ -927,6 +939,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24895F512D4BDCEA008EDD4C /* XCRemoteSwiftPackageReference "swift-perception" */;
 			productName = Perception;
+		};
+		249362EF2D5A31B400B60070 /* Defaults */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 249362EE2D5A31B400B60070 /* XCRemoteSwiftPackageReference "Defaults" */;
+			productName = Defaults;
 		};
 		24BABF582D40309800785306 /* WishKit */ = {
 			isa = XCSwiftPackageProductDependency;
