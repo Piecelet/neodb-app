@@ -2129,10 +2129,36 @@
       }
     },
     "store_feature_integration_description" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integrate with apps to search or open items."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他应用集成合作以搜索或打开条目。"
+          }
+        }
+      }
     },
     "store_feature_integration_title" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integration with Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他 App 整合"
+          }
+        }
+      }
     },
     "store_feature_search_description" : {
       "localizations" : {

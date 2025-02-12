@@ -35,9 +35,13 @@ struct ItemOpenInView: View {
         } ?? []
     }
 
-    private var searchAppScheme: [(resource: ItemExternalResourceSchema, scheme: URL)] {
+    private var searchAppScheme:
+        [(resource: ItemExternalResourceSchema, scheme: URL)]
+    {
         return item.externalResources?.compactMap { resource in
-            if let scheme = resource.makeAppSearchScheme(query: item.title ?? ""), resource.type == .douban {
+            if let scheme = resource.makeAppSearchScheme(
+                query: item.title ?? ""), resource.type == .douban
+            {
                 return (resource: resource, scheme: scheme)
             }
             return nil
@@ -136,7 +140,8 @@ struct ItemOpenInView: View {
             if !appSchemes.isEmpty {
                 ForEach(appSchemes, id: \.scheme.absoluteString) { pair in
                     Group {
-                        if let storeManager = storeManager, storeManager.isPlus {
+                        if let storeManager = storeManager, storeManager.isPlus
+                        {
                             Link(destination: pair.scheme) {
                                 Label(
                                     pair.resource.name,
@@ -161,14 +166,27 @@ struct ItemOpenInView: View {
     var searchAppView: some View {
         Group {
             ForEach(searchAppScheme, id: \.scheme.absoluteString) { pair in
-                Link(destination: pair.scheme) {
-                    Label(
-                        String(
-                            format: String(
-                                localized: "item_open_in_search_format",
-                                table: "Item"),
-                            pair.resource.name),
-                        symbol: pair.resource.symbolImage)
+                Group {
+                    if let storeManager = storeManager, storeManager.isPlus {
+                        Link(destination: pair.scheme) {
+                            Label(
+                                String(
+                                    format: String(
+                                        localized: "item_open_in_search_format",
+                                        table: "Item"),
+                                    pair.resource.name),
+                                symbol: pair.resource.symbolImage)
+                        }
+                    } else {
+                        Button {
+                            router?.presentSheet(
+                                .purchaseWithFeature(feature: .integration))
+                        } label: {
+                            Label(
+                                pair.resource.name,
+                                symbol: pair.resource.symbolImage)
+                        }
+                    }
                 }
             }
         }
