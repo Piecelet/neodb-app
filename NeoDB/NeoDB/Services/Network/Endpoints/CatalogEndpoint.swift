@@ -10,6 +10,7 @@ import Foundation
 enum CatalogEndpoint {
     case search(query: String, category: ItemCategory? = nil, page: Int? = nil)
     case fetch(url: URL)
+    @available(*, deprecated, message: "Use trending instead")
     case gallery
 }
 

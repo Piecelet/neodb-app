@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct MarkInSchema: Codable {
-    let shelfType: ShelfType
-    let visibility: MarkVisibility
-    let commentText: String?
-    let ratingGrade: Int?
-    let tags: [String]?
-    let createdTime: ServerDate?
-    let postToFediverse: Bool?
-}
+// struct MarkInSchema: Codable {
+//     let shelfType: ShelfType
+//     let visibility: MarkVisibility
+//     let commentText: String?
+//     let ratingGrade: Int?
+//     let tags: [String]?
+//     let createdTime: ServerDate?
+//     let postToFediverse: Bool?
+// }

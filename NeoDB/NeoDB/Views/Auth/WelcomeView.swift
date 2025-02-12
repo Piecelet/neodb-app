@@ -10,6 +10,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     @Environment(\.openURL) private var openURL
+    @EnvironmentObject private var router: Router
 
     // Animation states
     @State private var logoScale = 0.5
@@ -61,9 +62,7 @@ struct WelcomeView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
                 .simultaneousGesture(TapGesture().onEnded {
-                    Task {
-                        HapticFeedback.impact()
-                    }
+                    HapticFeedback.impact()
                 })
                 .opacity(contentOpacity)
 

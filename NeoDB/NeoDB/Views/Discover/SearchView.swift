@@ -5,29 +5,39 @@
 //  Created by citron on 1/15/25.
 //
 
-import SwiftUI
 import Kingfisher
+import SwiftUI
 
 struct SearchView: View {
     @StateObject private var viewModel = SearchViewModel()
+
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var router: Router
-    @Binding var isSearchActive: Bool {
-        didSet {
-            if !isSearchActive {
-                viewModel.cleanup()
-            }
-        }
-    }
-    
+
     var body: some View {
         searchContent
-            .navigationTitle(String(localized: "discover_search_title", table: "Discover"))
+            .navigationTitle(
+                String(localized: "discover_search_title", table: "Discover")
+            )
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Text("discover_search_title", tableName: "Discover")
+                        .font(.system(size: 24))
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 2)
+                        .padding(.top, 4)
+                }
+                ToolbarItem(placement: .principal) {
+                    Text("discover_search_title", tableName: "Discover")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 2)
+                        .hidden()
+                }
+            }
             .onAppear {
                 viewModel.accountsManager = accountsManager
-                Task {
-                    await viewModel.loadGallery()
-                }
             }
             .onDisappear {
                 viewModel.cleanup()
@@ -36,23 +46,25 @@ struct SearchView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-    
+
     private var searchContent: some View {
         List {
             if viewModel.searchText.isEmpty {
                 SearchURLView()
-                
+
                 if !viewModel.recentSearches.isEmpty {
                     recentSearchesSection
                 }
-                GalleryView(galleryItems: viewModel.galleryItems)
+                GalleryView()
             } else {
-                if !viewModel.searchText.isEmpty && viewModel.searchText.count >= viewModel.minSearchLength {
+                if !viewModel.searchText.isEmpty
+                    && viewModel.searchText.count >= viewModel.minSearchLength
+                {
                     categoryFilterSection
                 }
-                
+
                 Group {
                     switch viewModel.searchState {
                     case .idle:
@@ -74,21 +86,38 @@ struct SearchView: View {
                 .animation(.default, value: viewModel.searchState)
             }
         }
+        .scrollDismissesKeyboard(.interactively)
         .listStyle(.plain)
-        .searchable_iOS16(text: $viewModel.searchText, isPresented: $isSearchActive, prompt: String(localized: "discover_search_prompt", table: "Discover"))
+//        .searchable_iOS16(
+//            text: $viewModel.searchText, isPresented: $isSearchActive,
+//            placement: .navigationBarDrawer(displayMode: .always),
+//            prompt: String(
+//                localized: "discover_search_prompt", table: "Discover")
+//        )
+        .searchable(
+            text: $viewModel.searchText,
+            placement: .navigationBarDrawer(displayMode: .always),
+            prompt: String(
+                localized: "discover_search_prompt", table: "Discover")
+        )
         .onSubmit(of: .search) {
             Task {
+                TelemetryService.shared.trackSearchSubmit(
+                    category: viewModel.selectedCategory.itemCategory)
                 await viewModel.confirmSearch()
             }
         }
     }
-    
+
     private var categoryFilterSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                ForEach(ItemCategory.searchable.allCases, id: \.self) { category in
+                ForEach(ItemCategory.searchable.allCases, id: \.self) {
+                    category in
                     Button {
                         viewModel.selectedCategory = category
+                        TelemetryService.shared.trackSearchCategoryChange(
+                            category: category.itemCategory)
                         Task {
                             await viewModel.confirmSearch()
                         }
@@ -100,14 +129,13 @@ struct SearchView: View {
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(
-                            viewModel.selectedCategory == category ?
-                            category.color.opacity(0.2) :
-                            Color.grayBackground
+                            viewModel.selectedCategory == category
+                                ? category.color.opacity(0.2)
+                                : Color.grayBackground
                         )
                         .foregroundStyle(
-                            viewModel.selectedCategory == category ?
-                            category.color :
-                            .secondary
+                            viewModel.selectedCategory == category
+                                ? category.color : .secondary
                         )
                         .clipShape(Capsule())
                     }
@@ -118,7 +146,7 @@ struct SearchView: View {
         .listRowInsets(EdgeInsets())
         .listRowSeparator(.hidden)
     }
-    
+
     private var recentSearchesSection: some View {
         Section {
             ForEach(viewModel.recentSearches, id: \.self) { query in
@@ -134,9 +162,9 @@ struct SearchView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    
+
                     Spacer()
-                    
+
                     Button {
                         viewModel.removeRecentSearch(query)
                     } label: {
@@ -146,7 +174,7 @@ struct SearchView: View {
                     .buttonStyle(.plain)
                 }
             }
-            
+
             if !viewModel.recentSearches.isEmpty {
                 Button(role: .destructive) {
                     withAnimation {
@@ -161,7 +189,7 @@ struct SearchView: View {
             Text("discover_search_recent", tableName: "Discover")
         }
     }
-    
+
     private var searchLoadingView: some View {
         HStack {
             Spacer()
@@ -170,7 +198,7 @@ struct SearchView: View {
             Spacer()
         }
     }
-    
+
     private var searchEmptyStateView: some View {
         VStack(spacing: 16) {
             Image(systemName: "magnifyingglass")
@@ -178,15 +206,17 @@ struct SearchView: View {
                 .foregroundStyle(.secondary)
             Text("discover_search_no_results_title", tableName: "Discover")
                 .font(.headline)
-            Text("discover_search_no_results_description", tableName: "Discover")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
+            Text(
+                "discover_search_no_results_description", tableName: "Discover"
+            )
+            .font(.subheadline)
+            .foregroundStyle(.secondary)
+            .multilineTextAlignment(.center)
         }
         .frame(maxWidth: .infinity, minHeight: 200)
         .listRowSeparator(.hidden)
     }
-    
+
     private func suggestionsView(_ items: [ItemSchema]) -> some View {
         ForEach(Array(items.enumerated()), id: \.element.uuid) { index, item in
             if index == 0 {
@@ -218,7 +248,7 @@ struct SearchView: View {
             }
         }
     }
-    
+
     private func searchResultsView(_ items: [ItemSchema]) -> some View {
         ForEach(items, id: \.uuid) { item in
             Button {
@@ -235,7 +265,7 @@ struct SearchView: View {
             }
         }
     }
-    
+
     private func searchErrorView(_ error: Error) -> some View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
@@ -247,7 +277,10 @@ struct SearchView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-            Button(String(localized: "discover_search_try_again", table: "Discover")) {
+            Button(
+                String(
+                    localized: "discover_search_try_again", table: "Discover")
+            ) {
                 Task {
                     await viewModel.search()
                 }
@@ -261,7 +294,7 @@ struct SearchView: View {
 
 struct ItemCoverImage: View {
     let url: URL?
-    
+
     var body: some View {
         KFImage(url)
             .placeholder {
@@ -275,13 +308,12 @@ struct ItemCoverImage: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
-#Preview {
-    SearchView(isSearchActive: .constant(true))
-        .environmentObject(AppAccountsManager())
-        .environmentObject(Router())
-}
-
+//#Preview {
+//    SearchView(isSearchActive: .constant(true))
+//        .environmentObject(AppAccountsManager())
+//        .environmentObject(Router())
+//}

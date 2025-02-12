@@ -1,3 +1,4 @@
+
 //
 //  ContentView.swift
 //  NeoDB
@@ -12,21 +13,26 @@ struct ContentView: View {
     @EnvironmentObject var accountsManager: AppAccountsManager
     @EnvironmentObject var storeManager: StoreManager
     @StateObject private var router = Router()
+    @StateObject private var itemRepository = ItemRepository()
     @State private var isSearchActive = false
+    @Environment(\.openURL) private var openURL
     private let logger = Logger.views.contentView
 
     var body: some View {
         TabView(
             selection: $router.selectedTab.onUpdate { oldTab, newTab in
+                // HapticService.shared.selection()
+                // Track tab changes
+                TelemetryService.shared.trackTabChange(to: newTab)
                 // Only activate search when clicking search tab while already on search tab
-                if oldTab == .search && newTab == .search {
+                if oldTab == .discover && newTab == .discover {
                     isSearchActive.toggle()
                 }
             }
         ) {
             // Home Tab
-            NavigationStack(path: router.path(for: .home)) {
-                TimelinesView()
+            NavigationStack(path: router.path(for: .timelines)) {
+                MastodonTimelinesView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)
@@ -38,11 +44,11 @@ struct ContentView: View {
                         localized: "timelines_title_home", table: "Timelines"),
                     systemImage: "house.fill")
             }
-            .tag(TabSection.home)
+            .tag(TabDestination.timelines)
 
             // Search Tab
-            NavigationStack(path: router.path(for: .search)) {
-                SearchView(isSearchActive: $isSearchActive)
+            NavigationStack(path: router.path(for: .discover)) {
+                SearchView()
                     .navigationDestination(for: RouterDestination.self) {
                         destination in
                         destinationView(for: destination)
@@ -54,7 +60,7 @@ struct ContentView: View {
                         localized: "discover_search_title", table: "Discover"),
                     systemImage: "magnifyingglass")
             }
-            .tag(TabSection.search)
+            .tag(TabDestination.discover)
 
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
@@ -69,7 +75,7 @@ struct ContentView: View {
                     String(localized: "library_title", table: "Library"),
                     systemImage: "books.vertical.fill")
             }
-            .tag(TabSection.library)
+            .tag(TabDestination.library)
 
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
@@ -84,16 +90,24 @@ struct ContentView: View {
                     String(localized: "settings_title", table: "Settings"),
                     systemImage: "gear")
             }
-            .tag(TabSection.profile)
+            .tag(TabDestination.profile)
         }
         .tint(.accentColor)
         .environmentObject(router)
+        .environmentObject(itemRepository)
         .onChange(of: accountsManager.shouldShowPurchase) { shouldShow in
             logger.debug("shouldShowPurchase changed to \(shouldShow)")
             if shouldShow, !storeManager.isPlus {
                 router.presentSheet(.purchase)
             }
         }
+        .environment(
+            \.openURL,
+            OpenURLAction { url in
+                handleURL(url)
+                return .handled
+            }
+        )
         .sheet(
             item: Binding(
                 get: { router.sheetStack.last },
@@ -182,18 +196,52 @@ struct ContentView: View {
             MastodonStatusView(id: id)
         case .statusDetailWithStatus(let status):
             MastodonStatusView(id: status.id, status: status)
+        case .statusDetailWithStatusAndItem(let status, let item):
+            MastodonStatusView(id: status.id, status: status, item: item)
         case .hashTag(let tag):
             Text("Tag: #\(tag)")  // TODO: Implement HashTagView
         case .followers(let id):
-            Text("Followers: \(id)")  // TODO: Implement FollowersView
+            EmptyStateView(
+                String(localized: "relation_followers_in_development", table: "Timelines"),
+                systemImage: "person.3.fill",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                    }
+                }
+            )
         case .following(let id):
-            Text("Following: \(id)")  // TODO: Implement FollowingView
-        case .galleryCategory(let gallery):
-            GalleryCategoryView(gallery: gallery)
+            EmptyStateView(
+                String(localized: "relation_following_in_development", table: "Timelines"),
+                systemImage: "person.3.fill",
+                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
+                actions: {
+                    Button {
+                        router.navigate(to: .purchase)
+                    } label: {
+                        Text("store_plus_subscription_button", tableName: "Settings")
+                    }
+                }
+            )
+        case .galleryCategory(let galleryState):
+            GalleryCategoryView(galleryState: galleryState)
         case .purchase:
             PurchaseView()
         case .purchaseWithFeature(let feature):
             PurchaseView(scrollToFeature: feature)
+        }
+    }
+    
+    private func handleURL(_ url: URL) {
+        URLHandler.handleItemURL(url) { destination in
+            if let destination = destination {
+                router.navigate(to: destination)
+            } else {
+                openURL(url)
+            }
         }
     }
 }

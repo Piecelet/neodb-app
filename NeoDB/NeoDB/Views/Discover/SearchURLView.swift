@@ -13,7 +13,11 @@ import SwiftUI
 class SearchURLViewModel: ObservableObject {
     private let logger = Logger.views.discover.searchURL
 
-    @Published var urlInput = ""
+    @Published var urlInput = "" {
+        didSet {
+            urlError = nil
+        }
+    }
     @Published var isShowingURLInput = false
     @Published var isLoadingURL = false
     @Published var urlError: Error?
@@ -70,9 +74,13 @@ struct SearchURLView: View {
             VStack(alignment: .center, spacing: 16) {
 
                 VStack(alignment: .center, spacing: 12) {
-                    Label(String(localized: "discover_search_url_title", table: "Discover"), systemImage: "link")
-                        .font(.headline)
-                        .labelStyle(.titleOnly)
+                    Label(
+                        String(
+                            localized: "discover_search_url_title",
+                            table: "Discover"), systemImage: "link"
+                    )
+                    .font(.headline)
+                    .labelStyle(.titleOnly)
 
                     HStack(spacing: 4) {
                         Image("discover.searchURL.douban")
@@ -101,7 +109,10 @@ struct SearchURLView: View {
                 HStack(spacing: 8) {
                     ZStack(alignment: .trailing) {
                         TextField(
-                            String(localized: "discover_search_url_input_placeholder", table: "Discover"),
+                            String(
+                                localized:
+                                    "discover_search_url_input_placeholder",
+                                table: "Discover"),
                             text: $viewModel.urlInput
                         )
                         .autocorrectionDisabled()
@@ -120,6 +131,8 @@ struct SearchURLView: View {
                             if viewModel.urlInput.isEmpty {
                                 PasteButton(payloadType: String.self) {
                                     strings in
+                                    HapticService.shared.impact(.medium)
+                                    TelemetryService.shared.trackSearchURLPaste()
                                     guard let urlString = strings.first
                                     else { return }
                                     Task { @MainActor in
@@ -132,6 +145,8 @@ struct SearchURLView: View {
                                 .labelStyle(.iconOnly)
                             } else {
                                 Button {
+                                    HapticService.shared.impact(.medium)
+                                    TelemetryService.shared.trackSearchURLSubmit()
                                     Task {
                                         await viewModel.fetchFromURL(
                                             viewModel.urlInput)
@@ -144,7 +159,10 @@ struct SearchURLView: View {
                                                 .controlSize(.small)
                                         } else {
                                             Label(
-                                                String(localized: "discover_search_url_submit_button", table: "Discover"),
+                                                String(
+                                                    localized:
+                                                        "discover_search_url_submit_button",
+                                                    table: "Discover"),
                                                 systemSymbol: .arrowRight
                                             )
                                             .labelStyle(.iconOnly)
@@ -164,12 +182,13 @@ struct SearchURLView: View {
 
                 if !viewModel.urlInput.isEmpty && !viewModel.isLoadingURL {
                     Button(
-                        String(localized: "discover_search_url_clear_button", table: "Discover"),
+                        String(
+                            localized: "discover_search_url_clear_button",
+                            table: "Discover"),
                         systemSymbol: .xmark
                     ) {
-                        withAnimation(.spring(duration: 0.3)) {
-                            viewModel.urlInput = ""
-                        }
+                        HapticFeedback.selection()
+                        viewModel.urlInput = ""
                     }
                     .foregroundStyle(.secondary)
                     .font(.footnote)

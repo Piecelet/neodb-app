@@ -12,9 +12,8 @@ import UIKit
 @MainActor
 class SearchViewModel: ObservableObject {
     private let logger = Logger.views.discover.search
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private var searchTask: Task<Void, Never>?
-    private var galleryTask: Task<Void, Never>?
     private var searchDebounceTask: Task<Void, Never>?
     private let debounceInterval: TimeInterval = 0.5
      let minSearchLength = 2
@@ -61,8 +60,6 @@ class SearchViewModel: ObservableObject {
         }
     }
     @Published private(set) var searchState: SearchState = .idle
-    @Published var galleryItems: [GalleryResult] = []
-    @Published var isLoadingGallery = false
     @Published var currentPage = 1
     @Published var hasMorePages = false
     @Published private(set) var recentSearches: [String] = []
@@ -182,47 +179,6 @@ class SearchViewModel: ObservableObject {
         saveRecentSearches()
     }
     
-    func loadGallery() async {
-        galleryTask?.cancel()
-        
-        galleryTask = Task {
-            guard let accountsManager = accountsManager else { return }
-            
-            isLoadingGallery = true
-            defer { isLoadingGallery = false }
-            
-            do {                
-                // Try to get cached gallery first
-                if let cachedGallery: [GalleryResult] = try? await cacheService.retrieveGallery(instance: accountsManager.currentAccount.instance) {
-                    if !Task.isCancelled {
-                        galleryItems = cachedGallery
-                        logger.debug("Using cached gallery")
-                    }
-                }
-                
-                // Fetch fresh data
-                let endpoint = CatalogEndpoint.gallery
-                let result = try await accountsManager.currentClient.fetch(endpoint, type: [GalleryResult].self)
-                if !Task.isCancelled {
-                    galleryItems = result
-                    // Cache the new results
-                    try? await cacheService.cacheGallery(result, instance: accountsManager.currentAccount.instance)
-                    logger.debug("Cached new gallery results")
-                }
-            } catch {
-                if case NetworkError.cancelled = error {
-                    logger.debug("Gallery loading cancelled")
-                    return
-                }
-                
-                searchState = .error(error)
-                logger.error("Gallery loading failed: \(error.localizedDescription)")
-            }
-        }
-        
-        await galleryTask?.value
-    }
-    
     func loadMore() {
         guard case .results = searchState, !Task.isCancelled, hasMorePages else { return }
         
@@ -323,10 +279,8 @@ class SearchViewModel: ObservableObject {
     
     func cleanup() {
         searchTask?.cancel()
-        galleryTask?.cancel()
         searchDebounceTask?.cancel()
         searchTask = nil
-        galleryTask = nil
         searchDebounceTask = nil
         searchText = ""
     }

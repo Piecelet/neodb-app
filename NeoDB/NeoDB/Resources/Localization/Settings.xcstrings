@@ -694,6 +694,70 @@
         }
       }
     },
+    "customize_home_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose which screen to show when you open the app."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "选择 Piecelet 开启时展示哪个界面。"
+          }
+        }
+      }
+    },
+    "customize_home_discover_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discover"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "探索"
+          }
+        }
+      }
+    },
+    "customize_home_timelines_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Timelines"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "动态"
+          }
+        }
+      }
+    },
+    "customize_home_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Customize"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化"
+          }
+        }
+      }
+    },
     "developer_title" : {
       "localizations" : {
         "da" : {
@@ -1901,6 +1965,7 @@
       }
     },
     "store_feature_actions_description" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -1923,6 +1988,7 @@
       }
     },
     "store_feature_actions_title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -1988,6 +2054,38 @@
         }
       }
     },
+    "store_feature_customize_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personalize Piecelet to your needs."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化 Piecelet 以满足您的需求。"
+          }
+        }
+      }
+    },
+    "store_feature_customize_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Customize"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "个性化"
+          }
+        }
+      }
+    },
     "store_feature_discovery_description" : {
       "localizations" : {
         "da" : {
@@ -2028,6 +2126,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "快速发现"
+          }
+        }
+      }
+    },
+    "store_feature_integration_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integrate with apps to search or open items."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他应用集成合作以搜索或打开条目。"
+          }
+        }
+      }
+    },
+    "store_feature_integration_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Integration with Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "与其他 App 整合"
           }
         }
       }
@@ -2582,24 +2712,34 @@
         }
       }
     },
-    "store_plus_purchase_to_get_faster_development" : {
+    "store_plus_subscription_button" : {
       "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abonnér på Piecelet+ og hjælp udviklerne udvikle hurtigere"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Subscribe to Piecelet+ to help developers develop faster"
+            "value" : "Subscribe to Piecelet+"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "订阅 Piecelet+ 以帮助开发者更快地开发"
+            "value" : "订阅 Piecelet+"
+          }
+        }
+      }
+    },
+    "store_plus_subscription_to_get_faster_development" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet is being built by a solo student developer. Subscribe to Piecelet+ to support the development."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Piecelet 由一名学生开发者独自制作。订阅 Piecelet+ 以支持创作者开发。"
           }
         }
       }

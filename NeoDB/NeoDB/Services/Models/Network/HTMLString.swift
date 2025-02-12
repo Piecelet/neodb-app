@@ -24,6 +24,110 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
     private(set) var links = [Link]()
 
     var asSafeMarkdownAttributedString: AttributedString = .init()
+    
+    // 获取第一行（如果包含 ~neodb~）
+    var neodbStatusLine: String? {
+        let lines = asMarkdown.split(separator: "\n", maxSplits: 1)
+        guard let firstLine = lines.first,
+              firstLine.contains("~neodb~") else {
+            return nil
+        }
+        return String(firstLine)
+    }
+    
+    // 获取第一行的 AttributedString（如果是 NeoDB 状态行）
+    var neodbStatusLineAttributedString: AttributedString? {
+        guard let statusLine = neodbStatusLine else {
+            return nil
+        }
+        return (try? AttributedString(markdown: statusLine)) ?? AttributedString(statusLine)
+    }
+    
+    // 获取不包含评分的 NeoDB 状态行
+    var neodbStatusLineAttributedStringWithoutRating: AttributedString? {
+        guard let statusLine = neodbStatusLine else {
+            return nil
+        }
+        // 移除评分字符
+        var text = statusLine
+        let ratingPattern = "[🌕🌗🌑]+"
+        if let regex = try? NSRegularExpression(pattern: ratingPattern) {
+            text = regex.stringByReplacingMatches(
+                in: text,
+                range: NSRange(text.startIndex..., in: text),
+                withTemplate: ""
+            )
+        }
+        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+    
+    // 获取不包含 NeoDB 状态行的内容
+    var asSafeMarkdownAttributedStringWithoutNeoDBStatus: AttributedString {
+        var text = asMarkdown
+        if neodbStatusLine != nil {
+            // 如果存在 NeoDB 状态行，移除第一行（包括换行符）
+            if let newlineIndex = text.firstIndex(of: "\n") {
+                text = String(text[text.index(after: newlineIndex)...])
+            }
+        }
+        // 移除开头和结尾的换行符，但保留内容中的换行
+        text = text.trimmingCharacters(in: .newlines)
+        do {
+            let options = AttributedString.MarkdownParsingOptions(
+                allowsExtendedAttributes: true,
+                interpretedSyntax: .inlineOnlyPreservingWhitespace)
+            return try AttributedString(markdown: text, options: options)
+        } catch {
+            return AttributedString(text)
+        }
+    }
+    
+    var asSafeMarkdownAttributedStringWithoutRating: AttributedString {
+        var text = asMarkdown
+        // 移除评分字符
+        let ratingPattern = "[🌕🌗🌑]+"
+        if let regex = try? NSRegularExpression(pattern: ratingPattern) {
+            text = regex.stringByReplacingMatches(
+                in: text,
+                range: NSRange(text.startIndex..., in: text),
+                withTemplate: ""
+            )
+        }
+        return (try? AttributedString(markdown: text)) ?? AttributedString(text)
+    }
+    
+    var rating: Double? {
+        // 查找评分字符串
+        let ratingPattern = "[🌕🌗🌑]+"
+        guard let regex = try? NSRegularExpression(pattern: ratingPattern),
+              let match = regex.firstMatch(
+                in: asMarkdown,
+                range: NSRange(asMarkdown.startIndex..., in: asMarkdown)
+              ),
+              let range = Range(match.range, in: asMarkdown) else {
+            return nil
+        }
+        
+        let ratingString = String(asMarkdown[range])
+        
+        // 计算评分
+        var score = 0.0
+        for char in ratingString {
+            switch char {
+            case "🌕":
+                score += 2.0
+            case "🌗":
+                score += 1.0
+            case "🌑":
+                score += 0.0
+            default:
+                continue
+            }
+        }
+        
+        return score
+    }
+    
     private var main_regex: NSRegularExpression?
     private var underscore_regex: NSRegularExpression?
     init(from decoder: Decoder) {
@@ -330,11 +434,15 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
         let displayString: String
         let type: LinkType
         let title: String
+        let neodbItem: (any ItemProtocol)?
 
         init(_ url: URL, displayString: String) {
             self.url = url
             self.displayString = displayString
-
+            
+            // Try to parse NeoDB item first
+            self.neodbItem = NeoDBURL.parseItemURL(url, title: displayString)
+            
             switch displayString.first {
             case "@":
                 type = .mention
@@ -350,6 +458,43 @@ struct HTMLString: Codable, Equatable, Hashable, @unchecked Sendable {
                 }
                 title = hostNameUrl
             }
+        }
+        
+        // MARK: - Codable
+        private enum CodingKeys: String, CodingKey {
+            case url, displayString, type, title
+        }
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            url = try container.decode(URL.self, forKey: .url)
+            displayString = try container.decode(String.self, forKey: .displayString)
+            type = try container.decode(LinkType.self, forKey: .type)
+            title = try container.decode(String.self, forKey: .title)
+            neodbItem = NeoDBURL.parseItemURL(url, title: displayString)
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(url, forKey: .url)
+            try container.encode(displayString, forKey: .displayString)
+            try container.encode(type, forKey: .type)
+            try container.encode(title, forKey: .title)
+        }
+        
+        // MARK: - Hashable
+        func hash(into hasher: inout Hasher) {
+            hasher.combine(url)
+            hasher.combine(displayString)
+            hasher.combine(type)
+            hasher.combine(title)
+        }
+        
+        static func == (lhs: Link, rhs: Link) -> Bool {
+            lhs.url == rhs.url &&
+            lhs.displayString == rhs.displayString &&
+            lhs.type == rhs.type &&
+            lhs.title == rhs.title
         }
 
         enum LinkType: String, Codable {

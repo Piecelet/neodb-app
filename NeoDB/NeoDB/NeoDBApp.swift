@@ -8,19 +8,32 @@
 import RevenueCat
 import SwiftUI
 import WhatsNewKit
+import TipKit
+import OSLog
 
 @main
 struct NeoDBApp: App {
     @StateObject private var accountsManager = AppAccountsManager()
-    @StateObject private var storeManager = StoreManager()  // 全局唯一的 StoreManager
+    @StateObject private var storeManager = StoreManager()
     @StateObject private var router = Router()
+    private let logger = Logger.app
+
+    init() {
+        _ = TelemetryService.shared
+        if #available(iOS 17.0, *) {
+            do {
+                try Tips.configure()
+            } catch {
+                logger.error("Error initializing tips: \(error)")
+            }
+        }
+    }
 
     var body: some Scene {
         WindowGroup {
             Group {
                 if accountsManager.isAppAuthenticated {
                     ContentView()
-                        .environmentObject(router)
                         .environment(
                             \.whatsNew,
                             WhatsNewEnvironment(
@@ -29,11 +42,11 @@ struct NeoDBApp: App {
                                 whatsNewCollection: self
                             )
                         )
-                        .id(accountsManager.appId)
                 } else {
                     WelcomeView()
                 }
             }
+            .id(accountsManager.appId)
             .environmentObject(accountsManager)
             .environmentObject(storeManager)
             .onOpenURL { url in
@@ -60,6 +73,11 @@ struct NeoDBApp: App {
                     storeManager.customerInfo = customerInfo
                     storeManager.appUserID = Purchases.shared.appUserID
                 }
+            
+                // Track app launch when ContentView appears
+                TelemetryService.shared.trackAppLaunch()
+
+                TelemetryService.shared.updateDefaultUserID(to: storeManager.appUserID)
             }
             .enableInjection()
         }

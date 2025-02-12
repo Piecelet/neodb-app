@@ -7,18 +7,23 @@
 //
 
 import Foundation
-import Perception
 import SwiftUI
+import OSLog
 
-@Perceptible final class InstanceViewModel: ObservableObject {
+@MainActor
+final class InstanceViewModel: ObservableObject {
     private var fetchTask: Task<Void, Never>?
     private var client: NetworkClient?
     private let versionIdentifier = "neodb"
+    private let logger = Logger.views.login
 
-    var isLoading = false
-    var instanceInfo: MastodonInstance?
-    var error: Error?
-    var showIncompatibleAlert = false
+    @Published var isLoading = false
+    @Published var instanceInfo: MastodonInstance?
+    @Published var error: Error?
+    @Published var showIncompatibleAlert = false
+    @Published var instanceAddress: String = ""
+    
+    var disableInteractiveDismiss = false
 
     var isCompatible: Bool {
         guard let instance = instanceInfo else { return false }
@@ -61,5 +66,13 @@ import SwiftUI
 
             isLoading = false
         }
+    }
+    
+    func showIncompatibleInstanceAlert() {
+        showIncompatibleAlert = true
+    }
+    
+    func dismissIncompatibleAlert() {
+        showIncompatibleAlert = false
     }
 }

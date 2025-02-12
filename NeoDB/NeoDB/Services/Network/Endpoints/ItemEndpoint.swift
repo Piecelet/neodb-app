@@ -19,6 +19,11 @@ enum ItemEndpoint {
     
     static func make(id: String, category: ItemCategory) -> ItemEndpoint {
         let uuid = id.components(separatedBy: "/").last ?? id
+        return .make(UUID: uuid, category: category)
+    }
+    
+    static func make(UUID: String, category: ItemCategory) -> ItemEndpoint {
+        let uuid = UUID
         switch category {
         case .book, .fanfic, .exhibition, .collection:
             return .book(uuid: uuid)
@@ -78,7 +83,7 @@ extension ItemEndpoint: NetworkEndpoint {
                 return "/performance/\(uuid)"
             }
         case .post(let uuid, _):
-            return "/item/\(uuid)/posts)"
+            return "/item/\(uuid)/posts/"
         }
     }
 

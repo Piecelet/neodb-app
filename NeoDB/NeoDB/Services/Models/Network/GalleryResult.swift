@@ -7,15 +7,17 @@
 
 import Foundation
 
+typealias TrendingItemResult = [ItemSchema]
+
 struct GalleryResult: Codable, Identifiable {
     let name: String
-    let items: [ItemSchema]
+    let items: TrendingItemResult
     
     var id: String {
         name
     }
 
-    var itemCategory: ItemCategory? {
+    var itemCategory: ItemCategory.galleryCategory? {
         switch name {
         case "trending_book":
             return .book
@@ -29,14 +31,21 @@ struct GalleryResult: Codable, Identifiable {
             return .music
         case "trending_podcast":
             return .podcast
-        case "trending_performance":
-            return .performance
-        default:
+        default: 
             return nil
         }
     }
 
     var displayTitle: String {
         return itemCategory?.displayName ?? name
+    }
+}
+
+struct GalleryTrending: Codable, Identifiable, Hashable {
+    let category: ItemCategory.galleryCategory
+    let items: TrendingItemResult
+    
+    var id: String {
+        category.rawValue
     }
 }

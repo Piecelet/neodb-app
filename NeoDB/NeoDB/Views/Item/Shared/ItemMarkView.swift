@@ -41,75 +41,98 @@ enum ItemMarkSize {
 
 struct ItemMarkView: View {
     @EnvironmentObject private var router: Router
-    
-    let mark: MarkSchema
+
+    let markController: MarkDataController
     let size: ItemMarkSize
     var brief: Bool = false
     var showEditButton: Bool = false
 
     var body: some View {
-        Group {
-            VStack(alignment: .leading, spacing: 8) {
-                HStack(spacing: size.spacing) {
-                    if let rating = mark.ratingGrade {
-                        markRatingView(rating)
-                        Spacer()
-                        Text(mark.createdTime.relativeFormatted)
+        if let shelfType = markController.shelfType,
+            let createdTime = markController.createdTime,
+            markController.mark != nil {
+            Group {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(spacing: size.spacing) {
+                        if let rating = markController.ratingGrade {
+                            markRatingView(rating)
+                            Spacer()
+                            Text(
+                                createdTime.relativeFormatted
+                            )
                             .foregroundStyle(.secondary)
-                        Image(symbol: mark.shelfType.symbolImage)
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Image(symbol: shelfType.symbolImage)
+                                .foregroundStyle(.secondary)
+                            Text(
+                                createdTime.relativeFormatted
+                            )
                             .foregroundStyle(.secondary)
-                    } else {
-                        Image(symbol: mark.shelfType.symbolImage)
-                            .foregroundStyle(.secondary)
-                        Text(mark.createdTime.relativeFormatted)
-                            .foregroundStyle(.secondary)
+                        }
                     }
-                }
-                .font(size.font)
-                
-                if let comment = mark.commentText, !comment.isEmpty {
-                    Text(comment)
-                        .font(size.font)
-                        .lineLimit(brief ? 2 : nil)
-                }
-                
-                if !mark.tags.isEmpty {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: size.spacing) {
-                            ForEach(mark.tags, id: \.self) { tag in
-                                Text("#\(tag)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(Color(.systemGray5))
-                                    .clipShape(Capsule())
+                    .font(size.font)
+                    
+                    if !markController.commentText.isEmpty {
+                        Text(markController.commentText)
+                            .font(size.font)
+                            .lineLimit(brief ? 2 : nil)
+                    }
+                    
+                    if !markController.tags.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: size.spacing) {
+                                ForEach(markController.tags, id: \.self) { tag in
+                                    Text("#\(tag)")
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 4)
+                                        .background(Color(.systemGray5))
+                                        .clipShape(Capsule())
+                                }
                             }
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(size.padding)
+                .padding(
+                    .bottom,
+                    (showEditButton && markController.ratingGrade != nil
+                     && markController.commentText.isEmpty) ? 20 : 0
+                )
+                .background(Color.grayBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(size.padding)
-            .background(Color.grayBackground)
-            .padding(.bottom, (showEditButton && mark.ratingGrade != nil && mark.commentText == nil) ? 20 : 0)
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
-        .overlay(alignment: .bottomTrailing) {
-            if showEditButton {
-                Button("Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")", systemSymbol: .ellipsis) {
-                    router.presentSheet(.editShelfItem(mark: mark))
-                    HapticFeedback.impact()
+            .overlay(alignment: .bottomTrailing) {
+                if showEditButton, let mark = markController.mark {
+                    Button(
+                        "Edit Mark of \(mark.item.displayTitle ?? mark.item.title ?? "")",
+                        systemSymbol: .ellipsis
+                    ) {
+                        router.presentSheet(.editShelfItem(mark: mark))
+                        HapticFeedback.impact()
+                        TelemetryService.shared.trackItemMarkEdit(
+                            itemId: mark.item.id,
+                            category: mark.item.category)
+                    }
+                    .buttonStyle(.borderless)
+                    .accentColor(.gray)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 40, height: (markController.ratingGrade != nil
+                                               && markController.commentText.isEmpty) ? 28 : 32)
+                    .labelStyle(.iconOnly)
+                    // .background(.grayBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
-                .buttonStyle(.plain)
-                .accentColor(.gray)
-                .frame(width: 16, height: 14)
-                .labelStyle(.iconOnly)
-                .padding(.bottom, 8)
-                .padding(.trailing, 12)
             }
+            .enableInjection()
+        } else {
+            EmptyView()
+                .enableInjection()
         }
-        .enableInjection()
     }
 
     #if DEBUG

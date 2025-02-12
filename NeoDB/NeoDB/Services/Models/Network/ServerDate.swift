@@ -90,6 +90,12 @@ extension ServerDate {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return ServerDate(formatter.string(from: date))
     }
+
+    static var now: ServerDate {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return ServerDate(formatter.string(from: Date()))
+    }
 }
 
 extension Calendar {

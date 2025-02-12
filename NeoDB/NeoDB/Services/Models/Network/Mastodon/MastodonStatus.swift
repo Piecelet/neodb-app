@@ -71,6 +71,8 @@ protocol AnyMastodonStatus {
     // MARK: NeoDB Private
     //    var extNeodb: [NeoDBTag] {get}
     //    var relatedWith:
+
+    // MARK: - NeoDB
 }
 
 struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
@@ -192,7 +194,7 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
             pinned: false,
             bookmarked: false,
             emojis: [],
-            url: "https://example.com",
+            url: "https://piecelet.internal/placeholder",
             application: nil,
             inReplyToId: nil,
             inReplyToAccountId: nil,
@@ -246,6 +248,41 @@ struct MastodonStatus: AnyMastodonStatus, Codable, Identifiable, Equatable,
                 language: reblog.language)
         }
         return nil
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        content = try container.decode(HTMLString.self, forKey: .content)
+        account = try container.decode(MastodonAccount.self, forKey: .account)
+        createdAt = try container.decode(ServerDate.self, forKey: .createdAt)
+        editedAt = try container.decodeIfPresent(ServerDate.self, forKey: .editedAt)
+        reblog = try container.decodeIfPresent(MastodonReblogStatus.self, forKey: .reblog)
+        
+        // Handle mediaAttachments with a default empty array if missing
+        mediaAttachments = try container.decodeIfPresent([MastodonMediaAttachment].self, forKey: .mediaAttachments) ?? []
+        
+        mentions = try container.decode([MastodonMention].self, forKey: .mentions)
+        repliesCount = try container.decode(Int.self, forKey: .repliesCount)
+        reblogsCount = try container.decode(Int.self, forKey: .reblogsCount)
+        favouritesCount = try container.decode(Int.self, forKey: .favouritesCount)
+        tags = try container.decode([MastodonTag].self, forKey: .tags)
+        card = try container.decodeIfPresent(MastodonCard.self, forKey: .card)
+        favourited = try container.decodeIfPresent(Bool.self, forKey: .favourited)
+        reblogged = try container.decodeIfPresent(Bool.self, forKey: .reblogged)
+        pinned = try container.decodeIfPresent(Bool.self, forKey: .pinned)
+        bookmarked = try container.decodeIfPresent(Bool.self, forKey: .bookmarked)
+        emojis = try container.decode([MastodonEmoji].self, forKey: .emojis)
+        url = try container.decodeIfPresent(String.self, forKey: .url)
+        application = try container.decodeIfPresent(Application.self, forKey: .application)
+        inReplyToId = try container.decodeIfPresent(String.self, forKey: .inReplyToId)
+        inReplyToAccountId = try container.decodeIfPresent(String.self, forKey: .inReplyToAccountId)
+        visibility = try container.decode(MastodonVisibility.self, forKey: .visibility)
+        poll = try container.decodeIfPresent(MastodonPoll.self, forKey: .poll)
+        spoilerText = try container.decode(HTMLString.self, forKey: .spoilerText)
+        filtered = try container.decodeIfPresent([MastodonFiltered].self, forKey: .filtered)
+        sensitive = try container.decode(Bool.self, forKey: .sensitive)
+        language = try container.decodeIfPresent(String.self, forKey: .language)
     }
 }
 

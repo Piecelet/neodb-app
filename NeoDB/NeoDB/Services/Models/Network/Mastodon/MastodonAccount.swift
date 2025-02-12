@@ -53,8 +53,8 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
     let username: String
     let displayName: String?
     let cachedDisplayName: HTMLString
-    let avatar: URL
-    let header: URL
+    let avatar: URL?
+    let header: URL?
     let acct: String
     let note: HTMLString
     let createdAt: ServerDate
@@ -72,11 +72,17 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
     let moved: MastodonAccount?
 
     var haveAvatar: Bool {
-        avatar.lastPathComponent != "missing.png"
+        if let avatar {
+            return !avatar.lastPathComponent.contains("missing")
+        }
+        return false
     }
 
     var haveHeader: Bool {
-        header.lastPathComponent != "missing.png"
+        if let header {
+            return !header.lastPathComponent.contains("missing")
+        }
+        return false
     }
 
     var fullAccountName: String {
@@ -84,8 +90,8 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
     }
 
     init(
-        id: String, username: String, displayName: String?, avatar: URL,
-        header: URL, acct: String,
+        id: String, username: String, displayName: String?, avatar: URL?,
+        header: URL?, acct: String,
         note: HTMLString, createdAt: ServerDate, followersCount: Int,
         followingCount: Int,
         statusesCount: Int, lastStatusAt: String? = nil,
@@ -149,33 +155,47 @@ final class MastodonAccount: Codable, Identifiable, Hashable, Sendable,
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         username = try container.decode(String.self, forKey: .username)
-        displayName = try container.decodeIfPresent(
-            String.self, forKey: .displayName)
-        avatar = try container.decode(URL.self, forKey: .avatar)
-        header = try container.decode(URL.self, forKey: .header)
+        displayName = try container.decodeIfPresent(String.self, forKey: .displayName)
+        
+        // Handle avatar URL
+        if let avatarString = try container.decodeIfPresent(String.self, forKey: .avatar),
+           !avatarString.isEmpty {
+            avatar = URL(string: avatarString)
+        } else {
+            avatar = nil
+        }
+        
+        // Handle header URL
+        if let headerString = try container.decodeIfPresent(String.self, forKey: .header),
+           !headerString.isEmpty {
+            header = URL(string: headerString)
+        } else {
+            header = nil
+        }
+        
         acct = try container.decode(String.self, forKey: .acct)
         note = try container.decode(HTMLString.self, forKey: .note)
         createdAt = try container.decode(ServerDate.self, forKey: .createdAt)
-        followersCount = try container.decodeIfPresent(
-            Int.self, forKey: .followersCount)
-        followingCount = try container.decodeIfPresent(
-            Int.self, forKey: .followingCount)
-        statusesCount = try container.decodeIfPresent(
-            Int.self, forKey: .statusesCount)
-        lastStatusAt = try container.decodeIfPresent(
-            String.self, forKey: .lastStatusAt)
-        fields = try container.decode(
-            [MastodonAccount.Field].self, forKey: .fields)
+        followersCount = try container.decodeIfPresent(Int.self, forKey: .followersCount)
+        followingCount = try container.decodeIfPresent(Int.self, forKey: .followingCount)
+        statusesCount = try container.decodeIfPresent(Int.self, forKey: .statusesCount)
+        lastStatusAt = try container.decodeIfPresent(String.self, forKey: .lastStatusAt)
+        fields = try container.decode([MastodonAccount.Field].self, forKey: .fields)
         locked = try container.decode(Bool.self, forKey: .locked)
         emojis = try container.decode([MastodonEmoji].self, forKey: .emojis)
-        url = try container.decodeIfPresent(URL.self, forKey: .url)
-        source = try container.decodeIfPresent(
-            MastodonAccount.Source.self, forKey: .source)
+        
+        // Handle URL
+        if let urlString = try container.decodeIfPresent(String.self, forKey: .url),
+           !urlString.isEmpty {
+            url = URL(string: urlString)
+        } else {
+            url = nil
+        }
+        
+        source = try container.decodeIfPresent(MastodonAccount.Source.self, forKey: .source)
         bot = try container.decode(Bool.self, forKey: .bot)
-        discoverable = try container.decodeIfPresent(
-            Bool.self, forKey: .discoverable)
-        moved = try container.decodeIfPresent(
-            MastodonAccount.self, forKey: .moved)
+        discoverable = try container.decodeIfPresent(Bool.self, forKey: .discoverable)
+        moved = try container.decodeIfPresent(MastodonAccount.self, forKey: .moved)
 
         if let displayName, !displayName.isEmpty {
             cachedDisplayName = .init(stringValue: displayName)

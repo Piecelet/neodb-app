@@ -7,154 +7,15 @@
 
 import SwiftUI
 import OSLog
+import Defaults
 
-enum RouterDestination: Hashable {
-    // Library
-    case itemDetail(id: String)
-    case itemDetailWithItem(item: any ItemProtocol)
-    case shelfDetail(type: ShelfType)
-    case userShelf(userId: String, type: ShelfType)
-    
-    // Social
-    case userProfile(id: String)
-    case userProfileWithUser(user: User)
-    case statusDetail(id: String)
-    case statusDetailWithStatus(status: MastodonStatus)
-    case hashTag(tag: String)
-    
-    // Lists
-    case followers(id: String)
-    case following(id: String)
-
-    // Discover
-    case galleryCategory(gallery: GalleryResult)
-
-    // Store
-    case purchase
-    case purchaseWithFeature(feature: StoreConfig.Features)
-    
-    func hash(into hasher: inout Hasher) {
-        switch self {
-        case .itemDetail(let id):
-            hasher.combine(0)
-            hasher.combine(id)
-        case .itemDetailWithItem(let item):
-            hasher.combine(1)
-            hasher.combine(item.id)
-        case .shelfDetail(let type):
-            hasher.combine(2)
-            hasher.combine(type)
-        case .userShelf(let userId, let type):
-            hasher.combine(3)
-            hasher.combine(userId)
-            hasher.combine(type)
-        case .userProfile(let id):
-            hasher.combine(4)
-            hasher.combine(id)
-        case .userProfileWithUser(let user):
-            hasher.combine(5)
-            hasher.combine(user.url)
-        case .statusDetail(let id):
-            hasher.combine(6)
-            hasher.combine(id)
-        case .statusDetailWithStatus(let status):
-            hasher.combine(7)
-            hasher.combine(status.id)
-        case .hashTag(let tag):
-            hasher.combine(8)
-            hasher.combine(tag)
-        case .followers(let id):
-            hasher.combine(9)
-            hasher.combine(id)
-        case .following(let id):
-            hasher.combine(10)
-            hasher.combine(id)
-        case .galleryCategory(let gallery):
-            hasher.combine(11)
-            hasher.combine(gallery.id)
-        case .purchase:
-            hasher.combine(12)
-        case .purchaseWithFeature(let feature):
-            hasher.combine(13)
-            hasher.combine(feature)
-        }
-    }
-    
-    static func == (lhs: RouterDestination, rhs: RouterDestination) -> Bool {
-        switch (lhs, rhs) {
-        case (.itemDetail(let id1), .itemDetail(let id2)):
-            return id1 == id2
-        case (.itemDetailWithItem(let item1), .itemDetailWithItem(let item2)):
-            return item1.id == item2.id
-        case (.shelfDetail(let type1), .shelfDetail(let type2)):
-            return type1 == type2
-        case (.userShelf(let userId1, let type1), .userShelf(let userId2, let type2)):
-            return userId1 == userId2 && type1 == type2
-        case (.userProfile(let id1), .userProfile(let id2)):
-            return id1 == id2
-        case (.userProfileWithUser(let user1), .userProfileWithUser(let user2)):
-            return user1.url == user2.url
-        case (.statusDetail(let id1), .statusDetail(let id2)):
-            return id1 == id2
-        case (.statusDetailWithStatus(let status1), .statusDetailWithStatus(let status2)):
-            return status1.id == status2.id
-        case (.hashTag(let tag1), .hashTag(let tag2)):
-            return tag1 == tag2
-        case (.followers(let id1), .followers(let id2)):
-            return id1 == id2
-        case (.following(let id1), .following(let id2)):
-            return id1 == id2
-        case (.purchase, .purchase):
-            return true
-        default:
-            return false
-        }
-    }
-}
-
-enum SheetDestination: Identifiable {
-    case newStatus
-    case editStatus(status: MastodonStatus)
-    case replyToStatus(status: MastodonStatus)
-    case addToShelf(item: any ItemProtocol, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    case editShelfItem(mark: MarkSchema, shelfType: ShelfType? = nil, detentLevel: MarkView.DetailLevel = .brief)
-    case itemDetails(item: any ItemProtocol)
-    case login
-
-    // Store
-    case purchase
-    case purchaseWithFeature(feature: StoreConfig.Features)
-    
-    var id: String {
-        switch self {
-        case .newStatus, .editStatus, .replyToStatus:
-            return "statusEditor"
-        case .addToShelf:
-            return "shelfEditor"
-        case .editShelfItem:
-            return "shelfItemEditor"
-        case .itemDetails:
-            return "itemDetails"
-        case .purchase:
-            return "purchase"
-        case .purchaseWithFeature:
-            return "purchaseWithFeature"
-        case .login:
-            return "login"
-        }
-    }
-}
-
-enum TabSection: String, CaseIterable {
-    case home
-    case search
-    case library
-    case profile
-}
 
 @MainActor
 class Router: ObservableObject {
-    @Published var paths: [TabSection: [RouterDestination]] = [:]
+    // @Default(.defaultTab) var defaultTab
+    @Published var selectedTab: TabDestination
+    
+    @Published var paths: [TabDestination: [RouterDestination]] = [:]
     @Published var sheetStack: [SheetDestination] = []
     
     var presentedSheet: SheetDestination? {
@@ -162,18 +23,19 @@ class Router: ObservableObject {
     }
     
     @Published var itemToLoad: (any ItemProtocol)?
-    @Published var selectedTab: TabSection = .home
     
     private let logger = Logger.router
     
     init() {
+        selectedTab = Defaults[.defaultTab].tabDestination
+        
         // Initialize empty paths for each tab
-        TabSection.allCases.forEach { tab in
+        TabDestination.allCases.forEach { tab in
             paths[tab] = []
         }
     }
     
-    func path(for tab: TabSection) -> Binding<[RouterDestination]> {
+    func path(for tab: TabDestination) -> Binding<[RouterDestination]> {
         Binding(
             get: { self.paths[tab] ?? [] },
             set: { self.paths[tab] = $0 }
@@ -182,11 +44,12 @@ class Router: ObservableObject {
     
     func navigate(to destination: RouterDestination) {
         paths[selectedTab]?.append(destination)
-        
-        // Store item for loading if navigating to item detail
-        if case .itemDetailWithItem(let item) = destination {
-            itemToLoad = item
+
+        if case .purchaseWithFeature(let feature) = destination {
+            TelemetryService.shared.trackPurchaseWithFeature(feature: feature)
         }
+
+        dismissAllSheets()
         
         // logger.debug("Navigated to: \(String(describing: destination)) in tab: \(self.selectedTab.rawValue)")
     }
@@ -206,6 +69,10 @@ class Router: ObservableObject {
     func presentSheet(_ destination: SheetDestination) {
         logger.debug("Presenting sheet: \(destination)")
         sheetStack.append(destination)
+
+        if case .purchaseWithFeature(let feature) = destination {
+            TelemetryService.shared.trackPurchaseWithFeature(feature: feature)
+        }
     }
     
     func handleURL(_ url: URL) -> Bool {
@@ -257,4 +124,4 @@ class Router: ObservableObject {
         
         return false
     }
-} 
+}

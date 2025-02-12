@@ -7,40 +7,28 @@
 
 import BetterSafariView
 import SwiftUI
+import os
 
 struct LoginView: View {
     @EnvironmentObject private var accountsManager: AppAccountsManager
-    @StateObject private var viewModel = LoginViewModel()
     @Environment(\.dismiss) private var dismiss
+    @StateObject private var viewModel: LoginViewModel
     @State private var showMastodonLogin = false
-    let instance: MastodonInstance?
-    let instanceAddress: String
+    private let logger = Logger.views.login
 
-    // Animation states
-    @State private var buttonScale = 1.0
+    let isAddingAccount: Bool
 
-    init(instance: MastodonInstance? = nil, instanceAddress: String? = nil) {
-        self.instance = instance
-        self.instanceAddress = instanceAddress ?? AppConfig.defaultInstance
+    init(instanceAddress: String, isAddingAccount: Bool = false) {
+        self.isAddingAccount = isAddingAccount
+        _viewModel = StateObject(wrappedValue: LoginViewModel(
+            instanceAddress: instanceAddress
+        ))
+        logger.debug("LoginView initialized with instanceAddress: \(instanceAddress) isAddingAccount: \(isAddingAccount)")
     }
 
     private var signInButton: some View {
         Button(action: {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                buttonScale = 0.95
-            }
-
-            // Reset scale after brief delay
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
-                    buttonScale = 1.0
-                }
-            }
-
-            Task {
-                await viewModel.authenticate()
-                accountsManager.isAuthenticating = true
-            }
+            viewModel.handleSignInButtonTap()
         }) {
             HStack {
                 if accountsManager.isAuthenticating {
@@ -53,7 +41,7 @@ struct LoginView: View {
                             format: String(
                                 localized: "login_button_signin_with",
                                 table: "Settings"),
-                            accountsManager.currentAccount.instance))
+                            viewModel.instanceAddress))
                 }
             }
             .fontWeight(.medium)
@@ -64,8 +52,8 @@ struct LoginView: View {
             .foregroundColor(.white)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
-        .scaleEffect(buttonScale)
-        .disabled(accountsManager.isAuthenticating)
+        .scaleEffect(viewModel.buttonScale)
+        .disabled(accountsManager.isAuthenticating || viewModel.isAuthLoading)
     }
 
     var body: some View {
@@ -77,7 +65,7 @@ struct LoginView: View {
                     .frame(width: 120, height: 120)
 
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(accountsManager.currentAccount.instance)
+                    Text(viewModel.instanceAddress)
                         .foregroundColor(.secondary)
                         .padding()
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -88,9 +76,9 @@ struct LoginView: View {
 
                 if viewModel.isLoading {
                     ProgressView()
-                } else if let instance = instance ?? viewModel.instanceInfo {
+                } else if let instanceInfo = viewModel.instanceInfo {
                     VStack(alignment: .leading, spacing: 16) {
-                        if let rules = instance.rules, !rules.isEmpty {
+                        if let rules = instanceInfo.rules, !rules.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(
                                     String(
@@ -116,7 +104,6 @@ struct LoginView: View {
                         }
                     }
                 }
-
             }
             .padding(.vertical)
         }
@@ -157,6 +144,12 @@ struct LoginView: View {
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            if isAddingAccount {
+                accountsManager.restoreLastAuthenticatedAccount()
+            }
+        }
+        .interactiveDismissDisabled(isAddingAccount)
         .alert(
             "Error", isPresented: $viewModel.showError,
             actions: {
@@ -168,10 +161,9 @@ struct LoginView: View {
         )
         .task {
             viewModel.accountsManager = accountsManager
-            if instance == nil {
-                await viewModel.loadInstanceInfo(instance: instanceAddress)
-            }
+            viewModel.initialize()
         }
+        .id(accountsManager.appId)
         .webAuthenticationSession(isPresented: $viewModel.isAuthenticating) {
             WebAuthenticationSession(
                 url: viewModel.authUrl!,

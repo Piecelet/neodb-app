@@ -34,21 +34,33 @@ enum HapticFeedback {
 
     /// Trigger impact feedback
     static func impact(_ level: ImpactLevel = .medium, intensity: Double = 1.0) {
-        #if os(iOS)
-            let generator: UIImpactFeedbackGenerator
-            if let cachedGenerator = impactGenerators[level] {
-                generator = cachedGenerator  // 复用缓存的 generator
-            } else {
-                generator = UIImpactFeedbackGenerator(style: level.uiKitStyle)
-                impactGenerators[level] = generator  // 缓存新的 generator
-            }
-            DispatchQueue.global(qos: .userInitiated).async {  // 异步 prepare
-                generator.prepare()
-                DispatchQueue.main.async {  // 回到主线程触发
-                    generator.impactOccurred(intensity: intensity)
-                }
-            }
-        #endif
+        // #if os(iOS)
+        //     let generator: UIImpactFeedbackGenerator
+        //     if let cachedGenerator = impactGenerators[level] {
+        //         generator = cachedGenerator  // 复用缓存的 generator
+        //     } else {
+        //         generator = UIImpactFeedbackGenerator(style: level.uiKitStyle)
+        //         impactGenerators[level] = generator  // 缓存新的 generator
+        //     }
+        //     DispatchQueue.global(qos: .userInitiated).async {  // 异步 prepare
+        //         generator.prepare()
+        //         DispatchQueue.main.async {  // 回到主线程触发
+        //             generator.impactOccurred(intensity: intensity)
+        //         }
+        //     }
+        // #endif
+        switch level {
+        case .light:
+            HapticService.shared.impact(.light, intensity: intensity)
+        case .medium:
+            HapticService.shared.impact(.medium, intensity: intensity)
+        case .heavy:
+            HapticService.shared.impact(.heavy, intensity: intensity)
+        case .rigid:
+            HapticService.shared.impact(.rigid, intensity: intensity)
+        case .soft:
+            HapticService.shared.impact(.soft, intensity: intensity)
+        }
     }
 
     // 缓存 Selection Generator
@@ -56,21 +68,22 @@ enum HapticFeedback {
 
     /// Trigger selection feedback
     static func selection() {
-        #if os(iOS)
-            let generator: UISelectionFeedbackGenerator
-            if let cachedGenerator = selectionGenerator {
-                generator = cachedGenerator  // 复用缓存的 generator
-            } else {
-                generator = UISelectionFeedbackGenerator()
-                selectionGenerator = generator  // 缓存新的 generator
-            }
-            DispatchQueue.global(qos: .userInitiated).async {  // 异步 prepare
-                generator.prepare()
-                DispatchQueue.main.async {  // 回到主线程触发
-                    generator.selectionChanged()
-                }
-            }
-        #endif
+        // #if os(iOS)
+        //     let generator: UISelectionFeedbackGenerator
+        //     if let cachedGenerator = selectionGenerator {
+        //         generator = cachedGenerator  // 复用缓存的 generator
+        //     } else {
+        //         generator = UISelectionFeedbackGenerator()
+        //         selectionGenerator = generator  // 缓存新的 generator
+        //     }
+        //     DispatchQueue.global(qos: .userInitiated).async {  // 异步 prepare
+        //         generator.prepare()
+        //         DispatchQueue.main.async {  // 回到主线程触发
+        //             generator.selectionChanged()
+        //         }
+        //     }
+        // #endif
+        HapticService.shared.selection()
     }
 
     // 缓存 Notification Generator
@@ -78,17 +91,20 @@ enum HapticFeedback {
 
     /// Trigger success feedback
     static func success() {
-        notificationFeedback(.success)
+        // notificationFeedback(.success)
+        HapticService.shared.success()
     }
 
     /// Trigger error feedback
     static func error() {
-        notificationFeedback(.error)
+        // notificationFeedback(.error)
+        HapticService.shared.error()
     }
 
     /// Trigger warning feedback
     static func warning() {
-        notificationFeedback(.warning)
+        // notificationFeedback(.warning)
+        HapticService.shared.warning()
     }
 
     private static func notificationFeedback(

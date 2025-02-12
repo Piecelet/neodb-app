@@ -8,6 +8,7 @@
 import Foundation
 
 enum ItemURL {
+    @available(*, deprecated, message: "Use Item.ID instead")
     static func makeShareURL(for item: any ItemProtocol, instance: String) -> URL? {
         guard let url = URL(string: item.url) else { return nil }
         

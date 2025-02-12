@@ -7,40 +7,16 @@
 
 import SwiftUI
 
-enum ItemRatingSize {
-    case small
-    case medium
-    case large
-
-    var font: Font {
-        switch self {
-        case .small:
-            return .caption
-        case .medium:
-            return .subheadline
-        case .large:
-            return .subheadline
-        }
-    }
-    
-    var weight: Font.Weight? {
-        switch self {
-        default:
-            return nil
-        }
-    }
-}
-
 struct StarView: View {
     let rating: Double
     let maxRating: Int = 5
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: -1) {
             ForEach(0..<maxRating, id: \.self) { index in
                 let fillLevel = rating - Double(index)
                 Image(symbol: starType(for: fillLevel))
-                    .foregroundStyle(.orange.opacity(0.8))
+                    .foregroundStyle(.ratingPrimary)
             }
         }
         .enableInjection()
@@ -62,8 +38,32 @@ struct StarView: View {
 }
 
 struct ItemRatingView: View {
+    enum Size {
+        case small
+        case medium
+        case large
+
+        var font: Font {
+            switch self {
+            case .small:
+                return .footnote
+            case .medium:
+                return .subheadline
+            case .large:
+                return .subheadline
+            }
+        }
+        
+        var weight: Font.Weight? {
+            switch self {
+            default:
+                return nil
+            }
+        }
+    }
+    
     let item: (any ItemProtocol)?
-    let size: ItemRatingSize
+    let size: Size
     var hideRatingCount: Bool = false
     var showFullStar: Bool = false
     var showCategory: Bool = false
@@ -80,7 +80,7 @@ struct ItemRatingView: View {
                                 Image(systemName: "star.fill")
                             }
                         }
-                        .foregroundStyle(.orange.opacity(0.8))
+                        .foregroundStyle(.ratingPrimary)
                         Text(String(format: "%.1f", rating))
                         if let count = item.ratingCount, !hideRatingCount {
                             Text("(\(count))")

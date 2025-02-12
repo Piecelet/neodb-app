@@ -10,75 +10,144 @@ import Kingfisher
 import SwiftUI
 
 struct GalleryView: View {
-    let galleryItems: [GalleryResult]
+    @StateObject private var viewModel = GalleryViewModel()
     @EnvironmentObject private var router: Router
-    
+    @EnvironmentObject private var accountsManager: AppAccountsManager
+
     private let coverSize: ItemCoverSize = .large
     private var coverWidth: CGFloat {
         coverSize.height * AppConfig.defaultItemCoverRatio
     }
 
     var body: some View {
-        ForEach(Array(galleryItems.enumerated()), id: \.element.id) { index, gallery in
-            Section {
-                VStack(alignment: .leading) {
-                    Button {
-                        router.navigate(to: .galleryCategory(gallery: gallery))
-                    } label: {
-                        HStack(alignment: .center, spacing: 4) {
-                            Text(gallery.displayTitle)
-                                .font(.system(size: 20))
-                                .foregroundStyle(.primary)
-                            Image(systemSymbol: .chevronRight)
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        .fontWeight(.bold)
-                    }
-                    .padding(.horizontal)
-                    .buttonStyle(.plain)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack(alignment: .top, spacing: 12) {
-                            ForEach(gallery.items, id: \.uuid) { item in
-                                Button {
-                                    HapticFeedback.selection()
-                                    router.navigate(to: .itemDetailWithItem(item: item))
-                                } label: {
-                                    VStack(alignment: .leading, spacing: 8) {
-                                        ItemCoverView(item: item, size: coverSize, alignment: .fixed)
+        galleryContent
+            .task {
+                viewModel.accountsManager = accountsManager
+                await viewModel.loadAllGalleries()
+            }
+            .enableInjection()
+    }
 
-                                        ItemTitleView(item: item, mode: .title, size: .compact, alignment: .center)
-                                            .frame(width: coverWidth)
-                                    }
-                                }
-                                .buttonStyle(.plain)
+    private var galleryContent: some View {
+        ForEach(ItemCategory.galleryCategory.availableCategories, id: \.self) {
+            category in
+            if let state = viewModel.galleryStates[category] {
+                Section {
+                    VStack(alignment: .leading) {
+                        Button {
+                            TelemetryService.shared.trackGalleryCategoryClick(
+                                category: category.itemCategory)
+                            if let state = viewModel.galleryStates[category] {
+                                router.navigate(
+                                    to: .galleryCategory(
+                                        galleryState: state))
+                                HapticService.shared.selection()
                             }
+                        } label: {
+                            HStack(alignment: .center, spacing: 4) {
+                                Text(category.displayName)
+                                    .font(.system(size: 20))
+                                    .foregroundStyle(.primary)
+                                Image(systemSymbol: .chevronRight)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .fontWeight(.bold)
                         }
                         .padding(.horizontal)
+                        .buttonStyle(.plain)
+
+                        if state.trendingGallery.isEmpty {
+                            if state.isLoading || !state.isInited
+                                || state.isRefreshing
+                            {
+                                galleryView(isPlaceholder: true)
+                            } else if let error = state.error {
+                                EmptyStateView(
+                                    String(
+                                        localized:
+                                            "discover_gallery_error_title",
+                                        table: "Discover"),
+                                    systemImage: "exclamationmark.triangle",
+                                    description: Text(
+                                        error.localizedDescription)
+                                )
+                            } else {
+                                EmptyStateView(
+                                    description: Text(
+                                        String(
+                                            format: String(
+                                                localized: "discover_gallery_empty_description",
+                                                defaultValue: "No %@", table: "Discover",
+                                                comment: "Empty state description for gallery category"
+                                            ),
+                                            state.galleryCategory.displayName
+                                        )
+                                    )
+                                )
+                            }
+                        } else {
+                            galleryView(state.trendingGallery)
+                        }
                     }
+                    .listRowSeparator(.hidden)
+                    .padding(.top, 20)
+                    .listRowInsets(EdgeInsets())
                 }
-                .padding(.top, index == 0 ? 20 : nil)
-                .listRowInsets(.horizontal(0))
             }
-            .listRowSeparator(.hidden)
         }
-        .enableInjection()
+    }
+
+    private func galleryView(
+        _ items: TrendingItemResult
+    ) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(alignment: .top, spacing: 12) {
+                ForEach(items, id: \.uuid) { item in
+                    Button {
+                        HapticFeedback.selection()
+                        TelemetryService.shared.trackGalleryItemClick(
+                            itemId: item.id,
+                            category: item.category)
+                        router.navigate(to: .itemDetailWithItem(item: item))
+                    } label: {
+                        galleryItemView(item: item)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+
+    private func galleryView(isPlaceholder: Bool = false) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(alignment: .top, spacing: 12) {
+                ForEach(
+                    Array(ItemSchema.placeholders.enumerated()), id: \.offset
+                ) { index, item in
+                    galleryItemView(item: item)
+                        .redacted(reason: .placeholder)
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+
+    private func galleryItemView(item: ItemSchema) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ItemCoverView(
+                item: item, size: coverSize, alignment: .fixed)
+
+            ItemTitleView(
+                item: item, mode: .title, size: .compact,
+                alignment: .center
+            )
+            .frame(width: coverWidth)
+        }
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
-}
-
-#Preview {
-    List {
-        GalleryView(galleryItems: [
-            GalleryResult(
-                name: "Preview Gallery",
-                items: [ItemSchema.preview]
-            )
-        ])
-        .environmentObject(Router())
-    }
 }

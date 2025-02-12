@@ -9,6 +9,7 @@ extension Logger {
     // MARK: - App Lifecycle
     /// Logs related to app lifecycle events
     static let lifecycle = Logger(subsystem: subsystem, category: "lifecycle")
+    static let app = Logger(subsystem: subsystem, category: "app")
 
     // MARK: - Networking
     /// Logs related to network requests and responses
@@ -67,6 +68,11 @@ extension Logger {
                 subsystem: subsystem, category: "services.url.neodbURL")
             static let urlUtilities = Logger(
                 subsystem: subsystem, category: "services.url.urlUtilities")
+        }
+
+        enum telemetry {
+        static let telemetry = Logger(subsystem: subsystem, category: "services.telemetry")
+            static let auth = Logger(subsystem: subsystem, category: "services.telemetry.auth")
         }
     }
 
@@ -133,6 +139,14 @@ extension Logger {
             subsystem: subsystem, category: "manager.client")
         static let accountsManager = Logger(
             subsystem: subsystem, category: "manager.accountsManager")
+    }
+
+    // MARK: - Data Controllers
+    enum dataControllers {
+        static let markDataController = Logger(
+            subsystem: subsystem, category: "dataControllers.markDataController")
+        static let statusDataController = Logger(
+            subsystem: subsystem, category: "dataControllers.statusDataController")
     }
 }
 

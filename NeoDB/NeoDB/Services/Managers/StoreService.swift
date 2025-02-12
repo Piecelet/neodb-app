@@ -7,16 +7,88 @@
 
 import Foundation
 import RevenueCat
+import TelemetryDeck
+import OSLog
 
 @MainActor
 class StoreManager: ObservableObject {
     @Published var appUserID: String? = nil
     @Published var customerInfo: RevenueCat.CustomerInfo? = nil
     @Published var plusOffering: Offering? = nil
+    private let logger = Logger.managers.store
 
     var isPlus: Bool {
         return customerInfo?.entitlements.active[
             StoreConfig.RevenueCat.plus.entitlementName] != nil
+    }
+
+    enum PlusType {
+        case monthly
+        case yearly
+        case lifetime
+    }
+    
+    // 获取当前订阅类型
+    var currentSubscriptionType: PlusType? {
+        guard let entitlement = customerInfo?.entitlements.active[StoreConfig.RevenueCat.plus.entitlementName] else {
+            return nil
+        }
+        
+        switch entitlement.productIdentifier {
+        case _ where entitlement.productIdentifier.contains("monthly"):
+            return .monthly
+        case _ where entitlement.productIdentifier.contains("yearly"):
+            return .yearly
+        case _ where entitlement.productIdentifier.contains("lifetime"):
+            return .lifetime
+        default:
+            return nil
+        }
+    }
+    
+    // 获取当前订阅的价格信息
+    var subscriptionPrices: [String: String] {
+        var prices: [String: String] = [:]
+        
+        plusOffering?.availablePackages.forEach { package in
+            switch package.packageType {
+            case .monthly:
+                prices["monthly"] = package.storeProduct.localizedPriceString
+            case .annual:
+                prices["yearly"] = package.storeProduct.localizedPriceString
+            case .lifetime:
+                prices["lifetime"] = package.storeProduct.localizedPriceString
+            default:
+                break
+            }
+        }
+        
+        return prices
+    }
+    
+    // 获取美元数值的价格信息
+    var subscriptionPricesInUSDollar: [String: Decimal] {
+        var prices: [String: Decimal] = [:]
+        
+        plusOffering?.availablePackages.forEach { package in
+            switch package.packageType {
+            case .monthly:
+                prices["monthly"] = package.storeProduct.price
+            case .annual:
+                prices["yearly"] = package.storeProduct.price
+            case .lifetime:
+                prices["lifetime"] = package.storeProduct.price
+            default:
+                break
+            }
+        }
+        
+        return prices
+    }
+    
+    // 获取当前订阅的过期时间
+    var subscriptionExpirationDate: Date? {
+        customerInfo?.entitlements.active[StoreConfig.RevenueCat.plus.entitlementName]?.expirationDate
     }
 
     init() {
@@ -28,7 +100,7 @@ class StoreManager: ObservableObject {
     }
 
     private func configure() {
-        Purchases.logLevel = .error
+        Purchases.logLevel = AppConfig.isDebug == true ? .debug : .error
         Purchases.proxyURL = StoreConfig.RevenueCat.proxyURL
         // 使用带有 StoreKit 2 的最现代化方式
         Purchases.configure(
@@ -37,6 +109,11 @@ class StoreManager: ObservableObject {
                 .with(storeKitVersion: .storeKit2)
                 .build()
         )
+        Purchases.shared.attribution.setAttributes([
+            "$telemetryDeckUserId": TelemetryManager.shared
+                .hashedDefaultUser,
+            "$telemetryDeckAppId": AppConfig.telemetryDeckAppID
+        ])
     }
 
     func setCustomerInfo() async {
@@ -45,7 +122,7 @@ class StoreManager: ObservableObject {
             self.customerInfo = info
             self.appUserID = Purchases.shared.appUserID
         } catch {
-            print("Error setting customer info: \(error)")
+            logger.error("Error setting customer info: \(error)")
         }
     }
 
@@ -56,7 +133,7 @@ class StoreManager: ObservableObject {
                 plusOffering = offerings.offering(identifier: "plus") ?? offerings.current
             }
         } catch {
-            print("Error loading offerings: \(error)")
+            logger.error("Error loading offerings: \(error)")
         }
     }
 

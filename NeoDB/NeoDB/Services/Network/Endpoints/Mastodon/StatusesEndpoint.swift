@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum StatusesEndpoints {
+enum StatusesEndpoint {
     case postStatus(json: StatusData)
     case editStatus(id: String, json: StatusData)
     case status(id: String)
@@ -27,7 +27,7 @@ enum StatusesEndpoints {
     case report(accountId: String, statusId: String, comment: String)
 }
 
-extension StatusesEndpoints: NetworkEndpoint {
+extension StatusesEndpoint: NetworkEndpoint {
     var path: String {
         switch self {
         case .postStatus:

@@ -281,6 +281,22 @@
         }
       }
     },
+    "item_description_empty_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing so far."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暂无内容。"
+          }
+        }
+      }
+    },
     "item_details_title" : {
       "localizations" : {
         "da" : {
@@ -365,6 +381,501 @@
         }
       }
     },
+    "item_external_resource_ao3" : {
+      "comment" : "Item External Resource Name - AO3",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "AO3"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "AO3"
+          }
+        }
+      }
+    },
+    "item_external_resource_applemusic" : {
+      "comment" : "Item External Resource Name - Apple Music",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Apple Music"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Music"
+          }
+        }
+      }
+    },
+    "item_external_resource_applepodcasts" : {
+      "comment" : "Item External Resource Name - Apple Podcasts",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Apple Podcasts"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Podcasts"
+          }
+        }
+      }
+    },
+    "item_external_resource_bandcamp" : {
+      "comment" : "Item External Resource Name - Bandcamp",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bandcamp"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandcamp"
+          }
+        }
+      }
+    },
+    "item_external_resource_bangumi" : {
+      "comment" : "Item External Resource Name - Bangumi",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bangumi"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bangumi 番组计划"
+          }
+        }
+      }
+    },
+    "item_external_resource_bgg" : {
+      "comment" : "Item External Resource Name - BGG",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Board Game Geek"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Board Game Geek"
+          }
+        }
+      }
+    },
+    "item_external_resource_bilibili" : {
+      "comment" : "Item External Resource Name - Bilibili",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Bilibili"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "哔哩哔哩"
+          }
+        }
+      }
+    },
+    "item_external_resource_bookstw" : {
+      "comment" : "Item External Resource Name - BooksTW",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "BooksTW"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "博客来"
+          }
+        }
+      }
+    },
+    "item_external_resource_discogs" : {
+      "comment" : "Item External Resource Name - Discogs",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Discogs"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discogs"
+          }
+        }
+      }
+    },
+    "item_external_resource_douban" : {
+      "comment" : "Item External Resource Name - Douban",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Douban"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "豆瓣"
+          }
+        }
+      }
+    },
+    "item_external_resource_fedi" : {
+      "comment" : "Item External Resource Name - Fediverse",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Fediverse"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "联邦宇宙"
+          }
+        }
+      }
+    },
+    "item_external_resource_goodreads" : {
+      "comment" : "Item External Resource Name - Goodreads",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Goodreads"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Goodreads"
+          }
+        }
+      }
+    },
+    "item_external_resource_googlebooks" : {
+      "comment" : "Item External Resource Name - Google Books",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Google Books"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Google Books"
+          }
+        }
+      }
+    },
+    "item_external_resource_igdb" : {
+      "comment" : "Item External Resource Name - IGDB",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IGDB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IGDB"
+          }
+        }
+      }
+    },
+    "item_external_resource_imdb" : {
+      "comment" : "Item External Resource Name - IMDb",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "IMDb"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IMDb"
+          }
+        }
+      }
+    },
+    "item_external_resource_jinjiang" : {
+      "comment" : "Item External Resource Name - JinJiang",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "JinJiang"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "晋江"
+          }
+        }
+      }
+    },
+    "item_external_resource_qidian" : {
+      "comment" : "Item External Resource Name - Qidian",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Qidian"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "起点"
+          }
+        }
+      }
+    },
+    "item_external_resource_rss" : {
+      "comment" : "Item External Resource Name - RSS",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "RSS"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "RSS"
+          }
+        }
+      }
+    },
+    "item_external_resource_spotify" : {
+      "comment" : "Item External Resource Name - Spotify",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Spotify"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spotify"
+          }
+        }
+      }
+    },
+    "item_external_resource_steam" : {
+      "comment" : "Item External Resource Name - Steam",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Steam"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steam"
+          }
+        }
+      }
+    },
+    "item_external_resource_tmdb" : {
+      "comment" : "Item External Resource Name - TMDB",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "TMDB"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TMDB"
+          }
+        }
+      }
+    },
+    "item_external_resource_unknown" : {
+      "comment" : "Item External Resource Name - Unknown",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Unknown"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未知"
+          }
+        }
+      }
+    },
+    "item_external_resource_ypshuo" : {
+      "comment" : "Item External Resource Name - Ypshuo",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Ypshuo"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ypshuo"
+          }
+        }
+      }
+    },
+    "item_open_in_open_links" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Open Links"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开链接"
+          }
+        }
+      }
+    },
+    "item_open_in_search_format" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search on %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 %@ 搜索"
+          }
+        }
+      }
+    },
+    "item_open_in_section_title_apps" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 App 中打开"
+          }
+        }
+      }
+    },
+    "item_open_in_section_title_search" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search in Apps"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 App 中搜索"
+          }
+        }
+      }
+    },
+    "item_open_in_section_title_websites" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open in Websites"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在网页中打开"
+          }
+        }
+      }
+    },
     "item_open_in_website" : {
       "localizations" : {
         "da" : {
@@ -389,6 +900,106 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在 %@ 中打开"
+          }
+        }
+      }
+    },
+    "item_posts_comments" : {
+      "comment" : "Item Detail Comments",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comments"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "短评"
+          }
+        }
+      }
+    },
+    "item_posts_comments_empty" : {
+      "comment" : "Item Detail Comments Empty",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Comments"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有人评价。"
+          }
+        }
+      }
+    },
+    "item_posts_reviews" : {
+      "comment" : "Item Detail Reviews",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reviews"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "长评"
+          }
+        }
+      }
+    },
+    "item_posts_reviews_empty" : {
+      "comment" : "Item Detail Reviews Empty",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Reviews"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "还没有人评价。"
+          }
+        }
+      }
+    },
+    "item_posts_service_internal_error" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is an internal error with your instance."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的站点出现了内部错误。"
+          }
+        }
+      }
+    },
+    "item_posts_service_unsupported" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your instance isn't supported."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "你的站点不支持此功能。"
           }
         }
       }
@@ -445,34 +1056,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "暂无评分"
-          }
-        }
-      }
-    },
-    "item_view_details" : {
-      "localizations" : {
-        "da" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vis detaljer"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View Details"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ver detalhes"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "查看详情"
           }
         }
       }

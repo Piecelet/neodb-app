@@ -8,20 +8,20 @@
 import Foundation
 
 enum MarkEndpoint {
-    case get(itemId: String)
-    case mark(itemId: String, mark: MarkInSchema)
-    case delete(itemId: String)
+    case get(itemUUID: String)
+    case mark(itemUUID: String, mark: MarkInSchema)
+    case delete(itemUUID: String)
 }
 
 extension MarkEndpoint: NetworkEndpoint {
     var path: String {
         switch self {
-        case .get(let itemId):
-            return "/me/shelf/item/\(itemId)"
-        case .mark(let itemId, _):
-            return "/me/shelf/item/\(itemId)"
-        case .delete(let itemId):
-            return "/me/shelf/item/\(itemId)"
+        case .get(let itemUUID):
+            return "/me/shelf/item/\(itemUUID)"
+        case .mark(let itemUUID, _):
+            return "/me/shelf/item/\(itemUUID)"
+        case .delete(let itemUUID):
+            return "/me/shelf/item/\(itemUUID)"
         }
     }
 

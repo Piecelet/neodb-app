@@ -88,7 +88,34 @@ struct ItemSchema: ItemProtocol {
 }
 
 extension ItemSchema {
-    static func make(category: ItemCategory) -> any ItemProtocol.Type {
+    @available(*, deprecated, message: "Use ItemSchema.makeTemporaryItemSchema(uuid: String) instead.")
+    static func makeTemporaryItemSchema(uuid: String) -> ItemSchema {
+        return ItemSchema.makeTemporaryItemSchema(id: URL(string: "https://unknown.neodb.net/unknown/\(uuid)")!)
+    }
+
+    static func makeTemporaryItemSchema(id: URL) -> ItemSchema {
+        return ItemSchema(
+            id: id.absoluteString,
+            type: .unknown,
+            uuid: id.lastPathComponent.components(separatedBy: "/").last ?? id.absoluteString,
+            url: "",
+            apiUrl: "",
+            category: .book,
+            parentUuid: nil,
+            displayTitle: nil,
+            externalResources: nil,
+            title: nil,
+            description: nil,
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: nil,
+            rating: nil,
+            ratingCount: nil,
+            brief: nil
+        )
+    }
+
+    static func makeType(category: ItemCategory) -> any ItemProtocol.Type {
         switch category {
         case .book, .fanfic, .exhibition, .collection:
             return EditionSchema.self
@@ -113,6 +140,45 @@ extension ItemSchema {
         case .performanceProduction:
             return PerformanceProductionSchema.self
         }
+    }
+}
+
+extension ItemSchema {
+    static var placeholder: ItemSchema {
+        return .init(
+            id: "https://piecelet.internal/placeholder",
+            type: .unknown,
+            uuid: "placeholder",
+            url: "https://piecelet.internal/placeholder",
+            apiUrl: "https://piecelet.internal/placeholder",
+            category: .book,
+            parentUuid: nil,
+            displayTitle: "placeholder",
+            externalResources: [],
+            title: "placeholder",
+            description: "placeholder",
+            localizedTitle: nil,
+            localizedDescription: nil,
+            coverImageUrl: URL(string: "https://piecelet.internal/placeholder")!,
+            rating: 5,
+            ratingCount: 46,
+            brief: "placeholder"
+        )
+    }
+
+    static var placeholders: [ItemSchema] {
+        return [
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder,
+            .placeholder
+        ]
     }
 }
 

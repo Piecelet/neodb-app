@@ -23,8 +23,11 @@ struct LibraryView: View {
             GeometryReader { geometry in
                 TabView(selection: $viewModel.selectedShelfType) {
                     ForEach(ShelfType.allCases, id: \.self) { type in
-                        List {
-                            shelfContentView(for: type, geometry: geometry)
+                        Group {
+                                List {
+                                    shelfContentView(
+                                        for: type, geometry: geometry)
+                                }
                         }
                         .listStyle(.plain)
                         .refreshable {
@@ -38,6 +41,7 @@ struct LibraryView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .ignoresSafeArea(edges: .bottom)
         }
+        .toolbarBackground(.visible, for: .tabBar)
         .safeAreaInset(edge: .top) {
             headerView
         }
@@ -68,19 +72,24 @@ struct LibraryView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            categoryFilter
+        Group {
+                VStack(alignment: .leading, spacing: 0) {
+                    categoryFilter
 
-            TopTabBarView(
-                items: ShelfType.allCases,
-                selection: $viewModel.selectedShelfType
-            ) { $0.displayNameForCategory(viewModel.selectedCategory.itemCategory) }
+                    TopTabBarView(
+                        items: ShelfType.allCases,
+                        selection: $viewModel.selectedShelfType
+                    ) {
+                        $0.displayNameForCategory(
+                            viewModel.selectedCategory.itemCategory)
+                    }
+                    .padding(.bottom, -12)
+                }
         }
-        .padding(.bottom, -12)
     }
 
     private var categoryFilter: some View {
@@ -88,10 +97,10 @@ struct LibraryView: View {
     }
 
     // MARK: - Item View Components
-    private func shelfItemView(mark: MarkSchema) -> some View {
+    private func shelfItemView(item: ShelfMarkItem) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            ItemCoverView(item: mark.item, size: .medium)
-            itemDetails(for: mark)
+            ItemCoverView(item: item.mark.item, size: .medium)
+            itemDetails(for: item)
         }
         .overlay(alignment: .topTrailing) {
             chevronIcon
@@ -100,7 +109,42 @@ struct LibraryView: View {
         .contentShape(Rectangle())
     }
 
-    private func itemDetails(for mark: MarkSchema) -> some View {
+    private func shelfItemView(mark: MarkSchema) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            ItemCoverView(item: mark.item, size: .medium)
+            itemDetails(mark: mark)
+        }
+        .overlay(alignment: .topTrailing) {
+            chevronIcon
+                .padding(.top, 4)
+        }
+        .contentShape(Rectangle())
+    }
+
+    private func itemDetails(for item: ShelfMarkItem) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            ItemTitleView(
+                item: item.mark.item,
+                mode: .title,
+                size: .medium
+            )
+
+            ItemRatingView(
+                item: item.mark.item, size: .small, hideRatingCount: true)
+
+            ItemDescriptionView(
+                item: item.mark.item, mode: .brief, size: .medium)
+
+            ItemMarkView(
+                markController: item.controller,
+                size: .medium,
+                brief: true,
+                showEditButton: true
+            )
+        }
+    }
+
+    private func itemDetails(mark: MarkSchema) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             ItemTitleView(
                 item: mark.item,
@@ -111,9 +155,6 @@ struct LibraryView: View {
             ItemRatingView(item: mark.item, size: .small, hideRatingCount: true)
 
             ItemDescriptionView(item: mark.item, mode: .brief, size: .medium)
-
-            ItemMarkView(
-                mark: mark, size: .medium, brief: true, showEditButton: true)
         }
     }
 
@@ -125,66 +166,112 @@ struct LibraryView: View {
 
     // MARK: - Shelf Content View
     @ViewBuilder
-    private func shelfContentView(for type: ShelfType, geometry: GeometryProxy? = nil) -> some View {
+    private func shelfContentView(
+        for type: ShelfType, geometry: GeometryProxy? = nil
+    ) -> some View {
         if let state = viewModel.shelfStates[type] {
             if state.items.isEmpty {
-                emptyStateView(for: state, type: type)
+                if let error = state.error {
+                    EmptyStateView(
+                        String(
+                            localized: "library_error_title", table: "Library"),
+                        systemImage: "exclamationmark.triangle",
+                        description: Text(state.detailedError ?? error)
+                    )
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
                     .padding(.top, (geometry?.size.height ?? 0) / 4)
+                } else if !state.isLoading && !state.isRefreshing {
+                    EmptyStateView(
+                        String(
+                            localized: "library_empty_title", table: "Library"),
+                        systemImage: "books.vertical",
+                        description: Text(
+                            String(
+                                format: String(
+                                    localized: "library_empty_description",
+                                    table: "Library"), type.displayName))
+                    )
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .padding(.top, (geometry?.size.height ?? 0) / 4)
+                } else {
+                    shelfItemsPlaceholder()
+                }
             } else {
                 shelfItemsList(for: state, type: type)
             }
         }
     }
-    
+
+    //    @ViewBuilder
+    //    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
+    //        if let error = state.error {
+    //            EmptyStateView(
+    //                String(localized: "library_error_title", table: "Library"),
+    //                systemImage: "exclamationmark.triangle",
+    //                description: Text(state.detailedError ?? error)
+    //            )
+    //        } else if !state.isLoading && !state.isRefreshing {
+    //            EmptyStateView(
+    //                String(localized: "library_empty_title", table: "Library"),
+    //                systemImage: "books.vertical",
+    //                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
+    //            )
+    //        } else {
+    //            shelfItemsPlaceholder()
+    //        }
+    //    }
+
     @ViewBuilder
-    private func emptyStateView(for state: ShelfItemsState, type: ShelfType) -> some View {
-        if let error = state.error {
-            EmptyStateView(
-                String(localized: "library_error_title", table: "Library"),
-                systemImage: "exclamationmark.triangle",
-                description: Text(state.detailedError ?? error)
-            )
-        } else if !state.isLoading && !state.isRefreshing {
-            EmptyStateView(
-                String(localized: "library_empty_title", table: "Library"),
-                systemImage: "books.vertical",
-                description: Text(String(format: String(localized: "library_empty_description", table: "Library"), type.displayName))
-            )
-        } else {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding()
-                .id(UUID())
-                .padding(.top, 60)
+    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType)
+        -> some View
+    {
+        Group {
+            Section {
+                ForEach(state.items) { item in
+                    Button {
+                        TelemetryService.shared.trackLibraryItemClick(
+                            itemId: item.mark.item.id,
+                            category: item.mark.item.category,
+                            currentShelfType: type,
+                            currentShelfCategory: viewModel.selectedCategory)
+                        router.navigate(
+                            to: .itemDetailWithItem(item: item.mark.item))
+                    } label: {
+                        shelfItemView(item: item)
+                            .onAppear {
+                                if item.id == state.items.last?.id {
+                                    Task {
+                                        await viewModel.loadNextPage(type: type)
+                                    }
+                                }
+                            }
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            if state.isLoading && !state.isRefreshing {
+                Section {
+                    ProgressView()
+                        .listRowSeparator(.hidden)
+                        .id(UUID())
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .listRowInsets(EdgeInsets())
+                }
+            }
         }
     }
-    
+
     @ViewBuilder
-    private func shelfItemsList(for state: ShelfItemsState, type: ShelfType) -> some View {
-        ForEach(state.items) { mark in
-            Button {
-                router.navigate(to: .itemDetailWithItem(item: mark.item))
-            } label: {
-                shelfItemView(mark: mark)
-                    .onAppear {
-                        if mark.id == state.items.last?.id {
-                            Task {
-                                await viewModel.loadNextPage(type: type)
-                            }
-                        }
-                    }
-            }
-            .buttonStyle(.plain)
-        }
-        
-        if state.isLoading && !state.isRefreshing {
-            ProgressView()
-                .frame(maxWidth: .infinity)
-                .padding()
-                .listRowInsets(EdgeInsets())
+    private func shelfItemsPlaceholder() -> some View {
+        ForEach(PagedMarkSchema.placeholders.data) { item in
+            shelfItemView(mark: item)
+                .redacted(reason: .placeholder)
         }
     }
 }
@@ -197,3 +284,4 @@ struct LibraryView: View {
             .environmentObject(AppAccountsManager())
     }
 }
+

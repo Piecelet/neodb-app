@@ -7,8 +7,15 @@ enum LibraryState {
     case error
 }
 
+struct ShelfMarkItem: Identifiable {
+    let mark: MarkSchema
+    let controller: MarkDataController
+    
+    var id: String { mark.id }
+}
+
 struct ShelfItemsState {
-    var items: [MarkSchema] = []
+    var items: [ShelfMarkItem] = []
     var state: LibraryState = .loading
     var currentPage = 1
     var totalPages = 1
@@ -22,7 +29,8 @@ struct ShelfItemsState {
 final class LibraryViewModel: ObservableObject {
     // MARK: - Dependencies
     private let logger = Logger.views.library
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
+    let markDataProvider = MarkDataControllerProvider.shared
     
     // MARK: - Task Management
     private var loadTasks: [ShelfType: Task<Void, Never>] = [:]
@@ -34,6 +42,10 @@ final class LibraryViewModel: ObservableObject {
                 Task {
                     await loadShelfItems(type: selectedShelfType, refresh: true)
                 }
+                TelemetryService.shared.trackLibraryShelfTypeChange(
+                    shelfType: selectedShelfType,
+                    currentShelfType: oldValue,
+                    currentShelfCategory: selectedCategory)
             }
         }
     }
@@ -42,6 +54,10 @@ final class LibraryViewModel: ObservableObject {
             if oldValue != selectedCategory {
                 initShelfStates()
                 loadAllShelfItems()
+                TelemetryService.shared.trackLibraryCategoryChange(
+                    category: selectedCategory,
+                    currentShelfType: selectedShelfType,
+                    currentShelfCategory: oldValue)
             }
         }
     }
@@ -79,6 +95,9 @@ final class LibraryViewModel: ObservableObject {
     
     // MARK: - Public Methods
     func loadShelfItems(type: ShelfType, refresh: Bool = false) async {
+        if refresh {
+            TelemetryService.shared.trackLibraryRefresh()
+        }
         // Cancel existing task for this shelf type
         loadTasks[type]?.cancel()
         
@@ -202,9 +221,31 @@ final class LibraryViewModel: ObservableObject {
         loadTasks.removeAll()
     }
     
+    private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
+        if !Task.isCancelled {
+            updateShelfState(type: type) { state in
+                if let accountsManager = self.accountsManager {
+                    // 确保为每个 mark 创建新的 controller
+                    let newItems = cached.data.map { mark in
+                        let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                        controller.updateForm(for: mark)
+                        return ShelfMarkItem(mark: mark, controller: controller)
+                    }
+                    state.items = newItems
+                }
+                state.totalPages = cached.pages
+                state.state = .loaded
+            }
+            
+            logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
+        }
+    }
+    
     // MARK: - Private Methods
     private func updateShelfState(type: ShelfType, update: (inout ShelfItemsState) -> Void) {
         var state = shelfStates[type] ?? ShelfItemsState()
+        
+        // 只应用状态更新，不处理 controllers
         update(&state)
         shelfStates[type] = state
     }
@@ -223,17 +264,6 @@ final class LibraryViewModel: ObservableObject {
                     }
                 }
             }
-        }
-    }
-    
-    private func handleCachedItems(_ cached: PagedMarkSchema, type: ShelfType) async {
-        if !Task.isCancelled {
-            updateShelfState(type: type) { state in
-                state.items = cached.data
-                state.totalPages = cached.pages
-                state.state = .loaded
-            }
-            logger.debug("Loaded \(cached.data.count) items from cache for type: \(type)")
         }
     }
     
@@ -256,38 +286,41 @@ final class LibraryViewModel: ObservableObject {
     }
     
     private func handleFetchedItems(_ result: PagedMarkSchema, type: ShelfType, accountsManager: AppAccountsManager) async {
-        guard !Task.isCancelled else {
-            logger.debug("Shelf items loading cancelled after fetch for type: \(type)")
-            return
-        }
-        
-        updateShelfState(type: type) { state in
-            if state.currentPage == 1 || state.isRefreshing {
-                // 如果是第一页或刷新，直接替换数据
-                state.items = result.data
-            } else {
-                // 如果是加载更多，检查并去重后添加
-                let existingIds = Set(state.items.map { $0.id })
-                let newItems = result.data.filter { !existingIds.contains($0.id) }
-                state.items.append(contentsOf: newItems)
+        if !Task.isCancelled {
+            // 更新 UI 状态
+            updateShelfState(type: type) { state in
+                // 确保为每个 mark 创建新的 controller
+                let newItems = result.data.map { mark in
+                    let controller = self.markDataProvider.dataController(for: mark, appAccountsManager: accountsManager)
+                    controller.updateForm(for: mark)
+                    return ShelfMarkItem(mark: mark, controller: controller)
+                }
+                
+                if state.currentPage == 1 {
+                    state.items = newItems
+                } else {
+                    let existingIds = Set(state.items.map { $0.id })
+                    let filteredNewItems = newItems.filter { !existingIds.contains($0.id) }
+                    state.items.append(contentsOf: filteredNewItems)
+                }
+                state.totalPages = result.pages
+                state.state = .loaded
             }
-            state.totalPages = result.pages
-            state.state = .loaded
+            
+            // 只在第一页时缓存数据
+            let state = shelfStates[type] ?? ShelfItemsState()
+            if state.currentPage == 1 {
+                try? await cacheService.cacheLibrary(
+                    result,
+                    key: accountsManager.currentAccount.id,
+                    shelfType: type,
+                    category: selectedCategory
+                )
+                logger.debug("Cached first page data for type: \(type)")
+            }
+            
+            logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
         }
-        
-        // 只在第一页时缓存数据
-        let state = shelfStates[type] ?? ShelfItemsState()
-        if state.currentPage == 1 {
-            try? await cacheService.cacheLibrary(
-                result,
-                key: accountsManager.currentAccount.id,
-                shelfType: type,
-                category: selectedCategory
-            )
-            logger.debug("Cached first page data for type: \(type)")
-        }
-        
-        logger.debug("Successfully loaded \(result.data.count) items for type: \(type)")
     }
     
     private func handleError(_ error: Error, type: ShelfType) async {

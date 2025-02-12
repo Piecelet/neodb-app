@@ -13,8 +13,12 @@ extension CacheService {
     /// Cache keys for different types of data
     enum Keys {
         // Items
-        static func item(uuid: String, instance: String? = nil) -> String {
-            "item_\(instance ?? "default")_\(uuid)"
+        static func item(id: String) -> String {
+            "item_\(id)"
+        }
+
+        static func itemPosts(id: String, type: ItemPostType) -> String {
+            "itemPosts_\(id)_\(type.rawValue)"
         }
         
         // User related
@@ -23,8 +27,8 @@ extension CacheService {
         }
         
         // Marks related
-        static func mark(key: String, itemUUID: String) -> String {
-            "mark_\(key)_\(itemUUID)"
+        static func mark(itemID: String, accountID: String) -> String {
+            "mark_\(accountID)_\(itemID)"
         }
         
         // Library related
@@ -35,6 +39,10 @@ extension CacheService {
         // Gallery related
         static func gallery(instance: String? = nil) -> String {
             "gallery_\(instance ?? "default")"
+        }
+
+        static func gallery(instance: String = "default.instance", category: ItemCategory.galleryCategory) -> String {
+            "gallery_\(instance)_\(category.rawValue)"
         }
         
         // Search related
@@ -50,9 +58,8 @@ extension CacheService {
     
     // MARK: - Item Caching
     
-    func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory, instance: String? = nil) async throws {
-        let uuid = id.components(separatedBy: "/").last ?? id
-        let key = Keys.item(uuid: uuid, instance: instance)
+    func cacheItem(_ item: any ItemProtocol, id: String, category: ItemCategory) async throws {
+        let key = Keys.item(id: id)
         switch category {
         case .book:
             if let book = item as? EditionSchema {
@@ -99,16 +106,33 @@ extension CacheService {
         }
     }
     
-    func retrieveItem(id: String, category: ItemCategory, instance: String? = nil) async throws -> (any ItemProtocol)? {
-        let key = Keys.item(uuid: id, instance: instance)
-        let type = ItemSchema.make(category: category)
+    func retrieveItem(id: String, category: ItemCategory) async throws -> (any ItemProtocol)? {
+        let key = Keys.item(id: id)
+        let type = ItemSchema.makeType(category: category)
         return try await retrieve(forKey: key, type: type)
     }
     
-    func removeItem(id: String, category: ItemCategory, instance: String? = nil) async throws {
-        let key = Keys.item(uuid: id, instance: instance)
-        let type = ItemSchema.make(category: category)
+    func removeItem(id: String, category: ItemCategory) async throws {
+        let key = Keys.item(id: id)
+        let type = ItemSchema.makeType(category: category)
         try await remove(forKey: key, type: type)
+    }
+
+    // MARK: - Item Posts Caching
+
+    func cacheItemPosts(_ posts: [NeoDBPost], id: String, type: ItemPostType) async throws {
+        let key = Keys.itemPosts(id: id, type: type)
+        try await cache(posts, forKey: key, type: [NeoDBPost].self)
+    }
+
+    func retrieveItemPosts(id: String, type: ItemPostType) async throws -> [NeoDBPost]? {
+        let key = Keys.itemPosts(id: id, type: type)
+        return try await retrieve(forKey: key, type: [NeoDBPost].self)
+    }
+    
+    func removeItemPosts(id: String, type: ItemPostType) async throws {
+        let key = Keys.itemPosts(id: id, type: type)
+        try await remove(forKey: key, type: [NeoDBPost].self)
     }
     
     // MARK: - User Caching
@@ -130,18 +154,18 @@ extension CacheService {
     
     // MARK: - Marks Caching
     
-    func cacheMark(_ mark: MarkSchema, key: String, itemUUID: String, instance: String? = nil) async throws {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func cacheMark(_ mark: MarkSchema, accountID: String) async throws {
+        let key = Keys.mark(itemID: mark.item.id, accountID: accountID)
         try await cache(mark, forKey: key, type: MarkSchema.self)
     }
 
-    func retrieveMark(key: String, itemUUID: String) async throws -> MarkSchema? {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func retrieveMark(itemID: String, accountID: String) async throws -> MarkSchema? {
+        let key = Keys.mark(itemID: itemID, accountID: accountID)
         return try await retrieve(forKey: key, type: MarkSchema.self)
     }
     
-    func removeMark(key: String, itemUUID: String) async throws {
-        let key = Keys.mark(key: key, itemUUID: itemUUID)
+    func removeMark(itemID: String, accountID: String) async throws {
+        let key = Keys.mark(itemID: itemID, accountID: accountID)
         try await remove(forKey: key, type: MarkSchema.self)
     }
     
@@ -164,21 +188,36 @@ extension CacheService {
     
     // MARK: - Gallery Caching
     
-    func cacheGallery(_ gallery: [GalleryResult], instance: String? = nil) async throws {
+    func cacheGallery(galleryResult: [GalleryResult], instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
-        try await cache(gallery, forKey: key, type: [GalleryResult].self)
+        try await cache(galleryResult, forKey: key, type: [GalleryResult].self)
     }
-    
+
     func retrieveGallery(instance: String? = nil) async throws -> [GalleryResult]? {
         let key = Keys.gallery(instance: instance)
         return try await retrieve(forKey: key, type: [GalleryResult].self)
     }
-    
+
     func removeGallery(instance: String? = nil) async throws {
         let key = Keys.gallery(instance: instance)
         try await remove(forKey: key, type: [GalleryResult].self)
     }
 
+    func cacheGallery(_ gallery: TrendingItemResult, category: ItemCategory.galleryCategory, instance: String) async throws {
+        let key = Keys.gallery(instance: instance, category: category)
+        try await cache(gallery, forKey: key, type: TrendingItemResult.self)
+    }
+
+    func retrieveGallery(category: ItemCategory.galleryCategory, instance: String) async throws -> TrendingItemResult? {
+        let key = Keys.gallery(instance: instance, category: category)
+        return try await retrieve(forKey: key, type: TrendingItemResult.self)
+    }
+
+    func removeGallery(category: ItemCategory.galleryCategory, instance: String) async throws {
+        let key = Keys.gallery(instance: instance, category: category)
+        try await remove(forKey: key, type: TrendingItemResult.self)
+    }
+    
     // MARK: - Timelines Caching
 
     func cacheTimelines(_ timelines: [MastodonStatus], key: String) async throws {

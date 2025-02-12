@@ -5,11 +5,11 @@
 //  Created by citron(https://github.com/lcandy2) on 1/7/25.
 //
 
-import ColorfulX
 import Kingfisher
 import OSLog
 import SwiftUI
 import WishKit
+import Defaults
 
 @MainActor
 class SettingsViewModel: ObservableObject {
@@ -27,7 +27,7 @@ class SettingsViewModel: ObservableObject {
     @Published var isCacheClearing = false
     @Published var showClearCacheConfirmation = false
 
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
     private let logger = Logger.views.settings
 
     func loadUserProfile(forceRefresh: Bool = false) async {
@@ -223,11 +223,13 @@ struct AccountRow: View {
         .contentShape(Rectangle())
         .onTapGesture {
             switchToAccount(account)
+            TelemetryService.shared.trackSettingsSwitchAccount(to: account.instance)
         }
         .swipeActions(edge: .trailing) {
             if account.id != accountsManager.currentAccount.id {
                 Button(role: .destructive) {
                     deleteAccount(account)
+                    TelemetryService.shared.trackSettingsDeleteAccount(from: account.instance)
                 } label: {
                     Label("Remove", systemImage: "trash")
                 }
@@ -304,11 +306,6 @@ struct SettingsView: View {
 
     private let avatarSize: CGFloat = 60
 
-    init() {
-        WishKit.configure(with: AppConfig.wishkitApiKey)
-        WishKit.theme.primaryColor = .accent
-    }
-
     // MARK: - Body
     var body: some View {
         Group {
@@ -319,7 +316,26 @@ struct SettingsView: View {
             await viewModel.loadUserProfile()
         }
         .navigationTitle(String(localized: "settings_title", table: "Settings"))
-        .navigationBarTitleDisplayMode(.large)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                Text("settings_title", tableName: "Settings")
+                    .font(.system(size: 24))
+                    .fontWeight(.semibold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .padding(.top, 4)
+            }
+            ToolbarItem(placement: .principal) {
+                Text("settings_title", tableName: "Settings")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 2)
+                    .hidden()
+            }
+        }
+        .task {
+            TelemetryService.shared.trackSettingsView()
+        }
         #if DEBUG
             .enableInjection()
         #endif
@@ -329,13 +345,7 @@ struct SettingsView: View {
     @ViewBuilder
     private var contentView: some View {
         Group {
-            if viewModel.isLoading && viewModel.user == nil {
-                loadingView
-            } else if let error = viewModel.error {
-                errorView(error)
-            } else {
-                profileContent
-            }
+            profileContent
         }
         .animation(.smooth, value: viewModel.isLoading)
         .animation(.smooth, value: viewModel.error)
@@ -350,16 +360,28 @@ struct SettingsView: View {
         EmptyStateView(
             String(localized: "profile_error_title", table: "Settings"),
             systemImage: "exclamationmark.triangle",
-            description: Text(error)
+            description: Text(error),
+            actions: {
+                logoutButton
+            }
         )
     }
 
     private var profileContent: some View {
         List {
+            if viewModel.isLoading && viewModel.user == nil {
+                loadingView
+            } else if let error = viewModel.error {
+                errorView(error)
+            } else {
             profileHeaderSection
+            }
             purchaseSection
             accountManagementSection
-            accountInformationSection
+            if viewModel.error == nil {
+                accountInformationSection
+            }
+            mainInterfaceSection
             appSection
             cacheManagementSection
             logoutSection
@@ -460,9 +482,11 @@ struct SettingsView: View {
                         .labelStyle(.titleOnly)
                         .foregroundStyle(.primary)
                         if storeManager.isPlus {
-                            Text("store_description_plus", tableName: "Settings")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                            Text(
+                                "store_description_plus", tableName: "Settings"
+                            )
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                         } else {
                             Text("store_description", tableName: "Settings")
                                 .font(.subheadline)
@@ -480,17 +504,22 @@ struct SettingsView: View {
             }
             .background(
                 ZStack {
-                    ColorfulView(
-                        color: .constant([
+                    LinearGradient(
+                        colors: [
                             .green.opacity(0.8),
-                            .mint,
-                            .teal,
-                        ])
+                            .mint.opacity(0.9),
+                            .teal.opacity(0.8),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                     .opacity(0.5)
 
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(colorScheme == .dark ? .black.opacity(0.7) : .white.opacity(0.9))
+                        .fill(
+                            colorScheme == .dark
+                                ? .black.opacity(0.7) : .white.opacity(0.9)
+                        )
                         .padding(2)
                 }
             )
@@ -506,11 +535,14 @@ struct SettingsView: View {
         }
     }
 
+    private var mainInterfaceSection: some View {
+        SettingsViewCustomizeHome()
+    }
+
     private var appSection: some View {
         Section {
             NavigationLink {
-                WishKit.FeedbackListView()
-                    .padding(.bottom)
+                WishKitView()
             } label: {
                 Label {
                     Text("app_feature_requests", tableName: "Settings")
@@ -550,6 +582,7 @@ struct SettingsView: View {
         Section {
             Button(role: .destructive) {
                 viewModel.showClearCacheConfirmation = true
+                TelemetryService.shared.trackSettingsClearCache()
             } label: {
                 HStack {
                     if viewModel.isCacheClearing {
@@ -570,15 +603,21 @@ struct SettingsView: View {
 
     private var logoutSection: some View {
         Section {
+            logoutButton
+        }
+    }
+
+    private var logoutButton: some View {
             Button(role: .destructive) {
                 withAnimation {
                     viewModel.logout()
                     dismiss()
                 }
+                TelemetryService.shared.trackSettingsSignOut()
             } label: {
                 Text(String(localized: "signout_button", table: "Settings"))
                     .frame(maxWidth: .infinity)
             }
-        }
     }
+    
 }

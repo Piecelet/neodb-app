@@ -14,6 +14,7 @@ struct ItemView: View {
     @StateObject private var viewModel: ItemViewModel
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
+    @EnvironmentObject private var storeManager: StoreManager
     @Environment(\.openURL) private var openURL
 
     let id: String
@@ -47,7 +48,7 @@ struct ItemView: View {
         }
         .refreshable {
             await viewModel.loadItemDetail(
-                id: itemUUID, category: category, refresh: true)
+                id: id, category: category, refresh: true)
         }
         .alert(
             "Error", isPresented: $viewModel.showError,
@@ -57,7 +58,10 @@ struct ItemView: View {
         }
         .task {
             viewModel.accountsManager = accountsManager
-            await viewModel.loadItemDetail(id: itemUUID, category: category)
+            await viewModel.loadItemDetail(id: id, category: category)
+            TelemetryService.shared.trackItemView(
+                id: viewModel.item?.id,
+                category: viewModel.item?.category)
         }
         .onDisappear {
             viewModel.cleanup()
@@ -91,18 +95,15 @@ struct ItemView: View {
                     }
                 }
 
-            Divider()
-                .padding(.vertical)
-
-            if !viewModel.description.isEmpty {
-                descriptionView
-
-                Divider()
-                    .padding(.vertical)
-            }
-
             actionsView
                 .padding(.horizontal)
+                .padding(.top)
+
+            ItemViewDescription(item: viewModel.item)
+
+            if let item = viewModel.item {
+                ItemViewPosts(item: item)
+            }
         }
     }
 
@@ -154,46 +155,30 @@ struct ItemView: View {
                 ItemDescriptionView(
                     item: viewModel.item,
                     mode: .metadata,
-                    size: .large
+                    size: .large,
+                    action: {
+                        HapticService.shared.selection()
+                        router.presentSheet(.itemDetails(item: viewModel.item!))
+                        TelemetryService.shared.trackItemShowDetail(
+                            itemId: viewModel.item?.id,
+                            category: viewModel.item?.category)
+                    }
                 )
-
-                Button {
-                    router.presentSheet(.itemDetails(item: viewModel.item!))
-                } label: {
-                    Text("item_view_details", tableName: "Item")
-                        .font(.caption)
-                        .foregroundStyle(.accent)
-                }
             }
         }
-    }
-
-    // MARK: - Description View
-    private var descriptionView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("item_description", tableName: "Item")
-                .font(.headline)
-
-            ExpandableText(viewModel.description)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .lineLimit(4)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
     }
 
     // MARK: - Actions View
     private var actionsView: some View {
         VStack(spacing: 12) {
+            shelfTypeButtons
+
             if viewModel.isMarkLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity)
-            } else if let mark = viewModel.mark {
-                ItemMarkView(mark: mark, size: .large)
+            } else if let markDataController = viewModel.markDataController {
+                ItemMarkView(markController: markDataController, size: .large)
             }
-
-            shelfTypeButtons
         }
         .onChange(of: viewModel.isRefreshing) { newValue in
             if newValue {
@@ -208,17 +193,23 @@ struct ItemView: View {
                 type in
                 if let item = viewModel.item {
                     Group {
-                        if let mark = viewModel.mark,
-                         mark.shelfType == type {
+                        if let mark = viewModel.markDataController?.mark,
+                            mark.shelfType == type
+                        {
                             Button {
                                 router.presentSheet(
                                     .editShelfItem(
                                         mark: mark, shelfType: type,
                                         detentLevel: .detailed))
                                 HapticFeedback.impact(.medium)
+                                TelemetryService.shared.trackItemEditMark(
+                                    itemId: item.id,
+                                    category: item.category,
+                                    shelfType: type)
                             } label: {
                                 HStack(spacing: 4) {
-                                    Image(symbol: type.symbolActionStateDoneFill)
+                                    Image(
+                                        symbol: type.symbolActionStateDoneFill)
                                     Text(
                                         type.displayNameForCategory(
                                             viewModel.item?.category)
@@ -236,6 +227,10 @@ struct ItemView: View {
                                         item: item, shelfType: type,
                                         detentLevel: .detailed))
                                 HapticFeedback.impact(.medium)
+                                TelemetryService.shared.trackItemAddMark(
+                                    itemId: item.id,
+                                    category: item.category,
+                                    shelfType: type)
                             } label: {
                                 HStack(spacing: 4) {
                                     Image(symbol: type.symbolImage)
@@ -262,37 +257,11 @@ struct ItemView: View {
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarTrailing) {
             HStack(spacing: 16) {
-                if let resources = viewModel.item?.externalResources,
-                    !resources.isEmpty
-                {
-                    Menu {
-                        if let shareURL = viewModel.shareURL {
-                            Button(
-                                String(
-                                    format: String(
-                                        localized: "item_open_in_website",
-                                        table: "Item"),
-                                    accountsManager.currentAccount.instance),
-                                systemSymbol: .arrowUpRight
-                            ) {
-                                openURL(shareURL)
-                            }
-
-                            Divider()
-                        }
-
-                        ForEach(resources, id: \.url) { resource in
-                            Button(role: .none) {
-                                openURL(resource.url)
-                            } label: {
-                                Label(resource.name, systemImage: resource.icon)
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "link")
-                    }
+                if let item = viewModel.item {
+                    ItemOpenInView(
+                        item: item, accountsManager: accountsManager, router: router, storeManager: storeManager
+                    ).bodyMenu
                 }
-
                 if let url = viewModel.shareURL {
                     ShareLink(item: url) {
                         Label("Share", systemImage: "square.and.arrow.up")
@@ -303,11 +272,6 @@ struct ItemView: View {
         }
     }
 
-    // MARK: - Helper Properties
-    private var itemUUID: String {
-        URL(string: id)?.lastPathComponent ?? id
-    }
-
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
@@ -316,7 +280,7 @@ struct ItemView: View {
 // MARK: - Button Style
 private struct ShelfTypeButtonStyle: ButtonStyle {
     let filled: Bool
-    
+
     init(filled: Bool = false) {
         self.filled = filled
     }
@@ -334,7 +298,9 @@ private struct ShelfTypeButtonStyle: ButtonStyle {
             .foregroundStyle(filled ? color : color)
             .overlay {
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(filled ? color.opacity(0.4) : color, lineWidth: strokeWidth)
+                    .stroke(
+                        filled ? color.opacity(0.4) : color,
+                        lineWidth: strokeWidth)
             }
             .opacity(configuration.isPressed ? 0.7 : 1.0)
     }

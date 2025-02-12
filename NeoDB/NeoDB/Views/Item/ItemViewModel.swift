@@ -19,15 +19,19 @@ enum ItemState {
 final class ItemViewModel: ObservableObject {
     // MARK: - Dependencies
     let logger = Logger.views.item
-    private let cacheService = CacheService()
+    private let cacheService = CacheService.shared
 
     // MARK: - Task Management
     private var loadTask: Task<Void, Never>?
-    private var markLoadTask: Task<Void, Never>?
+    // private var markLoadTask: Task<Void, Never>?
+
+    private let markDataProvider = MarkDataControllerProvider.shared
+
+    var markDataController: MarkDataController?
 
     // MARK: - Published Properties
     @Published private(set) var item: (any ItemProtocol)?
-    @Published private(set) var mark: MarkSchema?
+    // @Published private(set) var mark: MarkSchema?
     @Published private(set) var state: ItemState = .loading
     @Published var error: Error?
     @Published var showError = false
@@ -55,8 +59,7 @@ final class ItemViewModel: ObservableObject {
     var coverImageURL: URL? { item?.coverImageUrl }
     var rating: String { item?.rating.map { String(format: "%.1f", $0) } ?? "" }
     var ratingCount: String { item?.ratingCount.map(String.init) ?? "0" }
-    var description: String { item?.description ?? "" }
-    var shelfType: ShelfType? { mark?.shelfType }
+    var shelfType: ShelfType? { markDataController?.shelfType }
 
     var metadata: [String] {
         guard let item else { return [] }
@@ -86,14 +89,8 @@ final class ItemViewModel: ObservableObject {
     }
 
     var shareURL: URL? {
-        guard let item,
-            let accountsManager
-        else { return nil }
-
-        return ItemURL.makeShareURL(
-            for: item,
-            instance: accountsManager.currentAccount.instance
-        )
+        guard let item else { return nil }
+        return URL(string: item.id)
     }
 
     // MARK: - Initialization
@@ -130,7 +127,7 @@ final class ItemViewModel: ObservableObject {
             do {
                 if !refresh,
                     let cached = try? await cacheService.retrieveItem(
-                        id: id, category: category, instance: accountsManager.currentAccount.instance)
+                        id: id, category: category)
                 {
                     await handleCachedItem(cached, id: id, category: category)
                         return
@@ -152,7 +149,7 @@ final class ItemViewModel: ObservableObject {
     }
     
     func loadMarkIfNeeded() {
-        guard mark == nil,
+        guard 
             let item
         else { return }
         loadMark(itemId: item.uuid, refresh: false)
@@ -165,56 +162,66 @@ final class ItemViewModel: ObservableObject {
 
     func cleanup() {
         loadTask?.cancel()
-        markLoadTask?.cancel()
+        // markLoadTask?.cancel()
         loadTask = nil
-        markLoadTask = nil
+        // markLoadTask = nil
     }
 
     private func loadMark(itemId: String, refresh: Bool) {
-        markLoadTask?.cancel()
+        guard let accountsManager else { return }
 
-        markLoadTask = Task {
-            guard let accountsManager else {
-                logger.debug("No accountsManager available")
-                return
-            }
-
-            if !Task.isCancelled {
-                if refresh {
-                    isRefreshing = true
-                } else {
-                    isMarkLoading = true
-                }
-            }
-
-            defer {
-                if !Task.isCancelled {
-                    isMarkLoading = false
-                    isRefreshing = false
-                }
-            }
-
-            do {
-                if !refresh,
-                    let cached = try? await getCachedMark(itemId: itemId)
-                {
-                    if !Task.isCancelled {
-                        mark = cached
-                    }
-                }
-
-                let endpoint = MarkEndpoint.get(itemId: itemId)
-                let result = try await accountsManager.currentClient.fetch(
-                    endpoint, type: MarkSchema.self)
-
-                if !Task.isCancelled {
-                    mark = result
-                    try? await cacheMark(result, itemId: itemId)
-                }
-            } catch {
-                await handleMarkError(error, itemId: itemId)
-            }
+        if markDataController == nil {
+            markDataController = markDataProvider.dataController(for: itemId, appAccountsManager: accountsManager)
         }
+
+        if refresh {
+            markDataController?.updateForm(for: itemId)
+        }
+
+        // markLoadTask?.cancel()
+
+        // markLoadTask = Task {
+        //     guard let accountsManager else {
+        //         logger.debug("No accountsManager available")
+        //         return
+        //     }
+
+        //     if !Task.isCancelled {
+        //         if refresh {
+        //             isRefreshing = true
+        //         } else {
+        //             isMarkLoading = true
+        //         }
+        //     }
+
+        //     defer {
+        //         if !Task.isCancelled {
+        //             isMarkLoading = false
+        //             isRefreshing = false
+        //         }
+        //     }
+
+        //     do {
+        //         if !refresh,
+        //             let cached = try? await getCachedMark(itemId: itemId)
+        //         {
+        //             if !Task.isCancelled {
+        //                 mark = cached
+        //             }
+        //         }
+
+        //         let endpoint = MarkEndpoint.get(itemUUID: itemId)
+        //         let result = try await accountsManager.currentClient.fetch(
+        //             endpoint, type: MarkSchema.self)
+
+        //         if !Task.isCancelled {
+        //             mark = result
+        //             try? await cacheMark(result, itemId: itemId)
+        //         }
+        //     } catch {
+        //         await handleMarkError(error, itemId: itemId)
+        //     }
+        // }
     }
 
     private func updateLoadingState(refresh: Bool) {
@@ -248,7 +255,7 @@ final class ItemViewModel: ObservableObject {
             item = result
             state = .loaded
             try? await cacheService.cacheItem(
-                result, id: id, category: category, instance: accountsManager?.currentAccount.instance)
+                result, id: id, category: category)
         }
     }
 
@@ -268,11 +275,11 @@ final class ItemViewModel: ObservableObject {
                 statusCode == 404
             {
                 // 404 means no mark exists, which is a normal case
-                mark = nil
+                markDataController?.mark = nil
                 logger.debug("No mark found for item: \(itemId)")
             } else {
                 // Only show error if we don't have cached data
-                if mark == nil {
+                if markDataController?.mark == nil {
                     self.error = error
                     self.showError = true
                     logger.error(
@@ -287,18 +294,17 @@ final class ItemViewModel: ObservableObject {
     ) async throws -> any ItemProtocol {
         let endpoint = ItemEndpoint.make(id: id, category: category)
         return try await client.fetch(
-            endpoint, type: ItemSchema.make(category: category))
+            endpoint, type: ItemSchema.makeType(category: category))
     }
 
     private func getCachedMark(itemId: String) async throws -> MarkSchema? {
         // let cacheKey = "mark_\(itemId)"
-        return try await cacheService.retrieveMark(
-            key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId)
+        return try await cacheService.retrieveMark(itemID: itemId, accountID: accountsManager?.currentAccount.id ?? "default")
     }
 
     private func cacheMark(_ mark: MarkSchema, itemId: String) async throws {
         try await cacheService.cacheMark(
-            mark, key: accountsManager?.currentAccount.id ?? "default", itemUUID: itemId, instance: accountsManager?.currentAccount.instance)
+            mark, accountID: accountsManager?.currentAccount.id ?? "default")
     }
 
     private func refreshItemInBackground(id: String, category: ItemCategory)
@@ -312,7 +318,7 @@ final class ItemViewModel: ObservableObject {
                 client: accountsManager.currentClient)
             logger.debug("Cache \(id) \(category) item refreshed")
             try? await cacheService.cacheItem(
-                result, id: id, category: category, instance: accountsManager.currentAccount.instance)
+                result, id: id, category: category)
             
             if !Task.isCancelled {
                 item = result

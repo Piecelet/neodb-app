@@ -104,7 +104,9 @@ NeoDB.xcconfig
 build/XCBuildData/
 
 IceNewTimelineRef
+IceStatusKit
 
 *.storekit
 
 .cursorrules
+Mastodon.zip
