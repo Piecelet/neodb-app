@@ -154,6 +154,7 @@ class TelemetryService: ObservableObject {
         if let currentShelfCategory = currentShelfCategory {
             parameters["currentShelfCategory"] = currentShelfCategory.rawValue
         }
+        TelemetryDeck.signal("library.category.change", parameters: parameters)
         logger.debug("Tracked library category change: \(category.rawValue)")
     }
 
