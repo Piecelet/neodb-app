@@ -75,18 +75,36 @@ struct TroubleshootingView: View {
     var body: some View {
         NavigationStack {
             List {
+                Text("If you're having trouble signing in, please try reset client.")
+                
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Instance")
-                            .font(.headline)
                         Text(viewModel.instanceAddress)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.headline)
+                        if let client = viewModel.clientInfo {
+                            Text(verbatim: "Client ID: \(client.clientId)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                     }
-                    .padding(.vertical, 4)
+                    
+                    Button(role: .destructive) {
+                        showResetClientAlert = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.counterclockwise.circle")
+                            Text("Reset Client")
+                        }
+                        .foregroundStyle(.secondary)
+                    }
+                    .disabled(viewModel.isResettingClient)
                 } header: {
-                    Text("Instance Information")
+                    Text("Instance")
+                } footer: {
+                    Text("Resetting the client will clear all OAuth client information for this instance. You may need to sign in again.")
                 }
+                
+                #if DEBUG
                 
                 Section {
                     if let client = viewModel.clientInfo {
@@ -108,20 +126,8 @@ struct TroubleshootingView: View {
                         Text("No client information found")
                             .foregroundStyle(.secondary)
                     }
-                    
-                    Button(role: .destructive) {
-                        showResetClientAlert = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.counterclockwise.circle")
-                            Text("Reset Client")
-                        }
-                    }
-                    .disabled(viewModel.isResettingClient)
                 } header: {
                     Text("Client Information")
-                } footer: {
-                    Text("Resetting the client will clear all OAuth client information for this instance. You'll need to sign in again.")
                 }
                 
                 Section {
@@ -138,6 +144,7 @@ struct TroubleshootingView: View {
                 } footer: {
                     Text("Access developer tools for more advanced troubleshooting options.")
                 }
+                #endif
                 
                 if viewModel.resetSuccess {
                     Section {
@@ -150,7 +157,7 @@ struct TroubleshootingView: View {
                     }
                 }
             }
-            .navigationTitle("Troubleshooting")
+            .navigationTitle("Need Help?")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -162,9 +169,9 @@ struct TroubleshootingView: View {
                     }
                 }
             }
-            .refreshable {
-                viewModel.loadClientInfo()
-            }
+            // .refreshable {
+            //    viewModel.loadClientInfo()
+            // }
             .alert("Error", isPresented: $viewModel.showError) {
                 Button("OK", role: .cancel) {}
             } message: {
@@ -186,7 +193,7 @@ struct TroubleshootingView: View {
             }
         }
         .presentationDetents([.medium, .large])
-        .presentationDragIndicator(.visible)
+        .presentationDragIndicator(.hidden)
         .enableInjection()
     }
     

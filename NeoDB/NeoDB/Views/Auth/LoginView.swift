@@ -257,6 +257,7 @@ struct LoginView: View {
         }
         .sheet(isPresented: $showTroubleshooting) {
             TroubleshootingView(instanceAddress: viewModel.instanceAddress)
+                .background(.ultraThinMaterial)
         }
         .enableInjection()
     }
