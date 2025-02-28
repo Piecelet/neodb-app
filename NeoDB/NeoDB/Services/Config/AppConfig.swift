@@ -39,9 +39,11 @@ enum AppConfig {
     }
 
     static let instances: [AppInstance] = [
-        AppInstance(name: "NeoDB", iconName: "appInstance.neodb", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文"], users: "19.7K"),
+        AppInstance(name: "NeoDB", iconName: "appInstance.neodb", host: "neodb.social", description: "一个自由、开放、互联的书籍、电影、音乐和游戏收藏评论交流社区。", tags: ["中文", "Flagship", "English"], users: "20.4K"),
         AppInstance(name: "Eggplant", iconName: "appInstance.eggplant", host: "eggplant.place", description: "Reviews about book, film, music, podcast and game.", tags: ["English", "Beta"], users: "270"),
         AppInstance(name: "ReviewDB", iconName: nil, host: "reviewdb.app", description: "A community for book, film, music, podcast and game reviews.", tags: ["International"], users: "58"),
         AppInstance(name: "Minreol", iconName: "appInstance.minreol", host: "minreol.dk", description: "MinReol er et dansk fællesskab centreret om bøger, film, TV-serier, spil og podcasts.", tags: ["Danish"], users: "38"),
+        AppInstance(name: "CasDB", iconName: "appInstance.casdb", host: "db.casually.cat", description: "Reviews about book, film, music, podcast and game.", tags: [], users: "5"),
+        AppInstance(name: "KevGa-NeoDB", iconName: nil, host: "neodb.kevga.de", description: "Hier kannst du Filme, Serien, Bücher, Aufführungen und auch Alben mit Lesezeichen versehen (um eine eigene Liste zu führen) oder bewerten.", tags: ["Germany"], users: "9"),
     ]
 }

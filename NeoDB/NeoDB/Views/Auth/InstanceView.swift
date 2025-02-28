@@ -123,6 +123,16 @@ struct InstanceView: View {
                         InstanceRowView(instance: .app(instance))
                     }
                 }
+                
+                HStack {
+                    Spacer()
+                    Text("instance_input_instance_hint", tableName: "Settings")
+                    Spacer()
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.vertical, 8)
+                .listRowSeparator(.hidden, edges: .bottom)
             }
             .listSectionSeparator(.hidden, edges: .top)
 

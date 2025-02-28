@@ -14,6 +14,7 @@ struct LoginView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: LoginViewModel
     @State private var showMastodonLogin = false
+    @State private var showTroubleshooting = false
     private let logger = Logger.views.login
 
     let isAddingAccount: Bool
@@ -144,6 +145,16 @@ struct LoginView: View {
         }
         .navigationTitle(String(localized: "login_title", table: "Settings"))
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showTroubleshooting = true
+                } label: {
+                    Image(systemName: "questionmark.circle")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
         .onDisappear {
             if isAddingAccount {
                 accountsManager.restoreLastAuthenticatedAccount()
@@ -178,6 +189,9 @@ struct LoginView: View {
                         viewModel.isAuthenticating = true
                         try? await viewModel.handleCallback(url: url)
                     }
+                } else if error != nil {
+                    // Login was canceled or failed
+                    showTroubleshooting = true
                 }
                 viewModel.isAuthenticating = false
             }
@@ -240,6 +254,9 @@ struct LoginView: View {
             }
             .presentationDetents([.fraction(0.85)])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showTroubleshooting) {
+            TroubleshootingView(instanceAddress: viewModel.instanceAddress)
         }
         .enableInjection()
     }

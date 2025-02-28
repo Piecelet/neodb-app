@@ -118,6 +118,8 @@ extension Logger {
             subsystem: subsystem, category: "view.developer")
         static let store = Logger(
             subsystem: subsystem, category: "view.store")
+        static let troubleshooting = Logger(
+            subsystem: subsystem, category: "view.troubleshooting")
     }
 
     // MARK: - User Actions

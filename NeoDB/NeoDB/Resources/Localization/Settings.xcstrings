@@ -915,6 +915,34 @@
         }
       }
     },
+    "instance_input_instance_hint" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kan du ikke se den instans, du leder efter? Indtast adressen på din instans i søgefeltet."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't see the instance you are looking for? Enter your instance's address in the search bar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não está vendo a instância que está procurando? Digite o endereço de sua instância na barra de pesquisa."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有找到您要查找的实例？在上方搜索栏中输入你的实例地址。"
+          }
+        }
+      }
+    },
     "instance_search_empty" : {
       "comment" : "Message shown when no search results are found",
       "localizations" : {
