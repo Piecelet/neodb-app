@@ -9,6 +9,7 @@
 import SwiftUI
 import KeychainSwift
 import OSLog
+import WishKit
 
 @MainActor
 class TroubleshootingViewModel: ObservableObject {
@@ -63,6 +64,7 @@ class TroubleshootingViewModel: ObservableObject {
 
 struct TroubleshootingView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.openURL) private var openURL
     @StateObject private var viewModel: TroubleshootingViewModel
     @State private var showResetClientAlert = false
     
@@ -85,6 +87,10 @@ struct TroubleshootingView: View {
                             Text(verbatim: "Client ID: \(client.clientId)")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+                        } else {
+                            Text(verbatim: "No registered client.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
                     
@@ -95,13 +101,56 @@ struct TroubleshootingView: View {
                             Image(systemName: "arrow.counterclockwise.circle")
                             Text("Reset Client")
                         }
-                        .foregroundStyle(.secondary)
                     }
-                    .disabled(viewModel.isResettingClient)
+                    .disabled(viewModel.isResettingClient || viewModel.clientInfo == nil)
                 } header: {
                     Text("Instance")
                 } footer: {
                     Text("Resetting the client will clear all OAuth client information for this instance. You may need to sign in again.")
+                }
+                
+                // Contact Section
+                Section {
+                    Link(destination: URL(string: "mailto:contact@piecelet.app")!) {
+                        HStack {
+                            Label("Email", systemImage: "envelope")
+                            Spacer()
+                            Text("contact@piecelet.app")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
+                    Link(destination: URL(string: "https://mastodon.social/@piecelet")!) {
+                        HStack {
+                            Label(String(localized: "about_social_mastodon", table: "Settings"), systemImage: "bubble.left")
+                            Spacer()
+                            Text("@piecelet")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
+                    Link(destination: URL(string: "https://m.cmx.im/@piecelet")!) {
+                        HStack {
+                            Label(String(localized: "about_social_mastodon_cn", table: "Settings"), systemImage: "bubble.left")
+                            Spacer()
+                            Text("@piecelet")
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                    
+                    NavigationLink {
+                        WishKitView()
+                    } label: {
+                        Label {
+                            Text("app_feature_requests", tableName: "Settings")
+                        } icon: {
+                            Image(systemName: "lightbulb")
+                        }
+                    }
+                } header: {
+                    Text("Contact & Feedback")
+                } footer: {
+                    Text("If you need further assistance, please contact us or submit feedback.")
                 }
                 
                 #if DEBUG
@@ -165,8 +214,8 @@ struct TroubleshootingView: View {
                         dismiss()
                     } label: {
                         Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
                     }
+                    .foregroundStyle(.secondary)
                 }
             }
             // .refreshable {
