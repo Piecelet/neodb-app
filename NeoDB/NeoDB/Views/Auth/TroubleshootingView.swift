@@ -77,7 +77,7 @@ struct TroubleshootingView: View {
     var body: some View {
         NavigationStack {
             List {
-                Text("If you're having trouble signing in, please try reset client.")
+                Text(String(localized: "troubleshooting_intro", table: "Settings"))
                 
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
@@ -88,7 +88,7 @@ struct TroubleshootingView: View {
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         } else {
-                            Text(verbatim: "No registered client.")
+                            Text(String(localized: "troubleshooting_no_client", table: "Settings"))
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -99,21 +99,21 @@ struct TroubleshootingView: View {
                     } label: {
                         HStack {
                             Image(systemName: "arrow.counterclockwise.circle")
-                            Text("Reset Client")
+                            Text(String(localized: "troubleshooting_reset_client", table: "Settings"))
                         }
                     }
                     .disabled(viewModel.isResettingClient || viewModel.clientInfo == nil)
                 } header: {
-                    Text("Instance")
+                    Text(String(localized: "troubleshooting_instance_header", table: "Settings"))
                 } footer: {
-                    Text("Resetting the client will clear all OAuth client information for this instance. You may need to sign in again.")
+                    Text(String(localized: "troubleshooting_reset_footer", table: "Settings"))
                 }
                 
                 // Contact Section
                 Section {
                     Link(destination: URL(string: "mailto:contact@piecelet.app")!) {
                         HStack {
-                            Label("Email", systemImage: "envelope")
+                            Label(String(localized: "about_email", table: "Settings"), systemImage: "envelope")
                             Spacer()
                             Text("contact@piecelet.app")
                                 .foregroundStyle(.secondary)
@@ -142,15 +142,15 @@ struct TroubleshootingView: View {
                         WishKitView()
                     } label: {
                         Label {
-                            Text("app_feature_requests", tableName: "Settings")
+                            Text(String(localized: "app_feature_requests", table: "Settings"))
                         } icon: {
                             Image(systemName: "lightbulb")
                         }
                     }
                 } header: {
-                    Text("Contact & Feedback")
+                    Text(String(localized: "troubleshooting_contact_header", table: "Settings"))
                 } footer: {
-                    Text("If you need further assistance, please contact us or submit feedback.")
+                    Text(String(localized: "troubleshooting_contact_footer", table: "Settings"))
                 }
                 
                 #if DEBUG
@@ -172,11 +172,11 @@ struct TroubleshootingView: View {
                         }
                         .padding(.vertical, 4)
                     } else {
-                        Text("No client information found")
+                        Text(String(localized: "troubleshooting_no_client_info", table: "Settings"))
                             .foregroundStyle(.secondary)
                     }
                 } header: {
-                    Text("Client Information")
+                    Text(String(localized: "troubleshooting_client_info_header", table: "Settings"))
                 }
                 
                 Section {
@@ -185,13 +185,11 @@ struct TroubleshootingView: View {
                     } label: {
                         HStack {
                             Image(systemName: "hammer.fill")
-                            Text("Developer Tools")
+                            Text(String(localized: "developer_title", table: "Settings"))
                         }
                     }
                 } header: {
-                    Text("Advanced")
-                } footer: {
-                    Text("Access developer tools for more advanced troubleshooting options.")
+                    Text(String(localized: "troubleshooting_advanced_header", table: "Settings"))
                 }
                 #endif
                 
@@ -200,13 +198,13 @@ struct TroubleshootingView: View {
                         HStack {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("Client successfully reset")
+                            Text(String(localized: "troubleshooting_reset_success", table: "Settings"))
                                 .foregroundColor(.green)
                         }
                     }
                 }
             }
-            .navigationTitle("Need Help?")
+            .navigationTitle(String(localized: "troubleshooting_title", table: "Settings"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -221,24 +219,24 @@ struct TroubleshootingView: View {
             // .refreshable {
             //    viewModel.loadClientInfo()
             // }
-            .alert("Error", isPresented: $viewModel.showError) {
-                Button("OK", role: .cancel) {}
+            .alert(String(localized: "troubleshooting_error_title", table: "Settings"), isPresented: $viewModel.showError) {
+                Button(String(localized: "troubleshooting_ok", table: "Settings"), role: .cancel) {}
             } message: {
-                Text(viewModel.error?.localizedDescription ?? "Unknown error")
+                Text(viewModel.error?.localizedDescription ?? String(localized: "troubleshooting_unknown_error", table: "Settings"))
             }
             .confirmationDialog(
-                "Reset Client",
+                String(localized: "troubleshooting_reset_client", table: "Settings"),
                 isPresented: $showResetClientAlert,
                 titleVisibility: .visible
             ) {
-                Button("Reset", role: .destructive) {
+                Button(String(localized: "troubleshooting_reset_confirm", table: "Settings"), role: .destructive) {
                     Task {
                         await viewModel.resetClient()
                     }
                 }
-                Button("Cancel", role: .cancel) {}
+                Button(String(localized: "troubleshooting_cancel", table: "Settings"), role: .cancel) {}
             } message: {
-                Text("This will delete the OAuth client for this instance. You'll need to sign in again. This action cannot be undone.")
+                Text(String(localized: "troubleshooting_reset_warning", table: "Settings"))
             }
         }
         .presentationDetents([.medium, .large])
