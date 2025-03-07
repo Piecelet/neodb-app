@@ -157,10 +157,16 @@ struct ProfileView: View {
 
                     // 状态列表
                     if viewModel.isLoadingStatuses && viewModel.statuses.isEmpty {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                    } else if viewModel.statuses.isEmpty {
+                        ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
+                            StatusView(status: status, mode: .timeline)
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.clear)
+                                .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                    return 4
+                                }
+                                .redacted(reason: .placeholder)
+                        }
+                    } else if viewModel.statuses.isEmpty && viewModel.account != nil && viewModel.isLoading == false {
                         EmptyStateView(
                             String(localized: "timelines_no_posts_title", table: "Timelines"),
                             systemImage: "text.bubble",
@@ -266,9 +272,6 @@ struct ProfileView: View {
             viewModel.accountsManager = accountsManager
             if account == nil && user == nil {
                 await viewModel.loadAccount(id: id)
-            }
-            if account != nil {
-                await viewModel.loadStatuses(refresh: true)
             }
         }
         .onDisappear {

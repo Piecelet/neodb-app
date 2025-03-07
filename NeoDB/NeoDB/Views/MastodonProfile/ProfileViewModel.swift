@@ -17,6 +17,7 @@ class ProfileViewModel: ObservableObject {
     @Published private(set) var hasMore = false
     @Published private(set) var isLoadingStatuses = false
     private var maxId: String?
+    private var currentPage = 1
     
     var accountsManager: AppAccountsManager? {
         didSet {
@@ -24,6 +25,7 @@ class ProfileViewModel: ObservableObject {
                 account = nil
                 statuses = []
                 maxId = nil
+                currentPage = 1
             }
         }
     }
@@ -99,6 +101,9 @@ class ProfileViewModel: ObservableObject {
                 
                 logger.debug("Successfully loaded account")
                 
+                // 加载账号成功后立即加载状态，首次加载不使用 refresh
+                await loadStatuses(refresh: false)
+                
             } catch {
                 if case NetworkError.cancelled = error {
                     logger.debug("Account loading cancelled")
@@ -119,6 +124,7 @@ class ProfileViewModel: ObservableObject {
     func loadStatuses(refresh: Bool = false) async {
         guard let account = account else { return }
         
+        // 防止重复请求
         guard !isLoadingStatuses else { return }
         
         loadStatusesTask?.cancel()
@@ -132,12 +138,40 @@ class ProfileViewModel: ObservableObject {
             if refresh {
                 maxId = nil
                 statuses = []
+                currentPage = 1
             }
             
             isLoadingStatuses = true
             defer { isLoadingStatuses = false }
             
+            let cacheKey = "\(accountsManager.currentAccount.instance)_account_\(account.id)_statuses"
+            logger.debug("Using cache key: \(cacheKey)")
+            
             do {
+                // 只在非刷新且是第一页时加载缓存
+                if !refresh && currentPage == 1 {
+                    if let cached = try? await cacheService.retrieve(
+                        forKey: cacheKey, type: [MastodonStatus].self)
+                    {
+                        if !Task.isCancelled {
+                            statuses = cached
+                            maxId = cached.last?.id
+                            hasMore = !cached.isEmpty
+                            logger.debug("Loaded \(cached.count) statuses from cache")
+                        }
+                    }
+                }
+                
+                guard !Task.isCancelled else {
+                    logger.debug("Statuses loading cancelled")
+                    return
+                }
+                
+                guard accountsManager.isAuthenticated else {
+                    logger.error("User not authenticated")
+                    throw NetworkError.unauthorized
+                }
+                
                 let endpoint = AccountsEndpoint.statuses(
                     id: account.id,
                     sinceId: maxId,
@@ -159,8 +193,23 @@ class ProfileViewModel: ObservableObject {
                     }
                     maxId = newStatuses.last?.id
                     hasMore = !newStatuses.isEmpty
+                    
+                    // 只在第一页时缓存数据
+                    if currentPage == 1 {
+                        try? await cacheService.cache(
+                            statuses, forKey: cacheKey, type: [MastodonStatus].self)
+                        logger.debug("Cached first page data")
+                    }
+                    
+                    currentPage += 1
+                    logger.debug("Successfully loaded \(newStatuses.count) statuses")
                 }
             } catch {
+                if case NetworkError.cancelled = error {
+                    logger.debug("Statuses loading cancelled")
+                    return
+                }
+                
                 if !Task.isCancelled {
                     logger.error("Failed to load statuses: \(error.localizedDescription)")
                 }
