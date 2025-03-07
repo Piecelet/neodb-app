@@ -117,7 +117,7 @@ struct ProfileView: View {
                                 .font(.title2)
                                 .bold()
                                 .titleVisibilityAnchor()
-                            Text("@\(account.username)")
+                            Text("@\(account.acct)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
 
