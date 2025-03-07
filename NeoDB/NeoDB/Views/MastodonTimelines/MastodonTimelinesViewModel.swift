@@ -55,6 +55,11 @@ final class MastodonTimelinesViewModel: ObservableObject {
         if refresh {
             TelemetryService.shared.trackMastodonTimelinesRefresh()
         }
+        
+        // Prevent duplicate requests
+        guard let state = timelineStates[type],
+              !state.isLoading else { return }
+        
         loadTasks[type]?.cancel()
         
         loadTasks[type] = Task {
@@ -99,19 +104,13 @@ final class MastodonTimelinesViewModel: ObservableObject {
             
             do {
                 let state = timelineStates[type] ?? MastodonTimelinesState()
-                let endpoint = type.endpoint(maxId: state.maxId)
+                let endpoint = type.endpoint(maxId: nil)  // Always load from start for refresh
                 
                 let newStatuses = try await accountsManager.currentClient.fetch(
                     endpoint, type: [MastodonStatus].self)
                 
                 updateState(for: type) { state in
-                    if refresh {
-                        state.statuses = newStatuses
-                    } else {
-                        let existingIds = Set(state.statuses.map(\.id))
-                        let uniqueNewStatuses = newStatuses.filter { !existingIds.contains($0.id) }
-                        state.statuses.append(contentsOf: uniqueNewStatuses)
-                    }
+                    state.statuses = newStatuses
                     state.maxId = newStatuses.last?.id
                     state.hasMore = !newStatuses.isEmpty
                     state.lastRefreshTime = Date()
@@ -120,10 +119,61 @@ final class MastodonTimelinesViewModel: ObservableObject {
                 }
                 
                 // Cache only if it's a refresh or first load
-                if refresh || state.statuses.isEmpty {
-                    try? await cacheService.cacheTimelines(
-                        timelineStates[type]?.statuses ?? [],
-                        key: "\(accountsManager.currentAccount.id)_\(type.rawValue)")
+                try? await cacheService.cacheTimelines(
+                    timelineStates[type]?.statuses ?? [],
+                    key: "\(accountsManager.currentAccount.id)_\(type.rawValue)")
+            } catch {
+                if !Task.isCancelled {
+                    updateState(for: type) { state in
+                        state.error = error
+                        logger.error("Timeline load error: \(error.localizedDescription)")
+                    }
+                }
+            }
+        }
+        
+        await loadTasks[type]?.value
+    }
+    
+    func loadNextPage(type: MastodonTimelinesFilter) async {
+        // Prevent duplicate requests
+        guard let state = timelineStates[type],
+              !state.isLoading,
+              state.hasMore else { return }
+        
+        loadTasks[type]?.cancel()
+        
+        loadTasks[type] = Task {
+            guard let accountsManager = accountsManager else {
+                logger.debug("No accountsManager available")
+                return
+            }
+            
+            updateLoadingState(type: type, refresh: false)
+            
+            defer {
+                if !Task.isCancelled {
+                    updateState(for: type) { state in
+                        state.isLoading = false
+                        state.isRefreshing = false
+                    }
+                }
+            }
+            
+            do {
+                let state = timelineStates[type] ?? MastodonTimelinesState()
+                let endpoint = type.endpoint(maxId: state.maxId)
+                
+                let newStatuses = try await accountsManager.currentClient.fetch(
+                    endpoint, type: [MastodonStatus].self)
+                
+                updateState(for: type) { state in
+                    let existingIds = Set(state.statuses.map(\.id))
+                    let uniqueNewStatuses = newStatuses.filter { !existingIds.contains($0.id) }
+                    state.statuses.append(contentsOf: uniqueNewStatuses)
+                    state.maxId = newStatuses.last?.id
+                    state.hasMore = !newStatuses.isEmpty
+                    state.error = nil
                 }
             } catch {
                 if !Task.isCancelled {

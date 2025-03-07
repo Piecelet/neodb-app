@@ -31,6 +31,7 @@ struct MastodonTimelinesView: View {
                                     for: type, geometry: geometry)
                             }
                         }
+                        .coordinateSpace(name: "scrollView")
                         .scrollContentBackground(.hidden)
                         .scrollIndicators(.automatic)
                         .ignoresSafeArea(edges: .bottom)
@@ -162,13 +163,6 @@ struct MastodonTimelinesView: View {
                         }
                     }
                     .buttonStyle(.plain)
-                    .task {
-                        if status == state.statuses.last && state.hasMore {
-                            Task {
-                                await viewModel.loadTimeline(type: type)
-                            }
-                        }
-                    }
                     .listRowBackground(Color.clear)
                     .alignmentGuide(.listRowSeparatorLeading) { _ in
                         return 4
@@ -176,7 +170,7 @@ struct MastodonTimelinesView: View {
                     .listRowInsets(EdgeInsets())
                 }
                 
-                if state.isLoading && !state.isRefreshing {
+                if state.hasMore {
                     HStack {
                         Spacer()
                         ProgressView()
@@ -186,10 +180,17 @@ struct MastodonTimelinesView: View {
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
                     .padding()
+                    .onAppear {
+                        if !state.isLoading {
+                            Task {
+                                await viewModel.loadNextPage(type: type)
+                            }
+                        }
+                    }
                 }
             }
         }
-            .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
+        .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
     }
 
     #if DEBUG
