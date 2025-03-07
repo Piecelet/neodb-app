@@ -31,6 +31,8 @@ struct MastodonTimelinesView: View {
                                     for: type, geometry: geometry)
                             }
                         }
+                        .scrollContentBackground(.hidden)
+                        .scrollIndicators(.automatic)
                         .ignoresSafeArea(edges: .bottom)
                         .listStyle(.plain)
                         .refreshable {
@@ -187,6 +189,7 @@ struct MastodonTimelinesView: View {
                 }
             }
         }
+            .listRowInsets(EdgeInsets(top: 5, leading: 10, bottom: 5, trailing: 10))
     }
 
     #if DEBUG

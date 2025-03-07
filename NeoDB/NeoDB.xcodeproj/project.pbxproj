@@ -12,7 +12,6 @@
 		2405C5DD2D42717400457DF5 /* BetterSafariView in Frameworks */ = {isa = PBXBuildFile; productRef = 2405C5DC2D42717400457DF5 /* BetterSafariView */; };
 		2405C5E32D42757100457DF5 /* WebView in Frameworks */ = {isa = PBXBuildFile; productRef = 2405C5E22D42757100457DF5 /* WebView */; };
 		242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */ = {isa = PBXBuildFile; productRef = 2426883F2D2A9E0D00DFAAC1 /* InjectionNext */; };
-		243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 243C38EA2D3D999B00EB356A /* ExpandableText */; };
 		243C39252D3E7ABA00EB356A /* SFSafeSymbols in Frameworks */ = {isa = PBXBuildFile; productRef = 243C39242D3E7ABA00EB356A /* SFSafeSymbols */; };
 		2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 2446C0C82D41712F00504129 /* SwiftSoup */; };
 		2456330D2D58BCFF005D39E1 /* WrappingHStack in Frameworks */ = {isa = PBXBuildFile; productRef = 2456330C2D58BCFF005D39E1 /* WrappingHStack */; };
@@ -27,6 +26,7 @@
 		24D1BE412D2A9F340063B530 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = 24D1BE402D2A9F340063B530 /* Inject */; };
 		24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24ECD3B62D46432A00E24D7D /* StoreKit.framework */; };
 		24ECD3C42D464AC100E24D7D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = 24ECD3C32D464AC100E24D7D /* RevenueCat */; };
+		24F954E32D7AAB1800BFEB88 /* ExpandableText in Frameworks */ = {isa = PBXBuildFile; productRef = 24F954E22D7AAB1800BFEB88 /* ExpandableText */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,12 +105,12 @@
 				24CDA87C2D56859E0010C589 /* SwiftUIIntrospect in Frameworks */,
 				242688402D2A9E0D00DFAAC1 /* InjectionNext in Frameworks */,
 				24D1BE412D2A9F340063B530 /* Inject in Frameworks */,
-				243C38EB2D3D999B00EB356A /* ExpandableText in Frameworks */,
 				24ECD3C42D464AC100E24D7D /* RevenueCat in Frameworks */,
 				2477BCD72D4D52AC00E39E1A /* ButtonKit in Frameworks */,
 				24ECD3B72D46432A00E24D7D /* StoreKit.framework in Frameworks */,
 				2446C0C92D41712F00504129 /* SwiftSoup in Frameworks */,
 				2475428C2D51215D006F032F /* TelemetryDeck in Frameworks */,
+				24F954E32D7AAB1800BFEB88 /* ExpandableText in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -187,7 +187,6 @@
 				24D1BE402D2A9F340063B530 /* Inject */,
 				2403E8CF2D2EFAEE00ED4CB5 /* Kingfisher */,
 				2403F2752D32511E00ED4CB5 /* Cache */,
-				243C38EA2D3D999B00EB356A /* ExpandableText */,
 				243C39242D3E7ABA00EB356A /* SFSafeSymbols */,
 				24BABF582D40309800785306 /* WishKit */,
 				24BABF5E2D40B0E900785306 /* WhatsNewKit */,
@@ -201,6 +200,7 @@
 				24CDA87B2D56859E0010C589 /* SwiftUIIntrospect */,
 				2456330C2D58BCFF005D39E1 /* WrappingHStack */,
 				249362EF2D5A31B400B60070 /* Defaults */,
+				24F954E22D7AAB1800BFEB88 /* ExpandableText */,
 			);
 			productName = NeoDB;
 			productReference = 24CEACEF2D0DA6200083D4BA /* NeoDB.app */;
@@ -901,10 +901,6 @@
 			package = 2415DF2F2D2A9DCC00DAC07F /* XCRemoteSwiftPackageReference "InjectionNext" */;
 			productName = InjectionNext;
 		};
-		243C38EA2D3D999B00EB356A /* ExpandableText */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ExpandableText;
-		};
 		243C39242D3E7ABA00EB356A /* SFSafeSymbols */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 243C39232D3E7ABA00EB356A /* XCRemoteSwiftPackageReference "SFSafeSymbols" */;
@@ -969,6 +965,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 24ECD3C22D464AC100E24D7D /* XCRemoteSwiftPackageReference "purchases-ios-spm" */;
 			productName = RevenueCat;
+		};
+		24F954E22D7AAB1800BFEB88 /* ExpandableText */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ExpandableText;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
