@@ -155,23 +155,59 @@ struct ProfileView: View {
                     
                     Divider()
 
-                    EmptyStateView(
-                        String(localized: "profile_in_development", table: "Timelines"),
-                        systemImage: "bubble.left.and.text.bubble.right",
-                        description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
-                        actions: {
-                            Button {
-                                router.navigate(to: .purchase)
-                            } label: {
-                                Text("store_plus_subscription_button", tableName: "Settings")
-                                    .font(.body)
+                    // 状态列表
+                    if viewModel.isLoadingStatuses && viewModel.statuses.isEmpty {
+                        ProgressView()
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else if viewModel.statuses.isEmpty {
+                        EmptyStateView(
+                            String(localized: "timelines_no_posts_title", table: "Timelines"),
+                            systemImage: "text.bubble",
+                            description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
+                        )
+                        .padding(.vertical, 30)
+                    } else {
+                        LazyVStack(spacing: 0) {
+                            ForEach(viewModel.statuses, id: \.id) { status in
+                                Group {
+                                    if let item = status.content.links.compactMap(\.neodbItem).first {
+                                        Button {
+                                            router.navigate(to: .statusDetailWithStatusAndItem(status: status, item: item))
+                                        } label: {
+                                            StatusView(status: status, mode: .timelineWithItem)
+                                        }
+                                    } else {
+                                        Button {
+                                            router.navigate(to: .statusDetailWithStatus(status: status))
+                                        } label: {
+                                            StatusView(status: status, mode: .timeline)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .listRowBackground(Color.clear)
+                                .listRowInsets(EdgeInsets())
+                            }
+                            
+                            if viewModel.hasMore {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .onAppear {
+                                        if !viewModel.isLoadingStatuses {
+                                            Task {
+                                                await viewModel.loadNextPage()
+                                            }
+                                        }
+                                    }
                             }
                         }
-                    )
-                    .padding(.vertical, 30)
+                    }
                 }
                 .refreshable {
                     await viewModel.loadAccount(id: id, refresh: true)
+                    await viewModel.loadStatuses(refresh: true)
                 }
             } else if let user = user {
                 ScrollView {
@@ -230,6 +266,9 @@ struct ProfileView: View {
             viewModel.accountsManager = accountsManager
             if account == nil && user == nil {
                 await viewModel.loadAccount(id: id)
+            }
+            if account != nil {
+                await viewModel.loadStatuses(refresh: true)
             }
         }
         .onDisappear {

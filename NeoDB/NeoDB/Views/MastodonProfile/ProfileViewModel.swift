@@ -5,6 +5,7 @@ import OSLog
 class ProfileViewModel: ObservableObject {
     private let logger = Logger.views.profile
     private var loadTask: Task<Void, Never>?
+    private var loadStatusesTask: Task<Void, Never>?
     private let cacheService = CacheService.shared
     
     @Published var account: MastodonAccount?
@@ -12,10 +13,17 @@ class ProfileViewModel: ObservableObject {
     @Published var error: Error?
     @Published var showError = false
     
+    @Published private(set) var statuses: [MastodonStatus] = []
+    @Published private(set) var hasMore = false
+    @Published private(set) var isLoadingStatuses = false
+    private var maxId: String?
+    
     var accountsManager: AppAccountsManager? {
         didSet {
             if oldValue !== accountsManager {
                 account = nil
+                statuses = []
+                maxId = nil
             }
         }
     }
@@ -108,8 +116,68 @@ class ProfileViewModel: ObservableObject {
         await loadTask?.value
     }
     
+    func loadStatuses(refresh: Bool = false) async {
+        guard let account = account else { return }
+        
+        guard !isLoadingStatuses else { return }
+        
+        loadStatusesTask?.cancel()
+        
+        loadStatusesTask = Task {
+            guard let accountsManager = accountsManager else {
+                logger.debug("No accountsManager available")
+                return
+            }
+            
+            if refresh {
+                maxId = nil
+                statuses = []
+            }
+            
+            isLoadingStatuses = true
+            defer { isLoadingStatuses = false }
+            
+            do {
+                let endpoint = AccountsEndpoint.statuses(
+                    id: account.id,
+                    sinceId: maxId,
+                    tag: nil,
+                    onlyMedia: false,
+                    excludeReplies: false
+                )
+                
+                let newStatuses = try await accountsManager.currentClient.fetch(
+                    endpoint, type: [MastodonStatus].self)
+                
+                if !Task.isCancelled {
+                    if refresh {
+                        statuses = newStatuses
+                    } else {
+                        let existingIds = Set(statuses.map(\.id))
+                        let uniqueNewStatuses = newStatuses.filter { !existingIds.contains($0.id) }
+                        statuses.append(contentsOf: uniqueNewStatuses)
+                    }
+                    maxId = newStatuses.last?.id
+                    hasMore = !newStatuses.isEmpty
+                }
+            } catch {
+                if !Task.isCancelled {
+                    logger.error("Failed to load statuses: \(error.localizedDescription)")
+                }
+            }
+        }
+        
+        await loadStatusesTask?.value
+    }
+    
+    func loadNextPage() async {
+        await loadStatuses(refresh: false)
+    }
+    
     func cleanup() {
         loadTask?.cancel()
         loadTask = nil
+        loadStatusesTask?.cancel()
+        loadStatusesTask = nil
     }
 } 

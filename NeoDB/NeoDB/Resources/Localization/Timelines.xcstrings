@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "profile_in_development" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

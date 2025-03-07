@@ -72,7 +72,7 @@ extension AccountsEndpoint: NetworkEndpoint {
         params.append(.init(name: "only_media", value: onlyMedia ? "true" : "false"))
       }
       if let excludeReplies {
-        params.append(.init(name: "exclude_replies", value: excludeReplies ? "true" : "fals"))
+        params.append(.init(name: "exclude_replies", value: excludeReplies ? "true" : "false"))
       }
       return params
     case let .relationships(ids):
