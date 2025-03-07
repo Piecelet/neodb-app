@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CustomNavigationTitle
 
 struct ProfileView: View {
     let id: String
@@ -115,6 +116,7 @@ struct ProfileView: View {
                             Text(account.displayName ?? "")
                                 .font(.title2)
                                 .bold()
+                                .titleVisibilityAnchor()
                             Text("@\(account.username)")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
@@ -211,6 +213,7 @@ struct ProfileView: View {
                         }
                     }
                 }
+                .scrollAwareTitle(account.displayName ?? "")
                 .refreshable {
                     await viewModel.loadAccount(id: id, refresh: true)
                     await viewModel.loadStatuses(refresh: true)

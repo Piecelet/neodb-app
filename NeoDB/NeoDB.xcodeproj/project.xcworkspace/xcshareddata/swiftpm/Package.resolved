@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "customnavigationtitle",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Chronos2500/CustomNavigationTitle.git",
+      "state" : {
+        "revision" : "a5098bbc042db0a03a9dd1000c598073cef03a07",
+        "version" : "1.0.0"
+      }
+    },
+    {
       "identity" : "defaults",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sindresorhus/Defaults",
