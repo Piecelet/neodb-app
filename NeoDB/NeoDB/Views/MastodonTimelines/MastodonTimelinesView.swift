@@ -142,7 +142,7 @@ struct MastodonTimelinesView: View {
                 }
             } else {
                 ForEach(state.statuses, id: \.id) { status in
-                    Group {
+                    VStack {
                         if let item = status.content.links.compactMap(
                             \.neodbItem
                         ).first {
