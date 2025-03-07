@@ -19,6 +19,10 @@ struct StatusItemView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var itemRepository: ItemRepository
+    
+    // 添加状态追踪
+    @State private var isLoading = false
+    @State private var hasLoaded = false
 
     init(item: any ItemProtocol, mode: Mode = .card) {
         _viewModel = StateObject(wrappedValue: StatusItemViewModel(item: item))
@@ -85,16 +89,26 @@ struct StatusItemView: View {
         }
         .buttonStyle(.plain)
         .task {
-            Task {
-                // 使用全局 ItemRepository 加载数据
-                if let fetched = await itemRepository.fetchItem(
+            // 只在未加载过且未在加载中时进行加载
+            guard !hasLoaded && !isLoading else { return }
+            
+            isLoading = true
+            defer { isLoading = false }
+            
+            // 使用 Task 在后台线程加载数据
+            if let fetched = await Task.detached(priority: .userInitiated) { () -> (any ItemProtocol)? in
+                await itemRepository.fetchItem(
                     for: viewModel.item,
                     refresh: false,
                     accountsManager: accountsManager
-                ) {
-                    // 当仓库成功加载到完整数据后，将数据更新到 ViewModel 中，
-                    // 这样 StatusItemView 会直接显示最新的 item 内容。
-                    viewModel.item = fetched
+                )
+            }.value {
+                // 在主线程更新 UI
+                await MainActor.run {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        viewModel.item = fetched
+                        hasLoaded = true
+                    }
                 }
             }
         }
