@@ -33,7 +33,117 @@ struct MastodonStatusView: View {
                     await viewModel.loadStatus(id: id, refresh: true)
                 }
             } else if let status = status ?? viewModel.status {
-                statusContent(status)
+                List {
+                    // Status Content Section
+                    Section {
+                        StatusView(status: status, mode: item != nil ? .detailWithItem : .detail)
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                        
+                        if let item = item {
+                            StatusItemView(item: item, mode: .indicator)
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                        }
+                        
+                        // Additional Info
+                        HStack(alignment: .bottom, spacing: 12) {
+                            if let application = status.application {
+                                infoRow(
+                                    title: String(localized: "timelines_status_posted_via", table: "Timelines"),
+                                    content: application.name
+                                )
+                                Spacer()
+                            }
+                            
+                            infoRow(
+                                title: String(localized: "timelines_status_visibility", table: "Timelines"),
+                                content: status.visibility.displayName
+                            )
+                            
+                            if let url = status.url {
+                                Spacer()
+                                Link(destination: URL(string:url)!) {
+                                    HStack {
+                                        VStack(alignment: .trailing) {
+                                            Text("timelines_status_browser_button", tableName: "Timelines")
+                                                .font(.caption)
+                                            Text("timelines_status_comments_button", tableName: "Timelines")
+                                                .font(.subheadline)
+                                        }
+                                        Image(systemName: "arrow.up.right")
+                                    }
+                                }
+                            }
+                        }
+                        .padding()
+                        .padding(.horizontal)
+                        .listRowInsets(EdgeInsets())
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                    }
+                    
+                    // Replies Section
+                    Section {
+                        if viewModel.isLoadingReplies && viewModel.replies.isEmpty {
+                            ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
+                                StatusView(status: status, mode: .timeline)
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowBackground(Color.clear)
+                                    .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                        return 4
+                                    }
+                                    .redacted(reason: .placeholder)
+                            }
+                        } else if viewModel.replies.isEmpty {
+                            EmptyStateView(
+                                String(localized: "timelines_no_replies_title", table: "Timelines"),
+                                systemImage: "bubble.left",
+                                description: Text(String(localized: "timelines_no_replies_description", table: "Timelines"))
+                            )
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 30)
+                        } else {
+                            ForEach(viewModel.replies, id: \.id) { reply in
+                                Group {
+                                    if let item = reply.content.links.compactMap(\.neodbItem).first {
+                                        Button {
+                                            router.navigate(to: .statusDetailWithStatusAndItem(status: reply, item: item))
+                                        } label: {
+                                            StatusView(status: reply, mode: .timelineWithItem)
+                                        }
+                                    } else {
+                                        Button {
+                                            router.navigate(to: .statusDetailWithStatus(status: reply))
+                                        } label: {
+                                            StatusView(status: reply, mode: .timeline)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                                .listRowBackground(Color.clear)
+                                .listRowInsets(EdgeInsets())
+                                .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                    return 4
+                                }
+                            }
+                        }
+                    }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .scrollIndicators(.automatic)
+                .refreshable {
+                    await viewModel.loadStatus(id: id, refresh: true)
+                    await viewModel.loadReplies(refresh: true)
+                }
             } else if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -74,95 +184,6 @@ struct MastodonStatusView: View {
     #if DEBUG
     @ObserveInjection var forceRedraw
     #endif
-    
-    private func statusContent(_ status: MastodonStatus) -> some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Status Content
-                StatusView(status: status, mode: item != nil ? .detailWithItem : .detail)
-                
-                    if let item = item {
-                        StatusItemView(item: item, mode: .indicator)
-                    }
-                
-                Divider()
-                
-                // Additional Info
-                HStack(alignment: .bottom, spacing: 12) {
-                    if let application = status.application {
-                        infoRow(
-                            title: String(localized: "timelines_status_posted_via", table: "Timelines"),
-                            content: application.name
-                        )
-                        Spacer()
-                    }
-                    
-                    infoRow(
-                        title: String(localized: "timelines_status_visibility", table: "Timelines"),
-                        content: status.visibility.displayName
-                    )
-                    
-                    if let url = status.url {
-                        Spacer()
-                        Link(destination: URL(string:url)!) {
-                            HStack {
-                                VStack(alignment: .trailing) {
-                                    Text("timelines_status_browser_button", tableName: "Timelines")
-                                        .font(.caption)
-                                    Text("timelines_status_comments_button", tableName: "Timelines")
-                                        .font(.subheadline)
-                                }
-                                Image(systemName: "arrow.up.right")
-                            }
-                        }
-                    }
-                }
-                .padding()
-                .padding(.horizontal)
-                
-                Divider()
-            }
-
-            EmptyStateView(
-                String(localized: "status_replies_in_development", table: "Timelines"),
-                systemImage: "bubble.left.and.text.bubble.right",
-                description: Text(String(localized: "store_plus_subscription_to_get_faster_development", table: "Settings")),
-                actions: {
-                    Button {
-                        router.navigate(to: .purchase)
-                    } label: {
-                        Text("store_plus_subscription_button", tableName: "Settings")
-                            .font(.body)
-                    }
-                    .foregroundStyle(.accent)
-                }
-            )
-            .padding(.vertical, 30)
-            .foregroundStyle(.secondary)
-        }
-        .refreshable {
-            await viewModel.loadStatus(id: id, refresh: true)
-        }
-        .enableInjection()
-    }
-    
-    private func statsButton(count: Int, icon: String, label: String) -> some View {
-        Button {
-            // TODO: Handle stats button tap
-        } label: {
-            VStack(spacing: 4) {
-                HStack(spacing: 4) {
-                    Image(systemName: icon)
-                    Text("\(count)")
-                }
-                .font(.subheadline)
-                
-                Text(label)
-                    .font(.caption)
-            }
-            .foregroundStyle(.secondary)
-        }
-    }
     
     private func infoRow(title: String, content: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {

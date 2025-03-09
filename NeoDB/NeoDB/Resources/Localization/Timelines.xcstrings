@@ -51,6 +51,7 @@
       }
     },
     "status_replies_in_development" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -147,6 +148,12 @@
           }
         }
       }
+    },
+    "timelines_no_replies_description" : {
+
+    },
+    "timelines_no_replies_title" : {
+
     },
     "timelines_profile_error_title" : {
       "localizations" : {
