@@ -37,146 +37,154 @@ struct ProfileView: View {
                     await viewModel.loadAccount(id: id, refresh: true)
                 }
             } else if let account = account ?? viewModel.account {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Header Image
-                        if let header = account.header {
-                            AsyncImage(url: header) { image in
-                                image.resizable()
-                                    .aspectRatio(contentMode: .fill)
-                        } placeholder: {
-                            Rectangle()
-                                .fill(.quaternary)
-                            }
-                            .frame(height: 200)
-                            .clipped()
-                        }
-
-                        // Avatar and Stats
-                        HStack(alignment: .bottom) {
-                            AccountAvatarView(account: account, size: .large)
-                                .padding(.leading)
-                                .offset(y: -40)
-
-                            Spacer()
-
-                            // Stats
-                            HStack(spacing: 24) {
-                                VStack {
-                                    Text("\(account.statusesCount ?? 0)")
-                                        .font(.headline)
-                                    Text(
-                                        "timelines_profile_posts",
-                                        tableName: "Timelines"
-                                    )
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                List {
+                    // Profile Header Section
+                    Section {
+                        VStack(alignment: .leading, spacing: 16) {
+                            // Header Image
+                            if let header = account.header {
+                                AsyncImage(url: header) { image in
+                                    image.resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                } placeholder: {
+                                    Rectangle()
+                                        .fill(.quaternary)
                                 }
+                                .frame(height: 200)
+                                .clipped()
+                            }
 
-                                Button {
-                                    router.navigate(
-                                        to: .following(id: account.id))
-                                    TelemetryService.shared.trackMastodonProfileFollowingView()
-                                } label: {
+                            // Avatar and Stats
+                            HStack(alignment: .bottom) {
+                                AccountAvatarView(account: account, size: .large)
+                                    .padding(.leading)
+                                    .offset(y: -40)
+
+                                Spacer()
+
+                                // Stats
+                                HStack(spacing: 24) {
                                     VStack {
-                                        Text("\(account.followingCount ?? 0)")
+                                        Text("\(account.statusesCount ?? 0)")
                                             .font(.headline)
                                         Text(
-                                            "timelines_profile_following",
+                                            "timelines_profile_posts",
                                             tableName: "Timelines"
                                         )
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                     }
-                                }
-                                
-                                Button {
-                                    router.navigate(
-                                        to: .followers(id: account.id))
-                                    TelemetryService.shared.trackMastodonProfileFollowersView()
-                                } label: {
-                                    VStack {
-                                        Text("\(account.followersCount ?? 0)")
-                                            .font(.headline)
-                                        Text(
-                                            "timelines_profile_followers",
-                                            tableName: "Timelines"
-                                        )
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+
+                                    Button {
+                                        router.navigate(
+                                            to: .following(id: account.id))
+                                        TelemetryService.shared.trackMastodonProfileFollowingView()
+                                    } label: {
+                                        VStack {
+                                            Text("\(account.followingCount ?? 0)")
+                                                .font(.headline)
+                                            Text(
+                                                "timelines_profile_following",
+                                                tableName: "Timelines"
+                                            )
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        }
                                     }
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
-                        .padding(.bottom, -40)
-
-                        // Profile Info
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(account.displayName ?? "")
-                                .font(.title2)
-                                .bold()
-                                .titleVisibilityAnchor()
-                            Text("@\(account.acct)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-
-                            if !account.note.asRawText.isEmpty {
-                                Text(account.note.asRawText)
-                                    .font(.body)
-                                    .padding(.top, 4)
-                            }
-
-                            if !account.fields.isEmpty {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    ForEach(account.fields) { field in
-                                        VStack(alignment: .leading) {
-                                            Text(field.name)
-                                                .font(.caption)
-                                                .foregroundStyle(.secondary)
-                                            Text(field.value.asRawText)
-                                                .font(.callout)
+                                    
+                                    Button {
+                                        router.navigate(
+                                            to: .followers(id: account.id))
+                                        TelemetryService.shared.trackMastodonProfileFollowersView()
+                                    } label: {
+                                        VStack {
+                                            Text("\(account.followersCount ?? 0)")
+                                                .font(.headline)
+                                            Text(
+                                                "timelines_profile_followers",
+                                                tableName: "Timelines"
+                                            )
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
                                         }
                                     }
                                 }
+                                .padding(.horizontal)
+                            }
+                            .padding(.bottom, -40)
+
+                            // Profile Info
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(account.displayName ?? "")
+                                    .font(.title2)
+                                    .bold()
+                                    .titleVisibilityAnchor()
+
+                                Text("@\(account.acct)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
+                                if !account.note.asRawText.isEmpty {
+                                    Text(account.note.asRawText)
+                                        .font(.body)
+                                        .padding(.top, 4)
+                                }
+
+                                if !account.fields.isEmpty {
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        ForEach(account.fields) { field in
+                                            VStack(alignment: .leading) {
+                                                Text(field.name)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                                Text(field.value.asRawText)
+                                                    .font(.callout)
+                                            }
+                                        }
+                                    }
+                                    .padding(.top, 8)
+                                }
+
+                                Text(
+                                    String(
+                                        format: String(
+                                            localized: "timelines_profile_joined",
+                                            table: "Timelines"), account.createdAt.relativeFormatted)
+                                )
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                                 .padding(.top, 8)
                             }
-
-                            Text(
-                                String(
-                                    format: String(
-                                        localized: "timelines_profile_joined",
-                                        table: "Timelines"), account.createdAt.relativeFormatted)
-                            )
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .padding(.top, 8)
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                     }
-                    
-                    Divider()
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
 
-                    // 状态列表
-                    if viewModel.isLoadingStatuses && viewModel.statuses.isEmpty {
-                        ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
-                            StatusView(status: status, mode: .timeline)
-                                .listRowInsets(EdgeInsets())
-                                .listRowBackground(Color.clear)
-                                .alignmentGuide(.listRowSeparatorLeading) { _ in
-                                    return 4
-                                }
-                                .redacted(reason: .placeholder)
-                        }
-                    } else if viewModel.statuses.isEmpty && viewModel.account != nil && viewModel.isLoading == false {
-                        EmptyStateView(
-                            String(localized: "timelines_no_posts_title", table: "Timelines"),
-                            systemImage: "text.bubble",
-                            description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
-                        )
-                        .padding(.vertical, 30)
-                    } else {
-                        LazyVStack(spacing: 0) {
+                    // Statuses Section
+                    Section {
+                        if viewModel.isLoadingStatuses && viewModel.statuses.isEmpty {
+                            ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
+                                StatusView(status: status, mode: .timeline)
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowBackground(Color.clear)
+                                    .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                        return 4
+                                    }
+                                    .redacted(reason: .placeholder)
+                            }
+                        } else if viewModel.statuses.isEmpty && viewModel.account != nil && viewModel.isLoading == false {
+                            EmptyStateView(
+                                String(localized: "timelines_no_posts_title", table: "Timelines"),
+                                systemImage: "text.bubble",
+                                description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
+                            )
+                            .listRowInsets(EdgeInsets())
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                            .padding(.vertical, 30)
+                        } else {
                             ForEach(viewModel.statuses, id: \.id) { status in
                                 Group {
                                     if let item = status.content.links.compactMap(\.neodbItem).first {
@@ -196,12 +204,18 @@ struct ProfileView: View {
                                 .buttonStyle(.plain)
                                 .listRowBackground(Color.clear)
                                 .listRowInsets(EdgeInsets())
+                                .alignmentGuide(.listRowSeparatorLeading) { _ in
+                                    return 4
+                                }
                             }
                             
                             if viewModel.hasMore {
                                 ProgressView()
                                     .frame(maxWidth: .infinity)
                                     .padding()
+                                    .listRowInsets(EdgeInsets())
+                                    .listRowBackground(Color.clear)
+                                    .listRowSeparator(.hidden)
                                     .onAppear {
                                         if !viewModel.isLoadingStatuses {
                                             Task {
@@ -212,43 +226,56 @@ struct ProfileView: View {
                             }
                         }
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .scrollIndicators(.automatic)
                 .scrollAwareTitle(account.displayName ?? "")
                 .refreshable {
                     await viewModel.loadAccount(id: id, refresh: true)
                     await viewModel.loadStatuses(refresh: true)
                 }
             } else if let user = user {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        // Avatar
-                        HStack(alignment: .center) {
-                            AccountAvatarView(user: user, size: .large)
-                                .padding(.leading)
+                List {
+                    Section {
+                        VStack(alignment: .leading, spacing: 16) {
+                            // Avatar
+                            HStack(alignment: .center) {
+                                AccountAvatarView(user: user, size: .large)
+                                    .padding(.leading)
 
-                            Spacer()
-                        }
-                        .padding(.vertical)
-
-                        // Profile Info
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text(user.displayName)
-                                .font(.title2)
-                                .bold()
-                            Text("@\(user.username)")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-
-                            if let externalAcct = user.externalAcct {
-                                Text(externalAcct)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                                    .padding(.top, 4)
+                                Spacer()
                             }
+                            .padding(.vertical)
+
+                            // Profile Info
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(user.displayName)
+                                    .font(.title2)
+                                    .bold()
+                                Text("@\(user.username)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+
+                                if let externalAcct = user.externalAcct {
+                                    Text(externalAcct)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                        .padding(.top, 4)
+                                }
+                            }
+                            .padding(.horizontal)
                         }
-                        .padding(.horizontal)
                     }
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
             } else if viewModel.isLoading {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
