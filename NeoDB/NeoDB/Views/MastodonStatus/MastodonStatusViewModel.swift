@@ -13,6 +13,7 @@ class MastodonStatusViewModel: ObservableObject {
     private let logger = Logger.views.status.status
     private var loadTask: Task<Void, Never>?
     private var loadRepliesTask: Task<Void, Never>?
+    private let cacheService = CacheService.shared
     
     @Published var status: MastodonStatus?
     @Published var isLoading = false
@@ -28,6 +29,9 @@ class MastodonStatusViewModel: ObservableObject {
         didSet {
             if oldValue !== accountsManager {
                 status = nil
+                replies = []
+                maxId = nil
+                currentPage = 1
             }
         }
     }
@@ -61,7 +65,7 @@ class MastodonStatusViewModel: ObservableObject {
             do {
                 // Only load from cache if not refreshing and status is nil
                 if !refresh && status == nil,
-                   let cached = try? await CacheService.shared.retrieve(
+                   let cached = try? await cacheService.retrieve(
                     forKey: cacheKey, type: MastodonStatus.self)
                 {
                     if !Task.isCancelled {
@@ -92,13 +96,15 @@ class MastodonStatusViewModel: ObservableObject {
                 }
                 
                 status = result
-                try? await CacheService.shared.cache(
+                try? await cacheService.cache(
                     result, forKey: cacheKey, type: MastodonStatus.self)
                 
                 logger.debug("Successfully loaded status")
                 
-                // Load replies after status is loaded
-                await loadReplies(refresh: false)
+                // Load replies immediately after status is loaded
+                if !Task.isCancelled {
+                    await loadReplies(refresh: false)
+                }
                 
             } catch {
                 if case NetworkError.cancelled = error {
@@ -151,6 +157,7 @@ class MastodonStatusViewModel: ObservableObject {
                 }
                 
                 let endpoint = StatusesEndpoint.context(id: status.id)
+                logger.debug("Fetching replies with endpoint: \(String(describing: endpoint))")
                 
                 let context = try await accountsManager.currentClient.fetch(
                     endpoint, type: MastodonContext.self)
@@ -163,7 +170,9 @@ class MastodonStatusViewModel: ObservableObject {
                         let uniqueNewReplies = context.descendants.filter { !existingIds.contains($0.id) }
                         replies.append(contentsOf: uniqueNewReplies)
                     }
-                    hasMore = false // Context API doesn't support pagination
+                    
+                    // Context API doesn't support pagination, so we'll show all replies at once
+                    hasMore = false
                     currentPage += 1
                     logger.debug("Successfully loaded \(context.descendants.count) replies")
                 }
@@ -180,6 +189,10 @@ class MastodonStatusViewModel: ObservableObject {
         }
         
         await loadRepliesTask?.value
+    }
+    
+    func loadNextPage() async {
+        await loadReplies(refresh: false)
     }
     
     func cleanup() {

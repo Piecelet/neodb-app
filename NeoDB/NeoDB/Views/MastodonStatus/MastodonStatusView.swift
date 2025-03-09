@@ -162,9 +162,7 @@ struct MastodonStatusView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             viewModel.accountsManager = accountsManager
-            if status == nil {
                 await viewModel.loadStatus(id: id)
-            }
             TelemetryService.shared.trackMastodonStatusDetailView()
         }
         .toolbar {
