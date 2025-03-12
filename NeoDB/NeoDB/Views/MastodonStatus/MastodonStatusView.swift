@@ -88,25 +88,21 @@ struct MastodonStatusView: View {
                     // Replies Section
                     Section {
                         if viewModel.isLoadingReplies && viewModel.replies.isEmpty {
-                            ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
-                                StatusView(status: status, mode: .timeline)
-                                    .listRowInsets(EdgeInsets())
-                                    .listRowBackground(Color.clear)
-                                    .alignmentGuide(.listRowSeparatorLeading) { _ in
-                                        return 4
-                                    }
-                                    .redacted(reason: .placeholder)
-                            }
+                            ProgressView()
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
                         } else if viewModel.replies.isEmpty {
-                            EmptyStateView(
-                                String(localized: "timelines_no_replies_title", table: "Timelines"),
-                                systemImage: "bubble.left",
-                                description: Text(String(localized: "timelines_no_replies_description", table: "Timelines"))
-                            )
-                            .listRowInsets(EdgeInsets())
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .padding(.vertical, 30)
+                            Text(String(localized: "timelines_no_replies_description", table: "Timelines"))
+                                .font(.body)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .listRowInsets(EdgeInsets())
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .padding(.vertical, 30)
                         } else {
                             ForEach(viewModel.replies, id: \.id) { reply in
                                 Group {
