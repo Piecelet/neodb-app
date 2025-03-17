@@ -103,10 +103,6 @@ buildServer.json
 NeoDB.xcconfig
 build/XCBuildData/
 
-IceNewTimelineRef
-IceStatusKit
-
 *.storekit
 
-.cursorrules
-Mastodon.zip
+.cursor
