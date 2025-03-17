@@ -110,9 +110,39 @@ struct ProfileView: View {
     
     private func avatarAndStatsView(account: MastodonAccount) -> some View {
         HStack(alignment: .bottom) {
-            AccountAvatarView(account: account, size: .large)
-                .padding(.leading)
-                .offset(y: -40)
+            VStack(alignment: .leading, spacing: 8) {
+                AccountAvatarView(account: account, size: .large)
+                    .padding(.leading)
+                    .offset(y: -40)
+                
+                // Relationship button
+                if let relationship = viewModel.relationship {
+                    Button {
+                        Task {
+                            if relationship.following {
+                                await viewModel.unfollow(id: account.id)
+                            } else {
+                                await viewModel.follow(id: account.id)
+                            }
+                        }
+                    } label: {
+                        Text(relationship.following ? 
+                            String(localized: "timelines_profile_unfollow", table: "Timelines") :
+                            String(localized: "timelines_profile_follow", table: "Timelines"))
+                            .font(.subheadline)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(relationship.following ? Color.secondary.opacity(0.1) : Color.accentColor)
+                            .foregroundStyle(relationship.following ? .primary : Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                    .padding(.leading)
+                    .disabled(viewModel.isLoadingRelationship)
+                } else if viewModel.isLoadingRelationship {
+                    ProgressView()
+                        .padding(.leading)
+                }
+            }
 
             Spacer()
 
@@ -165,10 +195,23 @@ struct ProfileView: View {
     
     private func profileInfoView(account: MastodonAccount) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(account.displayName ?? "")
-                .font(.title2)
-                .bold()
-                .titleVisibilityAnchor()
+            HStack {
+                Text(account.displayName ?? "")
+                    .font(.title2)
+                    .bold()
+                    .titleVisibilityAnchor()
+                
+                if let relationship = viewModel.relationship {
+                    if relationship.followedBy {
+                        Text("timelines_profile_follows_you", tableName: "Timelines")
+                            .font(.caption)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.secondary.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                    }
+                }
+            }
 
             Text("@\(account.acct)")
                 .font(.subheadline)

@@ -6,9 +6,11 @@ class ProfileViewModel: ObservableObject {
     private let logger = Logger.views.profile
     private var loadTask: Task<Void, Never>?
     private var loadStatusesTask: Task<Void, Never>?
+    private var loadRelationshipTask: Task<Void, Never>?
     private let cacheService = CacheService.shared
     
     @Published var account: MastodonAccount?
+    @Published var relationship: MastodonAccountRelationship?
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
@@ -16,6 +18,7 @@ class ProfileViewModel: ObservableObject {
     @Published private(set) var statuses: [MastodonStatus] = []
     @Published private(set) var hasMore = false
     @Published private(set) var isLoadingStatuses = false
+    @Published private(set) var isLoadingRelationship = false
     private var maxId: String?
     private var currentPage = 1
     
@@ -23,6 +26,7 @@ class ProfileViewModel: ObservableObject {
         didSet {
             if oldValue !== accountsManager {
                 account = nil
+                relationship = nil
                 statuses = []
                 maxId = nil
                 currentPage = 1
@@ -101,8 +105,11 @@ class ProfileViewModel: ObservableObject {
                 
                 logger.debug("Successfully loaded account")
                 
-                // 加载账号成功后立即加载状态，首次加载不使用 refresh
-                await loadStatuses(refresh: false)
+                // Load relationship and statuses after account is loaded
+                if !Task.isCancelled {
+                    await loadRelationship(id: id)
+                    await loadStatuses(refresh: false)
+                }
                 
             } catch {
                 if case NetworkError.cancelled = error {
@@ -119,6 +126,84 @@ class ProfileViewModel: ObservableObject {
         }
         
         await loadTask?.value
+    }
+    
+    func loadRelationship(id: String) async {
+        loadRelationshipTask?.cancel()
+        
+        loadRelationshipTask = Task {
+            guard let accountsManager = accountsManager else {
+                logger.debug("No accountsManager available")
+                return
+            }
+            
+            isLoadingRelationship = true
+            defer { isLoadingRelationship = false }
+            
+            do {
+                guard !Task.isCancelled else {
+                    logger.debug("Relationship loading cancelled")
+                    return
+                }
+                
+                guard accountsManager.isAuthenticated else {
+                    logger.error("User not authenticated")
+                    throw NetworkError.unauthorized
+                }
+                
+                let endpoint = AccountsEndpoint.relationships(ids: [id])
+                logger.debug("Fetching relationship with endpoint: \(String(describing: endpoint))")
+                
+                let relationships = try await accountsManager.currentClient.fetch(
+                    endpoint, type: [MastodonAccountRelationship].self)
+                
+                if !Task.isCancelled {
+                    relationship = relationships.first
+                    logger.debug("Successfully loaded relationship")
+                }
+            } catch {
+                if case NetworkError.cancelled = error {
+                    logger.debug("Relationship loading cancelled")
+                    return
+                }
+                
+                if !Task.isCancelled {
+                    logger.error("Failed to load relationship: \(error.localizedDescription)")
+                }
+            }
+        }
+        
+        await loadRelationshipTask?.value
+    }
+    
+    func follow(id: String) async {
+        guard let accountsManager = accountsManager else { return }
+        
+        do {
+            let endpoint = AccountsEndpoint.follow(id: id)
+            let result = try await accountsManager.currentClient.fetch(
+                endpoint, type: MastodonAccountRelationship.self)
+            relationship = result
+        } catch {
+            logger.error("Failed to follow account: \(error.localizedDescription)")
+            self.error = error
+            self.showError = true
+        }
+    }
+    
+    func unfollow(id: String) async {
+        guard let accountsManager = accountsManager else { return }
+        
+        do {
+            let endpoint = AccountsEndpoint.unfollow(id: id)
+            let result = try await accountsManager.currentClient.fetch(
+                endpoint, type: MastodonAccountRelationship.self)
+            relationship = result
+        } catch {
+            logger.error("Failed to unfollow account: \(error.localizedDescription)")
+            self.error = error
+            self.showError = true
+        }
     }
     
     func loadStatuses(refresh: Bool = false) async {
@@ -228,5 +313,7 @@ class ProfileViewModel: ObservableObject {
         loadTask = nil
         loadStatusesTask?.cancel()
         loadStatusesTask = nil
+        loadRelationshipTask?.cancel()
+        loadRelationshipTask = nil
     }
 } 
