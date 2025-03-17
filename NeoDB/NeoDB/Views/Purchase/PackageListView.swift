@@ -15,7 +15,7 @@ struct PackageListView: View {
     @Binding var showAllPlans: Bool
     @Binding var selectedPackage: Package?
     let viewModel: PurchaseViewModel
-    
+
     var body: some View {
         VStack {
             Button {
@@ -134,6 +134,6 @@ struct PackageListView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
