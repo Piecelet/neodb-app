@@ -89,6 +89,8 @@ extension Logger {
             subsystem: subsystem, category: "view.profile")
         static let settings = Logger(
             subsystem: subsystem, category: "view.settings")
+        static let purchase = Logger(
+            subsystem: subsystem, category: "view.purchase")
         static let library = Logger(
             subsystem: subsystem, category: "view.library")
         static let item = Logger(subsystem: subsystem, category: "view.item")

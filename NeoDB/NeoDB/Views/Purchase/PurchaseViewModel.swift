@@ -9,11 +9,14 @@
 import SwiftUI
 import RevenueCat
 import Perception
+import OSLog
 
 @MainActor
 class PurchaseViewModel: ObservableObject {
+    private let logger = Logger.views.purchase
     @Published private(set) var purchaseError: String?
     @Published var isLoading = false
+    @Published var isTrialEligible = false
     @Published var showAllPlans = false {
         didSet {
             if oldValue != showAllPlans {
@@ -38,6 +41,7 @@ class PurchaseViewModel: ObservableObject {
             self.storeManager = storeManager
             Task {
                 await loadOfferings()
+                await checkTrialEligibility()
             }
         }
     }
@@ -72,6 +76,16 @@ class PurchaseViewModel: ObservableObject {
         defer { isLoading = false }
         await storeManager?.loadOfferings()
         selectedPackage = currentOffering?.availablePackages.first(where: { $0.packageType == .annual })
+    }
+
+    func checkTrialEligibility() async {
+        guard let storeManager = storeManager,
+              let offering = storeManager.plusOffering,
+              let package = offering.availablePackages.first(where: { $0.packageType == .annual })
+        else { return }
+
+        let eligibility = try await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: package.storeProduct)
+        isTrialEligible = eligibility == .eligible
     }
 
     func purchase(_ package: Package) async {

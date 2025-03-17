@@ -70,7 +70,7 @@ struct PackageListView: View {
                                                     "store_package_lifetime",
                                                 table:
                                                     "Settings")
-                                            : "\(package.packageType == .annual ? String(localized: "store_package_yearly", table: "Settings") : String(localized: "store_package_monthly_short", table: "Settings"))")
+                                            : "\(package.packageType == .annual ? (viewModel.isTrialEligible ? String(localized: "store_package_trial", defaultValue: "Try Free For 7 Days", table: "Settings") : String(localized: "store_package_yearly", table: "Settings")) : String(localized: "store_package_monthly_short", table: "Settings"))")
                                             + " • \(package.storeProduct.localizedPriceString)"
                                     ).font(.headline)
 

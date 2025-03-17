@@ -13,7 +13,7 @@ import SwiftUI
 struct BottomPurchaseView: View {
     private enum PackageText {
         case lifetime(price: String)
-        case yearly(price: String)
+        case yearly(price: String, isTrialEligible: Bool = false)
         case monthly(price: String)
         case purchased(package: Package)
 
@@ -21,17 +21,27 @@ struct BottomPurchaseView: View {
             switch self {
             case .lifetime:
                 return String(
-                    localized: "store_button_upgrade_forever", table: "Settings"
+                    localized: "store_button_upgrade_forever",
+                    defaultValue: "Upgrade Forever", table: "Settings"
                 )
-            case .yearly:
-                return String(
-                    localized: "store_button_try_free", table: "Settings")
+            case .yearly(_, let isTrialEligible):
+                return isTrialEligible
+                    ? String(
+                        localized: "store_button_try_free",
+                        defaultValue: "Try Free for 7 Days", table: "Settings")
+                    : String(
+                        localized: "store_button_upgrade_now",
+                        defaultValue: "Upgrade Now", table: "Settings"
+                    )
             case .monthly:
                 return String(
-                    localized: "store_button_upgrade_now", table: "Settings")
+                    localized: "store_button_upgrade_now",
+                    defaultValue: "Upgrade Now", table: "Settings"
+                )
             case .purchased:
                 return String(
-                    localized: "store_button_thank_you", table: "Settings")
+                    localized: "store_button_thank_you",
+                    defaultValue: "Thank you", table: "Settings")
             }
         }
 
@@ -40,21 +50,33 @@ struct BottomPurchaseView: View {
             case .lifetime(let price):
                 return String(
                     format: String(
-                        localized: "store_package_lifetime_price",
+                        localized: "store_package_lifetime_price_description",
+                        defaultValue: "%@ once · Lifetime access",
                         table: "Settings"),
                     price
                 )
-            case .yearly(let price):
-                return String(
-                    format: String(
-                        localized: "store_package_yearly_price",
-                        table: "Settings"),
-                    price
-                )
+            case .yearly(let price, let isTrialEligible):
+                return isTrialEligible
+                    ? String(
+                        format: String(
+                            localized:
+                                "store_package_yearly_price_with_trial_description",
+                            defaultValue: "Then %@ per year · Cancel anytime",
+                            table: "Settings"),
+                        price
+                    )
+                    : String(
+                        format: String(
+                            localized: "store_package_yearly_price_description",
+                            defaultValue: "%@ per year · Cancel anytime",
+                            table: "Settings"),
+                        price
+                    )
             case .monthly(let price):
                 return String(
                     format: String(
-                        localized: "store_package_monthly_price",
+                        localized: "store_package_monthly_price_description",
+                        defaultValue: "%@ per month · Cancel anytime",
                         table: "Settings"),
                     price
                 )
@@ -92,7 +114,7 @@ struct BottomPurchaseView: View {
         case .lifetime:
             return .lifetime(price: price)
         case .annual:
-            return .yearly(price: price)
+            return .yearly(price: price, isTrialEligible: viewModel.isTrialEligible)
         case .monthly:
             return .monthly(price: price)
         default:

@@ -2534,7 +2534,8 @@
         }
       }
     },
-    "store_package_lifetime_price" : {
+    "store_package_lifetime_price_description" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -2544,14 +2545,14 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "new",
             "value" : "%@ once · Lifetime access"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ · 一次性购买终身访问"
+            "value" : "%@ · 一次购买终身访问"
           }
         }
       }
@@ -2578,7 +2579,8 @@
         }
       }
     },
-    "store_package_monthly_price" : {
+    "store_package_monthly_price_description" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -2588,7 +2590,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "new",
             "value" : "%@ per month · Cancel anytime"
           }
         },
@@ -2622,6 +2624,17 @@
         }
       }
     },
+    "store_package_trial" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Try Free For 7 Days"
+          }
+        }
+      }
+    },
     "store_package_yearly" : {
       "localizations" : {
         "da" : {
@@ -2644,7 +2657,31 @@
         }
       }
     },
-    "store_package_yearly_price" : {
+    "store_package_yearly_price_description" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ per år · Annuller når som helst"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%@ per year · Cancel anytime"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ 每年 · 随时可取消"
+          }
+        }
+      }
+    },
+    "store_package_yearly_price_with_trial_description" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "da" : {
           "stringUnit" : {
@@ -2654,7 +2691,7 @@
         },
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
+            "state" : "new",
             "value" : "Then %@ per year · Cancel anytime"
           }
         },
