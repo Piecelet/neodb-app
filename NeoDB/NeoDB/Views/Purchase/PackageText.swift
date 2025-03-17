@@ -9,7 +9,7 @@
 import Foundation
 import RevenueCat
 
-private enum PackageText {
+enum PackageText {
     case lifetime(price: String)
     case yearly(price: String, isTrialEligible: Bool = false)
     case monthly(price: String)
@@ -82,39 +82,62 @@ private enum PackageText {
             switch package.packageType {
             case .lifetime:
                 return String(
-                    localized: "store_package_lifetime", table: "Settings")
+                    localized: "store_package_purchased_lifetime_description",
+                    defaultValue: "Lifetime Access", table: "Settings")
             case .annual:
                 return String(
-                    localized: "store_package_annual", table: "Settings")
+                    localized: "store_package_purchased_yearly_description",
+                    defaultValue: "Yearly Subscription", table: "Settings")
             case .monthly:
                 return String(
-                    localized: "store_package_monthly", table: "Settings")
+                    localized: "store_package_purchased_monthly_description",
+                    defaultValue: "Monthly Subscription", table: "Settings")
             default:
                 return String(
-                    localized: "store_package_active", table: "Settings")
+                    localized: "store_package_purchased_active_description",
+                    defaultValue: "Active Access", table: "Settings")
             }
         }
     }
 
     var listText: String {
         switch self {
-        case .lifetime(let price):
+        case .lifetime:
             return String(
                 localized: "store_package_list_lifetime_label",
                 defaultValue: "Lifetime",
                 table: "Settings")
-        case .yearly(let price, _):
+        case .yearly:
             return String(
                 localized: "store_package_list_yearly_label",
                 defaultValue: "Yearly",
                 table: "Settings")
-        case .monthly(let price):
+        case .monthly:
             return String(
                 localized: "store_package_list_monthly_label",
                 defaultValue: "Monthly",
                 table: "Settings")
         case .purchased:
             return ""
+        }
+    }
+}
+
+extension PackageText {
+    static func getText(package: Package, isTrialEligible: Bool = false)
+        -> PackageText?
+    {
+        switch package.packageType {
+        case .lifetime:
+            return .lifetime(price: package.storeProduct.localizedPriceString)
+        case .annual:
+            return .yearly(
+                price: package.storeProduct.localizedPriceString,
+                isTrialEligible: isTrialEligible)
+        case .monthly:
+            return .monthly(price: package.storeProduct.localizedPriceString)
+        default:
+            return nil
         }
     }
 }

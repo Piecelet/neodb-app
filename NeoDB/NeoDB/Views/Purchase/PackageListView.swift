@@ -62,29 +62,17 @@ struct PackageListView: View {
                         } label: {
                             HStack {
                                 VStack(alignment: .leading) {
-                                    Text(
-                                        (package.packageType
-                                            == .lifetime
-                                            ? String(
-                                                localized:
-                                                    "store_package_lifetime",
-                                                table:
-                                                    "Settings")
-                                            : "\(package.packageType == .annual ? (viewModel.isTrialEligible ? String(localized: "store_package_trial", defaultValue: "Try Free For 7 Days", table: "Settings") : String(localized: "store_package_yearly", table: "Settings")) : String(localized: "store_package_monthly_short", table: "Settings"))")
-                                            + " • \(package.storeProduct.localizedPriceString)"
-                                    ).font(.headline)
-
+                                    if let packageText = PackageText.getText(package: package, isTrialEligible: viewModel.isTrialEligible) {
+                                        Text(packageText.listText + " • " + package.storeProduct.localizedPriceString)
+                                            .font(.headline)
+                                    }
                                 }
                                 Spacer(minLength: 0)
                                 // 如果是年订阅，展示节省多少
-                                if package.packageType
-                                    == .annual
-                                {
-                                    if let savings =
-                                        viewModel
-                                        .calculateSavings(
-                                            for: package,
-                                            in: offering)
+                                if package.packageType == .annual {
+                                    if let savings = viewModel.calculateSavings(
+                                        for: package,
+                                        in: offering)
                                     {
                                         Text(
                                             String(
