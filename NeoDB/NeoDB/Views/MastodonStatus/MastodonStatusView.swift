@@ -95,7 +95,7 @@ struct MastodonStatusView: View {
                                 .listRowBackground(Color.clear)
                                 .listRowSeparator(.hidden)
                         } else if viewModel.replies.isEmpty {
-                            Text(String(localized: "timelines_no_replies_description", table: "Timelines"))
+                            Text(String(localized: "replies_no_replies_description", defaultValue: "No replies", table: "Timelines"))
                                 .font(.body)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity)

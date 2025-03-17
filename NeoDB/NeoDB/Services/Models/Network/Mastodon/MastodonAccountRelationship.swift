@@ -10,7 +10,7 @@ import Foundation
 
 struct MastodonAccountRelationship: Codable, Equatable, Identifiable {
   let id: String
-  let following: Bool
+  var following: Bool
   let showingReblogs: Bool
   let followedBy: Bool
   let blocking: Bool

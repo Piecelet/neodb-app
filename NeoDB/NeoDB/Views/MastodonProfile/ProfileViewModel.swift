@@ -183,7 +183,9 @@ class ProfileViewModel: ObservableObject {
             let endpoint = AccountsEndpoint.follow(id: id)
             let result = try await accountsManager.currentClient.fetch(
                 endpoint, type: MastodonAccountRelationship.self)
-            relationship = result
+            var updatedResult = result
+            updatedResult.following = true
+            relationship = updatedResult
         } catch {
             logger.error("Failed to follow account: \(error.localizedDescription)")
             self.error = error
@@ -198,7 +200,9 @@ class ProfileViewModel: ObservableObject {
             let endpoint = AccountsEndpoint.unfollow(id: id)
             let result = try await accountsManager.currentClient.fetch(
                 endpoint, type: MastodonAccountRelationship.self)
-            relationship = result
+            var updatedResult = result
+            updatedResult.following = false
+            relationship = updatedResult
         } catch {
             logger.error("Failed to unfollow account: \(error.localizedDescription)")
             self.error = error

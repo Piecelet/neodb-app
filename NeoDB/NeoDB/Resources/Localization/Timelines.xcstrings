@@ -1,19 +1,52 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "profile_in_development" : {
-      "extractionState" : "stale",
+    "profile_follow_button" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Profile is Under Development"
+            "state" : "new",
+            "value" : "Follow"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "用户页现正开发中"
+            "value" : "关注"
+          }
+        }
+      }
+    },
+    "profile_follows_you_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Follows you"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "关注了你"
+          }
+        }
+      }
+    },
+    "profile_unfollow_button" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Unfollow"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "取关"
           }
         }
       }
@@ -50,19 +83,19 @@
         }
       }
     },
-    "status_replies_in_development" : {
-      "extractionState" : "stale",
+    "replies_no_replies_description" : {
+      "extractionState" : "extracted_with_value",
       "localizations" : {
         "en" : {
           "stringUnit" : {
-            "state" : "translated",
-            "value" : "Replies is Under Development"
+            "state" : "new",
+            "value" : "No replies"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "回复列表现正开发中"
+            "value" : "没有评论"
           }
         }
       }
@@ -149,9 +182,6 @@
         }
       }
     },
-    "timelines_no_replies_description" : {
-
-    },
     "timelines_profile_error_title" : {
       "localizations" : {
         "da" : {
@@ -173,9 +203,6 @@
           }
         }
       }
-    },
-    "timelines_profile_follow" : {
-
     },
     "timelines_profile_followers" : {
       "localizations" : {
@@ -220,9 +247,6 @@
           }
         }
       }
-    },
-    "timelines_profile_follows_you" : {
-
     },
     "timelines_profile_joined" : {
       "localizations" : {
@@ -311,9 +335,6 @@
           }
         }
       }
-    },
-    "timelines_profile_unfollow" : {
-
     },
     "timelines_status_browser_button" : {
       "localizations" : {

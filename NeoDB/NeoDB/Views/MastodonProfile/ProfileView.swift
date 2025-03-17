@@ -7,6 +7,7 @@
 
 import CustomNavigationTitle
 import SwiftUI
+import ButtonKit
 
 struct ProfileView: View {
     let id: String
@@ -118,22 +119,22 @@ struct ProfileView: View {
             VStack(alignment: .trailing, spacing: 8) {
                 // Relationship button
                 if let relationship = viewModel.relationship {
-                    Button {
-                        Task {
-                            if relationship.following {
-                                await viewModel.unfollow(id: id)
-                            } else {
-                                await viewModel.follow(id: id)
-                            }
+                    AsyncButton {
+                        if relationship.following {
+                            await viewModel.unfollow(id: id)
+                        } else {
+                            await viewModel.follow(id: id)
                         }
                     } label: {
                         Text(
                             relationship.following
                                 ? String(
-                                    localized: "timelines_profile_unfollow",
+                                    localized: "profile_unfollow_button",
+                                    defaultValue: "Unfollow",
                                     table: "Timelines")
                                 : String(
-                                    localized: "timelines_profile_follow",
+                                    localized: "profile_follow_button",
+                                    defaultValue: "Follow",
                                     table: "Timelines")
                         )
                         .font(.subheadline)
@@ -150,8 +151,9 @@ struct ProfileView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     .buttonStyle(.plain)
-                    .padding(.leading)
-                    .disabled(viewModel.isLoadingRelationship)
+                    .asyncButtonStyle(.overlay)
+                    .disabledWhenLoading()
+                    .padding(.horizontal)
                 } else if viewModel.isLoadingRelationship {
                     ProgressView()
                         .padding(.leading)
@@ -218,7 +220,7 @@ struct ProfileView: View {
                 if let relationship = viewModel.relationship {
                     if relationship.followedBy {
                         Text(
-                            "timelines_profile_follows_you",
+                            "profile_follows_you_label",
                             tableName: "Timelines"
                         )
                         .font(.caption)
