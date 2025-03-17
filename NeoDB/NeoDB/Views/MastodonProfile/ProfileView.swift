@@ -5,8 +5,8 @@
 //  Created by citron on 1/15/25.
 //
 
-import SwiftUI
 import CustomNavigationTitle
+import SwiftUI
 
 struct ProfileView: View {
     let id: String
@@ -49,9 +49,9 @@ struct ProfileView: View {
         }
         .enableInjection()
     }
-    
+
     // MARK: - Main Views
-    
+
     private func accountProfileView(account: MastodonAccount) -> some View {
         List {
             // Profile Header Section
@@ -78,7 +78,7 @@ struct ProfileView: View {
             await viewModel.loadStatuses(refresh: true)
         }
     }
-    
+
     private func profileHeaderSection(account: MastodonAccount) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             // Header Image
@@ -91,7 +91,7 @@ struct ProfileView: View {
             profileInfoView(account: account)
         }
     }
-    
+
     private func headerImageView(account: MastodonAccount) -> some View {
         Group {
             if let header = account.header {
@@ -107,51 +107,63 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private func avatarAndStatsView(account: MastodonAccount) -> some View {
         HStack(alignment: .bottom) {
-            VStack(alignment: .leading, spacing: 8) {
-                AccountAvatarView(account: account, size: .large)
-                    .padding(.leading)
-                    .offset(y: -40)
-                
+            AccountAvatarView(account: account, size: .large)
+                .padding(.leading)
+                .offset(y: -40)
+            Spacer()
+
+            VStack(alignment: .trailing, spacing: 8) {
                 // Relationship button
                 if let relationship = viewModel.relationship {
                     Button {
                         Task {
                             if relationship.following {
-                                await viewModel.unfollow(id: account.id)
+                                await viewModel.unfollow(id: id)
                             } else {
-                                await viewModel.follow(id: account.id)
+                                await viewModel.follow(id: id)
                             }
                         }
                     } label: {
-                        Text(relationship.following ? 
-                            String(localized: "timelines_profile_unfollow", table: "Timelines") :
-                            String(localized: "timelines_profile_follow", table: "Timelines"))
-                            .font(.subheadline)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(relationship.following ? Color.secondary.opacity(0.1) : Color.accentColor)
-                            .foregroundStyle(relationship.following ? .primary : Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        Text(
+                            relationship.following
+                                ? String(
+                                    localized: "timelines_profile_unfollow",
+                                    table: "Timelines")
+                                : String(
+                                    localized: "timelines_profile_follow",
+                                    table: "Timelines")
+                        )
+                        .font(.subheadline)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(
+                            relationship.following
+                                ? Color.secondary.opacity(0.1)
+                                : Color.accentColor
+                        )
+                        .foregroundStyle(
+                            relationship.following ? .primary : Color.white
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
+                    .buttonStyle(.plain)
                     .padding(.leading)
                     .disabled(viewModel.isLoadingRelationship)
                 } else if viewModel.isLoadingRelationship {
                     ProgressView()
                         .padding(.leading)
                 }
+
+                statsView(account: account)
+                    .padding(.horizontal)
             }
-
-            Spacer()
-
-            statsView(account: account)
-                .padding(.horizontal)
         }
         .padding(.bottom, -40)
     }
-    
+
     private func statsView(account: MastodonAccount) -> some View {
         HStack(spacing: 24) {
             // Posts count
@@ -176,7 +188,8 @@ struct ProfileView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
+            .buttonStyle(.plain)
+
             // Followers count
             Button {
                 router.navigate(to: .followers(id: account.id))
@@ -190,9 +203,10 @@ struct ProfileView: View {
                         .foregroundStyle(.secondary)
                 }
             }
+            .buttonStyle(.plain)
         }
     }
-    
+
     private func profileInfoView(account: MastodonAccount) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -200,15 +214,18 @@ struct ProfileView: View {
                     .font(.title2)
                     .bold()
                     .titleVisibilityAnchor()
-                
+
                 if let relationship = viewModel.relationship {
                     if relationship.followedBy {
-                        Text("timelines_profile_follows_you", tableName: "Timelines")
-                            .font(.caption)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.secondary.opacity(0.1))
-                            .clipShape(RoundedRectangle(cornerRadius: 4))
+                        Text(
+                            "timelines_profile_follows_you",
+                            tableName: "Timelines"
+                        )
+                        .font(.caption)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.secondary.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: 4))
                     }
                 }
             }
@@ -229,7 +246,8 @@ struct ProfileView: View {
                 String(
                     format: String(
                         localized: "timelines_profile_joined",
-                        table: "Timelines"), account.createdAt.relativeFormatted)
+                        table: "Timelines"), account.createdAt.relativeFormatted
+                )
             )
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -237,8 +255,9 @@ struct ProfileView: View {
         }
         .padding(.horizontal)
     }
-    
-    private func profileFieldsView(fields: [MastodonAccount.Field]) -> some View {
+
+    private func profileFieldsView(fields: [MastodonAccount.Field]) -> some View
+    {
         Group {
             if !fields.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -256,11 +275,14 @@ struct ProfileView: View {
             }
         }
     }
-    
+
     private var statusesSection: some View {
         Group {
             if viewModel.isLoadingStatuses && viewModel.statuses.isEmpty {
-                ForEach(Array(MastodonStatus.placeholders().enumerated()), id: \.offset) { index, status in
+                ForEach(
+                    Array(MastodonStatus.placeholders().enumerated()),
+                    id: \.offset
+                ) { index, status in
                     StatusView(status: status, mode: .timeline)
                         .listRowInsets(EdgeInsets())
                         .listRowBackground(Color.clear)
@@ -269,31 +291,35 @@ struct ProfileView: View {
                         }
                         .redacted(reason: .placeholder)
                 }
-            } else if viewModel.statuses.isEmpty && viewModel.account != nil && viewModel.isLoading == false {
+            } else if viewModel.statuses.isEmpty && viewModel.account != nil
+                && viewModel.isLoading == false
+            {
                 emptyStatusesView
             } else {
                 statusListView
             }
         }
     }
-    
+
     private var statusListView: some View {
         Group {
             ForEach(viewModel.statuses, id: \.id) { status in
                 statusRowView(status: status)
             }
-            
+
             if viewModel.hasMore {
                 loadMoreView
             }
         }
     }
-    
+
     private func statusRowView(status: MastodonStatus) -> some View {
         Group {
             if let item = status.content.links.compactMap(\.neodbItem).first {
                 Button {
-                    router.navigate(to: .statusDetailWithStatusAndItem(status: status, item: item))
+                    router.navigate(
+                        to: .statusDetailWithStatusAndItem(
+                            status: status, item: item))
                 } label: {
                     StatusView(status: status, mode: .timelineWithItem)
                 }
@@ -312,7 +338,7 @@ struct ProfileView: View {
             return 4
         }
     }
-    
+
     private var loadMoreView: some View {
         ProgressView()
             .id(UUID())
@@ -329,19 +355,22 @@ struct ProfileView: View {
                 }
             }
     }
-    
+
     private var emptyStatusesView: some View {
         EmptyStateView(
             String(localized: "timelines_no_posts_title", table: "Timelines"),
             systemImage: "text.bubble",
-            description: Text(String(localized: "timelines_no_posts_description", table: "Timelines"))
+            description: Text(
+                String(
+                    localized: "timelines_no_posts_description",
+                    table: "Timelines"))
         )
         .listRowInsets(EdgeInsets())
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
         .padding(.vertical, 30)
     }
-    
+
     private func userProfileView(user: User) -> some View {
         List {
             Section {
@@ -381,10 +410,11 @@ struct ProfileView: View {
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
     }
-    
+
     private func errorView(error: Error) -> some View {
         EmptyStateView(
-            String(localized: "timelines_profile_error_title", table: "Timelines"),
+            String(
+                localized: "timelines_profile_error_title", table: "Timelines"),
             systemImage: "exclamationmark.triangle",
             description: Text(error.localizedDescription)
         )
@@ -392,15 +422,17 @@ struct ProfileView: View {
             await viewModel.loadAccount(id: id, refresh: true)
         }
     }
-    
+
     private var loadingView: some View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
-    
+
     private var notFoundView: some View {
         EmptyStateView(
-            String(localized: "timelines_profile_not_found_title", table: "Timelines"),
+            String(
+                localized: "timelines_profile_not_found_title",
+                table: "Timelines"),
             systemImage: "person.slash",
             description: Text(
                 String(
@@ -414,7 +446,7 @@ struct ProfileView: View {
     }
 
     #if DEBUG
-    @ObserveInjection var forceRedraw
+        @ObserveInjection var forceRedraw
     #endif
 }
 
