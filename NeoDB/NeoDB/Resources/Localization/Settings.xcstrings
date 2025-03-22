@@ -347,6 +347,73 @@
         }
       }
     },
+    "about_telemetry_footer" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send anonymiserede data til TelemetryDeck for at hjælpe med at forbedre app'en."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send anonymized data to TelemetryDeck to help improve the app."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "向 TelemetryDeck 发送匿名化数据以帮助改进应用。"
+          }
+        }
+      }
+    },
+    "about_telemetry_title" : {
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Program for brugeroplevelser"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "User Experience"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用户体验计划"
+          }
+        }
+      }
+    },
+    "about_telemetry_toggle" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "da" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Brugsdata og forbedringer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Usage Data & Improvements"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用数据和改进"
+          }
+        }
+      }
+    },
     "about_title" : {
       "localizations" : {
         "da" : {

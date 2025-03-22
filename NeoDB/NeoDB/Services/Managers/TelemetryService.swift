@@ -9,6 +9,7 @@
 import Foundation
 import TelemetryDeck
 import OSLog
+import SwiftUI
 
 @MainActor
 class TelemetryService: ObservableObject {
@@ -18,6 +19,8 @@ class TelemetryService: ObservableObject {
     private let logger = Logger.services.telemetry.telemetry
 
     private let config = TelemetryDeck.Config(appID: AppConfig.telemetryDeckAppID)
+    
+    @AppStorage("isTelemetryEnabled") private var isTelemetryEnabled = true
     
     private init() {
         configure()
@@ -29,11 +32,32 @@ class TelemetryService: ObservableObject {
         logger.debug("TelemetryDeck initialized")
     }
 
+    func setTelemetryEnabled(_ enabled: Bool) {
+        isTelemetryEnabled = enabled
+        if enabled {
+            configure()
+        } else {
+            // Create a minimal config that effectively disables telemetry
+            let disabledConfig = TelemetryDeck.Config(appID: "")
+            TelemetryDeck.initialize(config: disabledConfig)
+        }
+    }
+    
+    func isEnabled() -> Bool {
+        return isTelemetryEnabled
+    }
+    
+    private func shouldTrack() -> Bool {
+        return isTelemetryEnabled
+    }
+
     func updateDefaultUserID(to id: String?) {
+        guard shouldTrack() else { return }
         TelemetryDeck.updateDefaultUserID(to: id)
     }
 
     func updateInstance(to instance: String) {
+        guard shouldTrack() else { return }
         config.defaultParameters = { ["instance": instance] }
         TelemetryDeck.initialize(config: config)
         logger.debug("TelemetryDeck initialized with instance: \(instance)")
@@ -42,6 +66,7 @@ class TelemetryService: ObservableObject {
     // MARK: - App Lifecycle Events
     
     func trackAppLaunch() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("launched")
         logger.debug("Tracked app launch")
     }
@@ -49,6 +74,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Authentication Events
     
     func trackAuthLogin(instance: String? = nil) {
+        guard shouldTrack() else { return }
         if let instance = instance {
             TelemetryDeck.signal("auth.login", parameters: ["instance": instance])
         } else {
@@ -58,6 +84,7 @@ class TelemetryService: ObservableObject {
     }
     
     func trackAuthLogout(instance: String? = nil) {
+        guard shouldTrack() else { return }
         if let instance = instance {
             TelemetryDeck.signal("auth.logout", parameters: ["instance": instance])
         } else {
@@ -69,11 +96,13 @@ class TelemetryService: ObservableObject {
     // MARK: - Navigation Events
     
     func trackTabChange(to tab: TabDestination) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("navigation.tab", parameters: ["tab": tab.rawValue])
         logger.debug("Tracked tab change to: \(tab.rawValue)")
     }
 
     func trackPurchaseWithFeature(feature: StoreConfig.Features? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let feature = feature {
             parameters["feature"] = feature.rawValue
@@ -82,9 +111,9 @@ class TelemetryService: ObservableObject {
         logger.debug("Tracked purchase with feature: \(feature?.rawValue ?? "none")")
     }
 
-
     // MARK - Discover Events
     func trackSearchSubmit(category: ItemCategory? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let category = category {
             parameters["itemCategory"] = category.rawValue
@@ -94,6 +123,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackSearchCategoryChange(category: ItemCategory? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let category = category {
             parameters["itemCategory"] = category.rawValue
@@ -103,16 +133,19 @@ class TelemetryService: ObservableObject {
     }
 
     func trackSearchURLPaste() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("discover.search.url.paste")
         logger.debug("Tracked search URL paste")
     }
 
     func trackSearchURLSubmit() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("discover.search.url.submit")
         logger.debug("Tracked search URL submit")
     }
 
     func trackGalleryItemClick(itemId: String, category: ItemCategory) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("discover.gallery.item.click", parameters: [
             "itemId": itemId,
             "category": category.rawValue
@@ -121,6 +154,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackGalleryCategoryClick(category: ItemCategory) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("discover.gallery.category.click", parameters: [
             "category": category.rawValue
         ])
@@ -130,6 +164,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Library Events
 
     func trackLibraryItemClick(itemId: String, category: ItemCategory, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue
@@ -145,6 +180,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackLibraryCategoryChange(category: ItemCategory.shelfAvailable, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [
             "category": category.rawValue
         ]
@@ -159,6 +195,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackLibraryShelfTypeChange(shelfType: ShelfType, currentShelfType: ShelfType? = nil, currentShelfCategory: ItemCategory.shelfAvailable? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [
             "shelfType": shelfType.rawValue
         ]
@@ -173,6 +210,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackLibraryRefresh() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("library.refresh")
         logger.debug("Tracked library refresh")
     }
@@ -180,6 +218,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Item Events
 
     func trackItemMarkEdit(itemId: String, category: ItemCategory) {
+        guard shouldTrack() else { return }
         let parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue
@@ -189,6 +228,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackItemShowDetail(itemId: String? = nil, category: ItemCategory? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let category = category {
             parameters["category"] = category.rawValue
@@ -200,6 +240,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackItemAddMark(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        guard shouldTrack() else { return }
         let parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue,
@@ -210,6 +251,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackItemEditMark(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        guard shouldTrack() else { return }
         let parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue,
@@ -220,6 +262,7 @@ class TelemetryService: ObservableObject {
     }
     
     func trackItemView(id: String? = nil, category: ItemCategory? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let category = category {
             parameters["category"] = category.rawValue
@@ -232,6 +275,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackItemViewFromStatus() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("item.viewed.from.status")
         logger.debug("Tracked item view from status")
     }
@@ -239,6 +283,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Mark Events
 
     func trackMarkDelete(itemId: String, category: ItemCategory, shelfType: ShelfType) {
+        guard shouldTrack() else { return }
         let parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue,
@@ -249,6 +294,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMarkSubmit(itemId: String, category: ItemCategory, shelfType: ShelfType, postToFediverse: Bool? = nil, changeTime: Bool? = nil, isRated: Bool? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [
             "itemId": itemId,
             "category": category.rawValue,
@@ -270,6 +316,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Mastodon Status Events
 
     func trackMastodonStatusLike(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -279,6 +326,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusReply(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -288,6 +336,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusRepost(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -297,6 +346,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusBookmark(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -306,6 +356,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusShare(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -315,6 +366,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusDetailView(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -324,6 +376,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonStatusItemMark(statusId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let statusId = statusId {
             parameters["statusId"] = statusId
@@ -334,6 +387,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Mastodon Profile Events
 
     func trackMastodonProfileView(profileId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let profileId = profileId {
             parameters["profileId"] = profileId
@@ -343,6 +397,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonProfileFollowingView(profileId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let profileId = profileId {
             parameters["profileId"] = profileId
@@ -352,6 +407,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonProfileFollowersView(profileId: String? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         if let profileId = profileId {
             parameters["profileId"] = profileId
@@ -363,6 +419,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Mastodon Timelines Events
 
     func trackMastodonTimelinesTypeChange(timelineType: MastodonTimelinesFilter, currentTimelineType: MastodonTimelinesFilter? = nil) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = [:]
         parameters["timelineType"] = timelineType.rawValue
         if let currentTimelineType = currentTimelineType {
@@ -373,6 +430,7 @@ class TelemetryService: ObservableObject {
     }
 
     func trackMastodonTimelinesRefresh() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("mastodon.timelines.refresh")
         logger.debug("Tracked mastodon timelines refresh")
     }
@@ -380,36 +438,43 @@ class TelemetryService: ObservableObject {
     // MARK: - Settings Events
 
     func trackSettingsView() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.view")
         logger.debug("Tracked settings view")
     }
 
     func trackSettingsCustomizeDefaultTab(to tab: TabDestination.Configurable) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.customize.defaultTab", parameters: ["tab": tab.rawValue])
         logger.debug("Tracked settings view customize default tab to: \(tab.rawValue)")
     }
 
     func trackSettingsSignOut() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.signOut")
         logger.debug("Tracked settings sign out")
     }
 
     func trackSettingsClearCache() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.clearCache")
         logger.debug("Tracked settings clear cache")
     }
 
     func trackSettingsSwitchAccount(to newInstance: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.switchAccount", parameters: ["newInstance": newInstance])
         logger.debug("Tracked settings switch account to: \(newInstance)")
     }
 
     func trackSettingsDeleteAccount(from oldInstance: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.deleteAccount", parameters: ["oldInstance": oldInstance])
         logger.debug("Tracked settings delete account from: \(oldInstance)")
     }
 
     func trackSettingsPurchase() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("settings.purchase")
         logger.debug("Tracked settings purchase")
     }
@@ -417,6 +482,7 @@ class TelemetryService: ObservableObject {
     // MARK: - Feature Usage Events
     
     func trackSearch(query: String, category: ItemCategory?) {
+        guard shouldTrack() else { return }
         var parameters: [String: String] = ["queryLength": "\(query.count)"]
         if let category = category {
             parameters["category"] = category.rawValue
@@ -428,16 +494,19 @@ class TelemetryService: ObservableObject {
     // MARK: - Store Events
     
     func trackPurchaseStart(package: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.started", parameters: ["package": package])
         logger.debug("Tracked purchase start for package: \(package)")
     }
     
     func trackPurchaseComplete(package: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.completed", parameters: ["package": package])
         logger.debug("Tracked purchase completion for package: \(package)")
     }
     
     func trackPurchaseError(package: String, error: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.error", parameters: [
             "package": package,
             "error": error
@@ -446,21 +515,25 @@ class TelemetryService: ObservableObject {
     }
 
     func trackPurchaseRestore() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.restore")
         logger.debug("Tracked purchase restore")
     }
 
     func trackPurchaseShowAllPlans(isShow: Bool) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.showAllPlans", parameters: ["isShow": isShow.description])
         logger.debug("Tracked purchase show all plans: \(isShow)")
     }
 
     func trackPurchasePackageChange(package: String) {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.package.change", parameters: ["package": package])
         logger.debug("Tracked purchase package change: \(package)")
     }
 
     func trackPurchaseClose() {
+        guard shouldTrack() else { return }
         TelemetryDeck.signal("store.purchase.close")
         logger.debug("Tracked purchase close")
     }

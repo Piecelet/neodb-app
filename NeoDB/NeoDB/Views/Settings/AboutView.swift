@@ -172,6 +172,20 @@ struct AboutView: View {
             } header: {
                 Text(String(localized: "about_policy_title", table: "Settings"))
             }
+            
+            // Telemetry Section
+            Section {
+                Toggle(isOn: Binding(
+                    get: { TelemetryService.shared.isEnabled() },
+                    set: { TelemetryService.shared.setTelemetryEnabled($0) }
+                )) {
+                    Label(String(localized: "about_telemetry_toggle", defaultValue: "Usage Data & Improvements", table: "Settings"), systemImage: "chart.bar")
+                }
+            } header: {
+                Text(String(localized: "about_telemetry_title", defaultValue: "User Experience", table: "Settings"))
+            } footer: {
+                Text(String(localized: "about_telemetry_footer", defaultValue: "Send anonymized data to TelemetryDeck to help improve the app.", table: "Settings"))
+            }
         }
         .navigationTitle(String(localized: "about_title", table: "Settings"))
         #if os(iOS)
