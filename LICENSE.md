@@ -1,3 +1,15 @@
+# License for "Piecelet"(https://github.com/lcandy2/neodb-app) project
+
+Piecelet project is licensed under the Piecelet custom license below and AGPL-3.0 license.
+
+## Piecelet Custom License
+
+- Please note that the name of "Piecelet" and the logo is **not** licensed for distribution.
+- Please note that all paid features are **not** licensed for free distribution.
+- Please note that the app (as is) is **not** licensed for distribution on all platforms, unless "Piecelet" project(as this repository) is archived.
+
+## AGPL-3.0 License
+
                     GNU AFFERO GENERAL PUBLIC LICENSE
                        Version 3, 19 November 2007
 

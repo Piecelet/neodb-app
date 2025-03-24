@@ -69,3 +69,11 @@ Thanks!
 - Portuguese (pt-BR) by [Dennis Nunes](https://github.com/nunesdennis)
 
 ![Icon](NeoDB/NeoDB/Assets.xcassets/AppIcon.appiconset/1024x1024%20copy%202%401x.png)
+
+## License
+
+- Please note that the name of "Piecelet" and the logo is **not** licensed for distribution.
+- Please note that all paid features are **not** licensed for distribution.
+- Please note that the app (as is) is **not** licensed for distribution on all platforms, unless "Piecelet" project(as this repository) is archived.
+
+This project is licensed under the Piecelet custom license below and AGPL-3.0 license. See the [LICENSE](LICENSE) file for details.
