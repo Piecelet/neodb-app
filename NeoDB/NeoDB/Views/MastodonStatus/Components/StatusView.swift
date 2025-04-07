@@ -103,7 +103,6 @@ struct StatusView: View {
                         }
 
                         if !content.characters.isEmpty {
-
                             Text(content)
                                 .environment(
                                     \.openURL,
@@ -116,7 +115,7 @@ struct StatusView: View {
                                 .lineLimit(isTimeline ? 5 : nil)
                         }
 
-                        if let item = status.content.links.compactMap(
+                        if let item = status.content.links.lazy.compactMap(
                             \.neodbItem
                         ).first, mode != .detailWithItem {
                             StatusItemView(item: item)
@@ -238,7 +237,9 @@ struct StatusView: View {
             if let destination = destination {
                 router.navigate(to: destination)
             } else {
-                openURL(url)
+                OpenURLAction(handler: { url in
+                    return .systemAction(url)
+                }).callAsFunction(url)
             }
         }
     }
