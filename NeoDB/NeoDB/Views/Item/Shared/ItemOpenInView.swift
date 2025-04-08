@@ -14,8 +14,6 @@ struct ItemOpenInView: View {
     var router: Router? = nil
     var storeManager: StoreManager? = nil
 
-    @Environment(\.openURL) private var openURL
-
     private var shareURL: URL? {
         return URL(string: item.id)
     }

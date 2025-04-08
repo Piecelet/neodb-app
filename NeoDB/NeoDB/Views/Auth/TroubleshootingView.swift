@@ -64,7 +64,6 @@ class TroubleshootingViewModel: ObservableObject {
 
 struct TroubleshootingView: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(\.openURL) private var openURL
     @StateObject private var viewModel: TroubleshootingViewModel
     @State private var showResetClientAlert = false
     

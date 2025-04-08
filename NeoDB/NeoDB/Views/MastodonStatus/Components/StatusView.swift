@@ -32,7 +32,6 @@ struct StatusView: View {
     let status: MastodonStatus
     let mode: StatusViewMode
 
-    @Environment(\.openURL) private var openURL
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
 
