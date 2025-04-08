@@ -32,11 +32,7 @@ struct MastodonTimelinesView: View {
                                     geometry: geometry
                                 )
                                 
-                                ProgressView()
-                                    .frame(maxWidth: .infinity)
-                                    .listRowInsets(EdgeInsets())
-                                    .listRowSeparator(.hidden)
-                                    .padding()
+                                LoadMoreIndicator()
                             }
                         }
                         .coordinateSpace(name: "scrollView")
@@ -193,6 +189,23 @@ struct MastodonTimelinesView: View {
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
+    
+    struct LoadMoreIndicator: View {
+        @State private var id = UUID()
+        
+        var body: some View {
+            VStack {
+                ProgressView()
+                    .id(id)
+            }
+            .onAppear { self.id = UUID() }
+            .onDisappear { self.id = UUID() }
+            .frame(maxWidth: .infinity)
+            .listRowInsets(EdgeInsets())
+            .listRowSeparator(.hidden)
+            .padding()
+        }
+    }
 }
 
 #Preview {
