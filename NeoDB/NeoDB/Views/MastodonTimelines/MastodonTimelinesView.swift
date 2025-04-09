@@ -28,7 +28,11 @@ struct MastodonTimelinesView: View {
                         Group {
                             List {
                                 timelineContent(
-                                    for: type, geometry: geometry)
+                                    for: type,
+                                    geometry: geometry
+                                )
+                                
+                                LoadMoreIndicator()
                             }
                         }
                         .coordinateSpace(name: "scrollView")
@@ -143,7 +147,7 @@ struct MastodonTimelinesView: View {
             } else {
                 ForEach(state.statuses, id: \.id) { status in
                     VStack {
-                        if let item = status.content.links.compactMap(
+                        if let item = status.content.links.lazy.compactMap(
                             \.neodbItem
                         ).first {
                             Button {
@@ -168,19 +172,8 @@ struct MastodonTimelinesView: View {
                         return 4
                     }
                     .listRowInsets(EdgeInsets())
-                }
-                
-                if state.hasMore {
-                    HStack {
-                        Spacer()
-                        ProgressView()
-                            .id(UUID())
-                        Spacer()
-                    }
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
-                    .padding()
                     .onAppear {
+                        guard status == state.statuses.last else { return }
                         if !state.isLoading {
                             Task {
                                 await viewModel.loadNextPage(type: type)
@@ -196,6 +189,23 @@ struct MastodonTimelinesView: View {
     #if DEBUG
         @ObserveInjection var forceRedraw
     #endif
+    
+    struct LoadMoreIndicator: View {
+        @State private var id = UUID()
+        
+        var body: some View {
+            VStack {
+                ProgressView()
+                    .id(id)
+            }
+            .onAppear { self.id = UUID() }
+            .onDisappear { self.id = UUID() }
+            .frame(maxWidth: .infinity)
+            .listRowInsets(EdgeInsets())
+            .listRowSeparator(.hidden)
+            .padding()
+        }
+    }
 }
 
 #Preview {

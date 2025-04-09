@@ -15,7 +15,6 @@ struct ItemView: View {
     @EnvironmentObject private var router: Router
     @EnvironmentObject private var accountsManager: AppAccountsManager
     @EnvironmentObject private var storeManager: StoreManager
-    @Environment(\.openURL) private var openURL
 
     let id: String
     let category: ItemCategory
