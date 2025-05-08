@@ -33,6 +33,10 @@ struct ContentView: View {
             // Home Tab
             NavigationStack(path: router.path(for: .timelines)) {
                 MastodonTimelinesView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
+                        destinationView(for: destination)
+                    }
             }
             .tabItem {
                 Label(
@@ -45,6 +49,10 @@ struct ContentView: View {
             // Search Tab
             NavigationStack(path: router.path(for: .discover)) {
                 SearchView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
+                        destinationView(for: destination)
+                    }
             }
             .tabItem {
                 Label(
@@ -57,6 +65,10 @@ struct ContentView: View {
             // Library Tab
             NavigationStack(path: router.path(for: .library)) {
                 LibraryView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
+                        destinationView(for: destination)
+                    }
                     
             }
             .tabItem {
@@ -69,6 +81,10 @@ struct ContentView: View {
             // Profile Tab
             NavigationStack(path: router.path(for: .profile)) {
                 SettingsView()
+                    .navigationDestination(for: RouterDestination.self) {
+                        destination in
+                        destinationView(for: destination)
+                    }
             }
             .tabItem {
                 Label(
@@ -76,10 +92,6 @@ struct ContentView: View {
                     systemImage: "gear")
             }
             .tag(TabDestination.profile)
-        }
-        .navigationDestination(for: RouterDestination.self) {
-            destination in
-            destinationView(for: destination)
         }
         .tint(.accentColor)
         .environmentObject(router)
