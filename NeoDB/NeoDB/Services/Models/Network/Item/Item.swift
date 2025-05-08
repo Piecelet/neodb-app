@@ -306,7 +306,7 @@ struct MovieSchema: ItemProtocol {
     
     // Additional properties specific to Movie
     let origTitle: String?
-    let otherTitle: [String]
+    let otherTitle: [String]?
     let director: [String]
     let playwright: [String]
     let actor: [String]
@@ -561,7 +561,7 @@ struct AlbumSchema: ItemProtocol {
     let brief: String?
     
     // Additional properties specific to Album
-    let otherTitle: [String]
+    let otherTitle: [String]?
     let genre: [String]
     let artist: [String]
     let company: [String]
@@ -868,7 +868,7 @@ struct PerformanceSchema: ItemProtocol {
     
     // Additional properties specific to Performance
     let origTitle: String?
-    let otherTitle: [String]
+    let otherTitle: [String]?
     let genre: [String]
     let language: [String]
     let openingDate: String?
@@ -963,7 +963,7 @@ struct PerformanceProductionSchema: ItemProtocol {
     
     // Additional properties specific to Performance Production
     let origTitle: String?
-    let otherTitle: [String]
+    let otherTitle: [String]?
     let language: [String]
     let openingDate: String?
     let closingDate: String?
