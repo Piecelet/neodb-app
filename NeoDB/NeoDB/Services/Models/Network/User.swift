@@ -30,7 +30,7 @@ struct ExternalAccount: Codable, Hashable, Identifiable {
     }
 }
 
-enum UserRoles: Codable {
+enum UserRoles: String, Codable {
     case admin
     case staff
 }
